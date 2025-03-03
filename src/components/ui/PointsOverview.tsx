@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Award, TrendingUp, Clock, BookOpen, Target, Gift, ChevronRight, Flame } from 'lucide-react';
+import { Award, TrendingUp, Clock, BookOpen, Target, Gift, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
