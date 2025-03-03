@@ -25,30 +25,30 @@ const Navbar: React.FC = () => {
       <div className="container flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-bold text-xl">LearningMS</span>
+            <span className="font-bold text-xl text-jio">Jio Learning</span>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
             <Link 
               to="/" 
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/') ? 'text-primary' : 'text-foreground/60'
+              className={`text-sm font-medium transition-colors hover:text-jio ${
+                isActive('/') ? 'text-jio' : 'text-foreground/60'
               }`}
             >
               Home
             </Link>
             <Link 
               to="/discover" 
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/discover') ? 'text-primary' : 'text-foreground/60'
+              className={`text-sm font-medium transition-colors hover:text-jio ${
+                isActive('/discover') ? 'text-jio' : 'text-foreground/60'
               }`}
             >
               Discover
             </Link>
             <Link 
               to="/my-learning" 
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/my-learning') ? 'text-primary' : 'text-foreground/60'
+              className={`text-sm font-medium transition-colors hover:text-jio ${
+                isActive('/my-learning') ? 'text-jio' : 'text-foreground/60'
               }`}
             >
               My Learning
@@ -62,13 +62,13 @@ const Navbar: React.FC = () => {
             <input
               type="search"
               placeholder="Search courses..."
-              className="rounded-full bg-secondary px-9 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+              className="rounded-full bg-secondary px-9 py-2 text-sm outline-none focus:ring-2 focus:ring-jio/30"
             />
           </div>
           
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-jio"></span>
           </Button>
           
           <DropdownMenu>

@@ -53,6 +53,13 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				jio: {
+					DEFAULT: 'hsl(var(--jio))',
+					foreground: 'hsl(var(--jio-foreground))',
+					light: 'hsl(var(--jio-light))',
+					dark: 'hsl(var(--jio-dark))',
+					muted: 'hsl(var(--jio-muted))',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,26 +13,32 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 210 100% 50%;
+    --primary: 214 100% 33%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
+    --secondary: 223 14% 96%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 220 14% 96%;
     --muted-foreground: 220 8% 46%;
 
-    --accent: 210 100% 50%;
+    --accent: 240 98% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
+    --jio: 214 100% 33%;
+    --jio-foreground: 0 0% 100%;
+    --jio-light: 214 100% 45%;
+    --jio-dark: 214 100% 25%;
+    --jio-muted: 214 30% 85%;
+
     --border: 220 14% 90%;
     --input: 220 14% 90%;
-    --ring: 210 100% 50%;
+    --ring: 214 100% 33%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 
   .dark {
@@ -46,7 +51,7 @@
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 100% 50%;
+    --primary: 214 100% 33%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 33% 17%;
@@ -55,8 +60,14 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217 33% 17%;
+    --accent: 240 98% 58%;
     --accent-foreground: 210 40% 98%;
+
+    --jio: 214 100% 33%;
+    --jio-foreground: 0 0% 100%;
+    --jio-light: 214 100% 45%;
+    --jio-dark: 214 100% 25%;
+    --jio-muted: 214 30% 25%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -136,5 +147,13 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .jio-gradient {
+    @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light;
+  }
+  
+  .jio-text-gradient {
+    @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light bg-clip-text text-transparent;
   }
 }
