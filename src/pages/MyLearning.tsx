@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import { Award, BookOpen, Gift, Medal, Target, ChevronRight } from 'lucide-react';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
@@ -21,9 +22,18 @@ const MyLearning = () => {
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="rewards">Rewards</TabsTrigger>
-            <TabsTrigger value="badges">Badges</TabsTrigger>
+            <TabsTrigger value="courses" className="flex items-center gap-1">
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline">Courses</span>
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="flex items-center gap-1">
+              <Gift className="h-4 w-4" />
+              <span className="hidden sm:inline">Rewards</span>
+            </TabsTrigger>
+            <TabsTrigger value="badges" className="flex items-center gap-1">
+              <Award className="h-4 w-4" />
+              <span className="hidden sm:inline">Badges</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="courses">
