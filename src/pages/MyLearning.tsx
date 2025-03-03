@@ -3,7 +3,17 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Award, BookOpen, Gift, Medal, Target, ChevronRight } from 'lucide-react';
+import { 
+  Award, 
+  BookOpen, 
+  Gift, 
+  Medal, 
+  Target, 
+  ChevronRight, 
+  Trophy,
+  Star,
+  Clock
+} from 'lucide-react';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
@@ -11,6 +21,9 @@ import BadgesTab from './my-learning/BadgesTab';
 
 const MyLearning = () => {
   const [activeTab, setActiveTab] = useState('courses');
+
+  // Get badge count for badge number indicator
+  const badgeCount = 3; // This would come from a real data source/API
 
   return (
     <>
@@ -30,9 +43,14 @@ const MyLearning = () => {
               <Gift className="h-4 w-4" />
               <span className="hidden sm:inline">Rewards</span>
             </TabsTrigger>
-            <TabsTrigger value="badges" className="flex items-center gap-1">
+            <TabsTrigger value="badges" className="flex items-center gap-1 relative">
               <Award className="h-4 w-4" />
               <span className="hidden sm:inline">Badges</span>
+              {badgeCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                  {badgeCount}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
           

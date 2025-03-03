@@ -3,7 +3,20 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, Share2, Lock, Clock, Star, Calendar, Trophy, Medal } from "lucide-react";
+import { 
+  Award, 
+  Share2, 
+  Lock, 
+  Clock, 
+  Star, 
+  Calendar, 
+  Trophy, 
+  Medal, 
+  Target, 
+  Sparkle, 
+  Timer,
+  Flame 
+} from "lucide-react";
 
 interface BadgeMilestone {
   name: string;
@@ -24,6 +37,7 @@ interface BadgeProps {
   isLimited?: boolean;
   available?: string;
   earnedDate?: string;
+  showPreview?: boolean;
 }
 
 const BadgeCard: React.FC<BadgeProps> = ({
@@ -40,6 +54,7 @@ const BadgeCard: React.FC<BadgeProps> = ({
   isLimited,
   available,
   earnedDate,
+  showPreview = false,
 }) => {
   const getCategoryIcon = () => {
     switch (category) {
@@ -51,31 +66,72 @@ const BadgeCard: React.FC<BadgeProps> = ({
         return <Medal className="h-4 w-4 text-amber-500" />;
       case 'Limited Time':
         return <Clock className="h-4 w-4 text-amber-500" />;
+      case 'Time-bound':
+        return <Timer className="h-4 w-4 text-amber-500" />;
       case 'Consistency':
         return <Calendar className="h-4 w-4 text-amber-500" />;
+      case 'Milestone':
+        return <Target className="h-4 w-4 text-amber-500" />;
+      case 'Rare':
+        return <Sparkle className="h-4 w-4 text-amber-500" />;
       default:
         return null;
+    }
+  };
+
+  // Determine badge color based on category
+  const getBadgeColor = () => {
+    switch (category) {
+      case 'Achievement':
+        return 'bg-amber-100 text-amber-800';
+      case 'Excellence':
+        return 'bg-purple-100 text-purple-800';
+      case 'Mastery':
+        return 'bg-blue-100 text-blue-800';
+      case 'Limited Time':
+        return 'bg-orange-100 text-orange-800';
+      case 'Time-bound':
+        return 'bg-red-100 text-red-800';
+      case 'Consistency':
+        return 'bg-green-100 text-green-800';
+      case 'Milestone':
+        return 'bg-sky-100 text-sky-800';
+      case 'Rare':
+        return 'bg-indigo-100 text-indigo-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
     <Card className={`overflow-hidden transition-all duration-200 ${isUnlocked ? "hover-scale" : "opacity-75"}`}>
       <div className="relative aspect-square flex items-center justify-center p-6 bg-gradient-to-br from-primary/10 to-primary/20">
-        {!isUnlocked && (
-          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-background/50 z-10">
-            <Lock className="h-10 w-10 text-muted-foreground" />
+        {!isUnlocked && !showPreview && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center backdrop-blur-sm bg-background/70 z-10">
+            <Lock className="h-10 w-10 text-muted-foreground mb-2" />
+            <span className="text-xs text-center text-muted-foreground">
+              Complete requirements to unlock
+            </span>
           </div>
         )}
+        
+        {!isUnlocked && showPreview && (
+          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px] bg-background/40 z-10">
+            {/* Badge preview - slightly visible but with opacity */}
+          </div>
+        )}
+        
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={title}
-            className="w-24 h-24 object-contain"
+            className={`w-24 h-24 object-contain ${!isUnlocked && showPreview ? 'opacity-60' : ''}`}
           />
         ) : (
-          <Award className="w-24 h-24 text-primary/80" />
+          <Award className={`w-24 h-24 text-primary/80 ${!isUnlocked && showPreview ? 'opacity-60' : ''}`} />
         )}
-        <Badge className="absolute top-2 right-2 flex items-center gap-1">
+        
+        <Badge className={`absolute top-2 right-2 flex items-center gap-1 ${getBadgeColor()}`}>
           {getCategoryIcon()}
           {category}
         </Badge>
@@ -134,6 +190,15 @@ const BadgeCard: React.FC<BadgeProps> = ({
           <div className="w-full text-center text-xs text-amber-600 font-medium">
             <Clock className="h-3 w-3 inline mr-1" />
             Limited time badge - Available {available}
+          </div>
+        </CardFooter>
+      )}
+      
+      {!isUnlocked && category === 'Time-bound' && (
+        <CardFooter className="p-4 pt-0">
+          <div className="w-full text-center text-xs text-red-600 font-medium">
+            <Timer className="h-3 w-3 inline mr-1" />
+            Complete within time limit to earn
           </div>
         </CardFooter>
       )}
