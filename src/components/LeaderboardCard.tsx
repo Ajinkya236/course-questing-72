@@ -19,7 +19,9 @@ import {
   UserCircle,
   BarChart3,
   Target,
-  TrendingUp
+  TrendingUp,
+  MapPin,
+  Briefcase
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
