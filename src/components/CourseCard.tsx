@@ -37,7 +37,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         <Badge className="absolute top-2 right-2 bg-primary/80">{category}</Badge>
       </div>
       <CardHeader className="p-4 pb-0">
-        <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
+        <h3 className="font-heading text-lg">{title}</h3>
       </CardHeader>
       <CardContent className="p-4 pt-2">
         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{description}</p>
@@ -53,7 +53,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <div className="w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-between gap-2">
+        <div className="w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-between gap-2 absolute bottom-4 left-0 right-0 px-4">
           <Button variant="default" size="sm" className="gap-1 flex-1">
             <Play className="h-4 w-4" /> Watch
           </Button>

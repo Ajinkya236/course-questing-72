@@ -76,7 +76,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="flex justify-between items-center border-b p-4">
-          <h2 className="font-semibold">Course Contents</h2>
+          <h2 className="font-heading">Course Contents</h2>
           <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden">
             <X className="h-5 w-5" />
           </Button>
@@ -94,7 +94,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({
           <div className="p-4 space-y-4">
             {course.modules.map((module) => (
               <div key={module.id} className="space-y-2">
-                <h3 className="font-medium">{module.title}</h3>
+                <h3 className="font-heading">{module.title}</h3>
                 <div className="space-y-1 pl-4">
                   {module.activities.map((activity) => (
                     <div 
