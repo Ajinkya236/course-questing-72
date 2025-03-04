@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Bell, Calendar, Clock, BookOpen, Gift, Trophy, TrendingUp, ChevronDown } from 'lucide-react';
+import { ChevronRight, Bell, Calendar, Clock, BookOpen, Gift, Trophy, TrendingUp } from 'lucide-react';
 import CourseCarousel from '@/components/CourseCarousel';
+import CourseCard from '@/components/CourseCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -457,168 +457,47 @@ const Home = () => {
         {/* Course Carousels */}
         <section className="space-y-10">
           {/* Continue Learning */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Continue Learning</h2>
-              <Button variant="outline" size="sm">
-                View All
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {mockCoursesData.usageHistory.map((course) => (
-                  <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <CourseCard {...course} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <CourseCarousel 
+            title="Continue Learning" 
+            courses={mockCoursesData.usageHistory}
+            viewAllLink="/my-learning"
+          />
           
           {/* Top Picks for You */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Top Picks for You</h2>
-              <Button variant="outline" size="sm">
-                View All
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {mockCoursesData.topPicks.map((course) => (
-                  <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <CourseCard {...course} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <CourseCarousel 
+            title="Top Picks for You" 
+            courses={mockCoursesData.topPicks}
+            viewAllLink="/discover"
+          />
           
           {/* Role-based Skills with Filter */}
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Role-based Skills</h2>
-              <div className="flex flex-wrap items-center gap-3">
-                <Select 
-                  value={roleBasedSkillFilter} 
-                  onValueChange={setRoleBasedSkillFilter}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by skill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillCategories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm">
-                  View All
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {mockCoursesData.roleBasedSkillGaps.map((course) => (
-                  <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <CourseCard {...course} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <CourseCarousel 
+            title="Role-based Skills" 
+            courses={mockCoursesData.roleBasedSkillGaps}
+            showFilter={true}
+            filterOptions={skillCategories}
+            filterValue={roleBasedSkillFilter}
+            onFilterChange={setRoleBasedSkillFilter}
+            viewAllLink="/discover?category=role-based"
+          />
           
           {/* Based on Your Interests with Filter */}
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Based on Your Interests</h2>
-              <div className="flex flex-wrap items-center gap-3">
-                <Select 
-                  value={interestSkillFilter} 
-                  onValueChange={setInterestSkillFilter}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by skill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillCategories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm">
-                  View All
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {mockCoursesData.skillInterestsFollowed.map((course) => (
-                  <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <CourseCard {...course} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <CourseCarousel 
+            title="Based on Your Interests" 
+            courses={mockCoursesData.skillInterestsFollowed}
+            showFilter={true}
+            filterOptions={skillCategories}
+            filterValue={interestSkillFilter}
+            onFilterChange={setInterestSkillFilter}
+            viewAllLink="/discover?category=interests"
+          />
           
           {/* Popular with Similar Learners */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold tracking-tight">Popular with Similar Learners</h2>
-              <Button variant="outline" size="sm">
-                View All
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {mockCoursesData.similarUsers.map((course) => (
-                  <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-                    <CourseCard {...course} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          <CourseCarousel 
+            title="Popular with Similar Learners" 
+            courses={mockCoursesData.similarUsers}
+            viewAllLink="/discover?category=similar"
+          />
         </section>
       </div>
     </>
