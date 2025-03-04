@@ -1,23 +1,54 @@
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Search, Menu } from "lucide-react";
+import { 
+  Bell, 
+  Search, 
+  Menu, 
+  ChevronDown,
+  BookOpen,
+  Compass,
+  Award,
+  TrendingUp,
+  UserPlus,
+  Star,
+  Users
+} from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuGroup
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { toast } from "@/hooks/use-toast";
+import NotificationsPanel from '../NotificationsPanel';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const isActive = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/view-all/${category.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
   return (
@@ -37,14 +68,99 @@ const Navbar: React.FC = () => {
             >
               Home
             </Link>
-            <Link 
-              to="/discover" 
-              className={`text-sm font-medium transition-colors hover:text-jio ${
-                isActive('/discover') ? 'text-jio' : 'text-foreground/60'
-              }`}
-            >
-              Discover
-            </Link>
+            
+            <HoverCard openDelay={100} closeDelay={200}>
+              <HoverCardTrigger asChild>
+                <Link 
+                  to="/discover" 
+                  className={`text-sm font-medium transition-colors hover:text-jio flex items-center gap-1 ${
+                    isActive('/discover') ? 'text-jio' : 'text-foreground/60'
+                  }`}
+                >
+                  Discover <ChevronDown className="h-4 w-4" />
+                </Link>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Top Picks')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Star className="h-4 w-4 text-primary" />
+                      Top Picks
+                    </div>
+                    <p className="text-xs text-muted-foreground">Curated courses just for you</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Based on Your Interests')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      Your Interests
+                    </div>
+                    <p className="text-xs text-muted-foreground">Matches your followed skills</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Role-based Skills')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Compass className="h-4 w-4 text-primary" />
+                      Role-based
+                    </div>
+                    <p className="text-xs text-muted-foreground">Skills for your current role</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Similar Learners')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      Similar Learners
+                    </div>
+                    <p className="text-xs text-muted-foreground">Popular with peers like you</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Assigned Courses')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <UserPlus className="h-4 w-4 text-primary" />
+                      Assigned
+                    </div>
+                    <p className="text-xs text-muted-foreground">Mandatory and recommended</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Trending')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      Trending
+                    </div>
+                    <p className="text-xs text-muted-foreground">What's popular right now</p>
+                  </div>
+                </div>
+                
+                <div className="mt-4 pt-3 border-t">
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto" 
+                    onClick={() => navigate('/discover')}
+                  >
+                    View all categories
+                  </Button>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+            
             <Link 
               to="/my-learning" 
               className={`text-sm font-medium transition-colors hover:text-jio ${
@@ -66,10 +182,17 @@ const Navbar: React.FC = () => {
             />
           </div>
           
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-jio"></span>
-          </Button>
+          <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-jio"></span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <NotificationsPanel onClose={() => setNotificationsOpen(false)} />
+            </PopoverContent>
+          </Popover>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

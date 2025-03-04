@@ -3,17 +3,27 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseCard from '@/components/CourseCard';
 import { coursesList } from '@/data/mockData';
+import { useNavigate } from 'react-router-dom';
 
 const CoursesTab = () => {
   const [activeTab, setActiveTab] = useState('assigned');
+  const navigate = useNavigate();
   
   // Filter courses based on the active tab
   // In a real application, you would have different lists of courses based on their status
-  const assignedCourses = coursesList.slice(0, 4);
+  const assignedCourses = coursesList.slice(0, 4).map(course => ({
+    ...course,
+    trainingCategory: ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+  }));
+  
   const inProgressCourses = coursesList.slice(4, 8);
   const completedCourses = coursesList.slice(8, 12);
   const savedCourses = coursesList.slice(12, 16);
   const sharedCourses = coursesList.slice(16, 20);
+  
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/course/${courseId}`);
+  };
   
   return (
     <div>
@@ -29,7 +39,9 @@ const CoursesTab = () => {
         <TabsContent value="assigned">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {assignedCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -37,7 +49,9 @@ const CoursesTab = () => {
         <TabsContent value="in-progress">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {inProgressCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -45,7 +59,9 @@ const CoursesTab = () => {
         <TabsContent value="completed">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {completedCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -53,7 +69,9 @@ const CoursesTab = () => {
         <TabsContent value="saved">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {savedCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -61,7 +79,9 @@ const CoursesTab = () => {
         <TabsContent value="shared">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sharedCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              </div>
             ))}
           </div>
         </TabsContent>
