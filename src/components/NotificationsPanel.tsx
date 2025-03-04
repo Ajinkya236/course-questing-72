@@ -60,7 +60,7 @@ const notifications = [
     id: '4',
     type: 'course_completed',
     title: 'Course Completed',
-    description: 'You've completed "Data Analysis Basics"',
+    description: "You've completed \"Data Analysis Basics\"",
     time: '1 week ago',
     isRead: true,
     icon: CheckCircle2,
