@@ -1,19 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseCard from '@/components/CourseCard';
 import { coursesList } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
 
-const CoursesTab = () => {
+interface CoursesTabProps {
+  initialActiveTab?: string;
+}
+
+const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
   const [activeTab, setActiveTab] = useState('assigned');
   const navigate = useNavigate();
+  
+  // Set initial tab if provided
+  useEffect(() => {
+    if (initialActiveTab) {
+      setActiveTab(initialActiveTab);
+    }
+  }, [initialActiveTab]);
   
   // Filter courses based on the active tab
   // In a real application, you would have different lists of courses based on their status
   const assignedCourses = coursesList.slice(0, 4).map(course => ({
     ...course,
-    trainingCategory: ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+    trainingCategory: course.trainingCategory || ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
   }));
   
   const inProgressCourses = coursesList.slice(4, 8);

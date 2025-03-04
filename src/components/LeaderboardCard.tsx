@@ -130,22 +130,47 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
     }
   });
   
+  // Always include the #1 ranked user
+  const topUser = filteredUsers.find(u => u.position === 1);
+  
   // For relative leaderboard - highlight users close to current user
   const getRelativeUsers = () => {
     if (!currentUser) return filteredUsers.slice(0, 5);
     
     const currentUserIndex = filteredUsers.findIndex(u => u.id === currentUser.id);
-    if (currentUserIndex <= 2) {
-      // If user is already in top 5, just show top 5
-      return filteredUsers.slice(0, 5);
-    } else {
-      // Show 2 users above and 2 users below current user
-      return [
-        ...filteredUsers.slice(currentUserIndex - 2, currentUserIndex),
-        currentUser,
+    if (currentUserIndex === -1) return filteredUsers.slice(0, 5);
+    
+    // Get 2 users above and 2 users below current user
+    let usersToShow = [];
+    
+    // Always include #1 ranked user if not already in the selection
+    if (topUser && topUser.id !== currentUser.id && 
+        (currentUserIndex <= 0 || currentUserIndex > 2)) {
+      usersToShow.push(topUser);
+    }
+    
+    // Get users above the current user (up to 2)
+    if (currentUserIndex > 0) {
+      const startIndex = Math.max(0, currentUserIndex - 2);
+      usersToShow = [
+        ...usersToShow,
+        ...filteredUsers.slice(startIndex, currentUserIndex)
+      ];
+    }
+    
+    // Add current user
+    usersToShow.push(currentUser);
+    
+    // Get users below the current user (up to 2)
+    if (currentUserIndex < filteredUsers.length - 1) {
+      usersToShow = [
+        ...usersToShow,
         ...filteredUsers.slice(currentUserIndex + 1, currentUserIndex + 3)
       ];
     }
+    
+    // Make sure we don't have duplicates
+    return [...new Map(usersToShow.map(user => [user.id, user])).values()];
   };
   
   const displayedUsers = leaderboardType === 'relative' ? getRelativeUsers() : filteredUsers.slice(0, 5);
@@ -192,11 +217,11 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
       <CardContent>
         <Tabs defaultValue="individual" className="mb-4">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="individual" onClick={() => setLeaderboardType('absolute')}>
+            <TabsTrigger value="individual" onClick={() => setFilterType('all')}>
               <User className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Individual</span>
             </TabsTrigger>
-            <TabsTrigger value="team" onClick={() => { setLeaderboardType('absolute'); setFilterType('team'); }}>
+            <TabsTrigger value="team" onClick={() => setFilterType('team')}>
               <Users className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
@@ -406,7 +431,7 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
               </div>
               <Button variant="outline" size="sm" className="w-full mt-3 flex items-center justify-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                View Earning Opportunities
+                View All Milestones
               </Button>
             </div>
           )}
@@ -414,7 +439,7 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
           <div className="mt-2">
             <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1">
               <ChevronRight className="h-4 w-4" />
-              <span>See Full Leaderboard</span>
+              <span>View Full Leaderboard</span>
             </Button>
           </div>
         </div>

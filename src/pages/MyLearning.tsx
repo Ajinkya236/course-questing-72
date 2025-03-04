@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,16 +14,28 @@ import {
   Star,
   Clock
 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
 import BadgesTab from './my-learning/BadgesTab';
 
 const MyLearning = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('courses');
-
+  
   // Get badge count for badge number indicator
   const badgeCount = 3; // This would come from a real data source/API
+  
+  // Check if we have state with a specified tab
+  useEffect(() => {
+    if (location.state) {
+      const { activeTab: tabFromState } = location.state as { activeTab?: string, courseTab?: string };
+      if (tabFromState) {
+        setActiveTab(tabFromState);
+      }
+    }
+  }, [location.state]);
 
   return (
     <>
@@ -55,7 +67,7 @@ const MyLearning = () => {
           </TabsList>
           
           <TabsContent value="courses">
-            <CoursesTab />
+            <CoursesTab initialActiveTab={location.state?.courseTab} />
           </TabsContent>
           
           <TabsContent value="rewards">

@@ -22,6 +22,7 @@ export interface Course {
   duration: string;
   rating: number;
   isBookmarked?: boolean;
+  trainingCategory?: string;
   learningObjectives: string[];
   skills: { name: string; proficiency: string }[];
   certificates: string[];

@@ -124,8 +124,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
           <Badge className="absolute top-2 left-2 bg-accent/80">{trainingCategory}</Badge>
         )}
       </div>
-      <CardHeader className="p-4 pb-0">
-        <h3 className="font-semibold text-base" title={title}>{title}</h3>
+      <CardHeader className="p-4 pb-2">
+        <h3 className="font-semibold text-base">{title}</h3>
       </CardHeader>
       <CardContent className="p-4 pt-2">
         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{description}</p>

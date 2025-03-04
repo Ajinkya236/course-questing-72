@@ -1,4 +1,3 @@
-
 // Mock data for courses
 export const coursesList = [
   {
@@ -10,6 +9,7 @@ export const coursesList = [
     duration: '4h 30m',
     rating: 4.7,
     isBookmarked: true,
+    trainingCategory: 'Leadership',
   },
   {
     id: '2',
@@ -19,6 +19,7 @@ export const coursesList = [
     category: 'Management',
     duration: '3h 15m',
     rating: 4.5,
+    trainingCategory: 'Mandatory',
   },
   {
     id: '3',
@@ -28,6 +29,7 @@ export const coursesList = [
     category: 'Project Management',
     duration: '5h 45m',
     rating: 4.8,
+    trainingCategory: 'Technical',
   },
   {
     id: '4',
@@ -37,6 +39,7 @@ export const coursesList = [
     category: 'Communication',
     duration: '2h 30m',
     rating: 4.6,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '5',
@@ -46,6 +49,7 @@ export const coursesList = [
     category: 'Analytics',
     duration: '4h 15m',
     rating: 4.9,
+    trainingCategory: 'Technical',
   },
   {
     id: '6',
@@ -55,6 +59,7 @@ export const coursesList = [
     category: 'Programming',
     duration: '8h 20m',
     rating: 4.8,
+    trainingCategory: 'Technical',
   },
   {
     id: '7',
@@ -64,6 +69,7 @@ export const coursesList = [
     category: 'Marketing',
     duration: '6h 45m',
     rating: 4.6,
+    trainingCategory: 'Ready for Role',
   },
   {
     id: '8',
@@ -73,6 +79,7 @@ export const coursesList = [
     category: 'Design',
     duration: '5h 30m',
     rating: 4.7,
+    trainingCategory: 'Technical',
   },
   {
     id: '9',
@@ -83,6 +90,7 @@ export const coursesList = [
     duration: '4h 15m',
     rating: 4.5,
     isBookmarked: true,
+    trainingCategory: 'Mandatory',
   },
   {
     id: '10',
@@ -92,6 +100,7 @@ export const coursesList = [
     category: 'Communication',
     duration: '3h 45m',
     rating: 4.9,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '11',
@@ -101,6 +110,7 @@ export const coursesList = [
     category: 'Project Management',
     duration: '5h 15m',
     rating: 4.7,
+    trainingCategory: 'Technical',
   },
   {
     id: '12',
@@ -110,6 +120,7 @@ export const coursesList = [
     category: 'Personal Development',
     duration: '3h 30m',
     rating: 4.8,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '13',
@@ -120,6 +131,7 @@ export const coursesList = [
     duration: '6h 20m',
     rating: 4.9,
     isBookmarked: true,
+    trainingCategory: 'Mandatory',
   },
   {
     id: '14',
@@ -129,6 +141,7 @@ export const coursesList = [
     category: 'Business',
     duration: '4h 45m',
     rating: 4.6,
+    trainingCategory: 'Ready for Role',
   },
   {
     id: '15',
@@ -138,6 +151,7 @@ export const coursesList = [
     category: 'Business Skills',
     duration: '3h 15m',
     rating: 4.7,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '16',
@@ -147,6 +161,7 @@ export const coursesList = [
     category: 'Innovation',
     duration: '4h 30m',
     rating: 4.8,
+    trainingCategory: 'Ready for Role',
   },
   {
     id: '17',
@@ -156,6 +171,7 @@ export const coursesList = [
     category: 'Productivity',
     duration: '2h 45m',
     rating: 4.7,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '18',
@@ -166,6 +182,7 @@ export const coursesList = [
     duration: '5h 15m',
     rating: 4.6,
     isBookmarked: true,
+    trainingCategory: 'Ready for Role',
   },
   {
     id: '19',
@@ -175,6 +192,7 @@ export const coursesList = [
     category: 'Data Science',
     duration: '7h 30m',
     rating: 4.9,
+    trainingCategory: 'Technical',
   },
   {
     id: '20',
@@ -184,6 +202,7 @@ export const coursesList = [
     category: 'Thinking Skills',
     duration: '3h 45m',
     rating: 4.8,
+    trainingCategory: 'Soft Skills',
   },
   {
     id: '21',
@@ -193,6 +212,7 @@ export const coursesList = [
     category: 'Remote Work',
     duration: '4h 15m',
     rating: 4.9,
+    trainingCategory: 'Ready for Role',
   },
   {
     id: '22',
@@ -203,5 +223,6 @@ export const coursesList = [
     duration: '6h 30m',
     rating: 4.8,
     isBookmarked: true,
+    trainingCategory: 'Technical',
   },
 ];

@@ -20,6 +20,8 @@ interface Course {
   duration: string;
   rating: number;
   isBookmarked?: boolean;
+  trainingCategory?: string;
+  previewUrl?: string;
 }
 
 interface CourseCarouselProps {
@@ -27,10 +29,12 @@ interface CourseCarouselProps {
   courses: Course[];
   showSkillFilters?: boolean;
   onCourseClick?: (courseId: string) => void;
+  onViewAllClick?: () => void;
+  filterOptions?: string[];
 }
 
-// Mock skills for filters - in a real app, these would come from an API
-const mockSkills = [
+// Default skills for filters - in a real app, these would come from an API
+const defaultSkills = [
   "All Skills", "Leadership", "Management", "Communication", "Project Management", 
   "Data Analysis", "Marketing", "Programming", "Design", "Finance",
   "Problem Solving", "Critical Thinking", "Teamwork", "Innovation", "Strategy"
@@ -40,15 +44,20 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   title, 
   courses,
   showSkillFilters = false,
-  onCourseClick 
+  onCourseClick,
+  onViewAllClick,
+  filterOptions
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
 
+  // Use provided filter options or default to skills
+  const skillFilters = filterOptions || defaultSkills;
+
   const toggleSkill = (skill: string) => {
-    if (skill === "All Skills") {
+    if (skill === "All Skills" || skill === "All Categories") {
       // If "All Skills" is selected, clear other selections
-      setSelectedSkills(["All Skills"]);
+      setSelectedSkills([skill]);
       return;
     }
 
@@ -56,8 +65,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     let newSelectedSkills = [...selectedSkills];
     
     // Remove "All Skills" if it's in the selection
-    if (newSelectedSkills.includes("All Skills")) {
-      newSelectedSkills = newSelectedSkills.filter(s => s !== "All Skills");
+    if (newSelectedSkills.includes("All Skills") || newSelectedSkills.includes("All Categories")) {
+      newSelectedSkills = newSelectedSkills.filter(s => s !== "All Skills" && s !== "All Categories");
     }
 
     // Toggle the clicked skill
@@ -89,14 +98,26 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   };
 
   // Filter courses based on selected skills
-  const filteredCourses = selectedSkills.includes("All Skills")
+  const filteredCourses = selectedSkills.includes("All Skills") || selectedSkills.includes("All Categories")
     ? courses
-    : courses.filter(course => selectedSkills.includes(course.category));
+    : courses.filter(course => {
+        // Check if the course matches any of the selected skills
+        // First check category, then check trainingCategory if it exists
+        return selectedSkills.includes(course.category) || 
+               (course.trainingCategory && selectedSkills.includes(course.trainingCategory));
+      });
 
   // Handle course click
   const handleCourseClick = (courseId: string) => {
     if (onCourseClick) {
       onCourseClick(courseId);
+    }
+  };
+
+  // Handle view all click
+  const handleViewAllClick = () => {
+    if (onViewAllClick) {
+      onViewAllClick();
     }
   };
 
@@ -121,7 +142,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="link" className="gap-1 text-primary">
+          <Button 
+            variant="link" 
+            className="gap-1 text-primary"
+            onClick={handleViewAllClick}
+          >
             View All <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -146,7 +171,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             <div className="flex gap-2 whitespace-nowrap">
-              {mockSkills.map((skill) => (
+              {skillFilters.map((skill) => (
                 <Button
                   key={skill}
                   variant={selectedSkills.includes(skill) ? "default" : "outline"}
@@ -185,7 +210,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {filteredCourses.map((course) => (
             <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
               <div onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} />
+                <CourseCard 
+                  {...course} 
+                  previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" 
+                />
               </div>
             </CarouselItem>
           ))}

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -257,6 +258,14 @@ const Home = () => {
     navigate(`/course/${courseId}`);
   };
 
+  const handleContinueLearningViewAll = () => {
+    navigate('/my-learning', { state: { activeTab: 'courses', courseTab: 'in-progress' } });
+  };
+
+  const handleViewAllCategory = (category: string) => {
+    navigate(`/view-all/${category.toLowerCase().replace(/\s+/g, '-')}`);
+  };
+
   return (
     <>
       <Helmet>
@@ -275,7 +284,7 @@ const Home = () => {
                 Earn points and badges as you progress through your learning journey.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button size="lg" className="gap-2">
+                <Button size="lg" className="gap-2" onClick={() => navigate('/discover')}>
                   Explore Courses
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -288,98 +297,116 @@ const Home = () => {
           <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
         </section>
 
-        {/* Follow Skills Section */}
-        <section>
-          <FollowSkills />
-        </section>
+        {/* Dashboard components in a single row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Skills to follow */}
+          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="p-6">
+              <FollowSkills />
+            </div>
+          </div>
+          
+          {/* Actionables Container */}
+          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-primary" />
+                  <h3 className="text-lg font-semibold">Actionables</h3>
+                </div>
+                <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                  View All <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                  <div>
+                    <p className="font-medium">Complete Leadership Course</p>
+                    <p className="text-sm text-muted-foreground">3 days remaining</p>
+                  </div>
+                  <Button size="sm">Resume</Button>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                  <div>
+                    <p className="font-medium">Rate Marketing Strategy Course</p>
+                    <p className="text-sm text-muted-foreground">Feedback requested</p>
+                  </div>
+                  <Button size="sm" variant="outline">Rate</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* My Rewards Container */}
+          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Gift className="h-5 w-5 text-primary" />
+                  <h3 className="text-lg font-semibold">My Rewards</h3>
+                </div>
+                <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                  View All <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                  <Award className="h-8 w-8 text-amber-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Points</p>
+                    <p className="text-xl font-bold">2,450</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                  <Star className="h-8 w-8 text-primary" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Rank</p>
+                    <p className="text-xl font-bold">#42</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {/* Course Carousels - Reordered with Continue Learning and Top Picks first */}
+        {/* Course Carousels */}
         <section className="space-y-12">
           {/* Continue Learning Section */}
           <CourseCarousel 
             title="Continue Learning" 
             courses={mockCoursesData.usageHistory} 
-            onCourseClick={handleCourseClick}  
+            onCourseClick={handleCourseClick}
+            onViewAllClick={handleContinueLearningViewAll}
+          />
+          
+          {/* Assigned Courses Section with training categories as filters */}
+          <CourseCarousel 
+            title="Assigned Courses" 
+            courses={mockCoursesData.roleBasedSkillGaps.map(course => ({
+              ...course,
+              trainingCategory: ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+            }))} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Assigned Courses')}
+            filterOptions={['All Categories', 'Ready for Role', 'Mandatory', 'Leadership', 'Technical']}
           />
           
           {/* Top Picks Section */}
           <CourseCarousel 
             title="Top Picks for You" 
             courses={mockCoursesData.topPicks} 
-            onCourseClick={handleCourseClick}  
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Top Picks for You')}
           />
-          
-          {/* Actionables and My Rewards containers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Actionables Container */}
-            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Actionables</h3>
-                  </div>
-                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
-                    View All <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
-                    <div>
-                      <p className="font-medium">Complete Leadership Course</p>
-                      <p className="text-sm text-muted-foreground">3 days remaining</p>
-                    </div>
-                    <Button size="sm">Resume</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
-                    <div>
-                      <p className="font-medium">Rate Marketing Strategy Course</p>
-                      <p className="text-sm text-muted-foreground">Feedback requested</p>
-                    </div>
-                    <Button size="sm" variant="outline">Rate</Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* My Rewards Container */}
-            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Gift className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">My Rewards</h3>
-                  </div>
-                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
-                    View All <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                    <Award className="h-8 w-8 text-amber-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Points</p>
-                      <p className="text-xl font-bold">2,450</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                    <Star className="h-8 w-8 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Rank</p>
-                      <p className="text-xl font-bold">#42</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           
           {/* Role-based Skills with Skill Filters */}
           <CourseCarousel 
             title="Role-based Skills" 
             courses={mockCoursesData.roleBasedSkillGaps} 
             showSkillFilters={true}
-            onCourseClick={handleCourseClick}  
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Role-based Skills')}
           />
           
           {/* Based on Your Interests with Skill Filters */}
@@ -387,14 +414,16 @@ const Home = () => {
             title="Based on Your Interests" 
             courses={mockCoursesData.skillInterestsFollowed} 
             showSkillFilters={true}
-            onCourseClick={handleCourseClick}  
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Based on Your Interests')}
           />
           
           {/* Popular with Similar Learners */}
           <CourseCarousel 
             title="Popular with Similar Learners" 
             courses={mockCoursesData.similarUsers} 
-            onCourseClick={handleCourseClick}  
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Popular with Similar Learners')}
           />
         </section>
       </div>
