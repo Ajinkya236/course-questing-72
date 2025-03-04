@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import CourseCard from '@/components/CourseCard';
 import { Search, SlidersHorizontal, BookOpen, Timer, Briefcase, GraduationCap, Code, LineChart } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // Mock data - we'll use the same courses from the Home page
 import { coursesList } from '@/data/mockData';
@@ -25,10 +24,6 @@ const filterOptions = {
 };
 
 const Discover = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const skillFilters = searchParams.getAll('skills');
-  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     type: 'All Types',
@@ -40,20 +35,16 @@ const Discover = () => {
   // For the prototype, we're not actually filtering the data
   // But in a real application, you would filter based on the selected filters
   const courses = coursesList.slice(0, 20);
-  
-  const handleCourseClick = (courseId: string) => {
-    navigate(`/course/${courseId}`);
-  };
 
   return (
     <>
       <Helmet>
-        <title>Discover Courses | Jio Learning</title>
+        <title>Discover Courses | Learning Management System</title>
       </Helmet>
       <div className="container py-8 mb-20">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-heading tracking-tight">Discover Courses</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Discover Courses</h1>
             <p className="text-muted-foreground mt-1">Explore our catalog of courses and expand your skills</p>
           </div>
           <div className="flex w-full md:w-auto items-center gap-2">
@@ -141,39 +132,19 @@ const Discover = () => {
 
         {/* Category Chips */}
         <div className="flex flex-wrap gap-2 mb-8">
-          <Button 
-            variant={skillFilters.includes('Programming') || skillFilters.length === 0 ? "secondary" : "outline"} 
-            size="sm" 
-            className="rounded-full"
-          >
+          <Button variant="secondary" size="sm" className="rounded-full">
             <Code className="mr-1 h-4 w-4" /> Programming
           </Button>
-          <Button 
-            variant={skillFilters.includes('Data Science') || skillFilters.length === 0 ? "secondary" : "outline"}
-            size="sm" 
-            className="rounded-full"
-          >
+          <Button variant="secondary" size="sm" className="rounded-full">
             <LineChart className="mr-1 h-4 w-4" /> Data Science
           </Button>
-          <Button 
-            variant={skillFilters.includes('Leadership') ? "secondary" : "outline"}
-            size="sm" 
-            className="rounded-full"
-          >
+          <Button variant="outline" size="sm" className="rounded-full">
             Leadership
           </Button>
-          <Button 
-            variant={skillFilters.includes('Communication') ? "secondary" : "outline"}
-            size="sm" 
-            className="rounded-full"
-          >
+          <Button variant="outline" size="sm" className="rounded-full">
             Communication
           </Button>
-          <Button 
-            variant={skillFilters.includes('Project Management') ? "secondary" : "outline"}
-            size="sm" 
-            className="rounded-full"
-          >
+          <Button variant="outline" size="sm" className="rounded-full">
             Project Management
           </Button>
         </div>
@@ -181,9 +152,7 @@ const Discover = () => {
         {/* Courses Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {courses.map((course) => (
-            <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-              <CourseCard {...course} />
-            </div>
+            <CourseCard key={course.id} {...course} />
           ))}
         </div>
 

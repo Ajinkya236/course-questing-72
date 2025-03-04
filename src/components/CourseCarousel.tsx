@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import CourseCard from './CourseCard';
-import { useNavigate } from 'react-router-dom';
 
 interface Course {
   id: string;
@@ -28,7 +27,6 @@ interface CourseCarouselProps {
   courses: Course[];
   showSkillFilters?: boolean;
   onCourseClick?: (courseId: string) => void;
-  viewAllLink?: string;
 }
 
 // Mock skills for filters - in a real app, these would come from an API
@@ -42,10 +40,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   title, 
   courses,
   showSkillFilters = false,
-  onCourseClick,
-  viewAllLink = "/discover" 
+  onCourseClick 
 }) => {
-  const navigate = useNavigate();
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -104,25 +100,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   };
 
-  // Handle view all click
-  const handleViewAll = () => {
-    // For "Continue Learning" section, navigate to My Learning > Courses > In Progress
-    if (title === "Continue Learning") {
-      navigate("/my-learning?tab=courses&status=in-progress");
-    } else {
-      // For other sections, navigate to discover with the selected skills as filters
-      const params = new URLSearchParams();
-      if (!selectedSkills.includes("All Skills")) {
-        selectedSkills.forEach(skill => params.append("skills", skill));
-      }
-      navigate(`${viewAllLink}?${params.toString()}`);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-heading tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
@@ -140,7 +121,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="link" className="gap-1 text-primary" onClick={handleViewAll}>
+          <Button variant="link" className="gap-1 text-primary">
             View All <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
