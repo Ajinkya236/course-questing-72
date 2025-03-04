@@ -51,7 +51,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {assignedCourses.map((course) => (
               <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" showFullTitle={true} />
               </div>
             ))}
           </div>
@@ -61,7 +61,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {inProgressCourses.map((course) => (
               <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" showFullTitle={true} />
               </div>
             ))}
           </div>
@@ -71,7 +71,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {completedCourses.map((course) => (
               <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" showFullTitle={true} />
               </div>
             ))}
           </div>
@@ -81,7 +81,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {savedCourses.map((course) => (
               <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" showFullTitle={true} />
               </div>
             ))}
           </div>
@@ -91,7 +91,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sharedCourses.map((course) => (
               <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" showFullTitle={true} />
               </div>
             ))}
           </div>
