@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -6,35 +7,23 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-
-interface Activity {
-  id: string;
-  title: string;
-  type: 'video' | 'quiz' | 'h5p';
-  duration: string;
-  completed: boolean;
-}
-
-interface Module {
-  id: string;
-  title: string;
-  activities: Activity[];
-}
-
-interface Course {
-  id: string;
-  title: string;
-  modules: Module[];
-  // Other course properties may be included but we'll use only what we need
-}
+import { Course, Activity } from '@/types/course';
 
 interface CourseSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   course: Course;
+  onActivitySelect?: (activityId: string) => void;
+  currentActivityId?: string;
 }
 
-const CourseSidebar: React.FC<CourseSidebarProps> = ({ isOpen, onClose, course }) => {
+const CourseSidebar: React.FC<CourseSidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  course, 
+  onActivitySelect,
+  currentActivityId 
+}) => {
   // Calculate course progress
   const totalActivities = course.modules.reduce(
     (total, module) => total + module.activities.length, 0
@@ -51,7 +40,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ isOpen, onClose, course }
     : 0;
 
   // Function to get the appropriate icon based on activity type
-  const getActivityIcon = (type: string) => {
+  const getActivityIcon = (type: 'video' | 'quiz' | 'h5p') => {
     switch (type) {
       case 'video':
         return <Play className="h-4 w-4" />;
@@ -61,6 +50,12 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ isOpen, onClose, course }
         return <LayoutGrid className="h-4 w-4" />;
       default:
         return <HelpCircle className="h-4 w-4" />;
+    }
+  };
+  
+  const handleActivityClick = (activityId: string) => {
+    if (onActivitySelect) {
+      onActivitySelect(activityId);
     }
   };
 
@@ -107,8 +102,10 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ isOpen, onClose, course }
                       className={`
                         flex items-center gap-2 p-2 rounded-md text-sm
                         ${activity.completed ? 'text-primary' : 'text-muted-foreground'}
-                        hover:bg-muted cursor-pointer transition-colors
+                        ${currentActivityId === activity.id ? 'bg-primary/10' : 'hover:bg-muted'}
+                        cursor-pointer transition-colors
                       `}
+                      onClick={() => handleActivityClick(activity.id)}
                     >
                       {activity.completed ? (
                         <CheckCircle2 className="h-4 w-4 text-primary" />

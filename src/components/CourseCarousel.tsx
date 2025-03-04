@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import CourseCard from './CourseCard';
 
 interface Course {
@@ -104,9 +104,27 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
-        <Button variant="link" className="gap-1 text-primary">
-          View All <ChevronRightIcon className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="rounded-full"
+            onClick={() => scrollSkills('left')}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="rounded-full"
+            onClick={() => scrollSkills('right')}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button variant="link" className="gap-1 text-primary">
+            View All <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       {showSkillFilters && (

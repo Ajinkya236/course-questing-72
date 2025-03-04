@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Clock, Star, Share2, Bookmark, Play } from "lucide-react";
+import { BookOpen, Clock, Star, Share2, Bookmark, Play, UserPlus } from "lucide-react";
 
 interface CourseCardProps {
   id: string;
@@ -27,12 +27,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
   isBookmarked = false,
 }) => {
   return (
-    <Card className="w-full hover-scale overflow-hidden">
+    <Card className="w-full hover-scale overflow-hidden group">
       <div className="relative h-40 overflow-hidden">
         <img
           src={imageUrl || "/placeholder.svg"}
           alt={title}
-          className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+          className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
         />
         <Badge className="absolute top-2 right-2 bg-primary/80">{category}</Badge>
       </div>
@@ -52,16 +52,21 @@ const CourseCard: React.FC<CourseCardProps> = ({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex justify-between gap-2">
-        <Button variant="default" size="sm" className="gap-1 flex-1">
-          <Play className="h-4 w-4" /> Watch
-        </Button>
-        <Button variant="outline" size="sm" className="px-2">
-          <Share2 className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" size="sm" className="px-2">
-          <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary" : ""}`} />
-        </Button>
+      <CardFooter className="p-4 pt-0">
+        <div className="w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-between gap-2">
+          <Button variant="default" size="sm" className="gap-1 flex-1">
+            <Play className="h-4 w-4" /> Watch
+          </Button>
+          <Button variant="outline" size="sm" className="px-2">
+            <Share2 className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm" className="px-2">
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary" : ""}`} />
+          </Button>
+          <Button variant="outline" size="sm" className="px-2">
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

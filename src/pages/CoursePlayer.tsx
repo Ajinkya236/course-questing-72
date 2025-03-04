@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import CourseDetailsTab from '@/components/course/CourseDetailsTab';
 import CourseQATab from '@/components/course/CourseQATab';
 import CourseTranscriptTab from '@/components/course/CourseTranscriptTab';
 import CourseNotesTab from '@/components/course/CourseNotesTab';
-import { Course } from '@/types/course';
+import { Course, Activity } from '@/types/course';
 
 // Mock data for the current course
 const mockCourseData: Course = {
@@ -70,17 +71,71 @@ const mockCourseData: Course = {
   ]
 };
 
+// Mock quiz data
+const mockQuizData = {
+  title: "Leadership Styles Quiz",
+  questions: [
+    {
+      id: "q1",
+      text: "Which leadership style involves making decisions without consulting team members?",
+      options: [
+        { id: "a", text: "Autocratic" },
+        { id: "b", text: "Democratic" },
+        { id: "c", text: "Laissez-faire" },
+        { id: "d", text: "Transformational" }
+      ],
+      correctAnswer: "a"
+    },
+    {
+      id: "q2",
+      text: "A democratic leadership style is characterized by:",
+      options: [
+        { id: "a", text: "Minimal supervision and guidance" },
+        { id: "b", text: "High level of control and direction" },
+        { id: "c", text: "Team involvement in decision-making" },
+        { id: "d", text: "Focus on short-term goals only" }
+      ],
+      correctAnswer: "c"
+    }
+  ]
+};
+
 const CoursePlayer: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [userRating, setUserRating] = useState<number | null>(null);
+  const [currentActivityId, setCurrentActivityId] = useState<string>("a1");
+  const [courseCompleted, setCourseCompleted] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>("John Smith");
   
   const courseData: Course = mockCourseData; // In a real app, this would filter based on courseId
   
+  // Find the current activity
+  const getCurrentActivity = (): Activity | null => {
+    for (const module of courseData.modules) {
+      const activity = module.activities.find(a => a.id === currentActivityId);
+      if (activity) return activity;
+    }
+    return null;
+  };
+  
+  const currentActivity = getCurrentActivity();
+  
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    
+    if (!isFullscreen) {
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   };
   
   const toggleSidebar = () => {
@@ -104,8 +159,121 @@ const CoursePlayer: React.FC = () => {
     toast.success(`You rated this course ${rating} stars`);
   };
   
+  const handleActivitySelect = (activityId: string) => {
+    setCurrentActivityId(activityId);
+    toast.info(`Loading activity: ${activityId}`);
+  };
+  
+  const completeActivity = () => {
+    // Update the activity completion status
+    const updatedModules = courseData.modules.map(module => ({
+      ...module,
+      activities: module.activities.map(activity => 
+        activity.id === currentActivityId 
+          ? { ...activity, completed: true } 
+          : activity
+      )
+    }));
+    
+    // Update the course data with the completed activity
+    Object.assign(courseData, { modules: updatedModules });
+    
+    // Check if course is completed
+    const allActivitiesCompleted = updatedModules.every(module => 
+      module.activities.every(activity => activity.completed)
+    );
+    
+    if (allActivitiesCompleted) {
+      setCourseCompleted(true);
+      toast.success("Congratulations! You've completed the course.");
+    }
+  };
+  
   const goBack = () => {
     navigate(-1);
+  };
+  
+  useEffect(() => {
+    // Mark all activities as completed for demo
+    const checkCompletion = () => {
+      const totalActivities = courseData.modules.reduce(
+        (total, module) => total + module.activities.length, 0
+      );
+      
+      const completedActivities = courseData.modules.reduce(
+        (total, module) => 
+          total + module.activities.filter(activity => activity.completed).length, 
+        0
+      );
+      
+      // Consider course completed if more than 80% activities are done
+      if (completedActivities / totalActivities > 0.8) {
+        setCourseCompleted(true);
+      }
+    };
+    
+    checkCompletion();
+  }, [courseData]);
+
+  // Render appropriate content based on activity type
+  const renderActivityContent = () => {
+    if (!currentActivity) return null;
+    
+    switch(currentActivity.type) {
+      case 'video':
+        return (
+          <iframe
+            src={courseData.videoUrl}
+            title={currentActivity.title}
+            className="w-full h-full"
+            allowFullScreen
+          />
+        );
+      case 'quiz':
+        return (
+          <div className="bg-white p-6 rounded-md h-full overflow-auto">
+            <h2 className="text-xl font-bold mb-4">{mockQuizData.title}</h2>
+            
+            <div className="space-y-6">
+              {mockQuizData.questions.map((question, index) => (
+                <div key={question.id} className="border p-4 rounded-md">
+                  <h3 className="font-medium mb-3">Question {index + 1}: {question.text}</h3>
+                  
+                  <div className="space-y-2">
+                    {question.options.map(option => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <input 
+                          type="radio" 
+                          id={`${question.id}-${option.id}`} 
+                          name={question.id} 
+                          className="rounded-full"
+                        />
+                        <label htmlFor={`${question.id}-${option.id}`}>{option.text}</label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <Button onClick={completeActivity}>Submit Quiz</Button>
+            </div>
+          </div>
+        );
+      case 'h5p':
+        return (
+          <div className="bg-white p-6 rounded-md h-full flex flex-col items-center justify-center">
+            <div className="text-center space-y-4">
+              <h2 className="text-xl font-bold">{currentActivity.title}</h2>
+              <p className="text-gray-500">Interactive H5P content would load here</p>
+              <Button onClick={completeActivity}>Complete Activity</Button>
+            </div>
+          </div>
+        );
+      default:
+        return <div>Unknown activity type</div>;
+    }
   };
 
   return (
@@ -119,6 +287,8 @@ const CoursePlayer: React.FC = () => {
           isOpen={isSidebarOpen} 
           onClose={() => setIsSidebarOpen(false)}
           course={courseData}
+          onActivitySelect={handleActivitySelect}
+          currentActivityId={currentActivityId}
         />
         
         <div className="flex-1 overflow-auto">
@@ -133,7 +303,7 @@ const CoursePlayer: React.FC = () => {
                 <Menu className="h-5 w-5" />
               </Button>
               <h1 className="text-lg font-semibold truncate max-w-[300px] md:max-w-md">
-                {courseData.title}
+                {currentActivity ? currentActivity.title : courseData.title}
               </h1>
             </div>
             
@@ -161,13 +331,8 @@ const CoursePlayer: React.FC = () => {
             </div>
           </div>
           
-          <div className={`aspect-video w-full ${isFullscreen ? 'h-[50vh]' : ''}`}>
-            <iframe
-              src={courseData.videoUrl}
-              title={courseData.title}
-              className="w-full h-full"
-              allowFullScreen
-            />
+          <div className={`aspect-video w-full ${isFullscreen ? 'h-screen' : ''}`}>
+            {renderActivityContent()}
           </div>
           
           <div className="p-4">
@@ -188,7 +353,11 @@ const CoursePlayer: React.FC = () => {
               </TabsList>
               
               <TabsContent value="details">
-                <CourseDetailsTab course={courseData} />
+                <CourseDetailsTab 
+                  course={courseData} 
+                  userName={userName}
+                  isCompleted={courseCompleted}
+                />
               </TabsContent>
               
               <TabsContent value="qa">
