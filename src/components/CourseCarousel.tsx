@@ -26,6 +26,7 @@ interface CourseCarouselProps {
   title: string;
   courses: Course[];
   showSkillFilters?: boolean;
+  onCourseClick?: (courseId: string) => void;
 }
 
 // Mock skills for filters - in a real app, these would come from an API
@@ -38,7 +39,8 @@ const mockSkills = [
 const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
   title, 
   courses,
-  showSkillFilters = false 
+  showSkillFilters = false,
+  onCourseClick 
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const filteredCourses = selectedSkills.includes("All Skills")
     ? courses
     : courses.filter(course => selectedSkills.includes(course.category));
+
+  // Handle course click
+  const handleCourseClick = (courseId: string) => {
+    if (onCourseClick) {
+      onCourseClick(courseId);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -157,7 +166,9 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         <CarouselContent>
           {filteredCourses.map((course) => (
             <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-              <CourseCard {...course} />
+              <div onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <CourseCard {...course} />
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>

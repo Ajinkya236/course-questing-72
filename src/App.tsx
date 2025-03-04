@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
+import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/layout/Navbar";
 import { Helmet } from "react-helmet";
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/my-learning" element={<MyLearning />} />
+              <Route path="/course/:courseId" element={<CoursePlayer />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

@@ -1,9 +1,10 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Bell, Gift, Award, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '@/components/CourseCarousel';
+import FollowSkills from '@/components/FollowSkills';
 
 // Mock data for courses
 const mockCoursesData = {
@@ -250,6 +251,12 @@ const mockCoursesData = {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
+  
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/course/${courseId}`);
+  };
+
   return (
     <>
       <Helmet>
@@ -281,13 +288,26 @@ const Home = () => {
           <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
         </section>
 
+        {/* Follow Skills Section */}
+        <section>
+          <FollowSkills />
+        </section>
+
         {/* Course Carousels - Reordered with Continue Learning and Top Picks first */}
         <section className="space-y-12">
           {/* Continue Learning Section */}
-          <CourseCarousel title="Continue Learning" courses={mockCoursesData.usageHistory} />
+          <CourseCarousel 
+            title="Continue Learning" 
+            courses={mockCoursesData.usageHistory} 
+            onCourseClick={handleCourseClick}  
+          />
           
           {/* Top Picks Section */}
-          <CourseCarousel title="Top Picks for You" courses={mockCoursesData.topPicks} />
+          <CourseCarousel 
+            title="Top Picks for You" 
+            courses={mockCoursesData.topPicks} 
+            onCourseClick={handleCourseClick}  
+          />
           
           {/* Actionables and My Rewards containers */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -359,6 +379,7 @@ const Home = () => {
             title="Role-based Skills" 
             courses={mockCoursesData.roleBasedSkillGaps} 
             showSkillFilters={true}
+            onCourseClick={handleCourseClick}  
           />
           
           {/* Based on Your Interests with Skill Filters */}
@@ -366,10 +387,15 @@ const Home = () => {
             title="Based on Your Interests" 
             courses={mockCoursesData.skillInterestsFollowed} 
             showSkillFilters={true}
+            onCourseClick={handleCourseClick}  
           />
           
           {/* Popular with Similar Learners */}
-          <CourseCarousel title="Popular with Similar Learners" courses={mockCoursesData.similarUsers} />
+          <CourseCarousel 
+            title="Popular with Similar Learners" 
+            courses={mockCoursesData.similarUsers} 
+            onCourseClick={handleCourseClick}  
+          />
         </section>
       </div>
     </>
