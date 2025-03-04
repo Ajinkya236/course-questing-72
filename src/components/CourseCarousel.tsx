@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, ChevronDown } from "lucide-react";
 import CourseCard from './CourseCard';
 
 interface Course {
@@ -30,7 +30,7 @@ interface CourseCarouselProps {
 
 // Mock skills for filters - in a real app, these would come from an API
 const mockSkills = [
-  "Leadership", "Management", "Communication", "Project Management", 
+  "All Skills", "Leadership", "Management", "Communication", "Project Management", 
   "Data Analysis", "Marketing", "Programming", "Design", "Finance",
   "Problem Solving", "Critical Thinking", "Teamwork"
 ];
@@ -41,12 +41,30 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   showSkillFilters = false 
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const skillsContainerRef = useRef<HTMLDivElement>(null);
 
   const toggleSkill = (skill: string) => {
+    if (skill === "All Skills") {
+      setSelectedSkills([]);
+      return;
+    }
+    
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
     } else {
       setSelectedSkills([...selectedSkills, skill]);
+    }
+  };
+
+  const scrollSkills = (direction: 'left' | 'right') => {
+    if (skillsContainerRef.current) {
+      const scrollAmount = 200;
+      const container = skillsContainerRef.current;
+      if (direction === 'left') {
+        container.scrollLeft -= scrollAmount;
+      } else {
+        container.scrollLeft += scrollAmount;
+      }
     }
   };
 
@@ -65,18 +83,51 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       </div>
       
       {showSkillFilters && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {mockSkills.map((skill) => (
+        <div className="relative">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full shadow-md bg-white"
+            onClick={() => scrollSkills('left')}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <div 
+            ref={skillsContainerRef} 
+            className="flex overflow-x-auto gap-2 py-2 px-10 scrollbar-hide scroll-smooth"
+            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+          >
             <Button
-              key={skill}
-              variant={selectedSkills.includes(skill) ? "default" : "outline"}
+              key="all-skills"
+              variant={selectedSkills.length === 0 ? "default" : "outline"}
               size="sm"
-              className="rounded-full text-sm px-4"
-              onClick={() => toggleSkill(skill)}
+              className="rounded-full text-sm px-4 whitespace-nowrap"
+              onClick={() => toggleSkill("All Skills")}
             >
-              {skill}
+              All Skills
             </Button>
-          ))}
+            {mockSkills.slice(1).map((skill) => (
+              <Button
+                key={skill}
+                variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                size="sm"
+                className="rounded-full text-sm px-4 whitespace-nowrap"
+                onClick={() => toggleSkill(skill)}
+              >
+                {skill}
+              </Button>
+            ))}
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full shadow-md bg-white"
+            onClick={() => scrollSkills('right')}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       )}
       
