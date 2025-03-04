@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Bell, Calendar, Clock, BookOpen, Gift, Trophy, TrendingUp } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import CourseCarousel from '@/components/CourseCarousel';
-import CourseCard from '@/components/CourseCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 // Mock data for courses
 const mockCoursesData = {
@@ -253,251 +249,45 @@ const mockCoursesData = {
   ],
 };
 
-// Mock organizational banner announcements
-const bannerAnnouncements = [
-  {
-    id: '1',
-    title: 'Annual Learning Challenge',
-    description: 'Complete 5 courses by June 30th to earn a special badge and bonus points',
-    bgColor: 'bg-gradient-to-r from-blue-600 to-indigo-700',
-    ctaText: 'Join Challenge',
-  },
-  {
-    id: '2',
-    title: 'New Leadership Program',
-    description: 'Exclusive training for emerging leaders. Limited seats available!',
-    bgColor: 'bg-gradient-to-r from-purple-600 to-pink-700',
-    ctaText: 'Apply Now',
-  },
-  {
-    id: '3',
-    title: 'Tech Conference 2023',
-    description: 'Register for our virtual tech conference with industry experts',
-    bgColor: 'bg-gradient-to-r from-teal-600 to-cyan-700',
-    ctaText: 'Register',
-  }
-];
-
-// Mock actionable items
-const actionableItems = [
-  {
-    id: '1',
-    title: 'Complete Python Assessment',
-    dueDate: 'Due in 2 days',
-    priority: 'High',
-    type: 'Assessment',
-    icon: BookOpen,
-  },
-  {
-    id: '2',
-    title: 'Submit Project Proposal',
-    dueDate: 'Due tomorrow',
-    priority: 'Critical',
-    type: 'Assignment',
-    icon: Clock,
-  },
-  {
-    id: '3',
-    title: 'Mentorship Session',
-    dueDate: 'Thursday, 3:00 PM',
-    priority: 'Medium',
-    type: 'Meeting',
-    icon: Calendar,
-  },
-  {
-    id: '4',
-    title: 'Feedback Requested',
-    dueDate: 'No deadline',
-    priority: 'Low',
-    type: 'Feedback',
-    icon: Bell,
-  },
-];
-
-// Categories for skill filters
-const skillCategories = [
-  { value: 'all', label: 'All Skills' },
-  { value: 'leadership', label: 'Leadership' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'business', label: 'Business' },
-  { value: 'communication', label: 'Communication' },
-  { value: 'analytics', label: 'Analytics' },
-];
-
 const Home = () => {
-  const [roleBasedSkillFilter, setRoleBasedSkillFilter] = useState('all');
-  const [interestSkillFilter, setInterestSkillFilter] = useState('all');
-  
   return (
     <>
       <Helmet>
         <title>Home | Learning Management System</title>
       </Helmet>
-      <div className="container py-8 space-y-10 mb-20">
-        {/* Banner Carousel */}
+      <div className="container py-8 space-y-12 mb-20">
+        {/* Hero Section */}
         <section className="relative rounded-xl overflow-hidden">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {bannerAnnouncements.map((announcement) => (
-                <CarouselItem key={announcement.id} className="basis-full">
-                  <div className={`relative ${announcement.bgColor} p-8 md:p-12 lg:p-16 rounded-xl`}>
-                    <div className="max-w-2xl space-y-4">
-                      <h1 className="text-2xl md:text-3xl font-bold text-white">
-                        {announcement.title}
-                      </h1>
-                      <p className="text-white/90">
-                        {announcement.description}
-                      </p>
-                      <div className="pt-4">
-                        <Button variant="jio-outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-                          {announcement.ctaText}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </section>
-
-        {/* Summary Containers Section */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Actionables Container */}
-          <div className="md:col-span-2">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl flex justify-between items-center">
-                  <span className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-jio" />
-                    Actionables
-                  </span>
-                  <Badge variant="jio-outline" className="cursor-pointer">4 Pending</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {actionableItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-jio/10 p-2 rounded-full">
-                          <item.icon className="h-5 w-5 text-jio" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">{item.title}</h4>
-                          <p className="text-xs text-muted-foreground">{item.dueDate}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant={item.priority === 'Critical' ? 'destructive' : (item.priority === 'High' ? 'jio' : 'secondary')}>
-                          {item.priority}
-                        </Badge>
-                        <Button variant="ghost" size="sm">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <Button variant="outline" className="w-full mt-4">View All Tasks</Button>
-              </CardContent>
-            </Card>
+          <div className="bg-gradient-to-r from-primary/90 to-primary/70 p-8 md:p-12 lg:p-16">
+            <div className="max-w-2xl space-y-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-white">
+                Unlock Your Potential with Personalized Learning
+              </h1>
+              <p className="text-white/90">
+                Discover tailored courses based on your role, interests, and learning history. 
+                Earn points and badges as you progress through your learning journey.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Button size="lg" className="gap-2">
+                  Explore Courses
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+                  View Learning Path
+                </Button>
+              </div>
+            </div>
           </div>
-          
-          {/* My Rewards Summary */}
-          <div>
-            <Card className="h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-jio" />
-                  My Rewards
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-center space-y-2">
-                  <div className="text-4xl font-bold text-jio">12,465</div>
-                  <p className="text-sm text-muted-foreground">Total Points Earned</p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Current Rank</span>
-                    <span className="font-semibold">8th</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Badges Earned</span>
-                    <span className="font-semibold">12</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Weekly Points</span>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                      <span className="font-semibold">450</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <Button variant="jio" className="w-full">
-                    <Gift className="h-4 w-4 mr-2" />
-                    View Rewards
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
         </section>
 
         {/* Course Carousels */}
-        <section className="space-y-10">
-          {/* Continue Learning */}
-          <CourseCarousel 
-            title="Continue Learning" 
-            courses={mockCoursesData.usageHistory}
-            viewAllLink="/my-learning"
-          />
-          
-          {/* Top Picks for You */}
-          <CourseCarousel 
-            title="Top Picks for You" 
-            courses={mockCoursesData.topPicks}
-            viewAllLink="/discover"
-          />
-          
-          {/* Role-based Skills with Filter */}
-          <CourseCarousel 
-            title="Role-based Skills" 
-            courses={mockCoursesData.roleBasedSkillGaps}
-            showFilter={true}
-            filterOptions={skillCategories}
-            filterValue={roleBasedSkillFilter}
-            onFilterChange={setRoleBasedSkillFilter}
-            viewAllLink="/discover?category=role-based"
-          />
-          
-          {/* Based on Your Interests with Filter */}
-          <CourseCarousel 
-            title="Based on Your Interests" 
-            courses={mockCoursesData.skillInterestsFollowed}
-            showFilter={true}
-            filterOptions={skillCategories}
-            filterValue={interestSkillFilter}
-            onFilterChange={setInterestSkillFilter}
-            viewAllLink="/discover?category=interests"
-          />
-          
-          {/* Popular with Similar Learners */}
-          <CourseCarousel 
-            title="Popular with Similar Learners" 
-            courses={mockCoursesData.similarUsers}
-            viewAllLink="/discover?category=similar"
-          />
+        <section className="space-y-12">
+          <CourseCarousel title="Role-based Skills" courses={mockCoursesData.roleBasedSkillGaps} />
+          <CourseCarousel title="Based on Your Interests" courses={mockCoursesData.skillInterestsFollowed} />
+          <CourseCarousel title="Continue Learning" courses={mockCoursesData.usageHistory} />
+          <CourseCarousel title="Popular with Similar Learners" courses={mockCoursesData.similarUsers} />
+          <CourseCarousel title="Top Picks for You" courses={mockCoursesData.topPicks} />
         </section>
       </div>
     </>
