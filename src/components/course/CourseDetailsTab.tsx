@@ -2,22 +2,10 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
-interface Skill {
-  name: string;
-  proficiency: string;
-}
+import { Course } from '@/types/course';
 
 interface CourseDetailsProps {
-  course: {
-    title: string;
-    description: string;
-    category: string;
-    duration: string;
-    learningObjectives: string[];
-    skills: Skill[];
-    certificates: string[];
-  };
+  course: Course;
 }
 
 const CourseDetailsTab: React.FC<CourseDetailsProps> = ({ course }) => {

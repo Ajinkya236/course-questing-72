@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -14,9 +13,10 @@ import CourseDetailsTab from '@/components/course/CourseDetailsTab';
 import CourseQATab from '@/components/course/CourseQATab';
 import CourseTranscriptTab from '@/components/course/CourseTranscriptTab';
 import CourseNotesTab from '@/components/course/CourseNotesTab';
+import { Course } from '@/types/course';
 
 // Mock data for the current course
-const mockCourseData = {
+const mockCourseData: Course = {
   id: '1',
   title: 'Leadership for New Managers',
   description: 'Essential skills for first-time managers and team leaders',
@@ -77,8 +77,7 @@ const CoursePlayer: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [userRating, setUserRating] = useState<number | null>(null);
   
-  // Mock function to get course data based on ID
-  const courseData = mockCourseData; // In a real app, this would filter based on courseId
+  const courseData: Course = mockCourseData; // In a real app, this would filter based on courseId
   
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
@@ -116,16 +115,13 @@ const CoursePlayer: React.FC = () => {
       </Helmet>
       
       <div className={`flex min-h-screen ${isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}`}>
-        {/* Course Sidebar */}
         <CourseSidebar 
           isOpen={isSidebarOpen} 
           onClose={() => setIsSidebarOpen(false)}
           course={courseData}
         />
         
-        {/* Main Content */}
         <div className="flex-1 overflow-auto">
-          {/* Top Navigation */}
           <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b p-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
               {!isFullscreen && (
@@ -165,7 +161,6 @@ const CoursePlayer: React.FC = () => {
             </div>
           </div>
           
-          {/* Video Player */}
           <div className={`aspect-video w-full ${isFullscreen ? 'h-[50vh]' : ''}`}>
             <iframe
               src={courseData.videoUrl}
@@ -175,7 +170,6 @@ const CoursePlayer: React.FC = () => {
             />
           </div>
           
-          {/* Tabs Section */}
           <div className="p-4">
             <Tabs defaultValue="details">
               <TabsList className="grid w-full grid-cols-4">
@@ -211,7 +205,6 @@ const CoursePlayer: React.FC = () => {
             </Tabs>
           </div>
           
-          {/* Rating Section (Only shown when course is completed) */}
           <div className="p-4 border-t">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
