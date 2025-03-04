@@ -281,7 +281,7 @@ const Home = () => {
           <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
         </section>
 
-        {/* Course Carousels - Reordered with Top Picks and Continue Learning first */}
+        {/* Course Carousels - Reordered with Continue Learning and Top Picks first */}
         <section className="space-y-12">
           {/* Continue Learning Section */}
           <CourseCarousel title="Continue Learning" courses={mockCoursesData.usageHistory} />
