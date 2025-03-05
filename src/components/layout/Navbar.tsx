@@ -14,11 +14,7 @@ import {
   TrendingUp,
   UserPlus,
   Star,
-  Users,
-  LogOut,
-  User,
-  HelpCircle,
-  Settings
+  Users
 } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -55,66 +51,6 @@ const Navbar: React.FC = () => {
     navigate(`/view-all/${category.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
-  const handleProfileClick = (action: string) => {
-    switch (action) {
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'faq':
-        navigate('/faq');
-        break;
-      case 'logout':
-        toast({
-          title: "Logged out",
-          description: "You have been successfully logged out.",
-        });
-        // In a real app, this would handle actual logout logic
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Categories for the discover dropdown
-  const discoverCategories = [
-    {
-      name: 'Top Picks for You',
-      icon: Star,
-      description: 'Curated courses just for you',
-      path: 'top-picks-for-you'
-    },
-    {
-      name: 'Based on Your Interests',
-      icon: BookOpen,
-      description: 'Matches your followed skills',
-      path: 'based-on-your-interests'
-    },
-    {
-      name: 'Role-based Skills',
-      icon: Compass,
-      description: 'Skills for your current role',
-      path: 'role-based-skills'
-    },
-    {
-      name: 'Popular with Similar Learners',
-      icon: Users,
-      description: 'Popular with peers like you',
-      path: 'popular-with-similar-learners'
-    },
-    {
-      name: 'Assigned Courses',
-      icon: UserPlus,
-      description: 'Mandatory and recommended',
-      path: 'assigned-courses'
-    },
-    {
-      name: 'Trending',
-      icon: TrendingUp,
-      description: 'What\'s popular right now',
-      path: 'trending'
-    }
-  ];
-
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between py-4">
@@ -146,19 +82,71 @@ const Navbar: React.FC = () => {
               </HoverCardTrigger>
               <HoverCardContent className="w-80 p-4">
                 <div className="grid grid-cols-2 gap-4">
-                  {discoverCategories.map((category) => (
-                    <div 
-                      key={category.path}
-                      className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                      onClick={() => handleCategoryClick(category.path)}
-                    >
-                      <div className="font-medium flex items-center gap-2">
-                        <category.icon className="h-4 w-4 text-primary" />
-                        {category.name}
-                      </div>
-                      <p className="text-xs text-muted-foreground">{category.description}</p>
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Top Picks for You')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Star className="h-4 w-4 text-primary" />
+                      Top Picks
                     </div>
-                  ))}
+                    <p className="text-xs text-muted-foreground">Curated courses just for you</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Based on Your Interests')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      Your Interests
+                    </div>
+                    <p className="text-xs text-muted-foreground">Matches your followed skills</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Role-based Skills')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Compass className="h-4 w-4 text-primary" />
+                      Role-based
+                    </div>
+                    <p className="text-xs text-muted-foreground">Skills for your current role</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Popular with Similar Learners')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      Similar Learners
+                    </div>
+                    <p className="text-xs text-muted-foreground">Popular with peers like you</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Assigned Courses')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <UserPlus className="h-4 w-4 text-primary" />
+                      Assigned
+                    </div>
+                    <p className="text-xs text-muted-foreground">Mandatory and recommended</p>
+                  </div>
+                  
+                  <div 
+                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
+                    onClick={() => handleCategoryClick('Trending')}
+                  >
+                    <div className="font-medium flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      Trending
+                    </div>
+                    <p className="text-xs text-muted-foreground">What's popular right now</p>
+                  </div>
                 </div>
                 
                 <div className="mt-4 pt-3 border-t">
@@ -218,36 +206,12 @@ const Navbar: React.FC = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => handleProfileClick('profile')}>
-                  <User className="h-4 w-4 mr-2" />
-                  <span>View Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleProfileClick('faq')}>
-                  <HelpCircle className="h-4 w-4 mr-2" />
-                  <span>View FAQs</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => navigate('/profile')}>Profile</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/my-learning')}>My Courses</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/my-learning?tab=badges')}>My Badges</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => navigate('/my-learning')}>
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  <span>My Courses</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/my-learning', { state: { activeTab: 'badges' } })}>
-                  <Award className="h-4 w-4 mr-2" />
-                  <span>My Badges</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleProfileClick('logout')}>
-                <LogOut className="h-4 w-4 mr-2" />
-                <span>Sign Out</span>
-              </DropdownMenuItem>
+              <DropdownMenuItem>Log out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           

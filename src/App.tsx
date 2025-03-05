@@ -1,40 +1,44 @@
 
-import * as React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
-
-import Navbar from "./components/layout/Navbar";
-import Footer from "./components/layout/Footer";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
-import ViewAllPage from "./pages/ViewAllPage";
 import NotFound from "./pages/NotFound";
-import Notifications from "./pages/Notifications";
-import Actionables from "./pages/Actionables";
-import LearningStreak from "./pages/LearningStreak";
-import Milestones from "./pages/Milestones";
+import Navbar from "./components/layout/Navbar";
+import { Helmet } from "react-helmet";
 
-function App() {
-  return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/discover" element={<Discover />} />
-        <Route path="/my-learning" element={<MyLearning />} />
-        <Route path="/course/:courseId" element={<CoursePlayer />} />
-        <Route path="/view-all/:category" element={<ViewAllPage />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/actionables" element={<Actionables />} />
-        <Route path="/learning-streak" element={<LearningStreak />} />
-        <Route path="/milestones" element={<Milestones />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Footer />
-    </Router>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Helmet>
+        <title>Learning Management System</title>
+        <meta name="description" content="A modern learning management system with gamification features" />
+      </Helmet>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/my-learning" element={<MyLearning />} />
+              <Route path="/course/:courseId" element={<CoursePlayer />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+        </div>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

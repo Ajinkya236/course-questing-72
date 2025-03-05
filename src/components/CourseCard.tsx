@@ -26,7 +26,6 @@ interface CourseCardProps {
   trainingCategory?: string;
   isBookmarked?: boolean;
   previewUrl?: string;
-  showFullTitle?: boolean;
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({
@@ -40,7 +39,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
   trainingCategory,
   isBookmarked = false,
   previewUrl,
-  showFullTitle = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -127,7 +125,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         )}
       </div>
       <CardHeader className="p-4 pb-2">
-        <h3 className={`font-semibold text-base ${showFullTitle ? '' : 'line-clamp-2'}`}>{title}</h3>
+        <h3 className="font-semibold text-base">{title}</h3>
       </CardHeader>
       <CardContent className="p-4 pt-2">
         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{description}</p>
