@@ -159,7 +159,11 @@ const Discover = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {courses.map((course) => (
             <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-              <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+              <CourseCard 
+                {...course} 
+                trainingCategory={course.trainingCategory || ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]} 
+                previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
+              />
             </div>
           ))}
         </div>

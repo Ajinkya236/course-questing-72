@@ -9,9 +9,11 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import Navbar from "./components/layout/Navbar";
+import Navbar from "./components/layout/NavbarEnhanced"; // Updated to use the enhanced navbar
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
+import LeaderboardFullView from "./pages/LeaderboardFullView";
+import Profile from "./pages/Profile";
 import { Helmet } from "react-helmet";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
               <Route path="/course/:courseId" element={<CoursePlayer />} />
               <Route path="/view-all/:category" element={<ViewAllPage />} />
               <Route path="/notifications" element={<Notifications />} />
+              <Route path="/leaderboard" element={<LeaderboardFullView />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
