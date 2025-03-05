@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Trophy, 
   Award, 
   Medal, 
+  Filter, 
   Calendar, 
   User, 
   Users, 
@@ -14,14 +15,18 @@ import {
   ArrowUp,
   ArrowDown,
   Minus,
+  Clock,
+  UserCircle,
+  BarChart3,
   Target,
   TrendingUp,
+  MapPin,
+  Briefcase
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Link } from "react-router-dom";
 
 interface LeaderboardUser {
   id: string;
@@ -52,8 +57,11 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
   currentUser,
   title = "Leaderboard" 
 }) => {
-  const [timeRange, setTimeRange] = React.useState("all-time");
-  const [showDetails, setShowDetails] = React.useState(false);
+  const [timeRange, setTimeRange] = useState("all-time");
+  const [showDetails, setShowDetails] = useState(false);
+  const [leaderboardType, setLeaderboardType] = useState("relative");
+  const [filterType, setFilterType] = useState("all");
+  const [filterValue, setFilterValue] = useState("");
   
   const getPositionIcon = (position: number) => {
     switch (position) {
@@ -90,40 +98,74 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
     }
   };
   
-  // Get relative users - current user, 2 above, 2 below
+  const getFilterTypeIcon = () => {
+    switch (filterType) {
+      case 'team':
+        return <Users className="h-4 w-4" />;
+      case 'department':
+        return <Building className="h-4 w-4" />;
+      case 'location':
+        return <MapPin className="h-4 w-4" />;
+      case 'role':
+        return <Briefcase className="h-4 w-4" />;
+      default:
+        return <User className="h-4 w-4" />;
+    }
+  };
+
+  const filteredUsers = users.filter(user => {
+    if (filterType === 'all' || !filterValue) return true;
+    
+    switch (filterType) {
+      case 'team':
+        return user.team === filterValue;
+      case 'department':
+        return user.department === filterValue;
+      case 'location':
+        return user.location === filterValue;
+      case 'role':
+        return user.role === filterValue;
+      default:
+        return true;
+    }
+  });
+  
+  // Always include the #1 ranked user
+  const topUser = filteredUsers.find(u => u.position === 1);
+  
+  // For relative leaderboard - highlight users close to current user
   const getRelativeUsers = () => {
-    if (!currentUser) return users.slice(0, 5);
+    if (!currentUser) return filteredUsers.slice(0, 5);
     
-    const currentUserIndex = users.findIndex(u => u.id === currentUser.id);
-    if (currentUserIndex === -1) return users.slice(0, 5);
+    const currentUserIndex = filteredUsers.findIndex(u => u.id === currentUser.id);
+    if (currentUserIndex === -1) return filteredUsers.slice(0, 5);
     
-    // Get users above the current user (up to 2)
+    // Get 2 users above and 2 users below current user
     let usersToShow = [];
     
     // Always include #1 ranked user if not already in the selection
-    const topUser = users.find(u => u.position === 1);
     if (topUser && topUser.id !== currentUser.id && 
         (currentUserIndex <= 0 || currentUserIndex > 2)) {
       usersToShow.push(topUser);
     }
     
-    // Get up to 2 users above current user
+    // Get users above the current user (up to 2)
     if (currentUserIndex > 0) {
       const startIndex = Math.max(0, currentUserIndex - 2);
       usersToShow = [
         ...usersToShow,
-        ...users.slice(startIndex, currentUserIndex)
+        ...filteredUsers.slice(startIndex, currentUserIndex)
       ];
     }
     
     // Add current user
     usersToShow.push(currentUser);
     
-    // Get up to 2 users below current user
-    if (currentUserIndex < users.length - 1) {
+    // Get users below the current user (up to 2)
+    if (currentUserIndex < filteredUsers.length - 1) {
       usersToShow = [
         ...usersToShow,
-        ...users.slice(currentUserIndex + 1, currentUserIndex + 3)
+        ...filteredUsers.slice(currentUserIndex + 1, currentUserIndex + 3)
       ];
     }
     
@@ -131,13 +173,13 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
     return [...new Map(usersToShow.map(user => [user.id, user])).values()];
   };
   
-  const displayedUsers = getRelativeUsers();
+  const displayedUsers = leaderboardType === 'relative' ? getRelativeUsers() : filteredUsers.slice(0, 5);
   
   const getNextMilestone = () => {
     if (!currentUser) return null;
     
     // Find the next user above the current user
-    const nextUser = users.find(user => user.position === currentUser.position - 1);
+    const nextUser = filteredUsers.find(user => user.position === currentUser.position - 1);
     if (!nextUser) return null;
     
     const pointsNeeded = nextUser.points - currentUser.points;
@@ -175,30 +217,78 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
       <CardContent>
         <Tabs defaultValue="individual" className="mb-4">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="individual">
+            <TabsTrigger value="individual" onClick={() => setFilterType('all')}>
               <User className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Individual</span>
             </TabsTrigger>
-            <TabsTrigger value="team">
+            <TabsTrigger value="team" onClick={() => setFilterType('team')}>
               <Users className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
-            <TabsTrigger value="department">
-              <Building className="h-4 w-4 mr-1.5" />
-              <span className="hidden sm:inline">Department</span>
+            <TabsTrigger value="personal" onClick={() => setLeaderboardType('relative')}>
+              <UserCircle className="h-4 w-4 mr-1.5" />
+              <span className="hidden sm:inline">Personal</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
         
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-xs" 
-            onClick={() => setShowDetails(!showDetails)}
-          >
-            {showDetails ? 'Hide Details' : 'Show Details'}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant={leaderboardType === 'relative' ? "default" : "outline"} 
+              size="sm" 
+              className="text-xs" 
+              onClick={() => setLeaderboardType('relative')}
+            >
+              Relative
+            </Button>
+            <Button 
+              variant={leaderboardType === 'absolute' ? "default" : "outline"} 
+              size="sm" 
+              className="text-xs" 
+              onClick={() => setLeaderboardType('absolute')}
+            >
+              Absolute
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-xs" 
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              {showDetails ? (
+                <>
+                  <BarChart3 className="h-3.5 w-3.5 mr-1" /> Hide Details
+                </>
+              ) : (
+                <>
+                  <BarChart3 className="h-3.5 w-3.5 mr-1" /> Show Details
+                </>
+              )}
+            </Button>
+            
+            <Select 
+              value={filterType} 
+              onValueChange={(value) => { 
+                setFilterType(value); 
+                setFilterValue(""); 
+              }}
+            >
+              <SelectTrigger className="w-[100px] h-8 text-xs">
+                <SelectValue placeholder="Filter By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="team">Team</SelectItem>
+                <SelectItem value="department">Department</SelectItem>
+                <SelectItem value="location">Location</SelectItem>
+                <SelectItem value="role">Role</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
         <div className="space-y-4">
@@ -225,8 +315,8 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
                   </Avatar>
                   <div>
                     <span className="font-medium text-sm">{user.name}</span>
-                    {user.team && (
-                      <div className="text-xs text-muted-foreground">{user.team}</div>
+                    {filterType !== 'all' && user[filterType] && (
+                      <div className="text-xs text-muted-foreground">{user[filterType]}</div>
                     )}
                   </div>
                 </div>
@@ -261,6 +351,69 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
               )}
             </div>
           ))}
+
+          {currentUser && !displayedUsers.some(u => u.id === currentUser.id) && leaderboardType === 'absolute' && (
+            <>
+              <div className="relative py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-2 text-xs text-muted-foreground">
+                    Your Ranking
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col rounded-lg bg-primary/10">
+                <div className="flex items-center justify-between p-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-8 h-8 relative">
+                      <span className="font-medium text-muted-foreground">{currentUser.position}</span>
+                      {currentUser.positionChange !== undefined && (
+                        <div className="absolute -top-1 -right-1 bg-background rounded-full">
+                          {getPositionChangeIcon(currentUser.positionChange)}
+                        </div>
+                      )}
+                    </div>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                      <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium">{currentUser.name}</span>
+                  </div>
+                  <div className="badge-glow">
+                    <span className="font-bold bg-primary/20 text-primary px-2 py-1 rounded-full">
+                      {currentUser.points.toLocaleString()} pts
+                    </span>
+                  </div>
+                </div>
+                
+                {showDetails && currentUser.details && (
+                  <div className="bg-secondary/20 p-2 text-xs grid grid-cols-3 gap-2 rounded-b-lg">
+                    {currentUser.details.assessmentScore !== undefined && (
+                      <div className="text-center">
+                        <p className="text-muted-foreground">Assessment</p>
+                        <p className="font-semibold">{currentUser.details.assessmentScore}%</p>
+                      </div>
+                    )}
+                    {currentUser.details.engagementScore !== undefined && (
+                      <div className="text-center">
+                        <p className="text-muted-foreground">Engagement</p>
+                        <p className="font-semibold">{currentUser.details.engagementScore}%</p>
+                      </div>
+                    )}
+                    {currentUser.details.completionRate !== undefined && (
+                      <div className="text-center">
+                        <p className="text-muted-foreground">Completion</p>
+                        <p className="font-semibold">{currentUser.details.completionRate}%</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
           
           {nextMilestone && (
             <div className="mt-6 p-4 border border-dashed rounded-lg">
@@ -271,27 +424,23 @@ const LeaderboardCard: React.FC<LeaderboardCardProps> = ({
               <p className="text-xs text-muted-foreground mb-2">
                 You need <span className="font-semibold text-primary">{nextMilestone.pointsNeeded.toLocaleString()} more points</span> to surpass {nextMilestone.name} and reach position #{nextMilestone.position}
               </p>
-              <Progress value={currentUser!.points / (currentUser!.points + nextMilestone.pointsNeeded) * 100} className="h-2" />
+              <Progress value={currentUser.points / (currentUser.points + nextMilestone.pointsNeeded) * 100} className="h-2" />
               <div className="flex justify-between text-xs mt-1">
-                <span className="text-muted-foreground">Current: {currentUser!.points.toLocaleString()}</span>
-                <span className="text-muted-foreground">Target: {(currentUser!.points + nextMilestone.pointsNeeded).toLocaleString()}</span>
+                <span className="text-muted-foreground">Current: {currentUser.points.toLocaleString()}</span>
+                <span className="text-muted-foreground">Target: {(currentUser.points + nextMilestone.pointsNeeded).toLocaleString()}</span>
               </div>
-              <Link to="/milestones">
-                <Button variant="outline" size="sm" className="w-full mt-3 flex items-center justify-center gap-1">
-                  <TrendingUp className="h-4 w-4" />
-                  View All Milestones
-                </Button>
-              </Link>
+              <Button variant="outline" size="sm" className="w-full mt-3 flex items-center justify-center gap-1">
+                <TrendingUp className="h-4 w-4" />
+                View All Milestones
+              </Button>
             </div>
           )}
           
           <div className="mt-2">
-            <Link to="/leaderboard">
-              <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1">
-                <ChevronRight className="h-4 w-4" />
-                <span>View Full Leaderboard</span>
-              </Button>
-            </Link>
+            <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1">
+              <ChevronRight className="h-4 w-4" />
+              <span>View Full Leaderboard</span>
+            </Button>
           </div>
         </div>
       </CardContent>

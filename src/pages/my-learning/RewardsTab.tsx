@@ -6,8 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'react-router-dom';
-import { Gift, Star, Target, TrendingUp } from 'lucide-react';
+import { Gift, Star, Sparkle, Box, Shuffle, Calendar, Target, TrendingUp } from 'lucide-react';
 
 // Mock data for points overview
 const pointsData = {
@@ -68,32 +67,25 @@ const leaderboardUsers = [
     position: 2,
   },
   {
-    id: '6',
-    name: 'Alex Thompson',
-    avatar: 'https://i.pravatar.cc/150?img=6',
-    points: 13120,
-    position: 6,
+    id: '3',
+    name: 'Emma Rodriguez',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    points: 15480,
+    position: 3,
   },
   {
-    id: '7',
-    name: 'Maya Henderson',
-    avatar: 'https://i.pravatar.cc/150?img=7',
-    points: 12740,
-    position: 7,
+    id: '4',
+    name: 'David Kim',
+    avatar: 'https://i.pravatar.cc/150?img=4',
+    points: 13950,
+    position: 4,
   },
   {
-    id: '9',
-    name: 'Sophia Wilson',
-    avatar: 'https://i.pravatar.cc/150?img=9',
-    points: 12050,
-    position: 9,
-  },
-  {
-    id: '10',
-    name: 'Daniel Smith',
-    avatar: 'https://i.pravatar.cc/150?img=10',
-    points: 11890,
-    position: 10,
+    id: '5',
+    name: 'Jessica Liu',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    points: 13240,
+    position: 5,
   },
 ];
 
@@ -218,11 +210,7 @@ const RewardsTab = () => {
             </TabsList>
             
             <TabsContent value="individual">
-              <LeaderboardCard 
-                users={leaderboardUsers}
-                currentUser={currentUser}
-                title="Individual Leaderboard"
-              />
+              <LeaderboardCard users={leaderboardUsers} currentUser={currentUser} />
             </TabsContent>
             
             <TabsContent value="team">
@@ -261,9 +249,7 @@ const RewardsTab = () => {
                 <div className="mt-4 bg-secondary h-2 rounded-full">
                   <div className="bg-primary h-2 rounded-full" style={{ width: '83%' }}></div>
                 </div>
-                <Link to="/milestones">
-                  <Button className="w-full mt-4" variant="outline">View All Milestones</Button>
-                </Link>
+                <Button className="w-full mt-4" variant="outline">View All Milestones</Button>
               </CardContent>
             </Card>
           </div>
@@ -273,7 +259,7 @@ const RewardsTab = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xl flex items-center gap-2">
-                <Gift className="h-5 w-5 text-primary" />
+                <Box className="h-5 w-5 text-primary" />
                 Mystery Rewards
               </CardTitle>
             </CardHeader>
@@ -283,7 +269,7 @@ const RewardsTab = () => {
                   <div key={reward.id} className="bg-secondary/20 rounded-lg p-4 hover-scale">
                     <div className="flex justify-between items-center mb-2">
                       <h4 className="font-medium text-sm flex items-center gap-1">
-                        <Star className="h-4 w-4 text-amber-500" />
+                        <Sparkle className="h-4 w-4 text-amber-500" />
                         {reward.title}
                       </h4>
                       <span className="text-xs bg-primary/10 px-2 py-1 rounded-full">
@@ -297,6 +283,7 @@ const RewardsTab = () => {
                       className="w-full"
                       onClick={() => handleOpenMysteryBox(reward.title)}
                     >
+                      <Shuffle className="h-4 w-4 mr-1" />
                       {mysteryBoxOpen ? 'Opening...' : 'Try Your Luck'}
                     </Button>
                   </div>
