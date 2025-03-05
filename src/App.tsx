@@ -10,6 +10,8 @@ import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/layout/Navbar";
+import ViewAllPage from "./pages/ViewAllPage";
+import Notifications from "./pages/Notifications";
 import { Helmet } from "react-helmet";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
               <Route path="/discover" element={<Discover />} />
               <Route path="/my-learning" element={<MyLearning />} />
               <Route path="/course/:courseId" element={<CoursePlayer />} />
+              <Route path="/view-all/:category" element={<ViewAllPage />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

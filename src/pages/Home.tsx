@@ -297,81 +297,9 @@ const Home = () => {
           <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
         </section>
 
-        {/* Dashboard components in a single row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Skills to follow */}
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div className="p-6">
-              <FollowSkills />
-            </div>
-          </div>
-          
-          {/* Actionables Container */}
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">Actionables</h3>
-                </div>
-                <Button variant="link" className="gap-1 text-primary text-sm p-0">
-                  View All <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
-                  <div>
-                    <p className="font-medium">Complete Leadership Course</p>
-                    <p className="text-sm text-muted-foreground">3 days remaining</p>
-                  </div>
-                  <Button size="sm">Resume</Button>
-                </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
-                  <div>
-                    <p className="font-medium">Rate Marketing Strategy Course</p>
-                    <p className="text-sm text-muted-foreground">Feedback requested</p>
-                  </div>
-                  <Button size="sm" variant="outline">Rate</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* My Rewards Container */}
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Gift className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">My Rewards</h3>
-                </div>
-                <Button variant="link" className="gap-1 text-primary text-sm p-0">
-                  View All <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                  <Award className="h-8 w-8 text-amber-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Points</p>
-                    <p className="text-xl font-bold">2,450</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                  <Star className="h-8 w-8 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Rank</p>
-                    <p className="text-xl font-bold">#42</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Course Carousels */}
+        {/* Course Carousels - REORDERED according to requirements */}
         <section className="space-y-12">
-          {/* Continue Learning Section */}
+          {/* 1. Continue Learning Section - FIRST */}
           <CourseCarousel 
             title="Continue Learning" 
             courses={mockCoursesData.usageHistory} 
@@ -379,7 +307,7 @@ const Home = () => {
             onViewAllClick={handleContinueLearningViewAll}
           />
           
-          {/* Assigned Courses Section with training categories as filters */}
+          {/* 2. Assigned Courses Section - SECOND */}
           <CourseCarousel 
             title="Assigned Courses" 
             courses={mockCoursesData.roleBasedSkillGaps.map(course => ({
@@ -392,7 +320,79 @@ const Home = () => {
             filterOptions={['All Categories', 'Ready for Role', 'Mandatory', 'Leadership', 'Technical']}
           />
           
-          {/* Top Picks Section */}
+          {/* 3. Dashboard components in a single row - THIRD */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Skills to follow */}
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="p-6">
+                <FollowSkills />
+              </div>
+            </div>
+            
+            {/* Actionables Container */}
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Actionables</h3>
+                  </div>
+                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                    View All <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                    <div>
+                      <p className="font-medium">Complete Leadership Course</p>
+                      <p className="text-sm text-muted-foreground">3 days remaining</p>
+                    </div>
+                    <Button size="sm">Resume</Button>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                    <div>
+                      <p className="font-medium">Rate Marketing Strategy Course</p>
+                      <p className="text-sm text-muted-foreground">Feedback requested</p>
+                    </div>
+                    <Button size="sm" variant="outline">Rate</Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* My Rewards Container */}
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Gift className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">My Rewards</h3>
+                  </div>
+                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                    View All <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                    <Award className="h-8 w-8 text-amber-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Points</p>
+                      <p className="text-xl font-bold">2,450</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                    <Star className="h-8 w-8 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Rank</p>
+                      <p className="text-xl font-bold">#42</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Top Picks Section - FOURTH */}
           <CourseCarousel 
             title="Top Picks for You" 
             courses={mockCoursesData.topPicks} 
