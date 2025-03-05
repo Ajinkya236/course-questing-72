@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -24,6 +25,7 @@ const filterOptions = {
 };
 
 const Discover = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     type: 'All Types',
@@ -35,6 +37,10 @@ const Discover = () => {
   // For the prototype, we're not actually filtering the data
   // But in a real application, you would filter based on the selected filters
   const courses = coursesList.slice(0, 20);
+  
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/course/${courseId}`);
+  };
 
   return (
     <>
@@ -152,7 +158,9 @@ const Discover = () => {
         {/* Courses Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {courses.map((course) => (
-            <CourseCard key={course.id} {...course} />
+            <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+              <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+            </div>
           ))}
         </div>
 

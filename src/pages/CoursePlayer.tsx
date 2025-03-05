@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ChevronLeft, Menu, BookOpen, MessageSquare, FileText, 
-  PenSquare, Bookmark, UserPlus, Share2, Star, Maximize, Minimize
+  PenSquare, Bookmark, UserPlus, Share2, Star, Maximize, Minimize,
+  Award, Trophy, TrendingUp, CheckCircle, Gift, AlertCircle
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import CourseSidebar from '@/components/course/CourseSidebar';
 import CourseDetailsTab from '@/components/course/CourseDetailsTab';
@@ -100,6 +102,24 @@ const mockQuizData = {
   ]
 };
 
+// Mock gamification data
+const mockGamificationData = {
+  streakDays: 3,
+  totalPoints: 450,
+  currentLevel: 'Explorer',
+  nextLevel: 'Specialist',
+  levelProgress: 75,
+  achievements: [
+    { id: 'a1', title: 'First Steps', description: 'Complete your first activity', unlocked: true },
+    { id: 'a2', title: 'Perfect Score', description: 'Get 100% on a quiz', unlocked: true },
+    { id: 'a3', title: 'Course Master', description: 'Complete all activities in a course', unlocked: false }
+  ],
+  badges: [
+    { id: 'b1', name: 'Fast Learner', icon: '🚀' },
+    { id: 'b2', name: 'Quiz Whiz', icon: '🧠' }
+  ]
+};
+
 const CoursePlayer: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -109,6 +129,9 @@ const CoursePlayer: React.FC = () => {
   const [currentActivityId, setCurrentActivityId] = useState<string>("a1");
   const [courseCompleted, setCourseCompleted] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("John Smith");
+  const [showAchievement, setShowAchievement] = useState<boolean>(false);
+  const [earnedPoints, setEarnedPoints] = useState<number>(0);
+  const [showPointsAnimation, setShowPointsAnimation] = useState<boolean>(false);
   
   const courseData: Course = mockCourseData; // In a real app, this would filter based on courseId
   
@@ -164,6 +187,23 @@ const CoursePlayer: React.FC = () => {
     toast.info(`Loading activity: ${activityId}`);
   };
   
+  const awardPoints = (points: number) => {
+    setEarnedPoints(points);
+    setShowPointsAnimation(true);
+    
+    setTimeout(() => {
+      setShowPointsAnimation(false);
+    }, 3000);
+  };
+  
+  const showAchievementUnlocked = () => {
+    setShowAchievement(true);
+    
+    setTimeout(() => {
+      setShowAchievement(false);
+    }, 4000);
+  };
+  
   const completeActivity = () => {
     // Update the activity completion status
     const updatedModules = courseData.modules.map(module => ({
@@ -182,6 +222,15 @@ const CoursePlayer: React.FC = () => {
     const allActivitiesCompleted = updatedModules.every(module => 
       module.activities.every(activity => activity.completed)
     );
+    
+    // Award points based on activity type
+    const pointsEarned = currentActivity?.type === 'quiz' ? 50 : 25;
+    awardPoints(pointsEarned);
+    
+    // Show achievement if it's quiz with 100% score or first completed activity
+    if (currentActivity?.type === 'quiz') {
+      showAchievementUnlocked();
+    }
     
     if (allActivitiesCompleted) {
       setCourseCompleted(true);
@@ -331,6 +380,37 @@ const CoursePlayer: React.FC = () => {
             </div>
           </div>
           
+          {/* Gamification - Learning Progress */}
+          <div className="bg-muted/30 p-3 border-b flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">Course Progress</span>
+              </div>
+              <div className="w-36 md:w-48">
+                <Progress value={75} className="h-2" />
+              </div>
+              <span className="text-sm font-medium">75%</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                <span className="text-sm font-medium">Level: Explorer</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">450 Points</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-purple-500" />
+                <span className="text-sm font-medium">2 Badges</span>
+              </div>
+            </div>
+          </div>
+          
           <div className={`aspect-video w-full ${isFullscreen ? 'h-screen' : ''}`}>
             {renderActivityContent()}
           </div>
@@ -395,6 +475,39 @@ const CoursePlayer: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      
+      {/* Gamification - Achievement Unlocked Animation */}
+      {showAchievement && (
+        <div className="fixed top-20 right-0 p-4 animate-slide-in-right">
+          <div className="bg-black/90 text-white p-4 rounded-l-lg shadow-lg flex items-center gap-3">
+            <Award className="h-10 w-10 text-yellow-400" />
+            <div>
+              <h4 className="font-bold text-lg">Achievement Unlocked!</h4>
+              <p>Perfect Score: Get 100% on a quiz</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Gamification - Points Animation */}
+      {showPointsAnimation && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-scale-in">
+          <div className="bg-primary/90 text-white px-6 py-4 rounded-full shadow-lg text-center font-bold text-2xl">
+            +{earnedPoints} Points!
+          </div>
+        </div>
+      )}
+      
+      {/* Streak Notification */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-black/80 text-white p-3 rounded-lg shadow-lg flex items-center gap-2">
+          <Gift className="h-5 w-5 text-primary" />
+          <div>
+            <p className="text-sm">3-day learning streak!</p>
+          </div>
+          <Button size="sm" variant="link" className="text-primary p-0 h-auto">View</Button>
         </div>
       </div>
     </>
