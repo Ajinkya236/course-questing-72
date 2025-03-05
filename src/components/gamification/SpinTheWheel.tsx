@@ -32,8 +32,19 @@ const SpinTheWheel: React.FC<SpinTheWheelProps> = ({
     }
   }, [spinning, segments, onSpinComplete]);
   
+  // Create a dynamic keyframes style for the spin animation
+  const spinAnimation = `
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(${1080 + Math.floor(Math.random() * 360)}deg); }
+    }
+  `;
+  
   return (
     <div className="relative w-full h-full">
+      {/* Add the keyframes as a style element */}
+      <style dangerouslySetInnerHTML={{ __html: spinAnimation }} />
+      
       {/* Wheel pointer */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[20px] border-l-transparent border-r-transparent border-b-primary z-10"></div>
       
@@ -73,14 +84,6 @@ const SpinTheWheel: React.FC<SpinTheWheelProps> = ({
           );
         })}
       </div>
-      
-      {/* Add a style tag for the spin animation */}
-      <style jsx>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(${1080 + Math.floor(Math.random() * 360)}deg); }
-        }
-      `}</style>
     </div>
   );
 };
