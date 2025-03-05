@@ -1,11 +1,13 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Bell, Gift, Award, Star } from 'lucide-react';
+import { ChevronRight, Bell, Gift, Award, Star, Zap, BookOpen, Clock, Trophy, Target, CalendarDays, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '@/components/CourseCarousel';
 import FollowSkills from '@/components/FollowSkills';
+import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
+import SpinTheWheelDialog from '@/components/gamification/SpinTheWheelDialog';
+import LearningStreakDialog from '@/components/LearningStreakDialog';
 
 // Mock data for courses
 const mockCoursesData = {
@@ -19,6 +21,8 @@ const mockCoursesData = {
       duration: '4h 30m',
       rating: 4.7,
       isBookmarked: true,
+      previewUrl: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
+      trainingCategory: 'Ready for Role'
     },
     {
       id: '2',
@@ -28,6 +32,7 @@ const mockCoursesData = {
       category: 'Management',
       duration: '3h 15m',
       rating: 4.5,
+      trainingCategory: 'Leadership'
     },
     {
       id: '3',
@@ -37,6 +42,7 @@ const mockCoursesData = {
       category: 'Project Management',
       duration: '5h 45m',
       rating: 4.8,
+      trainingCategory: 'Technical'
     },
     {
       id: '4',
@@ -46,6 +52,8 @@ const mockCoursesData = {
       category: 'Communication',
       duration: '2h 30m',
       rating: 4.6,
+      previewUrl: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
+      trainingCategory: 'Mandatory'
     },
     {
       id: '5',
@@ -55,6 +63,7 @@ const mockCoursesData = {
       category: 'Analytics',
       duration: '4h 15m',
       rating: 4.9,
+      trainingCategory: 'Technical'
     },
   ],
   skillInterestsFollowed: [
@@ -253,6 +262,9 @@ const mockCoursesData = {
 
 const Home = () => {
   const navigate = useNavigate();
+  const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
+  const [isSpinWheelOpen, setIsSpinWheelOpen] = useState(false);
+  const [isStreakDialogOpen, setIsStreakDialogOpen] = useState(false);
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
@@ -266,15 +278,26 @@ const Home = () => {
     navigate(`/view-all/${category.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
+  const handleViewActionables = () => {
+    navigate('/actionables');
+  };
+
+  const handleViewRewards = () => {
+    navigate('/my-learning', { state: { activeTab: 'rewards' } });
+  };
+
+  const handleViewMilestones = () => {
+    navigate('/milestones');
+  };
+
   return (
     <>
       <Helmet>
         <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
-        {/* Hero Section */}
         <section className="relative rounded-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-primary/90 to-primary/70 p-8 md:p-12 lg:p-16">
+          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent p-8 md:p-12 lg:p-16">
             <div className="max-w-2xl space-y-4">
               <h1 className="text-3xl md:text-4xl font-bold text-white">
                 Unlock Your Potential with Personalized Learning
@@ -284,7 +307,7 @@ const Home = () => {
                 Earn points and badges as you progress through your learning journey.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button size="lg" className="gap-2" onClick={() => navigate('/discover')}>
+                <Button size="lg" className="gap-2 bg-white text-primary hover:bg-white/90" onClick={() => navigate('/discover')}>
                   Explore Courses
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -294,12 +317,13 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-10"></div>
+          <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-20"></div>
+          
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/3 blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/20 rounded-full translate-y-1/3 -translate-x-1/3 blur-xl"></div>
         </section>
 
-        {/* Course Carousels - REORDERED according to requirements */}
         <section className="space-y-12">
-          {/* 1. Continue Learning Section - FIRST */}
           <CourseCarousel 
             title="Continue Learning" 
             courses={mockCoursesData.usageHistory} 
@@ -307,12 +331,10 @@ const Home = () => {
             onViewAllClick={handleContinueLearningViewAll}
           />
           
-          {/* 2. Assigned Courses Section - SECOND */}
           <CourseCarousel 
             title="Assigned Courses" 
             courses={mockCoursesData.roleBasedSkillGaps.map(course => ({
-              ...course,
-              trainingCategory: ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+              ...course
             }))} 
             showSkillFilters={true}
             onCourseClick={handleCourseClick}
@@ -320,36 +342,41 @@ const Home = () => {
             filterOptions={['All Categories', 'Ready for Role', 'Mandatory', 'Leadership', 'Technical']}
           />
           
-          {/* 3. Dashboard components in a single row - THIRD */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Skills to follow */}
-            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="h-2 bg-purple-500"></div>
               <div className="p-6">
                 <FollowSkills />
               </div>
             </div>
             
-            {/* Actionables Container */}
-            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="h-2 bg-blue-500"></div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-primary" />
+                    <div className="bg-blue-50 p-1.5 rounded-lg">
+                      <Bell className="h-5 w-5 text-blue-500" />
+                    </div>
                     <h3 className="text-lg font-semibold">Actionables</h3>
                   </div>
-                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                  <Button 
+                    variant="link" 
+                    className="gap-1 text-primary text-sm p-0"
+                    onClick={handleViewActionables}
+                  >
                     View All <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
                     <div>
                       <p className="font-medium">Complete Leadership Course</p>
                       <p className="text-sm text-muted-foreground">3 days remaining</p>
                     </div>
                     <Button size="sm">Resume</Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10">
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
                     <div>
                       <p className="font-medium">Rate Marketing Strategy Course</p>
                       <p className="text-sm text-muted-foreground">Feedback requested</p>
@@ -360,39 +387,111 @@ const Home = () => {
               </div>
             </div>
             
-            {/* My Rewards Container */}
-            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="h-2 bg-amber-500"></div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Gift className="h-5 w-5 text-primary" />
+                    <div className="bg-amber-50 p-1.5 rounded-lg">
+                      <Gift className="h-5 w-5 text-amber-500" />
+                    </div>
                     <h3 className="text-lg font-semibold">My Rewards</h3>
                   </div>
-                  <Button variant="link" className="gap-1 text-primary text-sm p-0">
+                  <Button 
+                    variant="link" 
+                    className="gap-1 text-primary text-sm p-0"
+                    onClick={handleViewRewards}
+                  >
                     View All <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                    <Award className="h-8 w-8 text-amber-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Points</p>
-                      <p className="text-xl font-bold">2,450</p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                      <Award className="h-8 w-8 text-amber-500" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total Points</p>
+                        <p className="text-xl font-bold">2,450</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
+                      <div className="relative">
+                        <Trophy className="h-8 w-8 text-primary" />
+                        <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-bold">
+                          8
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Rank</p>
+                        <p className="text-xl font-bold">#42</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 border rounded-lg bg-secondary/10">
-                    <Star className="h-8 w-8 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Rank</p>
-                      <p className="text-xl font-bold">#42</p>
+                  
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-orange-50 p-2 rounded-lg">
+                        <Flame className="h-5 w-5 text-orange-500" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Learning Streak</p>
+                        <p className="text-sm text-muted-foreground">18 days streak</p>
+                      </div>
                     </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setIsStreakDialogOpen(true)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-purple-50 p-2 rounded-lg">
+                        <Target className="h-5 w-5 text-purple-500" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Next Milestone</p>
+                        <p className="text-sm text-muted-foreground">2,535 points to Gold</p>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={handleViewMilestones}
+                    >
+                      View All
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button 
+                      variant="secondary" 
+                      className="flex items-center gap-2"
+                      onClick={() => setIsMysteryBoxOpen(true)}
+                    >
+                      <div className="relative">
+                        <Gift className="h-5 w-5 text-purple-500" />
+                        <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                      </div>
+                      <span>Mystery Box</span>
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      className="flex items-center gap-2"
+                      onClick={() => setIsSpinWheelOpen(true)}
+                    >
+                      <Zap className="h-5 w-5 text-amber-500" />
+                      <span>Spin the Wheel</span>
+                    </Button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 4. Top Picks Section - FOURTH */}
           <CourseCarousel 
             title="Top Picks for You" 
             courses={mockCoursesData.topPicks} 
@@ -400,7 +499,6 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Top Picks for You')}
           />
           
-          {/* Role-based Skills with Skill Filters */}
           <CourseCarousel 
             title="Role-based Skills" 
             courses={mockCoursesData.roleBasedSkillGaps} 
@@ -409,7 +507,6 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Role-based Skills')}
           />
           
-          {/* Based on Your Interests with Skill Filters */}
           <CourseCarousel 
             title="Based on Your Interests" 
             courses={mockCoursesData.skillInterestsFollowed} 
@@ -418,7 +515,6 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Based on Your Interests')}
           />
           
-          {/* Popular with Similar Learners */}
           <CourseCarousel 
             title="Popular with Similar Learners" 
             courses={mockCoursesData.similarUsers} 
@@ -426,6 +522,21 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Popular with Similar Learners')}
           />
         </section>
+        
+        <MysteryBoxDialog 
+          open={isMysteryBoxOpen} 
+          onClose={() => setIsMysteryBoxOpen(false)} 
+        />
+        
+        <SpinTheWheelDialog 
+          open={isSpinWheelOpen} 
+          onClose={() => setIsSpinWheelOpen(false)} 
+        />
+        
+        <LearningStreakDialog 
+          open={isStreakDialogOpen} 
+          onClose={() => setIsStreakDialogOpen(false)} 
+        />
       </div>
     </>
   );

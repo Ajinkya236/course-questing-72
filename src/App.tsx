@@ -9,11 +9,13 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import Navbar from "./components/layout/NavbarEnhanced"; // Updated to use the enhanced navbar
+import Navbar from "./components/layout/NavbarEnhanced"; // Enhanced premium navbar
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import LeaderboardFullView from "./pages/LeaderboardFullView";
 import Profile from "./pages/Profile";
+import Milestones from "./pages/Milestones"; // New Milestones page
+import Actionables from "./pages/Actionables"; // New Actionables page
 import { Helmet } from "react-helmet";
 
 const queryClient = new QueryClient();
@@ -40,6 +42,8 @@ const App = () => (
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/leaderboard" element={<LeaderboardFullView />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/milestones" element={<Milestones />} />
+              <Route path="/actionables" element={<Actionables />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

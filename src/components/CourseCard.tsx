@@ -125,6 +125,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         )}
       </div>
       <CardHeader className="p-4 pb-2">
+        {/* Changed from h3 with truncated text to full title */}
         <h3 className="font-semibold text-base">{title}</h3>
       </CardHeader>
       <CardContent className="p-4 pt-2">

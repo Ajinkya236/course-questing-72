@@ -85,27 +85,29 @@ const NavbarEnhanced = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+    <header className="sticky top-0 z-50 w-full border-b shadow-sm bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link to="/" className="flex items-center space-x-2">
-            <GraduationCap className="h-6 w-6" />
-            <span className="hidden font-bold sm:inline-block">
+            <div className="bg-primary text-white p-1.5 rounded-lg">
+              <GraduationCap className="h-6 w-6" />
+            </div>
+            <span className="hidden font-bold text-lg sm:inline-block">
               Learning Platform
             </span>
           </Link>
-          <NavigationMenu className="ml-6">
-            <NavigationMenuList>
+          <NavigationMenu className="ml-8">
+            <NavigationMenuList className="gap-1">
               {navLinks.map((link) => 
                 link.dropdown ? (
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuTrigger
                       className={cn(
-                        "h-auto px-4 py-2",
-                        isActive(link.href) && "bg-accent text-accent-foreground"
+                        "h-auto px-4 py-2 font-medium",
+                        isActive(link.href) && "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
                       )}
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         {link.icon}
                         <span>{link.label}</span>
                       </div>
@@ -132,15 +134,19 @@ const NavbarEnhanced = () => {
                   </NavigationMenuItem>
                 ) : (
                   <NavigationMenuItem key={link.href}>
-                    <Link to={link.href}>
+                    <Link to={link.href} className="group">
                       <NavigationMenuLink
                         className={cn(
-                          "flex items-center gap-1 px-4 py-2",
-                          isActive(link.href) && "bg-accent text-accent-foreground"
+                          "relative flex items-center gap-1.5 px-4 py-2 font-medium",
+                          isActive(link.href) && "text-primary"
                         )}
                       >
                         {link.icon}
                         <span>{link.label}</span>
+                        <span className={cn(
+                          "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform group-hover:scale-x-100",
+                          isActive(link.href) && "scale-x-100"
+                        )} />
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -157,13 +163,15 @@ const NavbarEnhanced = () => {
               size="icon"
               className="mr-2 md:hidden"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <GraduationCap className="h-6 w-6" />
+              <div className="bg-primary text-white p-1.5 rounded-lg">
+                <GraduationCap className="h-6 w-6" />
+              </div>
               <span className="font-bold">Learning Platform</span>
             </Link>
             <div className="grid gap-2 py-4">
@@ -204,18 +212,20 @@ const NavbarEnhanced = () => {
             </Button>
             
             {isNotificationsPanelOpen && (
-              <div className="absolute top-14 right-16 z-50 w-80 md:w-96 shadow-lg rounded-md border bg-card overflow-hidden">
+              <div className="absolute top-16 right-4 z-50 w-80 md:w-96 shadow-lg rounded-md border bg-card overflow-hidden">
                 <NotificationsPanel onClose={closeNotificationsPanel} />
               </div>
             )}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-1">
+                <Button variant="ghost" className="gap-2 p-2 hover:bg-secondary/50">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
+                  <span className="hidden md:inline font-medium">John Doe</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
