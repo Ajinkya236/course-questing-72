@@ -1,6 +1,8 @@
+
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +39,8 @@ import {
   Target,
   Zap,
   TrendingUp,
-  Users
+  Users,
+  X
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -47,6 +50,8 @@ const NavbarEnhanced = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const notificationsRef = useRef<HTMLButtonElement>(null);
   
   // Mock unread notifications count
@@ -74,6 +79,15 @@ const NavbarEnhanced = () => {
   
   const closeNotificationsPanel = () => {
     setIsNotificationsPanelOpen(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+      setIsSearchVisible(false);
+    }
   };
 
   return (
@@ -149,6 +163,36 @@ const NavbarEnhanced = () => {
         
         <div className="flex flex-1 items-center justify-end">
           <div className="flex items-center gap-2">
+            {isSearchVisible ? (
+              <form onSubmit={handleSearch} className="relative flex-1 mr-2">
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-[200px] md:w-[300px] pr-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-0 top-0 h-10 w-10"
+                  onClick={() => setIsSearchVisible(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </form>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Search"
+                onClick={() => setIsSearchVisible(true)}
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+            
             <Button
               ref={notificationsRef}
               variant="ghost"

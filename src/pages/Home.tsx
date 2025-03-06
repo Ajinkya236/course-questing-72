@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Bell, Gift, Award, Star, Zap, Target, Trophy, Flame, Target as TargetIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ChevronRight, Bell, Gift, Award, Star, Zap, Target, Trophy, Flame, Target as TargetIcon, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '@/components/CourseCarousel';
 import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
@@ -739,9 +740,17 @@ const Home = () => {
   const [isSkillsForRoleOpen, setIsSkillsForRoleOpen] = useState(false);
   const [skillsTab, setSkillsTab] = useState('follow');
   const [selectedAcademy, setSelectedAcademy] = useState('All Academies');
+  const [searchQuery, setSearchQuery] = useState('');
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const handleContinueLearningViewAll = () => {
@@ -778,27 +787,38 @@ const Home = () => {
         <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
-        <section className="relative rounded-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent p-8 md:p-12 lg:p-16">
-            <div className="max-w-2xl space-y-4">
-              <h1 className="text-3xl md:text-4xl font-bold text-white">
+        <section className="relative rounded-xl overflow-hidden max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent p-6 md:p-8">
+            <div className="max-w-xl space-y-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
                 Unlock Your Potential with Personalized Learning
               </h1>
-              <p className="text-white/90">
-                Discover tailored courses based on your role, interests, and learning history. 
-                Earn points and badges as you progress through your learning journey.
+              <p className="text-white/90 text-sm md:text-base">
+                Discover tailored courses based on your role, interests, and learning history.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
+              <form onSubmit={handleSearch} className="flex gap-2 pt-2">
+                <Input 
+                  type="text" 
+                  placeholder="Search for courses, skills, topics..." 
+                  className="bg-white/95 border-0 focus-visible:ring-white" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Button type="submit" className="bg-white text-primary hover:bg-white/90">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
+              <div className="flex flex-wrap gap-3 pt-2">
                 <Button 
-                  size="lg" 
-                  className="gap-2 bg-white text-primary hover:bg-white/90" 
+                  size="sm" 
+                  className="gap-1 bg-white text-primary hover:bg-white/90" 
                   onClick={handleDiscoverClick}
                 >
                   Explore Courses
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
                 <Button 
-                  size="lg" 
+                  size="sm"
                   variant="outline" 
                   className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                   onClick={handleViewLearningGoals}
@@ -810,8 +830,8 @@ const Home = () => {
           </div>
           <div className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1')] bg-cover bg-center opacity-20"></div>
           
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/3 blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/20 rounded-full translate-y-1/3 -translate-x-1/3 blur-xl"></div>
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/3 blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/20 rounded-full translate-y-1/3 -translate-x-1/3 blur-xl"></div>
         </section>
 
         <section className="space-y-12">
