@@ -28,7 +28,8 @@ import {
   FileDown,
   Award,
   X,
-  Filter
+  Filter,
+  Users
 } from 'lucide-react';
 
 // Mock data for active mentorships

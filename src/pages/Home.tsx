@@ -11,6 +11,38 @@ import LearningStreakDialog from '@/components/LearningStreakDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
+import BannerCarousel from '@/components/BannerCarousel';
+
+const hrCommunicationBanners = [
+  {
+    id: 1,
+    title: "New Learning Pathways Available",
+    description: "Explore our updated learning pathways designed to help you grow in your role",
+    imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+    link: "/learning-paths"
+  },
+  {
+    id: 2,
+    title: "Learning Festival Coming Soon",
+    description: "Save the date for our annual Learning Festival with workshops and guest speakers",
+    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+    link: "/events"
+  },
+  {
+    id: 3,
+    title: "New Technical Courses Added",
+    description: "Check out the latest technical courses added to our learning platform",
+    imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
+    link: "/discover"
+  },
+  {
+    id: 4,
+    title: "Mentorship Program Enrollment Open",
+    description: "Applications for our mentorship program are now open until June 30th",
+    imageUrl: "https://images.unsplash.com/photo-1522071901873-411886a10004",
+    link: "/mentoring"
+  },
+];
 
 const mockCoursesData = {
   roleBasedSkillGaps: [
@@ -374,6 +406,14 @@ const roleSkills = [
   { id: 5, name: 'Data Analysis', proficiency: 30, target: 60 },
 ];
 
+const skillsYouFollow = [
+  { id: 1, name: 'JavaScript', proficiency: 75 },
+  { id: 2, name: 'Product Management', proficiency: 60 },
+  { id: 3, name: 'UI/UX Design', proficiency: 45 },
+  { id: 4, name: 'DevOps', proficiency: 30 },
+  { id: 5, name: 'Cloud Architecture', proficiency: 50 },
+];
+
 const Home = () => {
   const navigate = useNavigate();
   const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
@@ -416,6 +456,9 @@ const Home = () => {
         <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
+        {/* HR Communication Banner */}
+        <BannerCarousel banners={hrCommunicationBanners} smallSize={true} />
+        
         <section className="relative rounded-xl overflow-hidden">
           <div className="bg-gradient-to-r from-primary via-primary/90 to-accent p-8 md:p-12 lg:p-16">
             <div className="max-w-2xl space-y-4">
@@ -454,22 +497,6 @@ const Home = () => {
             onCourseClick={handleCourseClick}
             onViewAllClick={handleContinueLearningViewAll}
           />
-
-          <CourseCarousel 
-            title="Trending Courses" 
-            courses={mockCoursesData.trendingCourses} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Trending Courses')}
-            showBadges={true}
-          />
-          
-          <CourseCarousel 
-            title="New Courses" 
-            courses={mockCoursesData.newCourses} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('New Courses')}
-            showBadges={true}
-          />
           
           <CourseCarousel 
             title="Assigned Courses" 
@@ -501,7 +528,27 @@ const Home = () => {
                   </div>
                   
                   <TabsContent value="follow">
-                    <FollowSkills />
+                    <div className="space-y-4">
+                      {skillsYouFollow.map(skill => (
+                        <div key={skill.id} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">{skill.name}</span>
+                            <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full">
+                              {skill.proficiency}%
+                            </span>
+                          </div>
+                          <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full bg-primary"
+                              style={{ width: `${skill.proficiency}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                      <Button variant="outline" className="w-full mt-2">
+                        View All Skills You Follow
+                      </Button>
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="role">
@@ -677,61 +724,3 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <CourseCarousel 
-            title="Top Picks for You" 
-            courses={mockCoursesData.topPicks} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Top Picks for You')}
-          />
-          
-          <CourseCarousel 
-            title="Role-based Skills" 
-            courses={mockCoursesData.roleBasedSkillGaps} 
-            showSkillFilters={true}
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Role-based Skills')}
-          />
-          
-          <CourseCarousel 
-            title="Based on Your Interests" 
-            courses={mockCoursesData.skillInterestsFollowed} 
-            showSkillFilters={true}
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Based on Your Interests')}
-          />
-          
-          <CourseCarousel 
-            title="Popular with Similar Learners" 
-            courses={mockCoursesData.similarUsers} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Popular with Similar Learners')}
-          />
-        </section>
-        
-        <MysteryBoxDialog 
-          open={isMysteryBoxOpen} 
-          onClose={() => setIsMysteryBoxOpen(false)} 
-        />
-        
-        <SpinTheWheelDialog 
-          open={isSpinWheelOpen} 
-          onClose={() => setIsSpinWheelOpen(false)} 
-        />
-        
-        <LearningStreakDialog 
-          open={isStreakDialogOpen} 
-          onClose={() => setIsStreakDialogOpen(false)} 
-        />
-
-        <SkillsForRoleDialog
-          open={isSkillsForRoleOpen}
-          onClose={() => setIsSkillsForRoleOpen(false)}
-        />
-      </div>
-    </>
-  );
-};
-
-export default Home;

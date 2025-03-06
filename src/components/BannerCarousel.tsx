@@ -9,14 +9,20 @@ interface Banner {
   title: string;
   description: string;
   imageUrl: string;
+  link?: string;
 }
 
 interface BannerCarouselProps {
   banners: Banner[];
   className?: string;
+  smallSize?: boolean;
 }
 
-const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners, className = '' }) => {
+const BannerCarousel: React.FC<BannerCarouselProps> = ({ 
+  banners, 
+  className = '',
+  smallSize = false
+}) => {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   const nextBanner = () => {
@@ -31,36 +37,57 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners, className = ''
     );
   };
 
+  const handleBannerClick = (link?: string) => {
+    if (link) {
+      window.open(link, '_blank');
+    }
+  };
+
   return (
-    <div className={`relative overflow-hidden rounded-md ${className}`}>
+    <div className={`relative overflow-hidden rounded-md ${smallSize ? 'h-32 md:h-40' : 'h-auto'} ${className}`}>
       <div className="absolute inset-0">
         <img 
           src={banners[currentBannerIndex].imageUrl} 
           alt={banners[currentBannerIndex].title}
-          className="w-full h-full object-cover opacity-20"
+          className="w-full h-full object-cover opacity-25"
         />
       </div>
-      <CardContent className="relative z-10 p-4 flex items-center justify-between">
+      <CardContent 
+        className={`relative z-10 p-4 flex items-center justify-between ${
+          banners[currentBannerIndex].link ? 'cursor-pointer' : ''
+        }`}
+        onClick={() => handleBannerClick(banners[currentBannerIndex].link)}
+      >
         <Button 
           variant="outline" 
           size="icon" 
           className="rounded-full h-8 w-8 bg-background/80" 
-          onClick={prevBanner}
+          onClick={(e) => {
+            e.stopPropagation();
+            prevBanner();
+          }}
           aria-label="Previous banner"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
         <div className="text-center flex-1 px-6">
-          <h3 className="text-lg font-semibold">{banners[currentBannerIndex].title}</h3>
-          <p className="text-sm text-muted-foreground">{banners[currentBannerIndex].description}</p>
+          <h3 className={`${smallSize ? 'text-base' : 'text-lg'} font-semibold`}>
+            {banners[currentBannerIndex].title}
+          </h3>
+          <p className={`${smallSize ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+            {banners[currentBannerIndex].description}
+          </p>
         </div>
         
         <Button 
           variant="outline" 
           size="icon" 
           className="rounded-full h-8 w-8 bg-background/80" 
-          onClick={nextBanner}
+          onClick={(e) => {
+            e.stopPropagation();
+            nextBanner();
+          }}
           aria-label="Next banner"
         >
           <ChevronRight className="h-4 w-4" />
