@@ -1,3 +1,4 @@
+<lov-code>
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -723,4 +724,4 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            
