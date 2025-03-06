@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -79,14 +78,14 @@ const recommendedMentors = [
   }
 ];
 
-// Sample request data
+// Sample request data - Fix the status property to use string literals
 const requestsData = [
   {
     id: 1,
     mentorName: "Dr. Sarah Johnson",
     mentorTitle: "Senior Data Scientist",
     topic: "Data Analysis",
-    status: "pending",
+    status: "pending" as const,
     date: "2023-10-15",
     imageUrl: "https://randomuser.me/api/portraits/women/44.jpg"
   },
@@ -95,7 +94,7 @@ const requestsData = [
     mentorName: "Michael Chen",
     mentorTitle: "Product Manager",
     topic: "Product Management",
-    status: "accepted",
+    status: "accepted" as const,
     date: "2023-10-10",
     imageUrl: "https://randomuser.me/api/portraits/men/32.jpg"
   },
@@ -104,14 +103,14 @@ const requestsData = [
     mentorName: "James Wilson",
     mentorTitle: "Software Engineering Lead",
     topic: "Leadership",
-    status: "rejected",
+    status: "rejected" as const,
     reason: "Currently at maximum mentee capacity",
     date: "2023-10-05",
     imageUrl: "https://randomuser.me/api/portraits/men/86.jpg"
   }
 ];
 
-// Sample active engagements
+// Sample active engagements - Fix the status property in sessions
 const activeEngagementsData = [
   {
     id: 1,
@@ -122,8 +121,8 @@ const activeEngagementsData = [
     imageUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     progress: 40,
     sessions: [
-      { id: 1, title: "Introduction to Data Analysis", date: "2023-10-25", status: "completed", notes: "Discussed key concepts and tools" },
-      { id: 2, title: "Advanced Data Visualization", date: "2023-11-05", status: "upcoming" }
+      { id: 1, title: "Introduction to Data Analysis", date: "2023-10-25", status: "completed" as const, notes: "Discussed key concepts and tools" },
+      { id: 2, title: "Advanced Data Visualization", date: "2023-11-05", status: "upcoming" as const }
     ],
     tasks: [
       { id: 1, title: "Data Cleaning Exercise", dueDate: "2023-10-30", status: "completed" },
@@ -144,10 +143,10 @@ const activeEngagementsData = [
     imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     progress: 65,
     sessions: [
-      { id: 1, title: "Product Requirements", date: "2023-09-20", status: "completed", notes: "Learned how to gather and document requirements" },
-      { id: 2, title: "Stakeholder Management", date: "2023-10-05", status: "completed", notes: "Discussed effective communication strategies" },
-      { id: 3, title: "Product Roadmapping", date: "2023-10-20", status: "completed", notes: "Created a sample roadmap" },
-      { id: 4, title: "Launch Strategies", date: "2023-11-10", status: "upcoming" }
+      { id: 1, title: "Product Requirements", date: "2023-09-20", status: "completed" as const, notes: "Learned how to gather and document requirements" },
+      { id: 2, title: "Stakeholder Management", date: "2023-10-05", status: "completed" as const, notes: "Discussed effective communication strategies" },
+      { id: 3, title: "Product Roadmapping", date: "2023-10-20", status: "completed" as const, notes: "Created a sample roadmap" },
+      { id: 4, title: "Launch Strategies", date: "2023-11-10", status: "upcoming" as const }
     ],
     tasks: [
       { id: 1, title: "Competitive Analysis", dueDate: "2023-09-30", status: "completed" },
