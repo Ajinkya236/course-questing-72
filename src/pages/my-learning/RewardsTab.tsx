@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
 import PointsOverview from '@/components/PointsOverview';
-import LeaderboardCard from '@/components/LeaderboardCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Gift, Star, Sparkle, Box, Shuffle, Calendar, Target, TrendingUp } from 'lucide-react';
+import { Gift, Star, Sparkle, Box, Shuffle, Target, TrendingUp, Trophy, Award, Medal, User, UserCircle } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
 
 // Mock data for points overview
 const pointsData = {
@@ -87,6 +87,41 @@ const leaderboardUsers = [
     points: 13240,
     position: 5,
   },
+  {
+    id: '6',
+    name: 'Robert Taylor',
+    avatar: 'https://i.pravatar.cc/150?img=6',
+    points: 12980,
+    position: 6,
+  },
+  {
+    id: '7',
+    name: 'Lisa Wang',
+    avatar: 'https://i.pravatar.cc/150?img=7',
+    points: 12790,
+    position: 7,
+  },
+  {
+    id: '8',
+    name: 'John Doe',
+    avatar: 'https://i.pravatar.cc/150?img=22',
+    points: 12465,
+    position: 8,
+  },
+  {
+    id: '9',
+    name: 'Mark Wilson',
+    avatar: 'https://i.pravatar.cc/150?img=9',
+    points: 12100,
+    position: 9,
+  },
+  {
+    id: '10',
+    name: 'Amy Martinez',
+    avatar: 'https://i.pravatar.cc/150?img=10',
+    points: 11890,
+    position: 10,
+  },
 ];
 
 // Current user data for leaderboard
@@ -157,7 +192,7 @@ const mysteryRewards = [
 
 const RewardsTab = () => {
   const { toast } = useToast();
-  const [currentLeaderboardType, setCurrentLeaderboardType] = useState('individual');
+  const [timeRange, setTimeRange] = useState('all-time');
   const [mysteryBoxOpen, setMysteryBoxOpen] = useState(false);
   
   const handleRedeemReward = (rewardTitle: string, points: number) => {
@@ -189,6 +224,50 @@ const RewardsTab = () => {
       setMysteryBoxOpen(false);
     }, 1000);
   };
+
+  // Get relative rankings - 2 above and 2 below current user
+  const getRelativeRankings = () => {
+    const currentUserIndex = leaderboardUsers.findIndex(user => user.id === currentUser.id);
+    if (currentUserIndex === -1) return [];
+
+    // Always include #1 ranked user if current user is not in the top 3
+    let usersToShow = [];
+    if (currentUserIndex > 2) {
+      usersToShow.push(leaderboardUsers[0]);
+    }
+
+    // Get 2 users above current user
+    const aboveStartIndex = Math.max(0, currentUserIndex - 2);
+    for (let i = aboveStartIndex; i < currentUserIndex; i++) {
+      usersToShow.push(leaderboardUsers[i]);
+    }
+
+    // Add current user
+    usersToShow.push(currentUser);
+
+    // Get 2 users below current user
+    const belowEndIndex = Math.min(leaderboardUsers.length, currentUserIndex + 3);
+    for (let i = currentUserIndex + 1; i < belowEndIndex; i++) {
+      usersToShow.push(leaderboardUsers[i]);
+    }
+
+    return usersToShow;
+  };
+
+  const relativeRankings = getRelativeRankings();
+  
+  const getPositionIcon = (position: number) => {
+    switch (position) {
+      case 1:
+        return <Trophy className="h-5 w-5 text-yellow-500" />;
+      case 2:
+        return <Award className="h-5 w-5 text-gray-400" />;
+      case 3:
+        return <Medal className="h-5 w-5 text-amber-700" />;
+      default:
+        return <span className="font-medium text-muted-foreground">{position}</span>;
+    }
+  };
   
   return (
     <div className="space-y-8">
@@ -196,37 +275,84 @@ const RewardsTab = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <Tabs defaultValue="individual">
-            <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="individual" onClick={() => setCurrentLeaderboardType('individual')}>
-                Individual
-              </TabsTrigger>
-              <TabsTrigger value="team" onClick={() => setCurrentLeaderboardType('team')}>
-                Team
-              </TabsTrigger>
-              <TabsTrigger value="department" onClick={() => setCurrentLeaderboardType('department')}>
-                Department
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="individual">
-              <LeaderboardCard users={leaderboardUsers} currentUser={currentUser} />
-            </TabsContent>
-            
-            <TabsContent value="team">
-              <Card className="p-6">
-                <CardTitle className="mb-4 text-xl">Team Leaderboard</CardTitle>
-                <p className="text-muted-foreground">Team leaderboards will be available soon!</p>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="department">
-              <Card className="p-6">
-                <CardTitle className="mb-4 text-xl">Department Leaderboard</CardTitle>
-                <p className="text-muted-foreground">Department leaderboards will be available soon!</p>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Trophy className="h-5 w-5 text-primary" />
+                <span>Leaderboard</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="individual" className="mb-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="individual">
+                    <User className="h-4 w-4 mr-1.5" />
+                    <span>Individual</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="personal">
+                    <UserCircle className="h-4 w-4 mr-1.5" />
+                    <span>My Ranking</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              <div className="space-y-4 mt-4">
+                {relativeRankings.map((user) => (
+                  <div
+                    key={user.id}
+                    className={`flex flex-col rounded-lg ${
+                      user.id === currentUser.id ? "bg-primary/10" : "bg-secondary/10"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8">
+                          {getPositionIcon(user.position)}
+                        </div>
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <span className="font-medium">{user.name}</span>
+                          {user.id === currentUser.id && (
+                            <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 ml-2 rounded-full">
+                              You
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="font-bold bg-primary/20 text-primary px-3 py-1 rounded-full">
+                          {user.points.toLocaleString()} pts
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Next Milestone */}
+                <div className="mt-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium">Next Milestone</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    You need <span className="font-semibold text-primary">2,535 more points</span> to reach Gold Achiever status
+                  </p>
+                  <Progress value={83} className="h-2" />
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-muted-foreground">Current: {currentUser.points.toLocaleString()}</span>
+                    <span className="text-muted-foreground">Target: 15,000</span>
+                  </div>
+                  <Button className="w-full mt-4" variant="outline" onClick={() => window.location.href = '/milestones'}>
+                    <Target className="h-4 w-4 mr-2" />
+                    View All Milestones
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
           <div className="mt-6">
             <Card>
@@ -249,7 +375,9 @@ const RewardsTab = () => {
                 <div className="mt-4 bg-secondary h-2 rounded-full">
                   <div className="bg-primary h-2 rounded-full" style={{ width: '83%' }}></div>
                 </div>
-                <Button className="w-full mt-4" variant="outline">View All Milestones</Button>
+                <Button className="w-full mt-4" variant="outline" onClick={() => window.location.href = '/milestones'}>
+                  View All Milestones
+                </Button>
               </CardContent>
             </Card>
           </div>

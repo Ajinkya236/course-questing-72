@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Bell, Gift, Award, Star, Zap, BookOpen, Clock, Trophy, Target, CalendarDays, Flame } from 'lucide-react';
+import { ChevronRight, Bell, Gift, Award, Star, Zap, BookOpen, Clock, Trophy, Target, CalendarDays, Flame, Bookmark, Briefcase, TrendingUp, PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '@/components/CourseCarousel';
 import FollowSkills from '@/components/FollowSkills';
 import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
 import SpinTheWheelDialog from '@/components/gamification/SpinTheWheelDialog';
 import LearningStreakDialog from '@/components/LearningStreakDialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
 
-// Mock data for courses
 const mockCoursesData = {
   roleBasedSkillGaps: [
     {
@@ -162,6 +164,110 @@ const mockCoursesData = {
       rating: 4.7,
     },
   ],
+  trendingCourses: [
+    {
+      id: '31',
+      title: 'AI for Business Leaders',
+      description: 'Understanding artificial intelligence for strategic business decisions',
+      imageUrl: 'https://images.unsplash.com/photo-1591453089816-0fbb971b454c',
+      category: 'Technology',
+      duration: '5h 15m',
+      rating: 4.9,
+      isHot: true
+    },
+    {
+      id: '32',
+      title: 'Remote Work Leadership',
+      description: 'Lead distributed teams effectively in the digital age',
+      imageUrl: 'https://images.unsplash.com/photo-1590402494610-2c378a9114c6',
+      category: 'Leadership',
+      duration: '4h 30m',
+      rating: 4.8,
+      isHot: true
+    },
+    {
+      id: '33',
+      title: 'Agile Project Management',
+      description: 'Modern approach to managing projects with agility',
+      imageUrl: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83',
+      category: 'Project Management',
+      duration: '6h 45m',
+      rating: 4.7,
+      isHot: true
+    },
+    {
+      id: '34',
+      title: 'Data Privacy Compliance',
+      description: 'Navigating the complex landscape of data protection regulations',
+      imageUrl: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d',
+      category: 'Legal',
+      duration: '3h 30m',
+      rating: 4.6,
+      isHot: true
+    },
+    {
+      id: '35',
+      title: 'Sustainable Business Practices',
+      description: 'Implementing environmental responsibility in business operations',
+      imageUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6',
+      category: 'Business',
+      duration: '4h 15m',
+      rating: 4.8,
+      isHot: true
+    }
+  ],
+  newCourses: [
+    {
+      id: '41',
+      title: 'Blockchain Fundamentals',
+      description: 'Learn the basics of blockchain technology and its applications',
+      imageUrl: 'https://images.unsplash.com/photo-1639322537228-f710d846310a',
+      category: 'Technology',
+      duration: '6h 00m',
+      rating: 4.5,
+      isNew: true
+    },
+    {
+      id: '42',
+      title: 'Inclusive Leadership',
+      description: 'Building diverse and inclusive teams for the modern workplace',
+      imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+      category: 'Leadership',
+      duration: '3h 45m',
+      rating: 4.9,
+      isNew: true
+    },
+    {
+      id: '43',
+      title: 'Digital Wellbeing',
+      description: 'Managing technology use for better mental health and productivity',
+      imageUrl: 'https://images.unsplash.com/photo-1507428217774-b274d7f4d441',
+      category: 'Wellness',
+      duration: '2h 30m',
+      rating: 4.7,
+      isNew: true
+    },
+    {
+      id: '44',
+      title: 'Advanced Data Visualization',
+      description: 'Create compelling visual representations of complex data',
+      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
+      category: 'Analytics',
+      duration: '5h 15m',
+      rating: 4.8,
+      isNew: true
+    },
+    {
+      id: '45',
+      title: 'Crisis Management',
+      description: 'Strategies for effectively managing organizational crises',
+      imageUrl: 'https://images.unsplash.com/photo-1514820720301-4c4790309f46',
+      category: 'Management',
+      duration: '4h 00m',
+      rating: 4.6,
+      isNew: true
+    }
+  ],
   similarUsers: [
     {
       id: '16',
@@ -260,11 +366,21 @@ const mockCoursesData = {
   ],
 };
 
+const roleSkills = [
+  { id: 1, name: 'Project Management', proficiency: 65, target: 80 },
+  { id: 2, name: 'Leadership', proficiency: 60, target: 75 },
+  { id: 3, name: 'Strategic Thinking', proficiency: 45, target: 70 },
+  { id: 4, name: 'Communication', proficiency: 85, target: 85 },
+  { id: 5, name: 'Data Analysis', proficiency: 30, target: 60 },
+];
+
 const Home = () => {
   const navigate = useNavigate();
   const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
   const [isSpinWheelOpen, setIsSpinWheelOpen] = useState(false);
   const [isStreakDialogOpen, setIsStreakDialogOpen] = useState(false);
+  const [isSkillsForRoleOpen, setIsSkillsForRoleOpen] = useState(false);
+  const [skillsTab, setSkillsTab] = useState('follow');
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
@@ -290,6 +406,10 @@ const Home = () => {
     navigate('/milestones');
   };
 
+  const handleDiscoverClick = () => {
+    navigate('/discover');
+  };
+
   return (
     <>
       <Helmet>
@@ -307,7 +427,11 @@ const Home = () => {
                 Earn points and badges as you progress through your learning journey.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button size="lg" className="gap-2 bg-white text-primary hover:bg-white/90" onClick={() => navigate('/discover')}>
+                <Button 
+                  size="lg" 
+                  className="gap-2 bg-white text-primary hover:bg-white/90" 
+                  onClick={handleDiscoverClick}
+                >
                   Explore Courses
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -330,6 +454,22 @@ const Home = () => {
             onCourseClick={handleCourseClick}
             onViewAllClick={handleContinueLearningViewAll}
           />
+
+          <CourseCarousel 
+            title="Trending Courses" 
+            courses={mockCoursesData.trendingCourses} 
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Trending Courses')}
+            showBadges={true}
+          />
+          
+          <CourseCarousel 
+            title="New Courses" 
+            courses={mockCoursesData.newCourses} 
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('New Courses')}
+            showBadges={true}
+          />
           
           <CourseCarousel 
             title="Assigned Courses" 
@@ -346,7 +486,54 @@ const Home = () => {
             <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="h-2 bg-purple-500"></div>
               <div className="p-6">
-                <FollowSkills />
+                <Tabs value={skillsTab} onValueChange={setSkillsTab}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-purple-50 p-1.5 rounded-lg">
+                        <Star className="h-5 w-5 text-purple-500" />
+                      </div>
+                      <h3 className="text-lg font-semibold">Skills</h3>
+                    </div>
+                    <TabsList>
+                      <TabsTrigger value="follow" className="text-xs">You Follow</TabsTrigger>
+                      <TabsTrigger value="role" className="text-xs">For Your Role</TabsTrigger>
+                    </TabsList>
+                  </div>
+                  
+                  <TabsContent value="follow">
+                    <FollowSkills />
+                  </TabsContent>
+                  
+                  <TabsContent value="role">
+                    <div className="space-y-4">
+                      {roleSkills.slice(0, 3).map(skill => (
+                        <div key={skill.id} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">{skill.name}</span>
+                            <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full">
+                              {skill.proficiency}% / {skill.target}%
+                            </span>
+                          </div>
+                          <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full ${skill.proficiency >= skill.target ? 'bg-green-500' : 'bg-primary'}`}
+                              style={{ width: `${(skill.proficiency / skill.target) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full mt-2 gap-2"
+                        onClick={() => setIsSkillsForRoleOpen(true)}
+                      >
+                        <Target className="h-4 w-4" />
+                        View All Role Skills
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
             
@@ -536,6 +723,11 @@ const Home = () => {
         <LearningStreakDialog 
           open={isStreakDialogOpen} 
           onClose={() => setIsStreakDialogOpen(false)} 
+        />
+
+        <SkillsForRoleDialog
+          open={isSkillsForRoleOpen}
+          onClose={() => setIsSkillsForRoleOpen(false)}
         />
       </div>
     </>

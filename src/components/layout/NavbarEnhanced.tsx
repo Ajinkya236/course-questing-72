@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,6 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +31,6 @@ import {
   User,
   HelpCircle,
   BarChart3,
-  Trophy,
   GraduationCap,
   Award,
   Target,
@@ -59,17 +56,9 @@ const NavbarEnhanced = () => {
       href: '/discover', 
       label: 'Discover', 
       icon: <Search className="h-4 w-4" />,
-      dropdown: true,
-      dropdownItems: [
-        { label: 'Role-based Skills', href: '/view-all/role-based-skills', icon: <Target className="h-4 w-4" /> },
-        { label: 'Assigned Courses', href: '/view-all/assigned-courses', icon: <BookOpen className="h-4 w-4" /> },
-        { label: 'Based on Your Interests', href: '/view-all/based-on-interests', icon: <Star className="h-4 w-4" /> },
-        { label: 'Top Picks for You', href: '/view-all/top-picks', icon: <Zap className="h-4 w-4" /> },
-        { label: 'Popular with Similar Learners', href: '/view-all/similar-learners', icon: <TrendingUp className="h-4 w-4" /> },
-      ]
+      dropdown: false
     },
-    { href: '/my-learning', label: 'My Learning', icon: <Layers className="h-4 w-4" /> },
-    { href: '/leaderboard', label: 'Leaderboard', icon: <Trophy className="h-4 w-4" /> }
+    { href: '/my-learning', label: 'My Learning', icon: <Layers className="h-4 w-4" /> }
   ];
   
   const isActive = (path: string) => {
@@ -144,8 +133,8 @@ const NavbarEnhanced = () => {
                         {link.icon}
                         <span>{link.label}</span>
                         <span className={cn(
-                          "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform group-hover:scale-x-100",
-                          isActive(link.href) && "scale-x-100"
+                          "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform",
+                          isActive(link.href) ? "scale-x-100" : "group-hover:scale-x-100"
                         )} />
                       </NavigationMenuLink>
                     </Link>

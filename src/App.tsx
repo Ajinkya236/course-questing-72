@@ -12,7 +12,6 @@ import NotFound from "./pages/NotFound";
 import Navbar from "./components/layout/NavbarEnhanced"; // Enhanced premium navbar
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
-import LeaderboardFullView from "./pages/LeaderboardFullView";
 import Profile from "./pages/Profile";
 import Milestones from "./pages/Milestones"; // New Milestones page
 import Actionables from "./pages/Actionables"; // New Actionables page
@@ -40,7 +39,6 @@ const App = () => (
               <Route path="/course/:courseId" element={<CoursePlayer />} />
               <Route path="/view-all/:category" element={<ViewAllPage />} />
               <Route path="/notifications" element={<Notifications />} />
-              <Route path="/leaderboard" element={<LeaderboardFullView />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/milestones" element={<Milestones />} />
               <Route path="/actionables" element={<Actionables />} />
