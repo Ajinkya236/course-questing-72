@@ -1,30 +1,24 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MentorProfile from './mentor/MentorProfile';
 import MenteeRequests from './mentor/MenteeRequests';
 import ActiveMentorships from './mentor/ActiveMentorships';
 import MentorshipHistory from './mentor/MentorshipHistory';
 import { 
-  UserCog, 
   ClipboardList, 
   Users, 
   History 
 } from 'lucide-react';
 
 const MentorJourney = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('requests');
 
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">My Mentor Journey</h2>
       
-      <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-4 mb-6">
-          <TabsTrigger value="profile" className="flex items-center gap-1">
-            <UserCog className="h-4 w-4 md:mr-1" />
-            <span className="hidden md:inline">Profile</span>
-          </TabsTrigger>
+      <Tabs defaultValue="requests" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="w-full grid grid-cols-3 mb-6">
           <TabsTrigger value="requests" className="flex items-center gap-1">
             <ClipboardList className="h-4 w-4 md:mr-1" />
             <span className="hidden md:inline">Requests</span>
@@ -38,10 +32,6 @@ const MentorJourney = () => {
             <span className="hidden md:inline">History</span>
           </TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="profile">
-          <MentorProfile />
-        </TabsContent>
         
         <TabsContent value="requests">
           <MenteeRequests />
