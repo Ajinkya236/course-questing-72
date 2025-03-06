@@ -1,4 +1,4 @@
-<lov-code>
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -777,3 +777,339 @@ const ActiveMentorships = () => {
                                           title: "Session Completed",
                                           description: "The session has been marked as completed"
                                         });
+                                      }}>
+                                        <Clock className="h-3.5 w-3.5" />
+                                        Mark as Completed
+                                      </Button>
+                                    )}
+                                    
+                                    {session.status === 'upcoming' && (
+                                      <Button variant="outline" size="sm" className="gap-1 text-destructive" onClick={() => {
+                                        setMentorships(mentorships.map(m => 
+                                          m.id === activeMentorship.id 
+                                            ? { 
+                                                ...m, 
+                                                sessions: m.sessions.map(s => 
+                                                  s.id === session.id 
+                                                    ? { ...s, status: 'cancelled' } 
+                                                    : s
+                                                )
+                                              } 
+                                            : m
+                                        ));
+                                        
+                                        toast({
+                                          title: "Session Cancelled",
+                                          description: "The session has been marked as cancelled"
+                                        });
+                                      }}>
+                                        <X className="h-3.5 w-3.5" />
+                                        Cancel
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="tasks">
+                          <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-medium">Assigned Tasks</h4>
+                            <Dialog open={showAddTaskDialog} onOpenChange={setShowAddTaskDialog}>
+                              <DialogTrigger asChild>
+                                <Button size="sm" className="gap-1">
+                                  <Plus className="h-3.5 w-3.5" />
+                                  Assign Task
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Assign a New Task</DialogTitle>
+                                  <DialogDescription>
+                                    Create a task for {activeMentorship.menteeName} to complete
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4 space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium mb-1" htmlFor="task-title">
+                                      Task Title
+                                    </label>
+                                    <Input
+                                      id="task-title"
+                                      placeholder="e.g., Create a React Component"
+                                      value={newTaskTitle}
+                                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-1" htmlFor="task-description">
+                                      Description
+                                    </label>
+                                    <Textarea
+                                      id="task-description"
+                                      placeholder="Provide clear instructions for the task..."
+                                      value={newTaskDescription}
+                                      onChange={(e) => setNewTaskDescription(e.target.value)}
+                                      className="resize-none"
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-1" htmlFor="task-due-date">
+                                      Due Date
+                                    </label>
+                                    <Input
+                                      id="task-due-date"
+                                      type="date"
+                                      value={newTaskDueDate}
+                                      onChange={(e) => setNewTaskDueDate(e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox 
+                                      id="task-has-sample" 
+                                      checked={newTaskHasSample} 
+                                      onCheckedChange={(checked) => setNewTaskHasSample(checked === true)}
+                                    />
+                                    <label
+                                      htmlFor="task-has-sample"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                      Provide sample/template
+                                    </label>
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button variant="outline" onClick={() => setShowAddTaskDialog(false)}>Cancel</Button>
+                                  <Button onClick={handleAddTask} disabled={!newTaskTitle || !newTaskDescription || !newTaskDueDate}>Assign Task</Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            {activeMentorship.tasks.map(task => (
+                              <Card key={task.id}>
+                                <div className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-medium">{task.title}</h4>
+                                    <Badge 
+                                      variant={task.status === 'completed' ? 'default' : 'secondary'}
+                                    >
+                                      {task.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm mb-3">
+                                    {task.description}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mb-3">
+                                    Due: {new Date(task.dueDate).toLocaleDateString()}
+                                  </p>
+                                  
+                                  {task.feedback && (
+                                    <div className="bg-primary/5 p-3 rounded-md mb-3">
+                                      <h5 className="text-sm font-medium mb-1">Your Feedback</h5>
+                                      <p className="text-sm">{task.feedback}</p>
+                                    </div>
+                                  )}
+                                  
+                                  {task.submission && (
+                                    <div className="bg-muted/30 p-3 rounded-md mb-3">
+                                      <h5 className="text-sm font-medium mb-1">Mentee's Submission</h5>
+                                      <p className="text-sm">{task.submission}</p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="flex justify-end gap-2">
+                                    {task.hasSample && (
+                                      <Button variant="outline" size="sm" className="gap-1" onClick={() => {
+                                        toast({
+                                          title: "Sample Downloaded",
+                                          description: "The sample template has been downloaded"
+                                        });
+                                      }}>
+                                        <Download className="h-3.5 w-3.5" />
+                                        Download Sample
+                                      </Button>
+                                    )}
+                                    
+                                    {task.status === 'pending' && task.submission && (
+                                      <Dialog open={showTaskFeedbackDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
+                                        setShowTaskFeedbackDialog(open);
+                                        if (open) {
+                                          setSelectedTask(task);
+                                          setTaskFeedback(task.feedback || '');
+                                        }
+                                      }}>
+                                        <DialogTrigger asChild>
+                                          <Button variant="outline" size="sm" className="gap-1">
+                                            <PenTool className="h-3.5 w-3.5" />
+                                            Provide Feedback
+                                          </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                          <DialogHeader>
+                                            <DialogTitle>Provide Feedback</DialogTitle>
+                                            <DialogDescription>
+                                              Review {activeMentorship.menteeName}'s submission and provide feedback
+                                            </DialogDescription>
+                                          </DialogHeader>
+                                          <div className="py-4">
+                                            <h4 className="text-sm font-medium mb-2">Mentee's Submission</h4>
+                                            <div className="bg-muted/30 p-3 rounded-md mb-4">
+                                              <p className="text-sm">{task.submission}</p>
+                                            </div>
+                                            <h4 className="text-sm font-medium mb-2">Your Feedback</h4>
+                                            <Textarea
+                                              placeholder="Provide constructive feedback on the submission..."
+                                              value={taskFeedback}
+                                              onChange={(e) => setTaskFeedback(e.target.value)}
+                                              className="resize-none"
+                                              rows={4}
+                                            />
+                                          </div>
+                                          <DialogFooter>
+                                            <Button variant="outline" onClick={() => setShowTaskFeedbackDialog(false)}>Cancel</Button>
+                                            <Button onClick={handleSaveTaskFeedback} disabled={!taskFeedback.trim()}>
+                                              Save Feedback & Mark Completed
+                                            </Button>
+                                          </DialogFooter>
+                                        </DialogContent>
+                                      </Dialog>
+                                    )}
+                                  </div>
+                                </div>
+                              </Card>
+                            ))}
+                            
+                            {activeMentorship.tasks.length === 0 && (
+                              <div className="text-center py-8">
+                                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-medium mb-2">No Tasks Assigned</h3>
+                                <p className="text-muted-foreground mb-4">
+                                  You haven't assigned any tasks to this mentee yet.
+                                </p>
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => setShowAddTaskDialog(true)}
+                                  className="gap-1"
+                                >
+                                  <Plus className="h-3.5 w-3.5" />
+                                  Assign First Task
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="courses">
+                          <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-medium">Recommended Courses</h4>
+                            <Dialog open={showAddCourseDialog} onOpenChange={setShowAddCourseDialog}>
+                              <DialogTrigger asChild>
+                                <Button size="sm" className="gap-1">
+                                  <Plus className="h-3.5 w-3.5" />
+                                  Recommend Course
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Recommend a Course</DialogTitle>
+                                  <DialogDescription>
+                                    Recommend learning materials for {activeMentorship.menteeName}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4 space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium mb-1" htmlFor="course-title">
+                                      Course Title
+                                    </label>
+                                    <Input
+                                      id="course-title"
+                                      placeholder="e.g., Advanced React Patterns"
+                                      value={newCourseTitle}
+                                      onChange={(e) => setNewCourseTitle(e.target.value)}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium mb-1" htmlFor="course-description">
+                                      Description
+                                    </label>
+                                    <Textarea
+                                      id="course-description"
+                                      placeholder="Brief description of the course content..."
+                                      value={newCourseDescription}
+                                      onChange={(e) => setNewCourseDescription(e.target.value)}
+                                      className="resize-none"
+                                      rows={3}
+                                    />
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button variant="outline" onClick={() => setShowAddCourseDialog(false)}>Cancel</Button>
+                                  <Button onClick={handleAddCourse} disabled={!newCourseTitle || !newCourseDescription}>Recommend</Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            {activeMentorship.courses.map(course => (
+                              <Card key={course.id}>
+                                <div className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-medium">{course.title}</h4>
+                                    <Badge 
+                                      variant={course.progress === 100 ? 'default' : 'secondary'}
+                                    >
+                                      {course.progress}% complete
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm mb-3">
+                                    {course.description}
+                                  </p>
+                                  <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-primary rounded-full" 
+                                      style={{ width: `${course.progress}%` }}
+                                    ></div>
+                                  </div>
+                                </div>
+                              </Card>
+                            ))}
+                            
+                            {activeMentorship.courses.length === 0 && (
+                              <div className="text-center py-8">
+                                <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-medium mb-2">No Courses Recommended</h3>
+                                <p className="text-muted-foreground mb-4">
+                                  You haven't recommended any courses to this mentee yet.
+                                </p>
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => setShowAddCourseDialog(true)}
+                                  className="gap-1"
+                                >
+                                  <Plus className="h-3.5 w-3.5" />
+                                  Recommend First Course
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default ActiveMentorships;
