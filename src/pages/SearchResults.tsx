@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -43,7 +42,7 @@ import { Course } from '@/types/course';
 import CourseCard from '@/components/CourseCard';
 import { Badge } from '@/components/ui/badge';
 
-// Import coursesList instead of mockCoursesData
+// Import coursesList
 import { coursesList } from '@/data/mockData';
 
 const SearchResults = () => {
@@ -52,7 +51,7 @@ const SearchResults = () => {
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('q') || '';
   
-  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
   const [isFiltersVisible, setIsFiltersVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(query);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -74,25 +73,13 @@ const SearchResults = () => {
     setSearchQuery(query);
     
     // Simulating search results based on the query
-    // Use coursesList instead of mockCoursesData.courses
     const results = coursesList.filter(course => 
       course.title.toLowerCase().includes(query.toLowerCase()) ||
       course.description.toLowerCase().includes(query.toLowerCase()) ||
-      course.category.toLowerCase().includes(query.toLowerCase()) ||
-      (course.skills && course.skills.some(skill => skill.name.toLowerCase().includes(query.toLowerCase())))
+      course.category.toLowerCase().includes(query.toLowerCase())
     );
     
-    // Add necessary properties to make courses compatible with Course type
-    const enhancedResults = results.map(course => ({
-      ...course,
-      learningObjectives: course.learningObjectives || [],
-      skills: course.skills || [],
-      certificates: course.certificates || [],
-      videoUrl: course.videoUrl || '',
-      modules: course.modules || [],
-    })) as Course[];
-    
-    setFilteredCourses(enhancedResults);
+    setFilteredCourses(results);
   }, [query]);
   
   const handleSearch = (e: React.FormEvent) => {
@@ -379,7 +366,6 @@ const SearchResults = () => {
               }>
                 {filteredCourses.map((course) => (
                   <div key={course.id} onClick={() => handleCourseClick(course.id)}>
-                    {/* Pass individual props instead of whole course object */}
                     <CourseCard 
                       id={course.id}
                       title={course.title}

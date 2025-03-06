@@ -12,24 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
 import { Course } from '@/types/course';
-
-interface MockCoursesData {
-  roleBasedSkillGaps: Course[];
-  usageHistory: Course[];
-  trendingCourses: Course[];
-  newCourses: Course[];
-  similarUsers: Course[];
-  topPicks?: Course[];
-  skillInterestsFollowed?: Course[];
-  chosenForMe?: Course[];
-  skillsForJobRole?: Course[];
-  basedOnInterest?: Course[];
-  academyCourses?: Course[];
-}
-
-const mockCoursesData: MockCoursesData = {
-  // ... keep existing mock data
-};
+import { mockCoursesData } from '@/data/mockData';
 
 const roleSkills = [
   { id: 1, name: 'Project Management', proficiency: 65, target: 80 },
@@ -113,7 +96,7 @@ const Home = () => {
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
         <section className="relative rounded-xl overflow-hidden max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent py-5 px-6 md:px-8">
+          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent py-4 px-6 md:px-8">
             <div className="max-w-xl space-y-2">
               <h1 className="text-xl md:text-2xl font-bold text-white">
                 Unlock Your Potential with Personalized Learning

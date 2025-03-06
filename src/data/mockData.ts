@@ -228,7 +228,21 @@ export const coursesList = [
   },
 ];
 
-// Create a mockCoursesData export using the coursesList
+// Create a mockCoursesData export with the required structure
 export const mockCoursesData = {
-  courses: coursesList
+  roleBasedSkillGaps: coursesList.filter(course => 
+    course.trainingCategory === 'Ready for Role' || course.trainingCategory === 'Mandatory'),
+  usageHistory: coursesList.slice(0, 5),
+  trendingCourses: coursesList.filter(course => course.rating >= 4.7),
+  newCourses: coursesList.slice(15, 22),
+  similarUsers: coursesList.filter(course => course.rating >= 4.5),
+  topPicks: coursesList.filter(course => course.isBookmarked),
+  skillInterestsFollowed: coursesList.filter(course => 
+    ['Programming', 'Data Science', 'Design'].includes(course.category)),
+  chosenForMe: coursesList.slice(5, 10),
+  skillsForJobRole: coursesList.filter(course => 
+    ['Leadership', 'Management'].includes(course.category)),
+  basedOnInterest: coursesList.filter(course => 
+    ['Marketing', 'Design', 'Business'].includes(course.category)),
+  academyCourses: coursesList.slice(10, 15),
 };
