@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +8,36 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Search, User, Star, Clock, Mail, Check, X, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// 50 sample topics for mentorship
+const topics = [
+  // Leadership & Management
+  "Leadership", "Team Management", "Strategic Planning", "Change Management", "Conflict Resolution", 
+  "Organizational Development", "Executive Coaching", "Performance Management", "Talent Management", "Succession Planning",
+  
+  // Technical Skills
+  "Software Development", "Data Science", "Machine Learning", "Artificial Intelligence", "Cloud Computing", 
+  "DevOps", "Cybersecurity", "Blockchain", "Mobile Development", "UI/UX Design",
+  
+  // Business & Marketing
+  "Digital Marketing", "Product Management", "Business Strategy", "Entrepreneurship", "Financial Planning", 
+  "Market Research", "Brand Management", "Content Marketing", "E-commerce", "Sales Strategies",
+  
+  // Personal Development
+  "Public Speaking", "Communication Skills", "Emotional Intelligence", "Time Management", "Work-Life Balance", 
+  "Networking", "Career Planning", "Personal Branding", "Mindfulness", "Stress Management",
+  
+  // Industry Specific
+  "Healthcare Management", "Education Technology", "Fintech", "Sustainability", "Remote Work", 
+  "Nonprofit Management", "Creative Arts", "Legal Compliance", "International Business", "Supply Chain Management"
+];
+
 // Mock data for mentors
 const mentorsData = [
   {
     id: 1,
     name: "Dr. Sarah Johnson",
     title: "Senior Data Scientist",
-    topics: ["Data Analysis", "Machine Learning", "Leadership"],
+    topics: ["Data Science", "Machine Learning", "Leadership"],
     rating: 4.9,
     availability: "Available",
     experience: "10+ years",
@@ -24,7 +47,7 @@ const mentorsData = [
     id: 2,
     name: "Michael Chen",
     title: "Product Manager",
-    topics: ["Product Management", "UX Design", "Team Building"],
+    topics: ["Product Management", "UI/UX Design", "Team Management"],
     rating: 4.7,
     availability: "Available",
     experience: "8 years",
@@ -34,7 +57,7 @@ const mentorsData = [
     id: 3,
     name: "Priya Patel",
     title: "Marketing Director",
-    topics: ["Digital Marketing", "Content Creation", "Brand Management"],
+    topics: ["Digital Marketing", "Content Marketing", "Brand Management"],
     rating: 4.8,
     availability: "Unavailable",
     experience: "12 years",
@@ -54,19 +77,46 @@ const mentorsData = [
     id: 5,
     name: "Elena Rodriguez",
     title: "Executive Coach",
-    topics: ["Leadership", "Communication", "Career Development"],
+    topics: ["Leadership", "Communication Skills", "Career Planning"],
     rating: 5.0,
     availability: "Available",
     experience: "20 years",
     imageUrl: "https://randomuser.me/api/portraits/women/28.jpg"
+  },
+  {
+    id: 6,
+    name: "David Lee",
+    title: "UX Designer",
+    topics: ["UI/UX Design", "Mobile Development", "Product Management"],
+    rating: 4.6,
+    availability: "Available",
+    experience: "7 years",
+    imageUrl: "https://randomuser.me/api/portraits/men/42.jpg"
+  },
+  {
+    id: 7,
+    name: "Lisa Wang",
+    title: "Cybersecurity Specialist",
+    topics: ["Cybersecurity", "Cloud Computing", "DevOps"],
+    rating: 4.9,
+    availability: "Available",
+    experience: "11 years",
+    imageUrl: "https://randomuser.me/api/portraits/women/59.jpg"
+  },
+  {
+    id: 8,
+    name: "Robert Garcia",
+    title: "Finance Director",
+    topics: ["Financial Planning", "Business Strategy", "Leadership"],
+    rating: 4.7,
+    availability: "Available",
+    experience: "18 years",
+    imageUrl: "https://randomuser.me/api/portraits/men/23.jpg"
   }
 ];
 
-const topics = [
-  "Leadership", "Product Management", "Data Analysis", "Machine Learning", 
-  "UX Design", "Software Development", "Digital Marketing", "Team Building",
-  "Communication", "Career Development", "DevOps", "Content Creation"
-];
+// Mock data for sent requests
+const sentRequestsIds = [3, 8]; // IDs of mentors to whom requests have been sent
 
 const MentorDiscovery = () => {
   const { toast } = useToast();
@@ -75,6 +125,9 @@ const MentorDiscovery = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState<any | null>(null);
   const [showMentorDetails, setShowMentorDetails] = useState(false);
+  const [sentRequests, setSentRequests] = useState<number[]>(sentRequestsIds);
+  const [popularTopics, setPopularTopics] = useState<string[]>(topics.slice(0, 10));
+  const [showAllTopics, setShowAllTopics] = useState(false);
 
   const handleTopicFilter = (topic: string) => {
     if (selectedTopics.includes(topic)) {
@@ -94,6 +147,9 @@ const MentorDiscovery = () => {
       return;
     }
     
+    // Add mentor ID to sent requests
+    setSentRequests([...sentRequests, mentor.id]);
+    
     toast({
       title: "Request Sent",
       description: `Your mentorship request to ${mentor.name} has been sent.`
@@ -101,6 +157,11 @@ const MentorDiscovery = () => {
   };
 
   const filteredMentors = mentorsData.filter(mentor => {
+    // Filter out mentors to whom requests have been sent
+    if (sentRequests.includes(mentor.id)) {
+      return false;
+    }
+    
     const matchesSearch = mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            mentor.title.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -109,6 +170,8 @@ const MentorDiscovery = () => {
     
     return matchesSearch && matchesTopics;
   });
+
+  const displayedTopics = showAllTopics ? topics : popularTopics;
 
   return (
     <div className="space-y-6">
@@ -145,9 +208,19 @@ const MentorDiscovery = () => {
           
           {showFilters && (
             <div className="mb-6 p-4 border rounded-lg">
-              <h3 className="text-sm font-medium mb-3">Filter by Topics</h3>
-              <div className="flex flex-wrap gap-2">
-                {topics.map(topic => (
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-sm font-medium">Filter by Topics</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowAllTopics(!showAllTopics)}
+                  className="text-xs h-7"
+                >
+                  {showAllTopics ? "Show Less" : "Show All"}
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto p-1">
+                {displayedTopics.map(topic => (
                   <Badge 
                     key={topic} 
                     variant={selectedTopics.includes(topic) ? "default" : "outline"}
@@ -158,6 +231,19 @@ const MentorDiscovery = () => {
                   </Badge>
                 ))}
               </div>
+              {selectedTopics.length > 0 && (
+                <div className="mt-4 flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Selected: {selectedTopics.length}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setSelectedTopics([])}
+                    className="text-xs h-7"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+              )}
             </div>
           )}
           
@@ -250,7 +336,10 @@ const MentorDiscovery = () => {
                             )}
                             <DialogFooter>
                               <Button 
-                                onClick={() => handleSendRequest(selectedMentor)}
+                                onClick={() => {
+                                  handleSendRequest(selectedMentor);
+                                  setShowMentorDetails(false);
+                                }}
                                 disabled={selectedMentor?.availability === "Unavailable"}
                                 className="gap-2"
                               >
