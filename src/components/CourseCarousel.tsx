@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import CourseCard from './CourseCard';
+import { type CarouselApi } from "@/components/ui/carousel";
 
 interface Course {
   id: string;
@@ -54,6 +55,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
   // Use provided filter options or default to skills
   const skillFilters = filterOptions || defaultSkills;
@@ -101,6 +103,17 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   };
 
+  // Navigate carousel
+  const navigateCarousel = (direction: 'left' | 'right') => {
+    if (carouselApi) {
+      if (direction === 'left') {
+        carouselApi.scrollPrev();
+      } else {
+        carouselApi.scrollNext();
+      }
+    }
+  };
+
   // Filter courses based on selected skills
   const filteredCourses = selectedSkills.includes("All Skills") || selectedSkills.includes("All Categories")
     ? courses
@@ -134,7 +147,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             variant="outline" 
             size="icon"
             className="rounded-full"
-            onClick={() => scrollSkills('left')}
+            onClick={() => navigateCarousel('left')}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -142,7 +155,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             variant="outline" 
             size="icon"
             className="rounded-full"
-            onClick={() => scrollSkills('right')}
+            onClick={() => navigateCarousel('right')}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -209,6 +222,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           loop: true,
         }}
         className="w-full"
+        setApi={setCarouselApi}
       >
         <CarouselContent>
           {filteredCourses.map((course) => (

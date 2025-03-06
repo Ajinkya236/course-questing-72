@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -420,6 +419,41 @@ const skillsYouFollow = [
   { id: 5, name: 'Cloud Architecture', proficiency: 50 },
 ];
 
+const chosenForMeCourses = mockCoursesData.roleBasedSkillGaps.slice(0, 5).map(course => ({
+  ...course,
+  trainingCategory: 'Personalized'
+}));
+
+const skillsForJobRoleCourses = mockCoursesData.newCourses.slice(0, 5).map(course => ({
+  ...course,
+  trainingCategory: 'Job Role'
+}));
+
+const basedOnInterestCourses = mockCoursesData.similarUsers.slice(0, 5).map(course => ({
+  ...course,
+  trainingCategory: 'Interest'
+}));
+
+const academyCourses = [
+  ...mockCoursesData.trendingCourses.slice(0, 2),
+  ...mockCoursesData.newCourses.slice(0, 3)
+].map(course => ({
+  ...course,
+  trainingCategory: 'Academy'
+}));
+
+const academyFilters = ['All Academies', 'Leadership Academy', 'Technical Academy', 'Business Academy', 'Soft Skills Academy'];
+const subAcademyFilters = {
+  'Leadership Academy': ['All', 'New Managers', 'Senior Leaders', 'Executive'],
+  'Technical Academy': ['All', 'Engineering', 'Data Science', 'DevOps', 'Security'],
+  'Business Academy': ['All', 'Finance', 'Marketing', 'Sales', 'Operations'],
+  'Soft Skills Academy': ['All', 'Communication', 'Teamwork', 'Problem Solving', 'Time Management']
+};
+
+const jobRoleSkillsFilters = ['All Skills', 'Management', 'Strategy', 'Analytics', 'Communication', 'Leadership'];
+
+const interestFilters = ['All Interests', 'Technology', 'Innovation', 'Design', 'Marketing', 'Personal Development'];
+
 const Home = () => {
   const navigate = useNavigate();
   const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
@@ -427,6 +461,7 @@ const Home = () => {
   const [isStreakDialogOpen, setIsStreakDialogOpen] = useState(false);
   const [isSkillsForRoleOpen, setIsSkillsForRoleOpen] = useState(false);
   const [skillsTab, setSkillsTab] = useState('follow');
+  const [selectedAcademy, setSelectedAcademy] = useState('All Academies');
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
@@ -739,6 +774,40 @@ const Home = () => {
           </div>
           
           <CourseCarousel 
+            title="Chosen For You" 
+            courses={chosenForMeCourses} 
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Chosen For You')}
+          />
+          
+          <CourseCarousel 
+            title="Skills For Your Job Role" 
+            courses={skillsForJobRoleCourses} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Skills For Your Job Role')}
+            filterOptions={jobRoleSkillsFilters}
+          />
+          
+          <CourseCarousel 
+            title="Based On Your Interest" 
+            courses={basedOnInterestCourses} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Based On Your Interest')}
+            filterOptions={interestFilters}
+          />
+          
+          <CourseCarousel 
+            title="Academy Courses" 
+            courses={academyCourses} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Academy Courses')}
+            filterOptions={academyFilters}
+          />
+          
+          <CourseCarousel 
             title="Popular with Similar Learners" 
             courses={mockCoursesData.similarUsers} 
             onCourseClick={handleCourseClick}
@@ -753,10 +822,10 @@ const Home = () => {
           />
           
           <CourseCarousel 
-            title="New Courses" 
+            title="Newly Added" 
             courses={mockCoursesData.newCourses} 
             onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('New Courses')}
+            onViewAllClick={() => handleViewAllCategory('Newly Added')}
           />
         </section>
       </div>
