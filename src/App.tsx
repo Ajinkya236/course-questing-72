@@ -15,7 +15,6 @@ import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Milestones from "./pages/Milestones"; // New Milestones page
 import Actionables from "./pages/Actionables"; // New Actionables page
-import Mentoring from "./pages/Mentoring"; // New Mentoring page
 import { Helmet } from "react-helmet";
 
 const queryClient = new QueryClient();
@@ -43,7 +42,6 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/milestones" element={<Milestones />} />
               <Route path="/actionables" element={<Actionables />} />
-              <Route path="/mentoring" element={<Mentoring />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
