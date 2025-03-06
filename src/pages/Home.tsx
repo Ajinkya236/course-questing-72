@@ -271,7 +271,7 @@ const mockCoursesData = {
     },
     {
       id: '43',
-4      title: 'Digital Wellbeing',
+      title: 'Digital Wellbeing',
       description: 'Managing technology use for better mental health and productivity',
       imageUrl: 'https://images.unsplash.com/photo-1507428217774-b274d7f4d441',
       category: 'Wellness',
@@ -456,7 +456,6 @@ const Home = () => {
         <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
-        {/* HR Communication Banner */}
         <BannerCarousel banners={hrCommunicationBanners} smallSize={true} />
         
         <section className="relative rounded-xl overflow-hidden">
