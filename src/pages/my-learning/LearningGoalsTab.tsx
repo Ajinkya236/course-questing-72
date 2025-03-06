@@ -5,26 +5,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CourseCard from '@/components/CourseCard';
 import { coursesList } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const LearningGoalsTab: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('selfAssigned');
+  const [selfAssignedCourses, setSelfAssignedCourses] = useState(
+    coursesList.slice(0, 3).map(course => ({
+      ...course,
+      trainingCategory: 'Self-Assigned'
+    }))
+  );
   
-  // Filter courses from the mock data
-  // In a real application, these would come from an API based on assignment source
-  const selfAssignedCourses = coursesList.slice(0, 3).map(course => ({
-    ...course,
-    trainingCategory: 'Self-Assigned'
-  }));
+  const [managerAssignedCourses, setManagerAssignedCourses] = useState(
+    coursesList.slice(3, 6).map(course => ({
+      ...course,
+      trainingCategory: 'Manager-Assigned'
+    }))
+  );
   
-  const managerAssignedCourses = coursesList.slice(3, 6).map(course => ({
-    ...course,
-    trainingCategory: 'Manager-Assigned'
-  }));
-  
-  // This function is now only used for whole card clicks, not for button clicks within cards
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
+  };
+
+  const handleUnassignCourse = (courseId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (activeTab === 'selfAssigned') {
+      setSelfAssignedCourses(prev => prev.filter(course => course.id !== courseId));
+      toast({
+        title: "Course Unassigned",
+        description: "The course has been removed from your learning goals",
+      });
+    }
   };
   
   return (
@@ -40,8 +55,16 @@ const LearningGoalsTab: React.FC = () => {
             {selfAssignedCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {selfAssignedCourses.map((course) => (
-                  <div key={course.id} className="cursor-pointer">
+                  <div key={course.id} className="cursor-pointer relative group">
                     <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
+                    <Button 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => handleUnassignCourse(course.id, e)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>

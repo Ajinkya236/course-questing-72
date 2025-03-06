@@ -5,8 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Trophy, 
   Award, 
-  Medal, 
-  Filter, 
+  Medal,
   Calendar, 
   User, 
   Users, 
@@ -15,19 +14,23 @@ import {
   ArrowUp,
   ArrowDown,
   Minus,
-  Clock,
   UserCircle,
   BarChart3,
   Target,
   TrendingUp,
   MapPin,
-  Briefcase
+  Briefcase,
+  BarChart,
+  PieChart,
+  TrendingDown,
+  Clock
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useNavigate } from "react-router-dom";
 
 interface LeaderboardUser {
   id: string;
@@ -70,13 +73,24 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
   title = "Leaderboard",
   isFullView = false
 }) => {
-  const [timeRange, setTimeRange] = useState("all-time");
+  const navigate = useNavigate();
+  const [timeRange, setTimeRange] = useState("this-week");
   const [showDetails, setShowDetails] = useState(false);
   const [leaderboardType, setLeaderboardType] = useState("relative");
   const [leaderboardView, setLeaderboardView] = useState("individual");
   const [filterType, setFilterType] = useState("all");
   const [filterValue, setFilterValue] = useState("");
   const [secondaryFilter, setSecondaryFilter] = useState("");
+  const [showPersonalHistory, setShowPersonalHistory] = useState(false);
+  
+  // Mock data for personal history
+  const personalHistory = [
+    { period: 'This Week', points: 850, rank: 8, completed: 3 },
+    { period: 'Last Week', points: 720, rank: 12, completed: 2 },
+    { period: 'Two Weeks Ago', points: 640, rank: 15, completed: 2 },
+    { period: 'Three Weeks Ago', points: 450, rank: 19, completed: 1 },
+    { period: 'Four Weeks Ago', points: 380, rank: 22, completed: 1 },
+  ];
   
   const getPositionIcon = (position: number) => {
     switch (position) {
@@ -104,10 +118,12 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
         return 'All time rankings';
       case 'this-week':
         return 'This week\'s rankings';
+      case 'last-week':
+        return 'Last week\'s rankings';
       case 'this-month':
         return 'This month\'s rankings';
-      case 'this-quarter':
-        return 'This quarter\'s rankings';
+      case 'last-month':
+        return 'Last month\'s rankings';
       default:
         return 'Rankings';
     }
@@ -136,9 +152,9 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     // If secondary filter is set, apply it too
     if (secondaryFilter && leaderboardView === 'individual') {
       const secondaryFilterType = filterType === 'department' ? 'team' :
-                                 filterType === 'team' ? 'role' :
-                                 filterType === 'location' ? 'department' :
-                                 'jobFamily';
+                               filterType === 'team' ? 'role' :
+                               filterType === 'location' ? 'department' :
+                               'jobFamily';
       
       const secondaryFilterKey = secondaryFilterType as keyof LeaderboardUser;
       return matchesPrimaryFilter && user[secondaryFilterKey] === secondaryFilter;
@@ -152,23 +168,23 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
   
   // For relative leaderboard - highlight users close to current user
   const getRelativeUsers = () => {
-    if (!currentUser) return filteredUsers.slice(0, 5);
+    if (!currentUser) return filteredUsers.slice(0, 10);
     
     const currentUserIndex = filteredUsers.findIndex(u => u.id === currentUser.id);
-    if (currentUserIndex === -1) return filteredUsers.slice(0, 5);
+    if (currentUserIndex === -1) return filteredUsers.slice(0, 10);
     
-    // Get 2 users above and 2 users below current user
+    // Get 5 users above and 5 users below current user
     let usersToShow = [];
     
     // Always include #1 ranked user if not already in the selection
     if (topUser && topUser.id !== currentUser.id && 
-        (currentUserIndex <= 0 || currentUserIndex > 2)) {
+        (currentUserIndex <= 0 || currentUserIndex > 5)) {
       usersToShow.push(topUser);
     }
     
-    // Get users above the current user (up to 2)
+    // Get users above the current user (up to 5)
     if (currentUserIndex > 0) {
-      const startIndex = Math.max(0, currentUserIndex - 2);
+      const startIndex = Math.max(0, currentUserIndex - 5);
       usersToShow = [
         ...usersToShow,
         ...filteredUsers.slice(startIndex, currentUserIndex)
@@ -178,11 +194,11 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     // Add current user
     usersToShow.push(currentUser);
     
-    // Get users below the current user (up to 2)
+    // Get users below the current user (up to 5)
     if (currentUserIndex < filteredUsers.length - 1) {
       usersToShow = [
         ...usersToShow,
-        ...filteredUsers.slice(currentUserIndex + 1, currentUserIndex + 3)
+        ...filteredUsers.slice(currentUserIndex + 1, Math.min(filteredUsers.length, currentUserIndex + 6))
       ];
     }
     
@@ -194,7 +210,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     ? filteredUsers 
     : leaderboardType === 'relative' 
       ? getRelativeUsers() 
-      : filteredUsers.slice(0, 5);
+      : filteredUsers.slice(0, 10);
   
   const getNextMilestone = () => {
     if (!currentUser) return null;
@@ -227,20 +243,28 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     }
   };
 
+  const togglePersonalHistory = () => {
+    setShowPersonalHistory(!showPersonalHistory);
+  };
+
   return (
     <Card className={isFullView ? "h-full" : ""}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl">{title}</CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-primary" />
+            {title}
+          </CardTitle>
           <Select onValueChange={(value) => setTimeRange(value)} defaultValue={timeRange}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Time Range" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-time">All Time</SelectItem>
               <SelectItem value="this-week">This Week</SelectItem>
+              <SelectItem value="last-week">Last Week</SelectItem>
               <SelectItem value="this-month">This Month</SelectItem>
-              <SelectItem value="this-quarter">This Quarter</SelectItem>
+              <SelectItem value="last-month">Last Month</SelectItem>
+              <SelectItem value="all-time">All Time</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -258,7 +282,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
             </TabsTrigger>
             <TabsTrigger value="group" onClick={() => { setFilterType('department'); setFilterValue(''); }}>
               <Users className="h-4 w-4 mr-1.5" />
-              <span className="hidden sm:inline">Group</span>
+              <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
             <TabsTrigger value="personal" onClick={() => { setLeaderboardType('relative'); setFilterType('all'); }}>
               <UserCircle className="h-4 w-4 mr-1.5" />
@@ -321,7 +345,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
                 <SelectItem value="team">Team</SelectItem>
                 <SelectItem value="department">Department</SelectItem>
                 <SelectItem value="location">Location</SelectItem>
-                <SelectItem value="role">Role</SelectItem>
+                <SelectItem value="role">Job Role</SelectItem>
                 <SelectItem value="jobFamily">Job Family</SelectItem>
               </SelectContent>
             </Select>
@@ -362,8 +386,56 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
             )}
           </div>
         </div>
+
+        {/* Personal History Section */}
+        {leaderboardView === 'personal' && (
+          <div className="mb-4">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2 mb-4"
+              onClick={togglePersonalHistory}
+            >
+              <Clock className="h-4 w-4" />
+              {showPersonalHistory ? 'Hide Personal Progress' : 'Show Personal Progress'}
+            </Button>
+            
+            {showPersonalHistory && (
+              <div className="space-y-3 mb-6 bg-secondary/10 p-3 rounded-lg">
+                <h3 className="font-medium text-sm flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  Your Progress Over Time
+                </h3>
+                
+                <div className="space-y-2">
+                  {personalHistory.map((stat, index) => (
+                    <div key={index} className="p-2 rounded-lg border flex justify-between items-center">
+                      <div>
+                        <p className="font-medium text-sm">{stat.period}</p>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Trophy className="h-3 w-3" /> Rank: #{stat.rank}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Target className="h-3 w-3" /> Points: {stat.points}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={`text-sm ${index > 0 && stat.rank < personalHistory[index-1].rank ? 'text-green-500' : index > 0 && stat.rank > personalHistory[index-1].rank ? 'text-red-500' : ''}`}>
+                        {index > 0 && stat.rank < personalHistory[index-1].rank 
+                          ? <div className="flex items-center"><ArrowUp className="h-3 w-3 mr-1" />{personalHistory[index-1].rank - stat.rank}</div>
+                          : index > 0 && stat.rank > personalHistory[index-1].rank 
+                            ? <div className="flex items-center"><ArrowDown className="h-3 w-3 mr-1" />{stat.rank - personalHistory[index-1].rank}</div>
+                            : <Minus className="h-3 w-3" />}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         
-        <ScrollArea className={isFullView ? "h-[calc(100vh-350px)]" : "max-h-96"}>
+        <ScrollArea className={isFullView ? "h-[calc(100vh-350px)]" : "max-h-80"}>
           <div className="space-y-4">
             {displayedUsers.map((user) => (
               <div
@@ -497,7 +569,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
           <div className="mt-6 p-4 border border-dashed rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Target className="h-5 w-5 text-primary" />
-              <h3 className="font-medium text-sm">Next Milestone</h3>
+              <h3 className="font-medium text-sm">Next Position Milestone</h3>
             </div>
             <p className="text-xs text-muted-foreground mb-2">
               You need <span className="font-semibold text-primary">{nextMilestone.pointsNeeded.toLocaleString()} more points</span> to surpass {nextMilestone.name} and reach position #{nextMilestone.position}
@@ -512,7 +584,12 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
         
         {!isFullView && (
           <div className="mt-4">
-            <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full flex items-center justify-center gap-1"
+              onClick={() => navigate('/leaderboard')}
+            >
               <ChevronRight className="h-4 w-4" />
               <span>View Full Leaderboard</span>
             </Button>
