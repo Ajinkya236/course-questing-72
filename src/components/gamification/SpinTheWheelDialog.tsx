@@ -9,7 +9,7 @@ import confetti from 'canvas-confetti';
 
 interface SpinTheWheelDialogProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 const rewards = [
@@ -23,7 +23,7 @@ const rewards = [
   { id: 8, name: "Mystery Reward", value: "Mystery", type: "mystery", color: "#607D8B" },
 ];
 
-const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onClose }) => {
+const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenChange }) => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [showReward, setShowReward] = useState(false);
@@ -68,13 +68,13 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onClose }
       title: "Reward Claimed!",
       description: `${result.name} has been added to your account.`,
     });
-    onClose();
+    onOpenChange(false);
     setResult(null);
     setShowReward(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">Spin The Wheel</DialogTitle>

@@ -9,7 +9,7 @@ import confetti from 'canvas-confetti';
 
 interface MysteryBoxDialogProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 const possibleRewards = [
@@ -22,7 +22,7 @@ const possibleRewards = [
   { type: "course", value: "Premium Access", icon: <BookOpen className="h-8 w-8 text-green-500" />, label: "Premium Course Access" },
 ];
 
-const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onClose }) => {
+const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onOpenChange }) => {
   const [isOpening, setIsOpening] = useState(false);
   const [reward, setReward] = useState<any>(null);
   const [boxOpened, setBoxOpened] = useState(false);
@@ -57,14 +57,14 @@ const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onClose }) =>
       title: "Reward Claimed!",
       description: `${reward.label} has been added to your account.`,
     });
-    onClose();
+    onOpenChange(false);
     // Reset state for next open
     setReward(null);
     setBoxOpened(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">Mystery Box</DialogTitle>

@@ -8,7 +8,7 @@ import { Flame, Award, Calendar as CalendarIcon, Trophy, Gift, Clock, LucideIcon
 
 interface LearningStreakDialogProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 // Sample streak data
@@ -44,9 +44,9 @@ const last3Months = Array.from({ length: 90 }, (_, i) => {
 // Randomly generate learning days for demonstration
 const learningDays = last3Months.filter(() => Math.random() > 0.3).map(date => date.toDateString());
 
-const LearningStreakDialog: React.FC<LearningStreakDialogProps> = ({ open, onClose }) => {  
+const LearningStreakDialog: React.FC<LearningStreakDialogProps> = ({ open, onOpenChange }) => {  
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold flex items-center justify-center gap-2">
@@ -141,7 +141,7 @@ const LearningStreakDialog: React.FC<LearningStreakDialogProps> = ({ open, onClo
             </div>
           </div>
           
-          <Button className="w-full" onClick={onClose}>
+          <Button className="w-full" onClick={() => onOpenChange(false)}>
             Close
           </Button>
         </div>

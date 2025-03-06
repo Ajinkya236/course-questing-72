@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/button';
 
 interface SkillsForRoleDialogProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
+  skills?: Array<{ id: number; name: string; proficiency: number; target: number }>;
 }
 
 // Mock data for role-based skills
@@ -85,7 +86,7 @@ const roleSkills = [
   },
 ];
 
-const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onClose }) => {
+const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onOpenChange, skills }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -113,7 +114,7 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onClose
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
@@ -185,7 +186,7 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onClose
         </ScrollArea>
         
         <div className="flex justify-end mt-4">
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>
     </Dialog>
