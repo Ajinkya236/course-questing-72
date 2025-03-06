@@ -40,8 +40,6 @@ const filterOptions = {
 
 // Sorting options
 const sortOptions = [
-  { id: 'dateAsc', label: 'Date (Newest First)', icon: <SortAsc className="h-4 w-4 mr-2" /> },
-  { id: 'dateDesc', label: 'Date (Oldest First)', icon: <SortDesc className="h-4 w-4 mr-2" /> },
   { id: 'nameAsc', label: 'Name (A-Z)', icon: <SortAsc className="h-4 w-4 mr-2" /> },
   { id: 'nameDesc', label: 'Name (Z-A)', icon: <SortDesc className="h-4 w-4 mr-2" /> },
   { id: 'durationAsc', label: 'Duration (Shortest First)', icon: <SortAsc className="h-4 w-4 mr-2" /> },
@@ -80,12 +78,6 @@ const Discover = () => {
     
     // Sort logic
     switch(currentSort) {
-      case 'dateAsc':
-        result.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
-        break;
-      case 'dateDesc':
-        result.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-        break;
       case 'nameAsc':
         result.sort((a, b) => a.title.localeCompare(b.title));
         break;
