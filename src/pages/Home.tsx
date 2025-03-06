@@ -271,7 +271,7 @@ const mockCoursesData = {
     },
     {
       id: '43',
-4      title: 'Digital Wellbeing',
+      title: 'Digital Wellbeing',
       description: 'Managing technology use for better mental health and productivity',
       imageUrl: 'https://images.unsplash.com/photo-1507428217774-b274d7f4d441',
       category: 'Wellness',
@@ -724,41 +724,3 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          </div>
-          
-          <CourseCarousel 
-            title="Popular with Similar Learners" 
-            courses={mockCoursesData.similarUsers} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Popular with Similar Learners')}
-          />
-          
-          <CourseCarousel 
-            title="Trending Now" 
-            courses={mockCoursesData.trendingCourses} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('Trending Now')}
-          />
-          
-          <CourseCarousel 
-            title="New Courses" 
-            courses={mockCoursesData.newCourses} 
-            onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('New Courses')}
-          />
-        </section>
-      </div>
-      
-      <MysteryBoxDialog open={isMysteryBoxOpen} onOpenChange={setIsMysteryBoxOpen} />
-      <SpinTheWheelDialog open={isSpinWheelOpen} onOpenChange={setIsSpinWheelOpen} />
-      <LearningStreakDialog open={isStreakDialogOpen} onOpenChange={setIsStreakDialogOpen} />
-      <SkillsForRoleDialog 
-        open={isSkillsForRoleOpen} 
-        onOpenChange={setIsSkillsForRoleOpen} 
-        skills={roleSkills}
-      />
-    </>
-  );
-};
-
-export default Home;
