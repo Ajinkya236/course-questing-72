@@ -3,16 +3,104 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserCog, Search, Users, Star } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { 
+  UserCog, 
+  Search, 
+  Users, 
+  Star, 
+  ChevronLeft, 
+  ChevronRight, 
+  X, 
+  Plus 
+} from 'lucide-react';
 import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
 import MentorJourney from '@/components/mentoring/MentorJourney';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const Mentoring = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('mentee');
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
+  const [showMentorPreferencesDialog, setShowMentorPreferencesDialog] = useState(false);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  
+  // Mock mentor preferences data
+  const [mentorPreferences, setMentorPreferences] = useState({
+    bio: "Senior technology professional with 15+ years of experience in software development and leadership roles.",
+    topics: ["Software Development", "Leadership", "Career Growth"],
+    idealMentee: "Ambitious professionals looking to grow their technical and leadership skills.",
+    philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
+  });
+  
+  // Mock banners data
+  const banners = [
+    {
+      id: 1,
+      title: "Become a Mentor",
+      description: "Share your knowledge and help others grow. Join our mentoring program today.",
+      imageUrl: "/lovable-uploads/7fa0a67a-4873-42ad-9abb-953c60322b3c.png"
+    },
+    {
+      id: 2,
+      title: "Find Your Mentor",
+      description: "Connect with industry experts who can guide your career journey.",
+      imageUrl: "/placeholder.svg"
+    },
+    {
+      id: 3,
+      title: "Mentoring Resources",
+      description: "Access guides and tools to make the most of your mentoring relationships.",
+      imageUrl: "/placeholder.svg"
+    }
+  ];
+
+  // For adding/removing topics
+  const [newTopic, setNewTopic] = useState('');
+
+  const handleAddTopic = () => {
+    if (newTopic.trim() && !mentorPreferences.topics.includes(newTopic.trim())) {
+      setMentorPreferences({
+        ...mentorPreferences,
+        topics: [...mentorPreferences.topics, newTopic.trim()]
+      });
+      setNewTopic('');
+    }
+  };
+
+  const handleRemoveTopic = (topic) => {
+    setMentorPreferences({
+      ...mentorPreferences,
+      topics: mentorPreferences.topics.filter(t => t !== topic)
+    });
+  };
+
+  const handleMentorPreferencesSave = () => {
+    setShowMentorPreferencesDialog(false);
+    toast({
+      title: "Preferences Saved",
+      description: "Your mentor preferences have been updated successfully."
+    });
+  };
+
+  const nextBanner = () => {
+    setCurrentBannerIndex((prevIndex) => 
+      prevIndex === banners.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevBanner = () => {
+    setCurrentBannerIndex((prevIndex) => 
+      prevIndex === 0 ? banners.length - 1 : prevIndex - 1
+    );
+  };
 
   // Mock recommended mentors data
   const recommendedMentors = [
@@ -61,6 +149,40 @@ const Mentoring = () => {
       </Helmet>
       <div className="container py-8 mb-20">
         <h1 className="text-3xl font-bold tracking-tight mb-6">Mentoring</h1>
+        
+        <Card className="relative overflow-hidden mb-6">
+          <div className="absolute inset-0">
+            <img 
+              src={banners[currentBannerIndex].imageUrl} 
+              alt={banners[currentBannerIndex].title}
+              className="w-full h-full object-cover opacity-20"
+            />
+          </div>
+          <CardContent className="relative z-10 p-6 flex items-center justify-between">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 bg-background/80" 
+              onClick={prevBanner}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="text-center flex-1 px-10">
+              <h3 className="text-xl font-semibold mb-2">{banners[currentBannerIndex].title}</h3>
+              <p className="text-muted-foreground">{banners[currentBannerIndex].description}</p>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 bg-background/80" 
+              onClick={nextBanner}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
         
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-8">
@@ -156,10 +278,107 @@ const Mentoring = () => {
                   <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentor Journey</h2>
                   <p className="text-muted-foreground">Set up your mentor profile, manage requests, and guide your mentees to success</p>
                 </div>
-                <Button className="mt-4 md:mt-0 gap-2" variant="outline">
-                  <UserCog className="h-4 w-4" />
-                  Mentor Dashboard
-                </Button>
+                <Dialog open={showMentorPreferencesDialog} onOpenChange={setShowMentorPreferencesDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="mt-4 md:mt-0 gap-2">
+                      <UserCog className="h-4 w-4" />
+                      Set Preferences
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                      <DialogTitle>Mentor Preferences</DialogTitle>
+                      <DialogDescription>
+                        Configure your mentoring profile to attract the right mentees
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1" htmlFor="bio">
+                          Professional Bio
+                        </label>
+                        <Textarea
+                          id="bio"
+                          placeholder="Share your professional background and expertise..."
+                          value={mentorPreferences.bio}
+                          onChange={(e) => setMentorPreferences({...mentorPreferences, bio: e.target.value})}
+                          className="resize-none"
+                          rows={4}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Mentoring Topics
+                        </label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {mentorPreferences.topics.map(topic => (
+                            <Badge key={topic} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
+                              {topic}
+                              <X 
+                                className="h-3.5 w-3.5 ml-1 cursor-pointer" 
+                                onClick={() => handleRemoveTopic(topic)}
+                              />
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add a topic..."
+                            value={newTopic}
+                            onChange={(e) => setNewTopic(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddTopic();
+                              }
+                            }}
+                          />
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={handleAddTopic}
+                            disabled={!newTopic.trim()}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1" htmlFor="ideal-mentee">
+                          Ideal Mentee
+                        </label>
+                        <Textarea
+                          id="ideal-mentee"
+                          placeholder="Describe your ideal mentee..."
+                          value={mentorPreferences.idealMentee}
+                          onChange={(e) => setMentorPreferences({...mentorPreferences, idealMentee: e.target.value})}
+                          className="resize-none"
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1" htmlFor="philosophy">
+                          Mentoring Philosophy
+                        </label>
+                        <Textarea
+                          id="philosophy"
+                          placeholder="Share your approach to mentoring..."
+                          value={mentorPreferences.philosophy}
+                          onChange={(e) => setMentorPreferences({...mentorPreferences, philosophy: e.target.value})}
+                          className="resize-none"
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowMentorPreferencesDialog(false)}>Cancel</Button>
+                      <Button onClick={handleMentorPreferencesSave}>Save Preferences</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
             

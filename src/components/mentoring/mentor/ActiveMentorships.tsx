@@ -23,9 +23,15 @@ import {
   Clock,
   Target,
   Award,
-  Filter
+  Filter,
+  Star,
+  Edit,
+  FileCheck,
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 // Define types for our components
 interface Session {
@@ -37,6 +43,13 @@ interface Session {
   menteeNotes?: string;
 }
 
+interface TaskSubmission {
+  id: number;
+  content: string;
+  submittedAt: string;
+  fileUrl?: string;
+}
+
 interface Task {
   id: number;
   title: string;
@@ -44,11 +57,11 @@ interface Task {
   dueDate: string;
   status: 'completed' | 'pending';
   hasSample?: boolean;
-  submission?: string;
+  submission?: TaskSubmission;
   feedback?: string;
+  rating?: number;
 }
 
-// Updated Course interface to use number for id consistently
 interface Course {
   id: number;
   title: string;
@@ -74,6 +87,7 @@ interface Mentorship {
 
 const ActiveMentorships = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [mentorships, setMentorships] = useState<Mentorship[]>([
     {
       id: 1,
@@ -93,8 +107,35 @@ const ActiveMentorships = () => {
         { id: 4, title: "React Introduction", date: "2023-12-05", status: "upcoming" }
       ],
       tasks: [
-        { id: 1, title: "Build a Simple Portfolio", dueDate: "2023-10-30", status: "completed", description: "Create a simple portfolio website using HTML and CSS", feedback: "Good work on the layout, consider adding more responsive design" },
-        { id: 2, title: "JavaScript Exercise", dueDate: "2023-11-15", status: "pending", description: "Build a simple calculator using JavaScript", hasSample: true }
+        { 
+          id: 1, 
+          title: "Build a Simple Portfolio", 
+          dueDate: "2023-10-30", 
+          status: "completed", 
+          description: "Create a simple portfolio website using HTML and CSS", 
+          feedback: "Good work on the layout, consider adding more responsive design",
+          rating: 4,
+          submission: {
+            id: 101,
+            content: "I've created a responsive portfolio with three sections: About, Projects, and Contact.",
+            submittedAt: "2023-10-28",
+            fileUrl: "/portfolio-submission.zip"
+          }
+        },
+        { 
+          id: 2, 
+          title: "JavaScript Exercise", 
+          dueDate: "2023-11-15", 
+          status: "pending", 
+          description: "Build a simple calculator using JavaScript", 
+          hasSample: true,
+          submission: {
+            id: 102,
+            content: "Here's my implementation of the calculator. I've added extra features like memory functions.",
+            submittedAt: "2023-11-12",
+            fileUrl: "/calculator-submission.zip"
+          }
+        }
       ],
       courses: [
         { id: 1, title: "HTML & CSS Fundamentals", description: "Learn the essentials of HTML5 and CSS3", progress: 80 },
@@ -120,10 +161,66 @@ const ActiveMentorships = () => {
         { id: 5, title: "Usability Testing", date: "2023-11-05", status: "upcoming" }
       ],
       tasks: [
-        { id: 1, title: "Competitor Analysis", dueDate: "2023-09-15", status: "completed", description: "Analyze 3 competing products", feedback: "Excellent insights on user flows" },
-        { id: 2, title: "User Personas", dueDate: "2023-10-01", status: "completed", description: "Create 2-3 user personas for your product", feedback: "Very detailed personas" },
-        { id: 3, title: "Wireframe Project", dueDate: "2023-10-25", status: "completed", description: "Create wireframes for a mobile app", hasSample: true, feedback: "Great attention to detail" },
-        { id: 4, title: "Prototype Project", dueDate: "2023-11-15", status: "pending", description: "Create a prototype based on your wireframes", hasSample: true }
+        { 
+          id: 1, 
+          title: "Competitor Analysis", 
+          dueDate: "2023-09-15", 
+          status: "completed", 
+          description: "Analyze 3 competing products", 
+          feedback: "Excellent insights on user flows",
+          rating: 5,
+          submission: {
+            id: 201,
+            content: "I've analyzed the top 3 competitors in the market and provided detailed user flow comparisons.",
+            submittedAt: "2023-09-13",
+            fileUrl: "/competitor-analysis.pdf"
+          }
+        },
+        { 
+          id: 2, 
+          title: "User Personas", 
+          dueDate: "2023-10-01", 
+          status: "completed", 
+          description: "Create 2-3 user personas for your product", 
+          feedback: "Very detailed personas",
+          rating: 5,
+          submission: {
+            id: 202,
+            content: "I've created 3 detailed user personas based on our target audience research.",
+            submittedAt: "2023-09-27",
+            fileUrl: "/personas.pdf"
+          }
+        },
+        { 
+          id: 3, 
+          title: "Wireframe Project", 
+          dueDate: "2023-10-25", 
+          status: "completed", 
+          description: "Create wireframes for a mobile app", 
+          hasSample: true, 
+          feedback: "Great attention to detail",
+          rating: 4,
+          submission: {
+            id: 203,
+            content: "Here are my wireframes for the mobile app. I've focused on simplicity and usability.",
+            submittedAt: "2023-10-22",
+            fileUrl: "/wireframes.fig"
+          }
+        },
+        { 
+          id: 4, 
+          title: "Prototype Project", 
+          dueDate: "2023-11-15", 
+          status: "pending", 
+          description: "Create a prototype based on your wireframes", 
+          hasSample: true,
+          submission: {
+            id: 204,
+            content: "I've created a high-fidelity prototype with interactive elements.",
+            submittedAt: "2023-11-10",
+            fileUrl: "/prototype.fig"
+          }
+        }
       ],
       courses: [
         { id: 1, title: "UX Research Fundamentals", description: "Learn essential UX research methodologies", progress: 100 },
@@ -148,7 +245,20 @@ const ActiveMentorships = () => {
         { id: 3, title: "Social Media Strategy", date: "2023-11-15", status: "upcoming" }
       ],
       tasks: [
-        { id: 1, title: "Marketing Plan", dueDate: "2023-08-30", status: "pending", description: "Create a basic marketing plan for a product launch", hasSample: true }
+        { 
+          id: 1, 
+          title: "Marketing Plan", 
+          dueDate: "2023-08-30", 
+          status: "pending", 
+          description: "Create a basic marketing plan for a product launch", 
+          hasSample: true,
+          submission: {
+            id: 301,
+            content: "Here's my draft marketing plan covering social media, content, and email strategies.",
+            submittedAt: "2023-08-28",
+            fileUrl: "/marketing-plan.pdf"
+          }
+        }
       ],
       courses: [
         { id: 1, title: "Digital Marketing Basics", description: "Introduction to digital marketing concepts", progress: 25 }
@@ -161,6 +271,7 @@ const ActiveMentorships = () => {
   );
   
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
+  const [showEditTaskDialog, setShowEditTaskDialog] = useState(false);
   const [showAddSessionDialog, setShowAddSessionDialog] = useState(false);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
@@ -168,32 +279,47 @@ const ActiveMentorships = () => {
   const [showAddCourseDialog, setShowAddCourseDialog] = useState(false);
   const [showSessionNotesDialog, setShowSessionNotesDialog] = useState(false);
   const [showTaskFeedbackDialog, setShowTaskFeedbackDialog] = useState(false);
+  const [showTaskSubmissionDialog, setShowTaskSubmissionDialog] = useState(false);
   
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [sessionNotes, setSessionNotes] = useState('');
   const [taskFeedback, setTaskFeedback] = useState('');
+  const [taskRating, setTaskRating] = useState(0);
   const [completionFeedback, setCompletionFeedback] = useState('');
   
-  // Form states for adding new items
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskDescription, setNewTaskDescription] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
-  const [newTaskHasSample, setNewTaskHasSample] = useState(false);
+  // Form states for adding and editing tasks
+  const [taskForm, setTaskForm] = useState({
+    id: 0,
+    title: '',
+    description: '',
+    dueDate: '',
+    hasSample: false
+  });
+  
   const [newSessionTitle, setNewSessionTitle] = useState('');
   const [newSessionDate, setNewSessionDate] = useState('');
   const [newCourseTitle, setNewCourseTitle] = useState('');
   const [newCourseDescription, setNewCourseDescription] = useState('');
   
   const handleDownloadAllMaterials = () => {
+    if (!activeMentorship) return;
+    
     toast({
       title: "Download Started",
-      description: "All tasks, notes and materials are being prepared for download."
+      description: `All tasks, notes, and materials for ${activeMentorship.menteeName} are being prepared for download.`
+    });
+  };
+  
+  const handleTaskFormChange = (field: string, value: any) => {
+    setTaskForm({
+      ...taskForm,
+      [field]: value
     });
   };
   
   const handleAddTask = () => {
-    if (!activeMentorship || !newTaskTitle || !newTaskDescription || !newTaskDueDate) {
+    if (!activeMentorship || !taskForm.title || !taskForm.description || !taskForm.dueDate) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
@@ -204,11 +330,11 @@ const ActiveMentorships = () => {
     
     const newTask: Task = {
       id: Date.now(),
-      title: newTaskTitle,
-      description: newTaskDescription,
-      dueDate: newTaskDueDate,
+      title: taskForm.title,
+      description: taskForm.description,
+      dueDate: taskForm.dueDate,
       status: "pending",
-      hasSample: newTaskHasSample
+      hasSample: taskForm.hasSample
     };
     
     setMentorships(mentorships.map(m => 
@@ -219,15 +345,63 @@ const ActiveMentorships = () => {
     
     toast({
       title: "Task Added",
-      description: `${newTaskTitle} has been assigned to ${activeMentorship.menteeName}`
+      description: `${taskForm.title} has been assigned to ${activeMentorship.menteeName}`
     });
     
     // Reset form
-    setNewTaskTitle('');
-    setNewTaskDescription('');
-    setNewTaskDueDate('');
-    setNewTaskHasSample(false);
+    setTaskForm({
+      id: 0,
+      title: '',
+      description: '',
+      dueDate: '',
+      hasSample: false
+    });
     setShowAddTaskDialog(false);
+  };
+  
+  const handleEditTask = () => {
+    if (!activeMentorship || !selectedTask || !taskForm.title || !taskForm.description || !taskForm.dueDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setMentorships(mentorships.map(m => 
+      m.id === activeMentorship.id 
+        ? { 
+            ...m, 
+            tasks: m.tasks.map(t => 
+              t.id === selectedTask.id 
+                ? { 
+                    ...t, 
+                    title: taskForm.title,
+                    description: taskForm.description,
+                    dueDate: taskForm.dueDate,
+                    hasSample: taskForm.hasSample
+                  } 
+                : t
+            ) 
+          } 
+        : m
+    ));
+    
+    toast({
+      title: "Task Updated",
+      description: `Task for ${activeMentorship.menteeName} has been updated successfully`
+    });
+    
+    // Reset form
+    setTaskForm({
+      id: 0,
+      title: '',
+      description: '',
+      dueDate: '',
+      hasSample: false
+    });
+    setShowEditTaskDialog(false);
   };
   
   const handleAddSession = () => {
@@ -264,7 +438,6 @@ const ActiveMentorships = () => {
     setShowAddSessionDialog(false);
   };
   
-  // When using recommendation courses, ensure we're using number IDs
   const handleAddCourse = () => {
     if (!activeMentorship || !newCourseTitle || !newCourseDescription) {
       toast({
@@ -275,28 +448,14 @@ const ActiveMentorships = () => {
       return;
     }
     
-    const newCourse: Course = {
-      id: Date.now(), // Ensuring this is a number
-      title: newCourseTitle,
-      description: newCourseDescription,
-      progress: 0
-    };
-    
-    setMentorships(mentorships.map(m => 
-      m.id === activeMentorship.id 
-        ? { ...m, courses: [...m.courses, newCourse] } 
-        : m
-    ));
-    
+    // Redirect to Discover page
     toast({
-      title: "Course Added",
-      description: `${newCourseTitle} has been assigned to ${activeMentorship.menteeName}`
+      title: "Redirecting to Discover",
+      description: "You'll be redirected to the Discover page to find a course"
     });
     
-    // Reset form
-    setNewCourseTitle('');
-    setNewCourseDescription('');
-    setShowAddCourseDialog(false);
+    // Navigate to Discover page
+    navigate('/discover');
   };
   
   const handleSaveSessionNotes = () => {
@@ -325,7 +484,14 @@ const ActiveMentorships = () => {
   };
   
   const handleSaveTaskFeedback = () => {
-    if (!activeMentorship || !selectedTask || !taskFeedback.trim()) return;
+    if (!activeMentorship || !selectedTask || !taskFeedback.trim() || taskRating === 0) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both feedback text and a rating",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setMentorships(mentorships.map(m => 
       m.id === activeMentorship.id 
@@ -333,7 +499,7 @@ const ActiveMentorships = () => {
             ...m, 
             tasks: m.tasks.map(t => 
               t.id === selectedTask.id 
-                ? { ...t, feedback: taskFeedback, status: 'completed' } 
+                ? { ...t, feedback: taskFeedback, rating: taskRating, status: 'completed' } 
                 : t
             ) 
           } 
@@ -346,6 +512,7 @@ const ActiveMentorships = () => {
     });
     
     setTaskFeedback('');
+    setTaskRating(0);
     setShowTaskFeedbackDialog(false);
   };
   
@@ -394,13 +561,54 @@ const ActiveMentorships = () => {
     setShowCompleteDialog(false);
   };
   
+  const handleMarkTaskAsComplete = (task: Task) => {
+    if (!activeMentorship) return;
+    
+    if (!task.feedback) {
+      // Open feedback dialog if no feedback provided yet
+      setSelectedTask(task);
+      setShowTaskFeedbackDialog(true);
+      return;
+    }
+    
+    setMentorships(mentorships.map(m => 
+      m.id === activeMentorship.id 
+        ? { 
+            ...m, 
+            tasks: m.tasks.map(t => 
+              t.id === task.id 
+                ? { ...t, status: 'completed' } 
+                : t
+            ) 
+          } 
+        : m
+    ));
+    
+    toast({
+      title: "Task Completed",
+      description: `"${task.title}" has been marked as completed`
+    });
+  };
+  
+  const handleViewTaskSubmission = (task: Task) => {
+    setSelectedTask(task);
+    setShowTaskSubmissionDialog(true);
+  };
+  
+  const handleDownloadSubmission = (task: Task) => {
+    if (!task.submission?.fileUrl) return;
+    
+    toast({
+      title: "Download Started",
+      description: `Downloading submission for "${task.title}"`
+    });
+  };
+  
   const canCompleteMentorship = activeMentorship?.goalsSet && activeMentorship?.sessionsCompleted > 0;
   
   // Filter only active mentorships for the main display
   const activeMentorshipsList = mentorships.filter(m => m.status === 'active');
 
-  // Change "success" variant to "default" since success doesn't exist
-  // Fix in render section for badges and buttons
   return (
     <div className="space-y-6">
       <Card>
@@ -839,8 +1047,8 @@ const ActiveMentorships = () => {
                                     <Input
                                       id="task-title"
                                       placeholder="e.g., Create a React Component"
-                                      value={newTaskTitle}
-                                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                                      value={taskForm.title}
+                                      onChange={(e) => handleTaskFormChange('title', e.target.value)}
                                     />
                                   </div>
                                   <div>
@@ -850,8 +1058,8 @@ const ActiveMentorships = () => {
                                     <Textarea
                                       id="task-description"
                                       placeholder="Provide clear instructions for the task..."
-                                      value={newTaskDescription}
-                                      onChange={(e) => setNewTaskDescription(e.target.value)}
+                                      value={taskForm.description}
+                                      onChange={(e) => handleTaskFormChange('description', e.target.value)}
                                       className="resize-none"
                                       rows={3}
                                     />
@@ -863,15 +1071,15 @@ const ActiveMentorships = () => {
                                     <Input
                                       id="task-due-date"
                                       type="date"
-                                      value={newTaskDueDate}
-                                      onChange={(e) => setNewTaskDueDate(e.target.value)}
+                                      value={taskForm.dueDate}
+                                      onChange={(e) => handleTaskFormChange('dueDate', e.target.value)}
                                     />
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <Checkbox 
                                       id="task-has-sample" 
-                                      checked={newTaskHasSample} 
-                                      onCheckedChange={(checked) => setNewTaskHasSample(checked === true)}
+                                      checked={taskForm.hasSample} 
+                                      onCheckedChange={(checked) => handleTaskFormChange('hasSample', checked === true)}
                                     />
                                     <label
                                       htmlFor="task-has-sample"
@@ -883,7 +1091,7 @@ const ActiveMentorships = () => {
                                 </div>
                                 <DialogFooter>
                                   <Button variant="outline" onClick={() => setShowAddTaskDialog(false)}>Cancel</Button>
-                                  <Button onClick={handleAddTask} disabled={!newTaskTitle || !newTaskDescription || !newTaskDueDate}>Assign Task</Button>
+                                  <Button onClick={handleAddTask} disabled={!taskForm.title || !taskForm.description || !taskForm.dueDate}>Assign Task</Button>
                                 </DialogFooter>
                               </DialogContent>
                             </Dialog>
@@ -910,19 +1118,45 @@ const ActiveMentorships = () => {
                                   
                                   {task.feedback && (
                                     <div className="bg-primary/5 p-3 rounded-md mb-3">
-                                      <h5 className="text-sm font-medium mb-1">Your Feedback</h5>
+                                      <div className="flex justify-between items-center mb-2">
+                                        <h5 className="text-sm font-medium">Your Feedback</h5>
+                                        <div className="flex">
+                                          {Array(5).fill(0).map((_, i) => (
+                                            <Star 
+                                              key={i} 
+                                              className={`h-4 w-4 ${i < (task.rating || 0) ? 'text-amber-500 fill-amber-500' : 'text-muted'}`}
+                                            />
+                                          ))}
+                                        </div>
+                                      </div>
                                       <p className="text-sm">{task.feedback}</p>
                                     </div>
                                   )}
                                   
                                   {task.submission && (
                                     <div className="bg-muted/30 p-3 rounded-md mb-3">
-                                      <h5 className="text-sm font-medium mb-1">Mentee's Submission</h5>
-                                      <p className="text-sm">{task.submission}</p>
+                                      <h5 className="text-sm font-medium mb-1 flex justify-between">
+                                        <span>Mentee's Submission</span>
+                                        <span className="text-xs text-muted-foreground">
+                                          {new Date(task.submission.submittedAt).toLocaleDateString()}
+                                        </span>
+                                      </h5>
+                                      <p className="text-sm mb-2">{task.submission.content}</p>
+                                      {task.submission.fileUrl && (
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          className="gap-1 mt-1" 
+                                          onClick={() => handleDownloadSubmission(task)}
+                                        >
+                                          <Download className="h-3.5 w-3.5" />
+                                          Download Submission
+                                        </Button>
+                                      )}
                                     </div>
                                   )}
                                   
-                                  <div className="flex justify-end gap-2">
+                                  <div className="flex justify-end gap-2 flex-wrap">
                                     {task.hasSample && (
                                       <Button variant="outline" size="sm" className="gap-1" onClick={() => {
                                         toast({
@@ -935,54 +1169,206 @@ const ActiveMentorships = () => {
                                       </Button>
                                     )}
                                     
-                                    {task.status === 'pending' && task.submission && (
-                                      <Dialog open={showTaskFeedbackDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
-                                        setShowTaskFeedbackDialog(open);
-                                        if (open) {
-                                          setSelectedTask(task);
-                                          setTaskFeedback(task.feedback || '');
-                                        }
-                                      }}>
-                                        <DialogTrigger asChild>
-                                          <Button variant="outline" size="sm" className="gap-1">
-                                            <PenTool className="h-3.5 w-3.5" />
-                                            Provide Feedback
-                                          </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                          <DialogHeader>
-                                            <DialogTitle>Provide Feedback</DialogTitle>
-                                            <DialogDescription>
-                                              Review {activeMentorship.menteeName}'s submission and provide feedback
-                                            </DialogDescription>
-                                          </DialogHeader>
-                                          <div className="py-4">
-                                            <h4 className="text-sm font-medium mb-2">Mentee's Submission</h4>
-                                            <div className="bg-muted/30 p-3 rounded-md mb-4">
-                                              <p className="text-sm">{task.submission}</p>
-                                            </div>
-                                            <h4 className="text-sm font-medium mb-2">Your Feedback</h4>
-                                            <Textarea
-                                              placeholder="Provide constructive feedback on the submission..."
-                                              value={taskFeedback}
-                                              onChange={(e) => setTaskFeedback(e.target.value)}
-                                              className="resize-none"
-                                              rows={4}
+                                    <Dialog open={showEditTaskDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
+                                      setShowEditTaskDialog(open);
+                                      if (open) {
+                                        setSelectedTask(task);
+                                        setTaskForm({
+                                          id: task.id,
+                                          title: task.title,
+                                          description: task.description,
+                                          dueDate: task.dueDate,
+                                          hasSample: task.hasSample || false
+                                        });
+                                      }
+                                    }}>
+                                      <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm" className="gap-1">
+                                          <Edit className="h-3.5 w-3.5" />
+                                          Edit Task
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent>
+                                        <DialogHeader>
+                                          <DialogTitle>Edit Task</DialogTitle>
+                                          <DialogDescription>
+                                            Update task details for {activeMentorship.menteeName}
+                                          </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="py-4 space-y-4">
+                                          <div>
+                                            <label className="block text-sm font-medium mb-1" htmlFor="edit-task-title">
+                                              Task Title
+                                            </label>
+                                            <Input
+                                              id="edit-task-title"
+                                              placeholder="e.g., Create a React Component"
+                                              value={taskForm.title}
+                                              onChange={(e) => handleTaskFormChange('title', e.target.value)}
                                             />
                                           </div>
-                                          <DialogFooter>
-                                            <Button variant="outline" onClick={() => setShowTaskFeedbackDialog(false)}>Cancel</Button>
-                                            <Button onClick={handleSaveTaskFeedback} disabled={!taskFeedback.trim()}>
-                                              Save Feedback & Mark Completed
+                                          <div>
+                                            <label className="block text-sm font-medium mb-1" htmlFor="edit-task-description">
+                                              Description
+                                            </label>
+                                            <Textarea
+                                              id="edit-task-description"
+                                              placeholder="Provide clear instructions for the task..."
+                                              value={taskForm.description}
+                                              onChange={(e) => handleTaskFormChange('description', e.target.value)}
+                                              className="resize-none"
+                                              rows={3}
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="block text-sm font-medium mb-1" htmlFor="edit-task-due-date">
+                                              Due Date
+                                            </label>
+                                            <Input
+                                              id="edit-task-due-date"
+                                              type="date"
+                                              value={taskForm.dueDate}
+                                              onChange={(e) => handleTaskFormChange('dueDate', e.target.value)}
+                                            />
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox 
+                                              id="edit-task-has-sample" 
+                                              checked={taskForm.hasSample} 
+                                              onCheckedChange={(checked) => handleTaskFormChange('hasSample', checked === true)}
+                                            />
+                                            <label
+                                              htmlFor="edit-task-has-sample"
+                                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                            >
+                                              Provide sample/template
+                                            </label>
+                                          </div>
+                                        </div>
+                                        <DialogFooter>
+                                          <Button variant="outline" onClick={() => setShowEditTaskDialog(false)}>Cancel</Button>
+                                          <Button onClick={handleEditTask} disabled={!taskForm.title || !taskForm.description || !taskForm.dueDate}>Save Changes</Button>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                    
+                                    {task.status === 'pending' && task.submission && (
+                                      <>
+                                        <Button variant="outline" size="sm" className="gap-1" onClick={() => handleViewTaskSubmission(task)}>
+                                          <FileCheck className="h-3.5 w-3.5" />
+                                          View Submission
+                                        </Button>
+                                        
+                                        <Dialog open={showTaskFeedbackDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
+                                          setShowTaskFeedbackDialog(open);
+                                          if (open) {
+                                            setSelectedTask(task);
+                                            setTaskFeedback(task.feedback || '');
+                                            setTaskRating(task.rating || 0);
+                                          }
+                                        }}>
+                                          <DialogTrigger asChild>
+                                            <Button variant="default" size="sm" className="gap-1">
+                                              <PenTool className="h-3.5 w-3.5" />
+                                              Provide Feedback
                                             </Button>
-                                          </DialogFooter>
-                                        </DialogContent>
-                                      </Dialog>
+                                          </DialogTrigger>
+                                          <DialogContent>
+                                            <DialogHeader>
+                                              <DialogTitle>Provide Feedback</DialogTitle>
+                                              <DialogDescription>
+                                                Review {activeMentorship.menteeName}'s submission and provide feedback
+                                              </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="py-4">
+                                              <div className="mb-4">
+                                                <h4 className="text-sm font-medium mb-2">Rating</h4>
+                                                <div className="flex gap-1">
+                                                  {Array(5).fill(0).map((_, i) => (
+                                                    <Star 
+                                                      key={i} 
+                                                      className={`h-6 w-6 cursor-pointer ${i < taskRating ? 'text-amber-500 fill-amber-500' : 'text-muted'}`}
+                                                      onClick={() => setTaskRating(i + 1)}
+                                                    />
+                                                  ))}
+                                                </div>
+                                              </div>
+                                              
+                                              <h4 className="text-sm font-medium mb-2">Your Feedback</h4>
+                                              <Textarea
+                                                placeholder="Provide constructive feedback on the submission..."
+                                                value={taskFeedback}
+                                                onChange={(e) => setTaskFeedback(e.target.value)}
+                                                className="resize-none"
+                                                rows={4}
+                                              />
+                                            </div>
+                                            <DialogFooter>
+                                              <Button variant="outline" onClick={() => setShowTaskFeedbackDialog(false)}>Cancel</Button>
+                                              <Button onClick={handleSaveTaskFeedback} disabled={!taskFeedback.trim() || taskRating === 0}>
+                                                Save Feedback & Mark Completed
+                                              </Button>
+                                            </DialogFooter>
+                                          </DialogContent>
+                                        </Dialog>
+                                        
+                                        <Button variant="outline" size="sm" className="gap-1" onClick={() => handleMarkTaskAsComplete(task)}>
+                                          <FileCheck className="h-3.5 w-3.5" />
+                                          Mark as Complete
+                                        </Button>
+                                      </>
                                     )}
                                   </div>
                                 </div>
                               </Card>
                             ))}
+                            
+                            <Dialog open={showTaskSubmissionDialog} onOpenChange={setShowTaskSubmissionDialog}>
+                              <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Task Submission</DialogTitle>
+                                  <DialogDescription>
+                                    {selectedTask?.title} - Submitted on {selectedTask?.submission ? new Date(selectedTask.submission.submittedAt).toLocaleDateString() : ''}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4">
+                                  <div className="bg-muted/30 p-4 rounded-md mb-4">
+                                    <p className="mb-4">{selectedTask?.submission?.content}</p>
+                                    {selectedTask?.submission?.fileUrl && (
+                                      <Button 
+                                        variant="outline" 
+                                        className="gap-1" 
+                                        onClick={() => selectedTask && handleDownloadSubmission(selectedTask)}
+                                      >
+                                        <Download className="h-4 w-4" />
+                                        Download Submission Files
+                                      </Button>
+                                    )}
+                                  </div>
+                                  
+                                  {selectedTask?.status === 'pending' && (
+                                    <div className="flex justify-between">
+                                      <Button variant="outline" onClick={() => {
+                                        setShowTaskSubmissionDialog(false);
+                                        if (selectedTask) {
+                                          setShowTaskFeedbackDialog(true);
+                                        }
+                                      }}>
+                                        Provide Feedback
+                                      </Button>
+                                      <Button variant="default" onClick={() => {
+                                        setShowTaskSubmissionDialog(false);
+                                        if (selectedTask) {
+                                          handleMarkTaskAsComplete(selectedTask);
+                                        }
+                                      }}>
+                                        Mark as Complete
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                             
                             {activeMentorship.tasks.length === 0 && (
                               <div className="text-center py-8">
@@ -1049,7 +1435,14 @@ const ActiveMentorships = () => {
                                 </div>
                                 <DialogFooter>
                                   <Button variant="outline" onClick={() => setShowAddCourseDialog(false)}>Cancel</Button>
-                                  <Button onClick={handleAddCourse} disabled={!newCourseTitle || !newCourseDescription}>Recommend</Button>
+                                  <Button 
+                                    onClick={handleAddCourse} 
+                                    disabled={!newCourseTitle || !newCourseDescription}
+                                    className="gap-1"
+                                  >
+                                    Find Course
+                                    <ExternalLink className="ml-1 h-3.5 w-3.5" />
+                                  </Button>
                                 </DialogFooter>
                               </DialogContent>
                             </Dialog>
