@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { UserCog, Search, Users, Star } from 'lucide-react';
 import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
+import MentorJourney from '@/components/mentoring/MentorJourney';
 
 const Mentoring = () => {
   const [activeTab, setActiveTab] = useState('mentee');
@@ -149,10 +150,21 @@ const Mentoring = () => {
           </TabsContent>
           
           <TabsContent value="mentor">
-            <div className="p-6 border rounded-lg bg-muted/30">
-              <h2 className="text-xl font-semibold mb-4">Mentor Journey</h2>
-              <p>Mentor features are coming soon!</p>
-            </div>
+            <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
+              <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentor Journey</h2>
+                  <p className="text-muted-foreground">Set up your mentor profile, manage requests, and guide your mentees to success</p>
+                </div>
+                <Button className="mt-4 md:mt-0 gap-2" variant="outline">
+                  <UserCog className="h-4 w-4" />
+                  Mentor Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+            
+            {/* Mentor Journey */}
+            <MentorJourney />
           </TabsContent>
         </Tabs>
       </div>
