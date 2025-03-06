@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -20,10 +21,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CourseCard from '@/components/CourseCard';
-import { Search, SlidersHorizontal, BookOpen, Timer, Briefcase, GraduationCap, Code, LineChart, SortAsc, SortDesc, Building, Globe, Database, Lightbulb, Gauge } from 'lucide-react';
+import { 
+  Search, 
+  SlidersHorizontal, 
+  BookOpen, 
+  Timer, 
+  Briefcase, 
+  GraduationCap, 
+  Code, 
+  LineChart, 
+  SortAsc, 
+  SortDesc, 
+  Building, 
+  Globe, 
+  Database, 
+  Lightbulb, 
+  Gauge,
+  CalendarDays
+} from 'lucide-react';
 
 // Mock data - we'll use the same courses from the Home page
 import { coursesList } from '@/data/mockData';
+import { useToast } from '@/hooks/use-toast';
 
 const filterOptions = {
   type: ['All Types', 'Online Course', 'Online Program', 'Blended', 'Classroom'],
@@ -44,10 +63,13 @@ const sortOptions = [
   { id: 'nameDesc', label: 'Name (Z-A)', icon: <SortDesc className="h-4 w-4 mr-2" /> },
   { id: 'durationAsc', label: 'Duration (Shortest First)', icon: <SortAsc className="h-4 w-4 mr-2" /> },
   { id: 'durationDesc', label: 'Duration (Longest First)', icon: <SortDesc className="h-4 w-4 mr-2" /> },
+  { id: 'dateAddedDesc', label: 'Date Added (Newest First)', icon: <CalendarDays className="h-4 w-4 mr-2" /> },
+  { id: 'dateAddedAsc', label: 'Date Added (Oldest First)', icon: <CalendarDays className="h-4 w-4 mr-2" /> },
 ];
 
 const Discover = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     type: 'All Types',
@@ -65,9 +87,12 @@ const Discover = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [filteredCourses, setFilteredCourses] = useState([]);
 
-  // For the prototype, we're not actually filtering the data
-  // But in a real application, you would filter based on the selected filters
-  const courses = coursesList.slice(0, 20);
+  // Add a date field to courses for sorting - in a real app this would come from the API
+  const courses = coursesList.slice(0, 20).map(course => ({
+    ...course,
+    // Generate a random date within the last year for demo purposes
+    dateAdded: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString()
+  }));
   
   // Apply filtering and sorting to courses
   useEffect(() => {
@@ -106,6 +131,12 @@ const Discover = () => {
           return extractMinutes(b.duration) - extractMinutes(a.duration);
         });
         break;
+      case 'dateAddedDesc':
+        result.sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
+        break;
+      case 'dateAddedAsc':
+        result.sort((a, b) => new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime());
+        break;
       default:
         // Default: no sorting
         break;
@@ -122,6 +153,20 @@ const Discover = () => {
   const getCurrentSortLabel = () => {
     const option = sortOptions.find(option => option.id === currentSort);
     return option ? option.label : 'Sort By';
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+    
+    // Show toast to indicate filter change (for demo purposes)
+    toast({
+      title: "Filter Applied",
+      description: `${filterType}: ${value}`,
+      duration: 2000,
+    });
   };
 
   return (
@@ -178,7 +223,7 @@ const Discover = () => {
           </div>
         </div>
 
-        {/* Filter Section - now with more filter options */}
+        {/* Filter Section - with all required filter options */}
         {showFilters && (
           <div className="mb-8 bg-secondary/20 p-4 rounded-lg">
             <h3 className="font-medium mb-4">Filter Courses</h3>
@@ -194,7 +239,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Course Type</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.type} onValueChange={(value) => setSelectedFilters({...selectedFilters, type: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.type} onValueChange={(value) => handleFilterChange('type', value)}>
                     {filterOptions.type.map((type) => (
                       <DropdownMenuRadioItem key={type} value={type}>{type}</DropdownMenuRadioItem>
                     ))}
@@ -213,7 +258,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Academy</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.academy} onValueChange={(value) => setSelectedFilters({...selectedFilters, academy: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.academy} onValueChange={(value) => handleFilterChange('academy', value)}>
                     {filterOptions.academy.map((academy) => (
                       <DropdownMenuRadioItem key={academy} value={academy}>{academy}</DropdownMenuRadioItem>
                     ))}
@@ -232,7 +277,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Sub-Academy</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.subAcademy} onValueChange={(value) => setSelectedFilters({...selectedFilters, subAcademy: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.subAcademy} onValueChange={(value) => handleFilterChange('subAcademy', value)}>
                     {filterOptions.subAcademy.map((subAcademy) => (
                       <DropdownMenuRadioItem key={subAcademy} value={subAcademy}>{subAcademy}</DropdownMenuRadioItem>
                     ))}
@@ -251,7 +296,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Language</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.language} onValueChange={(value) => setSelectedFilters({...selectedFilters, language: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.language} onValueChange={(value) => handleFilterChange('language', value)}>
                     {filterOptions.language.map((language) => (
                       <DropdownMenuRadioItem key={language} value={language}>{language}</DropdownMenuRadioItem>
                     ))}
@@ -270,7 +315,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Source</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.source} onValueChange={(value) => setSelectedFilters({...selectedFilters, source: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.source} onValueChange={(value) => handleFilterChange('source', value)}>
                     {filterOptions.source.map((source) => (
                       <DropdownMenuRadioItem key={source} value={source}>{source}</DropdownMenuRadioItem>
                     ))}
@@ -289,7 +334,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Topic</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.topic} onValueChange={(value) => setSelectedFilters({...selectedFilters, topic: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.topic} onValueChange={(value) => handleFilterChange('topic', value)}>
                     {filterOptions.topic.map((topic) => (
                       <DropdownMenuRadioItem key={topic} value={topic}>{topic}</DropdownMenuRadioItem>
                     ))}
@@ -308,7 +353,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Skill</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.skill} onValueChange={(value) => setSelectedFilters({...selectedFilters, skill: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.skill} onValueChange={(value) => handleFilterChange('skill', value)}>
                     {filterOptions.skill.map((skill) => (
                       <DropdownMenuRadioItem key={skill} value={skill}>{skill}</DropdownMenuRadioItem>
                     ))}
@@ -327,7 +372,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Category</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.category} onValueChange={(value) => setSelectedFilters({...selectedFilters, category: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.category} onValueChange={(value) => handleFilterChange('category', value)}>
                     {filterOptions.category.map((category) => (
                       <DropdownMenuRadioItem key={category} value={category}>{category}</DropdownMenuRadioItem>
                     ))}
@@ -346,7 +391,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Duration</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.duration} onValueChange={(value) => setSelectedFilters({...selectedFilters, duration: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.duration} onValueChange={(value) => handleFilterChange('duration', value)}>
                     {filterOptions.duration.map((duration) => (
                       <DropdownMenuRadioItem key={duration} value={duration}>{duration}</DropdownMenuRadioItem>
                     ))}
@@ -365,7 +410,7 @@ const Discover = () => {
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuLabel>Proficiency Level</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.proficiency} onValueChange={(value) => setSelectedFilters({...selectedFilters, proficiency: value})}>
+                  <DropdownMenuRadioGroup value={selectedFilters.proficiency} onValueChange={(value) => handleFilterChange('proficiency', value)}>
                     {filterOptions.proficiency.map((level) => (
                       <DropdownMenuRadioItem key={level} value={level}>{level}</DropdownMenuRadioItem>
                     ))}
