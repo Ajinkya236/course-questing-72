@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,397 @@ import LearningStreakDialog from '@/components/LearningStreakDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
+import { Course } from '@/types/course';
 
-const mockCoursesData = {
-  // ... keep existing mockCoursesData object
+interface MockCoursesData {
+  roleBasedSkillGaps: Course[];
+  usageHistory: Course[];
+  trendingCourses: Course[];
+  newCourses: Course[];
+  similarUsers: Course[];
+  topPicks?: Course[];
+  skillInterestsFollowed?: Course[];
+}
+
+const mockCoursesData: MockCoursesData = {
+  roleBasedSkillGaps: [
+    {
+      id: '1',
+      title: 'Leadership for New Managers',
+      description: 'Essential skills for first-time managers and team leaders',
+      imageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0',
+      category: 'Leadership',
+      duration: '4h 30m',
+      rating: 4.7,
+      isBookmarked: true,
+      trainingCategory: 'Ready for Role',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '2',
+      title: 'Strategic Decision Making',
+      description: 'Learn how to make effective decisions under pressure',
+      imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978',
+      category: 'Management',
+      duration: '3h 15m',
+      rating: 4.5,
+      trainingCategory: 'Leadership',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '3',
+      title: 'Project Management Fundamentals',
+      description: 'Master the basics of managing projects successfully',
+      imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40',
+      category: 'Project Management',
+      duration: '5h 45m',
+      rating: 4.8,
+      trainingCategory: 'Technical',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '4',
+      title: 'Effective Team Communication',
+      description: 'Improve communication within your team for better results',
+      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c',
+      category: 'Communication',
+      duration: '2h 30m',
+      rating: 4.6,
+      trainingCategory: 'Mandatory',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '5',
+      title: 'Data-Driven Decision Making',
+      description: 'Using data analytics to make better business decisions',
+      imageUrl: 'https://images.unsplash.com/photo-1551434678-e076c223a692',
+      category: 'Analytics',
+      duration: '4h 15m',
+      rating: 4.9,
+      trainingCategory: 'Technical',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ],
+  usageHistory: [
+    {
+      id: '11',
+      title: 'Agile Methodology & Scrum',
+      description: 'Learn agile development principles and scrum framework',
+      imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12',
+      category: 'Project Management',
+      duration: '5h 15m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '12',
+      title: 'Emotional Intelligence at Work',
+      description: 'Develop emotional intelligence to enhance workplace relationships',
+      imageUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e',
+      category: 'Personal Development',
+      duration: '3h 30m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '13',
+      title: 'Cybersecurity Fundamentals',
+      description: 'Essential knowledge for protecting digital assets',
+      imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3',
+      category: 'Security',
+      duration: '6h 20m',
+      rating: 4.9,
+      isBookmarked: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '14',
+      title: 'Business Strategy Essentials',
+      description: 'Learn key concepts in business strategy development',
+      imageUrl: 'https://images.unsplash.com/photo-1460794418188-1bb7dba2720d',
+      category: 'Business',
+      duration: '4h 45m',
+      rating: 4.6,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '15',
+      title: 'Negotiation Skills Mastery',
+      description: 'Powerful techniques for successful negotiations',
+      imageUrl: 'https://images.unsplash.com/photo-1556761175-129418cb2dfe',
+      category: 'Business Skills',
+      duration: '3h 15m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ],
+  trendingCourses: [
+    {
+      id: '31',
+      title: 'AI for Business Leaders',
+      description: 'Understanding artificial intelligence for strategic business decisions',
+      imageUrl: 'https://images.unsplash.com/photo-1591453089816-0fbb971b454c',
+      category: 'Technology',
+      duration: '5h 15m',
+      rating: 4.9,
+      isHot: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '32',
+      title: 'Remote Work Leadership',
+      description: 'Lead distributed teams effectively in the digital age',
+      imageUrl: 'https://images.unsplash.com/photo-1590402494610-2c378a9114c6',
+      category: 'Leadership',
+      duration: '4h 30m',
+      rating: 4.8,
+      isHot: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '33',
+      title: 'Agile Project Management',
+      description: 'Modern approach to managing projects with agility',
+      imageUrl: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83',
+      category: 'Project Management',
+      duration: '6h 45m',
+      rating: 4.7,
+      isHot: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '34',
+      title: 'Data Privacy Compliance',
+      description: 'Navigating the complex landscape of data protection regulations',
+      imageUrl: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d',
+      category: 'Legal',
+      duration: '3h 30m',
+      rating: 4.6,
+      isHot: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '35',
+      title: 'Sustainable Business Practices',
+      description: 'Implementing environmental responsibility in business operations',
+      imageUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6',
+      category: 'Business',
+      duration: '4h 15m',
+      rating: 4.8,
+      isHot: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    }
+  ],
+  newCourses: [
+    {
+      id: '41',
+      title: 'Blockchain Fundamentals',
+      description: 'Learn the basics of blockchain technology and its applications',
+      imageUrl: 'https://images.unsplash.com/photo-1639322537228-f710d846310a',
+      category: 'Technology',
+      duration: '6h 00m',
+      rating: 4.5,
+      isNew: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '42',
+      title: 'Inclusive Leadership',
+      description: 'Building diverse and inclusive teams for the modern workplace',
+      imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+      category: 'Leadership',
+      duration: '3h 45m',
+      rating: 4.9,
+      isNew: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '43',
+      title: 'Digital Wellbeing',
+      description: 'Managing technology use for better mental health and productivity',
+      imageUrl: 'https://images.unsplash.com/photo-1507428217774-b274d7f4d441',
+      category: 'Wellness',
+      duration: '2h 30m',
+      rating: 4.7,
+      isNew: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '44',
+      title: 'Advanced Data Visualization',
+      description: 'Create compelling visual representations of complex data',
+      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
+      category: 'Analytics',
+      duration: '5h 15m',
+      rating: 4.8,
+      isNew: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '45',
+      title: 'Crisis Management',
+      description: 'Strategies for effectively managing organizational crises',
+      imageUrl: 'https://images.unsplash.com/photo-1514820720301-4c4790309f46',
+      category: 'Management',
+      duration: '4h 00m',
+      rating: 4.6,
+      isNew: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    }
+  ],
+  similarUsers: [
+    {
+      id: '16',
+      title: 'Design Thinking Workshop',
+      description: 'Practical approach to creative problem solving',
+      imageUrl: 'https://images.unsplash.com/photo-1576267423445-b2e0074d68a4',
+      category: 'Innovation',
+      duration: '4h 30m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '17',
+      title: 'Effective Time Management',
+      description: 'Strategies for maximizing productivity and focus',
+      imageUrl: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe',
+      category: 'Productivity',
+      duration: '2h 45m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '18',
+      title: 'Content Marketing Strategy',
+      description: 'Create compelling content that drives engagement',
+      imageUrl: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07',
+      category: 'Marketing',
+      duration: '5h 15m',
+      rating: 4.6,
+      isBookmarked: true,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '19',
+      title: 'Introduction to Data Science',
+      description: 'Fundamentals of data analysis and visualization',
+      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
+      category: 'Data Science',
+      duration: '7h 30m',
+      rating: 4.9,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '20',
+      title: 'Critical Thinking Skills',
+      description: 'Enhance your ability to analyze and evaluate information',
+      imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3',
+      category: 'Thinking Skills',
+      duration: '3h 45m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ]
 };
 
 const roleSkills = [
