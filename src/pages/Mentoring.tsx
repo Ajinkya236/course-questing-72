@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { UserCog, Search, Users, Star, ChevronRight, ChevronLeft } from 'lucide-react';
 import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
+import MentorJourney from '@/components/mentoring/MentorJourney';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const Mentoring = () => {
@@ -267,10 +267,7 @@ const Mentoring = () => {
           </TabsContent>
           
           <TabsContent value="mentor">
-            <div className="p-6 border rounded-lg bg-muted/30">
-              <h2 className="text-xl font-semibold mb-4">Mentor Journey</h2>
-              <p>Mentor features are coming soon!</p>
-            </div>
+            <MentorJourney />
           </TabsContent>
         </Tabs>
       </div>
