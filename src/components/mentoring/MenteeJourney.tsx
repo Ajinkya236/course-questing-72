@@ -11,10 +11,7 @@ import {
   Search, 
   ClipboardList, 
   Users, 
-  History,
-  BookOpen,
-  Clock,
-  Target
+  History
 } from 'lucide-react';
 
 const MenteeJourney = () => {

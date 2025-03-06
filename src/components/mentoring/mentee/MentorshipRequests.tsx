@@ -22,7 +22,7 @@ const requestsData = [
     mentorName: "Dr. Sarah Johnson",
     mentorTitle: "Senior Data Scientist",
     topic: "Data Analysis",
-    status: "pending",
+    status: "pending" as const,
     date: "2023-10-15",
     imageUrl: "https://randomuser.me/api/portraits/women/44.jpg"
   },
@@ -31,7 +31,7 @@ const requestsData = [
     mentorName: "Michael Chen",
     mentorTitle: "Product Manager",
     topic: "Product Management",
-    status: "accepted",
+    status: "accepted" as const,
     date: "2023-10-10",
     imageUrl: "https://randomuser.me/api/portraits/men/32.jpg"
   },
@@ -40,10 +40,28 @@ const requestsData = [
     mentorName: "James Wilson",
     mentorTitle: "Software Engineering Lead",
     topic: "Leadership",
-    status: "rejected",
+    status: "rejected" as const,
     date: "2023-10-05",
     reason: "Currently at maximum mentee capacity",
     imageUrl: "https://randomuser.me/api/portraits/men/86.jpg"
+  },
+  {
+    id: 4,
+    mentorName: "Elena Rodriguez",
+    mentorTitle: "Marketing Director",
+    topic: "Digital Marketing",
+    status: "pending" as const,
+    date: "2023-10-18",
+    imageUrl: "https://randomuser.me/api/portraits/women/28.jpg"
+  },
+  {
+    id: 5,
+    mentorName: "David Lee",
+    mentorTitle: "UX Designer",
+    topic: "UX Design",
+    status: "accepted" as const,
+    date: "2023-10-08",
+    imageUrl: "https://randomuser.me/api/portraits/men/42.jpg"
   }
 ];
 
@@ -53,6 +71,7 @@ const MentorshipRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState<any | null>(null);
   const [showSetGoalsDialog, setShowSetGoalsDialog] = useState(false);
   const [goal, setGoal] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('all');
 
   const handleWithdrawRequest = (requestId: number) => {
     setRequests(requests.filter(request => request.id !== requestId));
@@ -83,9 +102,9 @@ const MentorshipRequests = () => {
     }
   };
 
-  const pendingRequests = requests.filter(r => r.status === 'pending');
-  const acceptedRequests = requests.filter(r => r.status === 'accepted');
-  const rejectedRequests = requests.filter(r => r.status === 'rejected');
+  const filteredRequests = activeFilter === 'all' 
+    ? requests 
+    : requests.filter(request => request.status === activeFilter);
 
   return (
     <div className="space-y-6">
@@ -99,134 +118,76 @@ const MentorshipRequests = () => {
             Track and manage your mentorship requests
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-lg font-medium mb-4">Pending Requests ({pendingRequests.length})</h3>
-            {pendingRequests.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No pending requests</p>
-            ) : (
-              <div className="space-y-4">
-                {pendingRequests.map(request => (
-                  <Card key={request.id} className="overflow-hidden">
-                    <div className="flex p-4">
-                      <div className="mr-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden">
-                          <img src={request.imageUrl} alt={request.mentorName} className="w-full h-full object-cover" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">{request.mentorName}</h4>
-                            <p className="text-sm text-muted-foreground">{request.mentorTitle}</p>
-                          </div>
-                          <div>{getStatusBadge(request.status)}</div>
-                        </div>
-                        <div className="mt-2">
-                          <Badge variant="secondary" className="mr-2">{request.topic}</Badge>
-                          <span className="text-xs text-muted-foreground">Requested on {new Date(request.date).toLocaleDateString()}</span>
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleWithdrawRequest(request.id)}
-                          >
-                            Withdraw Request
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Vertical Filters */}
+            <div className="md:w-64 space-y-2">
+              <h3 className="text-sm font-medium mb-3">Filter Requests</h3>
+              <div className="space-y-1">
+                <Button 
+                  variant={activeFilter === 'all' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => setActiveFilter('all')}
+                >
+                  All Requests ({requests.length})
+                </Button>
+                <Button 
+                  variant={activeFilter === 'pending' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="w-full justify-start gap-2"
+                  onClick={() => setActiveFilter('pending')}
+                >
+                  <Clock className="h-4 w-4" />
+                  Pending ({requests.filter(r => r.status === 'pending').length})
+                </Button>
+                <Button 
+                  variant={activeFilter === 'accepted' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="w-full justify-start gap-2"
+                  onClick={() => setActiveFilter('accepted')}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Accepted ({requests.filter(r => r.status === 'accepted').length})
+                </Button>
+                <Button 
+                  variant={activeFilter === 'rejected' ? 'default' : 'outline'} 
+                  size="sm" 
+                  className="w-full justify-start gap-2"
+                  onClick={() => setActiveFilter('rejected')}
+                >
+                  <XCircle className="h-4 w-4" />
+                  Rejected ({requests.filter(r => r.status === 'rejected').length})
+                </Button>
               </div>
-            )}
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-medium mb-4">Accepted Requests ({acceptedRequests.length})</h3>
-            {acceptedRequests.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No accepted requests</p>
-            ) : (
-              <div className="space-y-4">
-                {acceptedRequests.map(request => (
-                  <Card key={request.id} className="overflow-hidden">
-                    <div className="flex p-4">
-                      <div className="mr-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden">
-                          <img src={request.imageUrl} alt={request.mentorName} className="w-full h-full object-cover" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">{request.mentorName}</h4>
-                            <p className="text-sm text-muted-foreground">{request.mentorTitle}</p>
-                          </div>
-                          <div>{getStatusBadge(request.status)}</div>
-                        </div>
-                        <div className="mt-2">
-                          <Badge variant="secondary" className="mr-2">{request.topic}</Badge>
-                          <span className="text-xs text-muted-foreground">Accepted on {new Date(request.date).toLocaleDateString()}</span>
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                          <Dialog open={showSetGoalsDialog && selectedRequest?.id === request.id} onOpenChange={(open) => {
-                            setShowSetGoalsDialog(open);
-                            if (open) setSelectedRequest(request);
-                          }}>
-                            <DialogTrigger asChild>
-                              <Button 
-                                variant="default" 
-                                size="sm" 
-                                className="gap-1"
-                              >
-                                <Target className="h-4 w-4" />
-                                Set Goals
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Set Mentoring Goals</DialogTitle>
-                                <DialogDescription>
-                                  Define specific goals for your mentoring journey with {selectedRequest?.mentorName}
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="py-4">
-                                <h4 className="text-sm font-medium mb-2">What do you want to achieve?</h4>
-                                <textarea 
-                                  className="w-full p-2 border rounded-md resize-none h-32"
-                                  placeholder="Describe your specific goals for this mentoring engagement..."
-                                  value={goal}
-                                  onChange={(e) => setGoal(e.target.value)}
-                                />
-                              </div>
-                              <DialogFooter>
-                                <Button variant="outline" onClick={() => setShowSetGoalsDialog(false)}>Cancel</Button>
-                                <Button onClick={handleSetGoals}>Save Goals</Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+              
+              <div className="bg-muted/30 p-4 rounded-lg mt-6">
+                <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                  Rules & Guidelines
+                </h3>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-5">
+                  <li>You can have a maximum of 2 active engagements at any time</li>
+                  <li>You can only have one active engagement per topic</li>
+                  <li>If you reach the maximum engagement limit, pending requests will be automatically rejected</li>
+                  <li>You can withdraw a request at any time before it's accepted</li>
+                </ul>
               </div>
-            )}
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-medium mb-4">Rejected Requests ({rejectedRequests.length})</h3>
-            {rejectedRequests.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No rejected requests</p>
-            ) : (
-              <div className="space-y-4">
-                {rejectedRequests.map(request => (
-                  <Card key={request.id} className="overflow-hidden bg-muted/20">
+            </div>
+            
+            {/* Requests List */}
+            <div className="flex-1 space-y-4">
+              {filteredRequests.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-60 bg-muted/20 rounded-lg">
+                  <ClipboardList className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-muted-foreground">No {activeFilter === 'all' ? '' : activeFilter} requests found</p>
+                </div>
+              ) : (
+                filteredRequests.map(request => (
+                  <Card key={request.id} className={`overflow-hidden ${request.status === 'rejected' ? 'bg-muted/20' : ''}`}>
                     <div className="flex p-4">
                       <div className="mr-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden opacity-70">
+                        <div className={`w-12 h-12 rounded-full overflow-hidden ${request.status === 'rejected' ? 'opacity-70' : ''}`}>
                           <img src={request.imageUrl} alt={request.mentorName} className="w-full h-full object-cover" />
                         </div>
                       </div>
@@ -239,34 +200,79 @@ const MentorshipRequests = () => {
                           <div>{getStatusBadge(request.status)}</div>
                         </div>
                         <div className="mt-2">
-                          <Badge variant="secondary" className="mr-2 opacity-70">{request.topic}</Badge>
-                          <span className="text-xs text-muted-foreground">Rejected on {new Date(request.date).toLocaleDateString()}</span>
+                          <Badge variant="secondary" className={`mr-2 ${request.status === 'rejected' ? 'opacity-70' : ''}`}>{request.topic}</Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {request.status === 'pending' && 'Requested on '}
+                            {request.status === 'accepted' && 'Accepted on '}
+                            {request.status === 'rejected' && 'Rejected on '}
+                            {new Date(request.date).toLocaleDateString()}
+                          </span>
                         </div>
+                        
                         {request.reason && (
                           <div className="mt-2 p-2 bg-muted rounded-md flex items-start gap-2">
                             <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5" />
                             <p className="text-sm text-muted-foreground">{request.reason}</p>
                           </div>
                         )}
+                        
+                        <div className="mt-4 flex justify-end">
+                          {request.status === 'pending' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => handleWithdrawRequest(request.id)}
+                            >
+                              Withdraw Request
+                            </Button>
+                          )}
+                          
+                          {request.status === 'accepted' && (
+                            <Dialog open={showSetGoalsDialog && selectedRequest?.id === request.id} onOpenChange={(open) => {
+                              setShowSetGoalsDialog(open);
+                              if (open) setSelectedRequest(request);
+                            }}>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="default" 
+                                  size="sm" 
+                                  className="gap-1"
+                                >
+                                  <Target className="h-4 w-4" />
+                                  Set Goals
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Set Mentoring Goals</DialogTitle>
+                                  <DialogDescription>
+                                    Define specific goals for your mentoring journey with {selectedRequest?.mentorName}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4">
+                                  <h4 className="text-sm font-medium mb-2">What do you want to achieve?</h4>
+                                  <textarea 
+                                    className="w-full p-2 border rounded-md resize-none h-32"
+                                    placeholder="Describe your specific goals for this mentoring engagement..."
+                                    value={goal}
+                                    onChange={(e) => setGoal(e.target.value)}
+                                  />
+                                </div>
+                                <DialogFooter>
+                                  <Button variant="outline" onClick={() => setShowSetGoalsDialog(false)}>Cancel</Button>
+                                  <Button onClick={handleSetGoals}>Save Goals</Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </Card>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          <div className="bg-muted/30 p-4 rounded-lg">
-            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              Rules & Guidelines
-            </h3>
-            <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-5">
-              <li>You can have a maximum of 2 active engagements at any time</li>
-              <li>You can only have one active engagement per topic</li>
-              <li>If you reach the maximum engagement limit, pending requests will be automatically rejected</li>
-              <li>You can withdraw a request at any time before it's accepted</li>
-            </ul>
+                ))
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
