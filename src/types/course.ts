@@ -30,4 +30,15 @@ export interface Course {
   modules: Module[];
   isHot?: boolean;
   isNew?: boolean;
+  createdAt?: string;
+  
+  // Additional fields for filtering
+  courseType?: 'Online Course' | 'Online Program' | 'Blended' | 'Classroom';
+  academy?: string;
+  subAcademy?: string;
+  language?: string;
+  source?: 'Internal' | 'LinkedIn' | 'CourseEra' | 'els' | 'WorkEra' | 'Skillsoft';
+  topic?: string;
+  skillLevel?: string;
+  proficiency?: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 }

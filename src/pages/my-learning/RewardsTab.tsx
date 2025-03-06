@@ -7,6 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Gift, Box, Shuffle, Target, TrendingUp } from 'lucide-react';
 import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
 import { useNavigate } from 'react-router-dom';
+import LearningStreakDialog from '@/components/LearningStreakDialog';
+import RedeemPointsDialog from '@/components/RedeemPointsDialog';
 
 // Mock data for points overview
 const pointsData = {
@@ -195,12 +197,11 @@ const RewardsTab = () => {
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState('all-time');
   const [mysteryBoxOpen, setMysteryBoxOpen] = useState(false);
+  const [streakDialogOpen, setStreakDialogOpen] = useState(false);
+  const [redeemDialogOpen, setRedeemDialogOpen] = useState(false);
   
   const handleRedeemReward = (rewardTitle: string, points: number) => {
-    toast({
-      title: "Reward Redeemed!",
-      description: `You've successfully redeemed ${rewardTitle} for ${points} points.`,
-    });
+    setRedeemDialogOpen(true);
   };
   
   const handleOpenMysteryBox = (mysteryTitle: string) => {
@@ -377,6 +378,17 @@ const RewardsTab = () => {
           </Card>
         </div>
       </div>
+      
+      <LearningStreakDialog 
+        open={streakDialogOpen} 
+        onOpenChange={setStreakDialogOpen} 
+      />
+      
+      <RedeemPointsDialog 
+        open={redeemDialogOpen} 
+        onOpenChange={setRedeemDialogOpen}
+        availablePoints={pointsData.redeemablePoints}
+      />
     </div>
   );
 };

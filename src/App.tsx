@@ -17,6 +17,7 @@ import Milestones from "./pages/Milestones"; // New Milestones page
 import Actionables from "./pages/Actionables"; // New Actionables page
 import Mentoring from "./pages/Mentoring"; // New Mentoring page
 import { Helmet } from "react-helmet";
+import RecommendedMentorsPage from "./pages/RecommendedMentorsPage"; // New Recommended Mentors page
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/milestones" element={<Milestones />} />
               <Route path="/actionables" element={<Actionables />} />
               <Route path="/mentoring" element={<Mentoring />} />
+              <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

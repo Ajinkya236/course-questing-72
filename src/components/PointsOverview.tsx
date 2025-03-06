@@ -27,9 +27,15 @@ export interface PointsData {
 
 interface PointsOverviewProps {
   data: PointsData;
+  onViewStreakDetails?: () => void;
+  onRedeemPoints?: () => void;
 }
 
-const PointsOverview: React.FC<PointsOverviewProps> = ({ data }) => {
+const PointsOverview: React.FC<PointsOverviewProps> = ({ 
+  data, 
+  onViewStreakDetails,
+  onRedeemPoints
+}) => {
   const percentChange = ((data.pointsThisWeek - data.pointsLastWeek) / data.pointsLastWeek) * 100;
   
   return (
@@ -164,7 +170,11 @@ const PointsOverview: React.FC<PointsOverviewProps> = ({ data }) => {
             </p>
             
             <div className="mt-4">
-              <Button variant="outline" className="w-full flex items-center justify-center">
+              <Button 
+                variant="outline" 
+                className="w-full flex items-center justify-center"
+                onClick={onViewStreakDetails}
+              >
                 <Target className="h-4 w-4 mr-2" />
                 View Details
               </Button>
@@ -188,7 +198,10 @@ const PointsOverview: React.FC<PointsOverviewProps> = ({ data }) => {
             </div>
             
             <div className="mt-4">
-              <Button className="w-full">
+              <Button 
+                className="w-full"
+                onClick={onRedeemPoints}
+              >
                 Redeem Points
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
