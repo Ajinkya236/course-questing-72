@@ -6,11 +6,11 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import CourseCard from './CourseCard';
-import { type CarouselApi } from "@/components/ui/carousel";
 
 interface Course {
   id: string;
@@ -55,7 +55,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   // Use provided filter options or default to skills
   const skillFilters = filterOptions || defaultSkills;
@@ -141,12 +141,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-primary">{title}</h2>
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
             size="icon"
-            className="rounded-full"
+            className="rounded-full hover:bg-accent-blue hover:text-white"
             onClick={() => navigateCarousel('left')}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -154,7 +154,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <Button 
             variant="outline" 
             size="icon"
-            className="rounded-full"
+            className="rounded-full hover:bg-accent-blue hover:text-white"
             onClick={() => navigateCarousel('right')}
           >
             <ChevronRight className="h-4 w-4" />
@@ -175,7 +175,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <Button 
             variant="outline" 
             size="icon" 
-            className="absolute -left-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md"
+            className="absolute -left-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md hover:bg-accent-blue hover:text-white"
             onClick={() => scrollSkills('left')}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -208,7 +208,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <Button 
             variant="outline" 
             size="icon" 
-            className="absolute -right-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md"
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md hover:bg-accent-blue hover:text-white"
             onClick={() => scrollSkills('right')}
           >
             <ChevronRight className="h-4 w-4" />

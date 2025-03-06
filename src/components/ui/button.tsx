@@ -10,25 +10,25 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-[#0A3D91] text-white hover:bg-[#0A3D91]/90", // Primary Blue
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-[#2A5CAA] bg-background text-[#0A3D91] hover:bg-[#2A5CAA]/10", // Accent Blue border
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-[#F7F7F7] text-[#0A3D91] hover:bg-[#F7F7F7]/80", // Off-white with Primary Blue text
+        ghost: "hover:bg-[#F7F7F7] hover:text-[#0A3D91]", // Hover off-white with Primary Blue text
+        link: "text-[#0A3D91] underline-offset-4 hover:underline", // Primary Blue text
         jio: "bg-jio text-jio-foreground hover:bg-jio-dark",
         "jio-outline": "border border-jio text-jio hover:bg-jio hover:text-jio-foreground",
         "jio-ghost": "text-jio hover:bg-jio-muted",
         "jio-gradient": "jio-gradient text-white hover:opacity-90",
       },
       size: {
-        default: "h-10 px-4 py-2",
+        default: "h-10 px-4 py-2 rounded-lg",
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        lg: "h-12 rounded-lg px-8 text-base",
+        icon: "h-10 w-10 rounded-full",
       },
     },
     defaultVariants: {

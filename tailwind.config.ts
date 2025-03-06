@@ -69,7 +69,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Direct color values for the new design system
+				'primary-blue': '#0A3D91',
+				'accent-blue': '#2A5CAA',
+				'off-white': '#F7F7F7',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -154,7 +158,10 @@ export default {
 				float: 'float 3s ease-in-out infinite',
 				spotlight: 'spotlight 2s ease .75s 1 forwards',
 				shimmer: 'shimmer 2s linear infinite'
-			}
+			},
+			fontFamily: {
+				sans: ['Roboto', 'Open Sans', 'sans-serif'],
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
