@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -92,8 +91,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   // Handle course click to navigate to course player
   const handleCourseClick = (e: React.MouseEvent) => {
-    // Let the button clicks handle their own actions
-    if ((e.target as HTMLElement).closest('button')) {
+    // Don't navigate if the click was on a button or if a dialog is open
+    if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       return;
     }
     navigate(`/course/${id}`);

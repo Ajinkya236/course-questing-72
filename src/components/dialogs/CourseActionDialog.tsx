@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,6 +38,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
   const navigate = useNavigate();
   const [emails, setEmails] = useState('');
   const [assignTab, setAssignTab] = useState('me');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Mock data for team members, mentees, etc.
   const teamMembers: Person[] = [
@@ -55,7 +56,10 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<string[]>([]);
   const [selectedMentees, setSelectedMentees] = useState<string[]>([]);
   
-  const handleShare = () => {
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!emails.trim()) {
       toast({
         title: "Error",
@@ -65,20 +69,30 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
       return;
     }
     
-    toast({
-      title: "Course Shared",
-      description: `"${courseName}" has been shared successfully`,
-    });
+    setIsSubmitting(true);
     
-    onOpenChange(false);
-    setEmails('');
+    // Simulate a network request
+    setTimeout(() => {
+      toast({
+        title: "Course Shared",
+        description: `"${courseName}" has been shared successfully`,
+      });
+      
+      setIsSubmitting(false);
+      onOpenChange(false);
+      setEmails('');
+    }, 500);
   };
   
-  const handleAssign = () => {
+  const handleAssign = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     let message = '';
     let shouldNavigateToMyLearning = false;
     let shouldNavigateToLearningGoals = false;
     let courseTabToNavigate = 'assigned';
+    let isValid = true;
     
     switch (assignTab) {
       case 'me':
@@ -92,9 +106,10 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
             description: "Please select at least one team member",
             variant: "destructive"
           });
-          return;
+          isValid = false;
+        } else {
+          message = `"${courseName}" has been assigned to ${selectedTeamMembers.length} team member(s)`;
         }
-        message = `"${courseName}" has been assigned to ${selectedTeamMembers.length} team member(s)`;
         break;
       case 'mentee':
         if (selectedMentees.length === 0) {
@@ -103,9 +118,10 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
             description: "Please select at least one mentee",
             variant: "destructive"
           });
-          return;
+          isValid = false;
+        } else {
+          message = `"${courseName}" has been assigned to ${selectedMentees.length} mentee(s)`;
         }
-        message = `"${courseName}" has been assigned to ${selectedMentees.length} mentee(s)`;
         break;
       case 'mygoals':
         message = `"${courseName}" has been added to your learning goals`;
@@ -118,27 +134,36 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
             description: "Please select at least one team member",
             variant: "destructive"
           });
-          return;
+          isValid = false;
+        } else {
+          message = `"${courseName}" has been added to ${selectedTeamMembers.length} team member(s) learning goals`;
         }
-        message = `"${courseName}" has been added to ${selectedTeamMembers.length} team member(s) learning goals`;
         break;
     }
     
-    toast({
-      title: "Course Assigned",
-      description: message,
-    });
+    if (!isValid) return;
     
-    onOpenChange(false);
-    setSelectedTeamMembers([]);
-    setSelectedMentees([]);
+    setIsSubmitting(true);
     
-    // Navigate to appropriate page after assignment
-    if (shouldNavigateToMyLearning) {
-      navigate('/my-learning', { state: { activeTab: 'courses', courseTab: courseTabToNavigate } });
-    } else if (shouldNavigateToLearningGoals) {
-      navigate('/my-learning', { state: { activeTab: 'goals' } });
-    }
+    // Simulate a network request
+    setTimeout(() => {
+      toast({
+        title: "Course Assigned",
+        description: message,
+      });
+      
+      setIsSubmitting(false);
+      onOpenChange(false);
+      setSelectedTeamMembers([]);
+      setSelectedMentees([]);
+      
+      // Navigate to appropriate page after assignment
+      if (shouldNavigateToMyLearning) {
+        navigate('/my-learning', { state: { activeTab: 'courses', courseTab: courseTabToNavigate } });
+      } else if (shouldNavigateToLearningGoals) {
+        navigate('/my-learning', { state: { activeTab: 'goals' } });
+      }
+    }, 500);
   };
   
   const handleCheckboxChange = (id: string, type: 'team' | 'mentee') => {
@@ -159,9 +184,14 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            {actionType === 'share' 
+              ? "Share this course with your colleagues" 
+              : "Add this course to the learning path"}
+          </DialogDescription>
         </DialogHeader>
         
         {actionType === 'share' && (
@@ -178,8 +208,22 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button onClick={handleShare}>Share Course</Button>
+              <Button 
+                variant="outline" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenChange(false);
+                }}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleShare}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Sharing..." : "Share Course"}
+              </Button>
             </DialogFooter>
           </>
         )}
@@ -329,8 +373,22 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
             </Tabs>
             
             <DialogFooter>
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button onClick={handleAssign}>Assign Course</Button>
+              <Button 
+                variant="outline" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenChange(false);
+                }}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAssign}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Assigning..." : "Assign Course"}
+              </Button>
             </DialogFooter>
           </>
         )}

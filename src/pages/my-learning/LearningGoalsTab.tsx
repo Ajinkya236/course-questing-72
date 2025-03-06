@@ -22,12 +22,13 @@ const LearningGoalsTab: React.FC = () => {
     trainingCategory: 'Manager-Assigned'
   }));
   
+  // This function is now only used for whole card clicks, not for button clicks within cards
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
   };
   
   return (
-    <div>
+    <div onClick={(e) => e.stopPropagation()}>
       <Tabs defaultValue="selfAssigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-2 mb-8">
           <TabsTrigger value="selfAssigned">Courses Assigned by You</TabsTrigger>
@@ -39,7 +40,7 @@ const LearningGoalsTab: React.FC = () => {
             {selfAssignedCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {selfAssignedCourses.map((course) => (
-                  <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                  <div key={course.id} className="cursor-pointer">
                     <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
                   </div>
                 ))}
@@ -57,7 +58,7 @@ const LearningGoalsTab: React.FC = () => {
             {managerAssignedCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {managerAssignedCourses.map((course) => (
-                  <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                  <div key={course.id} className="cursor-pointer">
                     <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
                   </div>
                 ))}
