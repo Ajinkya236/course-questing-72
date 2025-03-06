@@ -1,50 +1,62 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { 
   Users, 
   Calendar, 
-  BookOpen, 
-  CheckCircle2, 
-  ClipboardList, 
-  Download, 
   FileText, 
-  CheckSquare,
+  BookOpen, 
+  CheckCircle, 
+  Upload, 
+  PenTool,
+  X,
+  ThumbsUp,
+  ChevronRight,
+  Download,
   Target,
-  AlertCircle,
-  Award 
+  BookMarked,
+  Award
 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock data for active engagements
-type Session = {
+// Define the types as mentioned in the error message
+type SessionStatus = "completed" | "upcoming";
+type TaskStatus = "pending" | "completed";
+
+interface Session {
   id: number;
   title: string;
   date: string;
-  status: "completed" | "upcoming";
+  status: SessionStatus;
   notes?: string;
-};
+}
 
-type Task = {
+interface Task {
   id: number;
   title: string;
-  description: string;
   dueDate: string;
-  status: "completed" | "pending";
-};
+  status: TaskStatus;
+  description?: string;
+  hasSample?: boolean;
+}
 
-type Course = {
+interface Course {
   id: number;
   title: string;
   progress: number;
-};
+  totalModules: number;
+  completedModules: number;
+}
 
-type Engagement = {
+interface Engagement {
   id: number;
   mentorName: string;
   mentorTitle: string;
@@ -57,87 +69,34 @@ type Engagement = {
   courses: Course[];
   goalsSet: boolean;
   sessionsCompleted: number;
-};
+  journalEntries?: { id: number; date: string; content: string }[];
+}
 
+// Mock data for active engagements with proper typing
 const activeEngagementsData: Engagement[] = [
   {
     id: 1,
     mentorName: "Dr. Sarah Johnson",
     mentorTitle: "Senior Data Scientist",
-    topic: "Data Science",
-    startDate: "2023-09-15",
+    topic: "Data Analysis",
+    startDate: "2023-10-20",
     imageUrl: "https://randomuser.me/api/portraits/women/44.jpg",
-    progress: 65,
-    goalsSet: true,
-    sessionsCompleted: 3,
+    progress: 40,
+    goalsSet: false,
+    sessionsCompleted: 1,
     sessions: [
-      {
-        id: 1,
-        title: "Introduction to Data Science Journey",
-        date: "2023-09-20",
-        status: "completed",
-        notes: "Discussed learning path and set initial goals."
-      },
-      {
-        id: 2,
-        title: "Data Analysis Fundamentals",
-        date: "2023-10-05",
-        status: "completed",
-        notes: "Covered pandas library basics and data cleaning techniques."
-      },
-      {
-        id: 3,
-        title: "Visualization Best Practices",
-        date: "2023-10-20",
-        status: "completed",
-        notes: "Explored data visualization using matplotlib and seaborn."
-      },
-      {
-        id: 4,
-        title: "Machine Learning Basics",
-        date: "2023-11-05",
-        status: "upcoming"
-      }
+      { id: 1, title: "Introduction to Data Analysis", date: "2023-10-25", status: "completed", notes: "Discussed key concepts and tools" },
+      { id: 2, title: "Advanced Data Visualization", date: "2023-11-05", status: "upcoming" }
     ],
     tasks: [
-      {
-        id: 1,
-        title: "Data Cleaning Exercise",
-        description: "Clean the provided dataset and prepare it for analysis.",
-        dueDate: "2023-10-10",
-        status: "completed"
-      },
-      {
-        id: 2,
-        title: "Visualization Project",
-        description: "Create 3 different visualizations from the cleaned dataset.",
-        dueDate: "2023-10-25",
-        status: "completed"
-      },
-      {
-        id: 3,
-        title: "Build a Simple Predictive Model",
-        description: "Using scikit-learn, build a simple predictive model with the dataset.",
-        dueDate: "2023-11-10",
-        status: "pending"
-      }
+      { id: 1, title: "Data Cleaning Exercise", dueDate: "2023-10-30", status: "completed", description: "Clean the provided dataset and normalize values." },
+      { id: 2, title: "Visualization Project", dueDate: "2023-11-15", status: "pending", description: "Create visualizations using the cleaned dataset.", hasSample: true }
     ],
     courses: [
-      {
-        id: 1,
-        title: "Python for Data Science",
-        progress: 100
-      },
-      {
-        id: 2,
-        title: "Statistical Analysis with Python",
-        progress: 75
-      },
-      {
-        id: 3,
-        title: "Introduction to Machine Learning",
-        progress: 30
-      }
+      { id: 1, title: "Fundamentals of Data Analysis", progress: 75, totalModules: 8, completedModules: 6 }
+    ],
+    journalEntries: [
+      { id: 1, date: "2023-10-25", content: "Today I learned about data cleaning techniques and how to identify outliers." }
     ]
   },
   {
@@ -145,59 +104,29 @@ const activeEngagementsData: Engagement[] = [
     mentorName: "Michael Chen",
     mentorTitle: "Product Manager",
     topic: "Product Management",
-    startDate: "2023-10-01",
+    startDate: "2023-09-15",
     imageUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-    progress: 35,
-    goalsSet: false,
-    sessionsCompleted: 1,
+    progress: 65,
+    goalsSet: true,
+    sessionsCompleted: 3,
     sessions: [
-      {
-        id: 1,
-        title: "Product Management Overview",
-        date: "2023-10-10",
-        status: "completed",
-        notes: "Introduced key product management concepts and frameworks."
-      },
-      {
-        id: 2,
-        title: "User Research Techniques",
-        date: "2023-10-25",
-        status: "upcoming"
-      },
-      {
-        id: 3,
-        title: "Product Roadmapping",
-        date: "2023-11-10",
-        status: "upcoming"
-      }
+      { id: 1, title: "Product Requirements", date: "2023-09-20", status: "completed", notes: "Learned how to gather and document requirements" },
+      { id: 2, title: "Stakeholder Management", date: "2023-10-05", status: "completed", notes: "Discussed effective communication strategies" },
+      { id: 3, title: "Product Roadmapping", date: "2023-10-20", status: "completed", notes: "Created a sample roadmap" },
+      { id: 4, title: "Launch Strategies", date: "2023-11-10", status: "upcoming" }
     ],
     tasks: [
-      {
-        id: 1,
-        title: "Competitive Analysis",
-        description: "Analyze 3 competing products and identify strengths and weaknesses.",
-        dueDate: "2023-10-20",
-        status: "completed"
-      },
-      {
-        id: 2,
-        title: "User Persona Development",
-        description: "Create 2-3 user personas for your product idea.",
-        dueDate: "2023-11-05",
-        status: "pending"
-      }
+      { id: 1, title: "Competitive Analysis", dueDate: "2023-09-30", status: "completed", description: "Research 3-5 competing products and analyze their strengths and weaknesses." },
+      { id: 2, title: "Create PRD Document", dueDate: "2023-10-15", status: "completed", description: "Develop a Product Requirements Document for your chosen product idea." },
+      { id: 3, title: "User Persona Development", dueDate: "2023-11-05", status: "pending", description: "Create 3-4 user personas for your product.", hasSample: true }
     ],
     courses: [
-      {
-        id: 1,
-        title: "Product Management Fundamentals",
-        progress: 60
-      },
-      {
-        id: 2,
-        title: "User Research for Product Managers",
-        progress: 20
-      }
+      { id: 1, title: "Product Management Fundamentals", progress: 100, totalModules: 10, completedModules: 10 },
+      { id: 2, title: "Agile Product Development", progress: 40, totalModules: 5, completedModules: 2 }
+    ],
+    journalEntries: [
+      { id: 1, date: "2023-09-20", content: "Today's session on product requirements was insightful. I learned how to properly scope features and prioritize based on user needs." },
+      { id: 2, date: "2023-10-05", content: "Stakeholder management is challenging but crucial. I need to work on my communication skills with technical teams." }
     ]
   }
 ];
@@ -205,68 +134,135 @@ const activeEngagementsData: Engagement[] = [
 const ActiveEngagements = () => {
   const { toast } = useToast();
   const [engagements, setEngagements] = useState<Engagement[]>(activeEngagementsData);
-  const [activeTab, setActiveTab] = useState<string>("sessions");
-  const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
-  const [showEngagementDetails, setShowEngagementDetails] = useState(false);
-  const [journalNote, setJournalNote] = useState("");
-  const [goals, setGoals] = useState("");
-  const [showGoalsDialog, setShowGoalsDialog] = useState(false);
+  const [activeEngagementId, setActiveEngagementId] = useState<number | null>(
+    engagements.length > 0 ? engagements[0].id : null
+  );
+  const [showNoteDialog, setShowNoteDialog] = useState(false);
+  const [showTaskSubmissionDialog, setShowTaskSubmissionDialog] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [sessionNote, setSessionNote] = useState('');
+  const [taskFile, setTaskFile] = useState<File | null>(null);
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [completionFeedback, setCompletionFeedback] = useState('');
+  const [showGoalSettingDialog, setShowGoalSettingDialog] = useState(false);
+  const [goal, setGoal] = useState('');
+  const [showJournalSheet, setShowJournalSheet] = useState(false);
+  const [journalEntry, setJournalEntry] = useState('');
+  const [showCertificateDialog, setShowCertificateDialog] = useState(false);
 
-  const handleMarkTaskCompleted = (engagementId: number, taskId: number) => {
-    setEngagements(engagements.map(engagement => {
-      if (engagement.id === engagementId) {
-        return {
-          ...engagement,
-          tasks: engagement.tasks.map(task => {
-            if (task.id === taskId) {
-              return { ...task, status: "completed" };
-            }
-            return task;
-          })
-        };
-      }
-      return engagement;
-    }));
+  const activeEngagement = engagements.find(e => e.id === activeEngagementId) || null;
 
+  const handleAddNote = () => {
+    if (!activeEngagement || !selectedSession || !sessionNote.trim()) return;
+    
     toast({
-      title: "Task Completed",
-      description: "Your task has been marked as completed."
+      title: "Note Added",
+      description: "Your note has been saved successfully."
+    });
+    
+    setSessionNote('');
+    setShowNoteDialog(false);
+  };
+
+  const handleTaskSubmission = () => {
+    if (!activeEngagement || !selectedTask || !taskFile) return;
+    
+    toast({
+      title: "Task Submitted",
+      description: `Your submission for "${selectedTask.title}" has been uploaded.`
+    });
+    
+    setTaskFile(null);
+    setShowTaskSubmissionDialog(false);
+  };
+
+  const handleWithdrawEngagement = () => {
+    if (!activeEngagementId) return;
+    
+    setEngagements(engagements.filter(e => e.id !== activeEngagementId));
+    
+    toast({
+      title: "Engagement Withdrawn",
+      description: "You have successfully withdrawn from this mentoring engagement."
+    });
+    
+    setShowWithdrawDialog(false);
+    setActiveEngagementId(engagements.length > 0 ? engagements[0].id : null);
+  };
+
+  const handleCompleteEngagement = () => {
+    if (!activeEngagementId) return;
+    
+    // Check if completion requirements are met
+    const engagement = engagements.find(e => e.id === activeEngagementId);
+    if (!engagement?.goalsSet || engagement.sessionsCompleted === 0) {
+      toast({
+        title: "Cannot Complete Engagement",
+        description: "You must set goals and complete at least one session before completing the engagement.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Engagement Completed",
+      description: "You have successfully completed this mentoring engagement."
+    });
+    
+    setShowCompletionDialog(false);
+  };
+
+  const handleSetGoals = () => {
+    if (!activeEngagementId || !goal.trim()) return;
+    
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId ? { ...e, goalsSet: true } : e
+    ));
+    
+    toast({
+      title: "Goals Set",
+      description: "Your mentoring goals have been saved successfully."
+    });
+    
+    setShowGoalSettingDialog(false);
+  };
+
+  const handleAddJournalEntry = () => {
+    if (!activeEngagement || !journalEntry.trim()) return;
+    
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      content: journalEntry
+    };
+    
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? { 
+            ...e, 
+            journalEntries: [...(e.journalEntries || []), newEntry]
+          } 
+        : e
+    ));
+    
+    toast({
+      title: "Journal Entry Added",
+      description: "Your journal entry has been saved successfully."
+    });
+    
+    setJournalEntry('');
+  };
+
+  const handleDownloadAllMaterials = () => {
+    toast({
+      title: "Download Started",
+      description: "All tasks, notes and materials are being prepared for download."
     });
   };
-
-  const handleSaveJournalNote = () => {
-    toast({
-      title: "Journal Saved",
-      description: "Your journal notes have been saved."
-    });
-    setJournalNote("");
-  };
-
-  const handleSaveGoals = (engagementId: number) => {
-    setEngagements(engagements.map(engagement => {
-      if (engagement.id === engagementId) {
-        return { ...engagement, goalsSet: true };
-      }
-      return engagement;
-    }));
-
-    toast({
-      title: "Goals Saved",
-      description: "Your mentoring goals have been set successfully."
-    });
-    setShowGoalsDialog(false);
-  };
-
-  const handleDownloadMaterials = (engagement: Engagement) => {
-    toast({
-      title: "Materials Downloaded",
-      description: `All materials for the engagement with ${engagement.mentorName} have been downloaded.`
-    });
-  };
-
-  const isEngagementCompleted = (engagement: Engagement) => {
-    return engagement.goalsSet && engagement.sessionsCompleted > 0;
-  };
+  
+  const canCompleteEngagement = activeEngagement?.goalsSet && activeEngagement?.sessionsCompleted > 0;
 
   return (
     <div className="space-y-6">
@@ -277,357 +273,506 @@ const ActiveEngagements = () => {
             Active Mentoring Engagements
           </CardTitle>
           <CardDescription>
-            Manage your ongoing mentoring relationships
+            Manage your ongoing mentorships and track your progress
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent>
           {engagements.length === 0 ? (
-            <div className="text-center p-8">
-              <p className="text-muted-foreground">You don't have any active mentoring engagements</p>
+            <div className="text-center py-12">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">No Active Engagements</h3>
+              <p className="text-muted-foreground mb-6">You don't have any active mentoring engagements yet.</p>
+              <Button onClick={() => window.location.href = '/mentoring?tab=discovery'}>
+                Find a Mentor
+              </Button>
             </div>
           ) : (
-            engagements.map(engagement => (
-              <Card key={engagement.id} className="overflow-hidden">
-                <div className="flex flex-col md:flex-row">
-                  <div className="p-4 md:w-1/3 border-b md:border-b-0 md:border-r">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden">
-                        <img src={engagement.imageUrl} alt={engagement.mentorName} className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{engagement.mentorName}</h3>
-                        <p className="text-sm text-muted-foreground">{engagement.mentorTitle}</p>
-                        <Badge className="mt-1">{engagement.topic}</Badge>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Overall Progress</span>
-                        <span>{engagement.progress}%</span>
-                      </div>
-                      <Progress value={engagement.progress} className="h-2" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span>Started: {new Date(engagement.startDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                        <span>{engagement.sessionsCompleted} Sessions</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => {
-                          setSelectedEngagement(engagement);
-                          setShowEngagementDetails(true);
-                        }}
+            <div>
+              <div className="p-4 mb-6 border border-amber-200 bg-amber-50 rounded-md">
+                <h3 className="text-sm font-medium text-amber-800 mb-1">Completion Requirements</h3>
+                <p className="text-xs text-amber-700">
+                  To complete an engagement, you must set your learning goals and complete at least one session with your mentor.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1">
+                  <h3 className="text-lg font-medium mb-4">My Engagements</h3>
+                  <div className="space-y-3">
+                    {engagements.map(engagement => (
+                      <Card 
+                        key={engagement.id} 
+                        className={`overflow-hidden cursor-pointer hover:border-primary/50 transition-colors ${
+                          activeEngagementId === engagement.id ? 'border-primary bg-primary/5' : ''
+                        }`}
+                        onClick={() => setActiveEngagementId(engagement.id)}
                       >
-                        Details
-                      </Button>
-                      <Button 
-                        variant={engagement.goalsSet ? "outline" : "default"} 
-                        size="sm" 
-                        className="w-full gap-1"
-                        onClick={() => {
-                          setSelectedEngagement(engagement);
-                          setShowGoalsDialog(true);
-                          setGoals("");
-                        }}
-                      >
-                        <Target className="h-4 w-4" />
-                        {engagement.goalsSet ? "Update Goals" : "Set Goals"}
-                      </Button>
-                    </div>
+                        <div className="flex p-3">
+                          <div className="mr-3">
+                            <div className="w-10 h-10 rounded-full overflow-hidden">
+                              <img src={engagement.imageUrl} alt={engagement.mentorName} className="w-full h-full object-cover" />
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm">{engagement.mentorName}</h4>
+                            <Badge variant="secondary" className="mt-1">{engagement.topic}</Badge>
+                            <div className="flex flex-col gap-1 mt-2">
+                              <div className="flex items-center text-xs">
+                                <Target className="h-3 w-3 mr-1 text-muted-foreground" />
+                                <span>{engagement.goalsSet ? 'Goals set' : 'Goals not set'}</span>
+                              </div>
+                              <div className="flex items-center text-xs">
+                                <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
+                                <span>{engagement.sessionsCompleted} session(s) completed</span>
+                              </div>
+                            </div>
+                            <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-primary rounded-full" 
+                                style={{ width: `${engagement.progress}%` }}
+                              ></div>
+                            </div>
+                            <p className="text-xs text-right text-muted-foreground mt-1">{engagement.progress}% complete</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
                   </div>
                   
-                  <div className="p-4 md:w-2/3">
-                    <h3 className="font-medium mb-3">Upcoming Activities</h3>
-                    <div className="space-y-3">
-                      {engagement.sessions.filter(s => s.status === "upcoming").slice(0, 1).map(session => (
-                        <div key={session.id} className="p-3 border rounded-md">
-                          <div className="flex justify-between">
-                            <h4 className="font-medium flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-primary" />
-                              {session.title}
-                            </h4>
-                            <Badge variant="outline">
-                              {new Date(session.date).toLocaleDateString()}
-                            </Badge>
+                  {activeEngagement && (
+                    <div className="mt-6 space-y-2">
+                      <Sheet open={showJournalSheet} onOpenChange={setShowJournalSheet}>
+                        <SheetTrigger asChild>
+                          <Button variant="outline" className="w-full gap-2" size="sm">
+                            <BookMarked className="h-4 w-4" />
+                            Mentee Journal
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-[400px] sm:w-[540px]">
+                          <SheetHeader>
+                            <SheetTitle>Mentee Journal</SheetTitle>
+                            <SheetDescription>
+                              Keep private notes about your mentoring journey with {activeEngagement.mentorName}
+                            </SheetDescription>
+                          </SheetHeader>
+                          <div className="py-6">
+                            <div className="mb-6">
+                              <h4 className="font-medium mb-2">New Entry</h4>
+                              <Textarea 
+                                placeholder="Write your thoughts, learnings, questions, or notes here..."
+                                value={journalEntry}
+                                onChange={(e) => setJournalEntry(e.target.value)}
+                                className="resize-none"
+                                rows={6}
+                              />
+                              <Button 
+                                onClick={handleAddJournalEntry} 
+                                className="mt-2"
+                                disabled={!journalEntry.trim()}
+                              >
+                                Add Entry
+                              </Button>
+                            </div>
+                            
+                            <div>
+                              <h4 className="font-medium mb-3">Previous Entries</h4>
+                              {activeEngagement.journalEntries && activeEngagement.journalEntries.length > 0 ? (
+                                <div className="space-y-4">
+                                  {activeEngagement.journalEntries.map(entry => (
+                                    <div key={entry.id} className="p-3 border rounded-md">
+                                      <div className="flex justify-between items-center mb-2">
+                                        <span className="text-sm font-medium">{new Date(entry.date).toLocaleDateString()}</span>
+                                      </div>
+                                      <p className="text-sm whitespace-pre-wrap">{entry.content}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">No journal entries yet</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        </SheetContent>
+                      </Sheet>
                       
-                      {engagement.tasks.filter(t => t.status === "pending").slice(0, 1).map(task => (
-                        <div key={task.id} className="p-3 border rounded-md">
-                          <div className="flex justify-between">
-                            <h4 className="font-medium flex items-center gap-2">
-                              <ClipboardList className="h-4 w-4 text-primary" />
-                              {task.title}
-                            </h4>
-                            <Badge variant="outline">
-                              Due: {new Date(task.dueDate).toLocaleDateString()}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                            {task.description}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="mt-4 flex justify-end">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="gap-1"
-                        onClick={() => handleDownloadMaterials(engagement)}
-                      >
+                      <Button variant="outline" className="w-full gap-2" size="sm" onClick={handleDownloadAllMaterials}>
                         <Download className="h-4 w-4" />
                         Download Materials
                       </Button>
+
+                      <Dialog open={showGoalSettingDialog} onOpenChange={setShowGoalSettingDialog}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant={activeEngagement.goalsSet ? "outline" : "default"} 
+                            className="w-full gap-2" 
+                            size="sm"
+                          >
+                            <Target className="h-4 w-4" />
+                            {activeEngagement.goalsSet ? "Update Goals" : "Set Goals"}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Set Your Learning Goals</DialogTitle>
+                            <DialogDescription>
+                              Define what you want to achieve through this mentoring engagement
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="py-4">
+                            <Textarea 
+                              placeholder="Describe your specific learning goals for this mentoring relationship..."
+                              value={goal}
+                              onChange={(e) => setGoal(e.target.value)}
+                              className="resize-none"
+                              rows={6}
+                            />
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Setting clear, specific goals will help your mentor guide you more effectively.
+                            </p>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowGoalSettingDialog(false)}>Cancel</Button>
+                            <Button onClick={handleSetGoals} disabled={!goal.trim()}>Save Goals</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog open={showCertificateDialog} onOpenChange={setShowCertificateDialog}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full gap-2" size="sm">
+                            <Award className="h-4 w-4" />
+                            View Certificate
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Certificate Preview</DialogTitle>
+                          </DialogHeader>
+                          <div className="py-6">
+                            {canCompleteEngagement ? (
+                              <div className="border p-8 rounded-md text-center space-y-4">
+                                <Award className="h-12 w-12 mx-auto text-primary" />
+                                <h3 className="text-xl font-bold">Certificate of Achievement</h3>
+                                <p className="text-muted-foreground">This certifies that</p>
+                                <p className="text-xl">[Your Name]</p>
+                                <p className="text-muted-foreground">has successfully completed</p>
+                                <p className="text-lg font-medium">{activeEngagement?.topic} Mentorship</p>
+                                <p className="text-muted-foreground">under the guidance of</p>
+                                <p className="text-lg">{activeEngagement?.mentorName}</p>
+                                <div className="pt-4 text-sm text-muted-foreground">
+                                  <p>This certificate will be available for download after</p>
+                                  <p>you complete this engagement</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-center py-6">
+                                <Award className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                                <h3 className="text-lg font-medium mb-2">Certificate Not Available Yet</h3>
+                                <p className="text-muted-foreground mb-4">
+                                  You need to set goals and complete at least one session before earning a certificate.
+                                </p>
+                                <div className="space-y-2 text-sm mt-4">
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox id="goals" checked={activeEngagement.goalsSet} disabled />
+                                    <label htmlFor="goals" className={activeEngagement.goalsSet ? "" : "text-muted-foreground"}>
+                                      Set learning goals
+                                    </label>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox id="sessions" checked={activeEngagement.sessionsCompleted > 0} disabled />
+                                    <label htmlFor="sessions" className={activeEngagement.sessionsCompleted > 0 ? "" : "text-muted-foreground"}>
+                                      Complete at least one session
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog open={showWithdrawDialog} onOpenChange={setShowWithdrawDialog}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full text-destructive" size="sm">
+                            Withdraw from Engagement
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Withdraw from Engagement</DialogTitle>
+                            <DialogDescription>
+                              Are you sure you want to withdraw from your mentoring engagement with {activeEngagement.mentorName}?
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="py-4">
+                            <p className="text-sm text-muted-foreground mb-2">
+                              This action cannot be undone. Your mentor will be notified of your withdrawal.
+                            </p>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowWithdrawDialog(false)}>Cancel</Button>
+                            <Button variant="destructive" onClick={handleWithdrawEngagement}>Withdraw</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog open={showCompletionDialog} onOpenChange={setShowCompletionDialog}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="default" 
+                            className="w-full mt-2" 
+                            size="sm" 
+                            disabled={!canCompleteEngagement}
+                          >
+                            Complete Engagement
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Complete Engagement</DialogTitle>
+                            <DialogDescription>
+                              Please confirm that you have met your learning objectives with {activeEngagement.mentorName}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="py-4">
+                            <h4 className="text-sm font-medium mb-2">Feedback on Goals Achieved</h4>
+                            <Textarea 
+                              placeholder="Please share what you've learned and how this mentorship helped you achieve your goals..."
+                              value={completionFeedback}
+                              onChange={(e) => setCompletionFeedback(e.target.value)}
+                              className="resize-none"
+                              rows={4}
+                            />
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowCompletionDialog(false)}>Cancel</Button>
+                            <Button onClick={handleCompleteEngagement} disabled={!completionFeedback.trim()}>Complete & Send Feedback</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
-                {/* Certificate Preview Section */}
-                {isEngagementCompleted(engagement) && (
-                  <div className="p-4 border-t bg-muted/20">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Award className="h-5 w-5 text-primary" />
-                        <h4 className="font-medium">Certificate of Completion</h4>
+                <div className="md:col-span-2">
+                  {activeEngagement && (
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium">Engagement with {activeEngagement.mentorName}</h3>
+                        <Badge variant="outline">Started {new Date(activeEngagement.startDate).toLocaleDateString()}</Badge>
                       </div>
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Download className="h-4 w-4" />
-                        Download Certificate
-                      </Button>
+                      
+                      <Tabs defaultValue="sessions" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 mb-6">
+                          <TabsTrigger value="sessions" className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>Sessions</span>
+                          </TabsTrigger>
+                          <TabsTrigger value="tasks" className="flex items-center gap-1">
+                            <FileText className="h-4 w-4" />
+                            <span>Tasks</span>
+                          </TabsTrigger>
+                          <TabsTrigger value="courses" className="flex items-center gap-1">
+                            <BookOpen className="h-4 w-4" />
+                            <span>Courses</span>
+                          </TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="sessions">
+                          <div className="space-y-4">
+                            {activeEngagement.sessions.map(session => (
+                              <Card key={session.id}>
+                                <div className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-medium">{session.title}</h4>
+                                    <Badge 
+                                      variant={session.status === 'completed' ? 'default' : 'outline'}
+                                    >
+                                      {session.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mb-3">
+                                    {new Date(session.date).toLocaleDateString('en-US', {
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
+                                    })}
+                                  </p>
+                                  
+                                  {session.notes && (
+                                    <div className="bg-muted/30 p-3 rounded-md mb-3">
+                                      <h5 className="text-sm font-medium mb-1">Your Notes</h5>
+                                      <p className="text-sm">{session.notes}</p>
+                                    </div>
+                                  )}
+                                  
+                                  {session.status === 'completed' && (
+                                    <div className="flex justify-end">
+                                      <Dialog open={showNoteDialog && selectedSession?.id === session.id} onOpenChange={(open) => {
+                                        setShowNoteDialog(open);
+                                        if (open) setSelectedSession(session);
+                                      }}>
+                                        <DialogTrigger asChild>
+                                          <Button variant="outline" size="sm" className="gap-1">
+                                            <PenTool className="h-3.5 w-3.5" />
+                                            {session.notes ? 'Edit Notes' : 'Add Notes'}
+                                          </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                          <DialogHeader>
+                                            <DialogTitle>Session Notes</DialogTitle>
+                                            <DialogDescription>
+                                              Add private notes for your session on {session.title}
+                                            </DialogDescription>
+                                          </DialogHeader>
+                                          <div className="py-4">
+                                            <Textarea
+                                              placeholder="Add your notes, key learnings, or action items from this session..."
+                                              value={sessionNote}
+                                              onChange={(e) => setSessionNote(e.target.value)}
+                                              className="resize-none"
+                                              rows={6}
+                                            />
+                                          </div>
+                                          <DialogFooter>
+                                            <Button variant="outline" onClick={() => setShowNoteDialog(false)}>Cancel</Button>
+                                            <Button onClick={handleAddNote}>Save Notes</Button>
+                                          </DialogFooter>
+                                        </DialogContent>
+                                      </Dialog>
+                                    </div>
+                                  )}
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="tasks">
+                          <div className="space-y-4">
+                            {activeEngagement.tasks.map(task => (
+                              <Card key={task.id}>
+                                <div className="p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h4 className="font-medium">{task.title}</h4>
+                                    <Badge 
+                                      variant={task.status === 'completed' ? 'default' : 'outline'}
+                                    >
+                                      {task.status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mb-3">
+                                    Due: {new Date(task.dueDate).toLocaleDateString()}
+                                  </p>
+                                  
+                                  {task.description && (
+                                    <div className="bg-muted/30 p-3 rounded-md mb-3">
+                                      <p className="text-sm">{task.description}</p>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="flex flex-wrap gap-2 mt-3">
+                                    {task.hasSample && (
+                                      <Button variant="outline" size="sm" className="gap-1">
+                                        <Download className="h-3.5 w-3.5" />
+                                        Download Sample
+                                      </Button>
+                                    )}
+                                    
+                                    {task.status === 'pending' && (
+                                      <Dialog open={showTaskSubmissionDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
+                                        setShowTaskSubmissionDialog(open);
+                                        if (open) setSelectedTask(task);
+                                      }}>
+                                        <DialogTrigger asChild>
+                                          <Button variant="default" size="sm" className="gap-1">
+                                            <Upload className="h-3.5 w-3.5" />
+                                            Submit Task
+                                          </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                          <DialogHeader>
+                                            <DialogTitle>Submit Task</DialogTitle>
+                                            <DialogDescription>
+                                              Upload your completed work for {task.title}
+                                            </DialogDescription>
+                                          </DialogHeader>
+                                          <div className="py-4">
+                                            <label className="block text-sm font-medium mb-2">Upload Document</label>
+                                            <Input
+                                              type="file"
+                                              onChange={(e) => setTaskFile(e.target.files?.[0] || null)}
+                                            />
+                                            <p className="text-xs text-muted-foreground mt-2">
+                                              Accepted file types: PDF, DOC, DOCX, PPT, PPTX, MP4, MOV (Max: 10MB)
+                                            </p>
+                                          </div>
+                                          <DialogFooter>
+                                            <Button variant="outline" onClick={() => setShowTaskSubmissionDialog(false)}>Cancel</Button>
+                                            <Button 
+                                              onClick={handleTaskSubmission}
+                                              disabled={!taskFile}
+                                            >
+                                              Submit Task
+                                            </Button>
+                                          </DialogFooter>
+                                        </DialogContent>
+                                      </Dialog>
+                                    )}
+                                    
+                                    {task.status === 'completed' && (
+                                      <Badge variant="outline" className="gap-1">
+                                        <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                                        Completed
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="courses">
+                          <div className="space-y-4">
+                            {activeEngagement.courses.map(course => (
+                              <Card key={course.id}>
+                                <div className="p-4">
+                                  <h4 className="font-medium mb-2">{course.title}</h4>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm text-muted-foreground">
+                                      {course.completedModules} of {course.totalModules} modules completed
+                                    </span>
+                                    <span className="text-sm font-medium">{course.progress}%</span>
+                                  </div>
+                                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-4">
+                                    <div 
+                                      className="h-full bg-primary rounded-full" 
+                                      style={{ width: `${course.progress}%` }}
+                                    ></div>
+                                  </div>
+                                  
+                                  <div className="flex justify-end">
+                                    <Button variant="outline" size="sm" className="gap-1" onClick={() => window.location.href = '/my-learning'}>
+                                      Continue Learning
+                                      <ChevronRight className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </div>
-                  </div>
-                )}
-              </Card>
-            ))
+                  )}
+                </div>
+              </div>
+            </div>
           )}
-          
-          {/* Completion Requirements Notice */}
-          <div className="bg-muted/30 p-4 rounded-lg mt-4 border border-muted">
-            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              Completion Requirements
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              An engagement is considered complete when both of the following requirements are met:
-            </p>
-            <ul className="text-sm text-muted-foreground mt-2 space-y-1 list-disc pl-5">
-              <li>At least one mentoring session has been completed</li>
-              <li>Mentoring goals have been set and acknowledged by both parties</li>
-            </ul>
-            <p className="text-sm text-muted-foreground mt-2">
-              Once an engagement is completed, you will be able to download your certificate and provide feedback for your mentor.
-            </p>
-          </div>
         </CardContent>
       </Card>
-      
-      {/* Engagement Details Dialog */}
-      <Dialog open={showEngagementDetails} onOpenChange={setShowEngagementDetails}>
-        <DialogContent className="sm:max-w-[900px]">
-          <DialogHeader>
-            <DialogTitle>Mentoring Engagement Details</DialogTitle>
-            <DialogDescription>
-              {selectedEngagement && `${selectedEngagement.topic} mentoring with ${selectedEngagement.mentorName}`}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedEngagement && (
-            <div className="py-4">
-              <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-4 mb-4">
-                  <TabsTrigger value="sessions">Sessions</TabsTrigger>
-                  <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                  <TabsTrigger value="resources">Resources</TabsTrigger>
-                  <TabsTrigger value="journal">Journal</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="sessions" className="space-y-4">
-                  {selectedEngagement.sessions.map(session => (
-                    <Card key={session.id}>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-medium">{session.title}</h3>
-                          <Badge variant={session.status === "completed" ? "default" : "outline"}>
-                            {session.status === "completed" ? "Completed" : "Upcoming"}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {new Date(session.date).toLocaleDateString()}
-                        </p>
-                        {session.notes && (
-                          <div className="mt-3 p-3 bg-muted/30 rounded-md">
-                            <h4 className="text-sm font-medium mb-1">Session Notes</h4>
-                            <p className="text-sm">{session.notes}</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </TabsContent>
-                
-                <TabsContent value="tasks" className="space-y-4">
-                  {selectedEngagement.tasks.map(task => (
-                    <Card key={task.id}>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-medium flex items-center gap-2">
-                            {task.status === "completed" ? (
-                              <CheckSquare className="h-4 w-4 text-primary" />
-                            ) : (
-                              <ClipboardList className="h-4 w-4 text-primary" />
-                            )}
-                            {task.title}
-                          </h3>
-                          <Badge variant={task.status === "completed" ? "default" : "outline"}>
-                            {task.status === "completed" ? "Completed" : `Due: ${new Date(task.dueDate).toLocaleDateString()}`}
-                          </Badge>
-                        </div>
-                        <p className="text-sm mt-2">{task.description}</p>
-                        
-                        {task.status === "pending" && (
-                          <div className="mt-4 flex justify-between">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="gap-1"
-                            >
-                              <Download className="h-4 w-4" />
-                              Download Sample
-                            </Button>
-                            <div className="space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                              >
-                                Submit Work
-                              </Button>
-                              <Button 
-                                variant="default" 
-                                size="sm"
-                                onClick={() => handleMarkTaskCompleted(selectedEngagement.id, task.id)}
-                              >
-                                Mark Complete
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </TabsContent>
-                
-                <TabsContent value="resources" className="space-y-4">
-                  <h3 className="font-medium mb-2">Recommended Courses</h3>
-                  {selectedEngagement.courses.map(course => (
-                    <Card key={course.id}>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <h4 className="font-medium flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-primary" />
-                            {course.title}
-                          </h4>
-                          <span className="text-sm">{course.progress}% completed</span>
-                        </div>
-                        <Progress value={course.progress} className="h-2" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                  
-                  <div className="mt-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-1 w-full"
-                      onClick={() => handleDownloadMaterials(selectedEngagement)}
-                    >
-                      <Download className="h-4 w-4" />
-                      Download All Materials
-                    </Button>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="journal" className="space-y-4">
-                  <Card>
-                    <CardContent className="p-4">
-                      <h3 className="font-medium mb-3">Private Mentoring Journal</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        This journal is private and only visible to you. Use it to track your progress, insights, and questions.
-                      </p>
-                      <textarea 
-                        className="w-full p-3 border rounded-md resize-none h-40"
-                        placeholder="Write your private notes about this mentoring journey..."
-                        value={journalNote}
-                        onChange={(e) => setJournalNote(e.target.value)}
-                      />
-                      <div className="mt-2 flex justify-end">
-                        <Button 
-                          variant="default" 
-                          size="sm"
-                          onClick={handleSaveJournalNote}
-                          disabled={!journalNote.trim()}
-                        >
-                          Save Journal
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      
-      {/* Set Goals Dialog */}
-      <Dialog open={showGoalsDialog} onOpenChange={setShowGoalsDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Set Mentoring Goals</DialogTitle>
-            <DialogDescription>
-              Define specific goals for your mentoring journey
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <h4 className="text-sm font-medium mb-2">What do you want to achieve?</h4>
-            <textarea 
-              className="w-full p-2 border rounded-md resize-none h-40"
-              placeholder="Describe your specific goals for this mentoring engagement..."
-              value={goals}
-              onChange={(e) => setGoals(e.target.value)}
-            />
-            <div className="mt-4 p-3 bg-muted/30 rounded-md">
-              <p className="text-sm text-muted-foreground">
-                <strong>Tip:</strong> Setting clear, specific goals will help your mentor guide you more effectively. 
-                Consider including skills you want to develop, career milestones you want to reach, or specific projects you need help with.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowGoalsDialog(false)}>Cancel</Button>
-            <Button 
-              onClick={() => selectedEngagement && handleSaveGoals(selectedEngagement.id)} 
-              disabled={!goals.trim()}
-            >
-              Save Goals
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
