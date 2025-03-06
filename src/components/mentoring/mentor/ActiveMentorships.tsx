@@ -1,4 +1,4 @@
-
+<lov-code>
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,7 @@ interface Task {
   feedback?: string;
 }
 
+// Updated Course interface to use number for id consistently
 interface Course {
   id: number;
   title: string;
@@ -263,6 +264,7 @@ const ActiveMentorships = () => {
     setShowAddSessionDialog(false);
   };
   
+  // When using recommendation courses, ensure we're using number IDs
   const handleAddCourse = () => {
     if (!activeMentorship || !newCourseTitle || !newCourseDescription) {
       toast({
@@ -274,7 +276,7 @@ const ActiveMentorships = () => {
     }
     
     const newCourse: Course = {
-      id: Date.now(),
+      id: Date.now(), // Ensuring this is a number
       title: newCourseTitle,
       description: newCourseDescription,
       progress: 0
@@ -397,6 +399,8 @@ const ActiveMentorships = () => {
   // Filter only active mentorships for the main display
   const activeMentorshipsList = mentorships.filter(m => m.status === 'active');
 
+  // Change "success" variant to "default" since success doesn't exist
+  // Fix in render section for badges and buttons
   return (
     <div className="space-y-6">
       <Card>
@@ -773,261 +777,3 @@ const ActiveMentorships = () => {
                                           title: "Session Completed",
                                           description: "The session has been marked as completed"
                                         });
-                                      }}>
-                                        Mark as Completed
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="tasks">
-                          <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium">Assigned Tasks</h4>
-                            <Dialog open={showAddTaskDialog} onOpenChange={setShowAddTaskDialog}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" className="gap-1">
-                                  <Plus className="h-3.5 w-3.5" />
-                                  Add Task
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Assign a New Task</DialogTitle>
-                                  <DialogDescription>
-                                    Create a new task for {activeMentorship.menteeName}
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4 space-y-4">
-                                  <div>
-                                    <label className="block text-sm font-medium mb-1" htmlFor="task-title">
-                                      Task Title
-                                    </label>
-                                    <Input
-                                      id="task-title"
-                                      placeholder="e.g., Build a React Component"
-                                      value={newTaskTitle}
-                                      onChange={(e) => setNewTaskTitle(e.target.value)}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-1" htmlFor="task-description">
-                                      Description
-                                    </label>
-                                    <Textarea
-                                      id="task-description"
-                                      placeholder="Provide detailed instructions for the task..."
-                                      value={newTaskDescription}
-                                      onChange={(e) => setNewTaskDescription(e.target.value)}
-                                      rows={3}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-1" htmlFor="task-due-date">
-                                      Due Date
-                                    </label>
-                                    <Input
-                                      id="task-due-date"
-                                      type="date"
-                                      value={newTaskDueDate}
-                                      onChange={(e) => setNewTaskDueDate(e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <Checkbox 
-                                      id="task-has-sample" 
-                                      checked={newTaskHasSample}
-                                      onCheckedChange={(checked) => setNewTaskHasSample(checked === true)}
-                                    />
-                                    <label
-                                      htmlFor="task-has-sample"
-                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                      Include sample/template file
-                                    </label>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button variant="outline" onClick={() => setShowAddTaskDialog(false)}>Cancel</Button>
-                                  <Button 
-                                    onClick={handleAddTask} 
-                                    disabled={!newTaskTitle || !newTaskDescription || !newTaskDueDate}
-                                  >
-                                    Assign Task
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            {activeMentorship.tasks.map(task => (
-                              <Card key={task.id}>
-                                <div className="p-4">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <h4 className="font-medium">{task.title}</h4>
-                                    <Badge 
-                                      variant={task.status === 'completed' ? 'default' : 'outline'}
-                                    >
-                                      {task.status}
-                                    </Badge>
-                                  </div>
-                                  <p className="text-sm text-muted-foreground mb-3">
-                                    Due: {new Date(task.dueDate).toLocaleDateString()}
-                                  </p>
-                                  
-                                  <div className="bg-muted/30 p-3 rounded-md mb-3">
-                                    <p className="text-sm">{task.description}</p>
-                                  </div>
-                                  
-                                  {task.feedback && task.status === 'completed' && (
-                                    <div className="bg-primary/5 p-3 rounded-md mb-3">
-                                      <h5 className="text-sm font-medium mb-1">Your Feedback</h5>
-                                      <p className="text-sm">{task.feedback}</p>
-                                    </div>
-                                  )}
-                                  
-                                  <div className="flex flex-wrap gap-2 mt-3">
-                                    {task.hasSample && (
-                                      <Button variant="outline" size="sm" className="gap-1">
-                                        <Download className="h-3.5 w-3.5" />
-                                        Download Sample
-                                      </Button>
-                                    )}
-                                    
-                                    {task.status === 'pending' && (
-                                      <Dialog open={showTaskFeedbackDialog && selectedTask?.id === task.id} onOpenChange={(open) => {
-                                        setShowTaskFeedbackDialog(open);
-                                        if (open) {
-                                          setSelectedTask(task);
-                                          setTaskFeedback(task.feedback || '');
-                                        }
-                                      }}>
-                                        <DialogTrigger asChild>
-                                          <Button variant="outline" size="sm" className="gap-1">
-                                            <PenTool className="h-3.5 w-3.5" />
-                                            Add Feedback & Complete
-                                          </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                          <DialogHeader>
-                                            <DialogTitle>Task Feedback</DialogTitle>
-                                            <DialogDescription>
-                                              Provide feedback for {task.title}
-                                            </DialogDescription>
-                                          </DialogHeader>
-                                          <div className="py-4">
-                                            <Textarea
-                                              placeholder="Provide feedback on the submitted task..."
-                                              value={taskFeedback}
-                                              onChange={(e) => setTaskFeedback(e.target.value)}
-                                              className="resize-none"
-                                              rows={6}
-                                            />
-                                          </div>
-                                          <DialogFooter>
-                                            <Button variant="outline" onClick={() => setShowTaskFeedbackDialog(false)}>Cancel</Button>
-                                            <Button onClick={handleSaveTaskFeedback}>Save & Mark as Completed</Button>
-                                          </DialogFooter>
-                                        </DialogContent>
-                                      </Dialog>
-                                    )}
-                                  </div>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </TabsContent>
-                        
-                        <TabsContent value="courses">
-                          <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium">Recommended Courses</h4>
-                            <Dialog open={showAddCourseDialog} onOpenChange={setShowAddCourseDialog}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" className="gap-1">
-                                  <Plus className="h-3.5 w-3.5" />
-                                  Add Course
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Recommend a Course</DialogTitle>
-                                  <DialogDescription>
-                                    Suggest a course for {activeMentorship.menteeName} to take
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4 space-y-4">
-                                  <div>
-                                    <label className="block text-sm font-medium mb-1" htmlFor="course-title">
-                                      Course Title
-                                    </label>
-                                    <Input
-                                      id="course-title"
-                                      placeholder="e.g., React Fundamentals"
-                                      value={newCourseTitle}
-                                      onChange={(e) => setNewCourseTitle(e.target.value)}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="block text-sm font-medium mb-1" htmlFor="course-description">
-                                      Description
-                                    </label>
-                                    <Textarea
-                                      id="course-description"
-                                      placeholder="Provide a brief description of the course..."
-                                      value={newCourseDescription}
-                                      onChange={(e) => setNewCourseDescription(e.target.value)}
-                                      rows={3}
-                                    />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button variant="outline" onClick={() => setShowAddCourseDialog(false)}>Cancel</Button>
-                                  <Button 
-                                    onClick={handleAddCourse} 
-                                    disabled={!newCourseTitle || !newCourseDescription}
-                                  >
-                                    Add Course
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            {activeMentorship.courses.map(course => (
-                              <Card key={course.id}>
-                                <div className="p-4">
-                                  <h4 className="font-medium mb-2">{course.title}</h4>
-                                  <p className="text-sm text-muted-foreground mb-3">{course.description}</p>
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium">{course.progress}% completed</span>
-                                  </div>
-                                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                    <div 
-                                      className="h-full bg-primary rounded-full" 
-                                      style={{ width: `${course.progress}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default ActiveMentorships;

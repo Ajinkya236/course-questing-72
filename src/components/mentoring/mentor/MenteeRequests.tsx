@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -121,7 +120,6 @@ const MenteeRequests = () => {
       description: `You have declined ${selectedRequest.menteeName}'s mentoring request`,
     });
     
-    // Reset
     setShowRejectionDialog(false);
     setRejectionReason('');
     setSelectedRequest(null);
