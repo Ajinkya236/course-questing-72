@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -87,60 +89,25 @@ const NavbarEnhanced = () => {
           </Link>
           <NavigationMenu className="ml-8">
             <NavigationMenuList className="gap-1">
-              {navLinks.map((link) => 
-                link.dropdown ? (
-                  <NavigationMenuItem key={link.href}>
-                    <NavigationMenuTrigger
+              {navLinks.map((link) => (
+                <NavigationMenuItem key={link.href}>
+                  <Link to={link.href} className="group">
+                    <NavigationMenuLink
                       className={cn(
-                        "h-auto px-4 py-2 font-medium",
-                        isActive(link.href) && "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                        "relative flex items-center gap-1.5 px-4 py-2 font-medium",
+                        isActive(link.href) && "text-primary"
                       )}
                     >
-                      <div className="flex items-center gap-1.5">
-                        {link.icon}
-                        <span>{link.label}</span>
-                      </div>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                        {link.dropdownItems?.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              >
-                                <div className="flex items-center gap-2 text-sm font-medium leading-none">
-                                  {item.icon}
-                                  {item.label}
-                                </div>
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                ) : (
-                  <NavigationMenuItem key={link.href}>
-                    <Link to={link.href} className="group">
-                      <NavigationMenuLink
-                        className={cn(
-                          "relative flex items-center gap-1.5 px-4 py-2 font-medium",
-                          isActive(link.href) && "text-primary"
-                        )}
-                      >
-                        {link.icon}
-                        <span>{link.label}</span>
-                        <span className={cn(
-                          "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform",
-                          isActive(link.href) ? "scale-x-100" : "group-hover:scale-x-100"
-                        )} />
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                )
-              )}
+                      {link.icon}
+                      <span>{link.label}</span>
+                      <span className={cn(
+                        "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform",
+                        isActive(link.href) ? "scale-x-100" : "group-hover:scale-x-100"
+                      )} />
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>

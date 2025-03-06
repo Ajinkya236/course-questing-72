@@ -22,12 +22,15 @@ interface Course {
   isBookmarked?: boolean;
   trainingCategory?: string;
   previewUrl?: string;
+  isHot?: boolean;
+  isNew?: boolean;
 }
 
 interface CourseCarouselProps {
   title: string;
   courses: Course[];
   showSkillFilters?: boolean;
+  showBadges?: boolean;
   onCourseClick?: (courseId: string) => void;
   onViewAllClick?: () => void;
   filterOptions?: string[];
@@ -44,6 +47,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   title, 
   courses,
   showSkillFilters = false,
+  showBadges = false,
   onCourseClick,
   onViewAllClick,
   filterOptions
