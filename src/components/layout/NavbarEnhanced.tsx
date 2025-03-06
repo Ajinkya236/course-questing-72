@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -37,7 +36,8 @@ import {
   Award,
   Target,
   Zap,
-  TrendingUp
+  TrendingUp,
+  Users
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -60,7 +60,8 @@ const NavbarEnhanced = () => {
       icon: <Search className="h-4 w-4" />,
       dropdown: false
     },
-    { href: '/my-learning', label: 'My Learning', icon: <Layers className="h-4 w-4" /> }
+    { href: '/my-learning', label: 'My Learning', icon: <Layers className="h-4 w-4" /> },
+    { href: '/mentoring', label: 'Mentoring', icon: <Users className="h-4 w-4" /> }
   ];
   
   const isActive = (path: string) => {
