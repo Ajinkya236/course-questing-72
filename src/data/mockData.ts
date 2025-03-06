@@ -1,3 +1,4 @@
+
 // Mock data for courses
 export const coursesList = [
   {
@@ -226,3 +227,8 @@ export const coursesList = [
     trainingCategory: 'Technical',
   },
 ];
+
+// Create a mockCoursesData export using the coursesList
+export const mockCoursesData = {
+  courses: coursesList
+};

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -42,8 +43,8 @@ import { Course } from '@/types/course';
 import CourseCard from '@/components/CourseCard';
 import { Badge } from '@/components/ui/badge';
 
-// Mock data - this would be replaced with actual API calls
-import { mockCoursesData } from '@/data/mockData';
+// Import coursesList instead of mockCoursesData
+import { coursesList } from '@/data/mockData';
 
 const SearchResults = () => {
   const location = useLocation();
@@ -73,16 +74,25 @@ const SearchResults = () => {
     setSearchQuery(query);
     
     // Simulating search results based on the query
-    // This would be replaced with an actual API call
-    // For now, we'll just filter the courses based on the query
-    const results = mockCoursesData.courses.filter(course => 
+    // Use coursesList instead of mockCoursesData.courses
+    const results = coursesList.filter(course => 
       course.title.toLowerCase().includes(query.toLowerCase()) ||
       course.description.toLowerCase().includes(query.toLowerCase()) ||
       course.category.toLowerCase().includes(query.toLowerCase()) ||
-      course.skills.some(skill => skill.name.toLowerCase().includes(query.toLowerCase()))
+      (course.skills && course.skills.some(skill => skill.name.toLowerCase().includes(query.toLowerCase())))
     );
     
-    setFilteredCourses(results);
+    // Add necessary properties to make courses compatible with Course type
+    const enhancedResults = results.map(course => ({
+      ...course,
+      learningObjectives: course.learningObjectives || [],
+      skills: course.skills || [],
+      certificates: course.certificates || [],
+      videoUrl: course.videoUrl || '',
+      modules: course.modules || [],
+    })) as Course[];
+    
+    setFilteredCourses(enhancedResults);
   }, [query]);
   
   const handleSearch = (e: React.FormEvent) => {
@@ -369,7 +379,20 @@ const SearchResults = () => {
               }>
                 {filteredCourses.map((course) => (
                   <div key={course.id} onClick={() => handleCourseClick(course.id)}>
-                    <CourseCard course={course} layout={viewMode === 'list' ? 'horizontal' : 'vertical'} />
+                    {/* Pass individual props instead of whole course object */}
+                    <CourseCard 
+                      id={course.id}
+                      title={course.title}
+                      description={course.description}
+                      imageUrl={course.imageUrl}
+                      category={course.category}
+                      duration={course.duration}
+                      rating={course.rating}
+                      trainingCategory={course.trainingCategory}
+                      isBookmarked={course.isBookmarked}
+                      isHot={course.isHot}
+                      isNew={course.isNew}
+                    />
                   </div>
                 ))}
               </div>
