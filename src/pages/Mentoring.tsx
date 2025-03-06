@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,13 +15,18 @@ import {
   ChevronLeft, 
   ChevronRight, 
   X, 
-  Plus 
+  Plus,
+  Briefcase,
+  GraduationCap,
+  BookOpen,
+  FilePlus
 } from 'lucide-react';
 import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
 import MentorJourney from '@/components/mentoring/MentorJourney';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import BannerCarousel from '@/components/BannerCarousel';
 
 const Mentoring = () => {
   const { toast } = useToast();
@@ -30,7 +34,6 @@ const Mentoring = () => {
   const [activeTab, setActiveTab] = useState('mentee');
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   const [showMentorPreferencesDialog, setShowMentorPreferencesDialog] = useState(false);
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   
   // Mock mentor preferences data
   const [mentorPreferences, setMentorPreferences] = useState({
@@ -40,25 +43,25 @@ const Mentoring = () => {
     philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
   });
   
-  // Mock banners data
+  // Mock HR and user guide banner data - this is now a shared banner for both mentee and mentor tabs
   const banners = [
     {
       id: 1,
-      title: "Become a Mentor",
-      description: "Share your knowledge and help others grow. Join our mentoring program today.",
-      imageUrl: "/lovable-uploads/7fa0a67a-4873-42ad-9abb-953c60322b3c.png"
+      title: "HR Update: New Mentoring Guidelines",
+      description: "Learn about the updated mentoring program policies and best practices.",
+      imageUrl: "/lovable-uploads/a0e176e9-79b3-47b4-8e35-d6e6d19e40fc.png"
     },
     {
       id: 2,
-      title: "Find Your Mentor",
-      description: "Connect with industry experts who can guide your career journey.",
-      imageUrl: "/placeholder.svg"
+      title: "Mentoring Excellence Workshop",
+      description: "Join our upcoming workshop to enhance your mentoring skills - Thursday at 2 PM.",
+      imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81"
     },
     {
       id: 3,
-      title: "Mentoring Resources",
-      description: "Access guides and tools to make the most of your mentoring relationships.",
-      imageUrl: "/placeholder.svg"
+      title: "Mentoring Resources Hub",
+      description: "Access our updated knowledge base with templates and guides for effective mentoring.",
+      imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
     }
   ];
 
@@ -90,16 +93,8 @@ const Mentoring = () => {
     });
   };
 
-  const nextBanner = () => {
-    setCurrentBannerIndex((prevIndex) => 
-      prevIndex === banners.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevBanner = () => {
-    setCurrentBannerIndex((prevIndex) => 
-      prevIndex === 0 ? banners.length - 1 : prevIndex - 1
-    );
+  const handleDiscoverRedirect = () => {
+    navigate('/discover');
   };
 
   // Mock recommended mentors data
@@ -150,48 +145,19 @@ const Mentoring = () => {
       <div className="container py-8 mb-20">
         <h1 className="text-3xl font-bold tracking-tight mb-6">Mentoring</h1>
         
-        <Card className="relative overflow-hidden mb-6">
-          <div className="absolute inset-0">
-            <img 
-              src={banners[currentBannerIndex].imageUrl} 
-              alt={banners[currentBannerIndex].title}
-              className="w-full h-full object-cover opacity-20"
-            />
-          </div>
-          <CardContent className="relative z-10 p-6 flex items-center justify-between">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 bg-background/80" 
-              onClick={prevBanner}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            <div className="text-center flex-1 px-10">
-              <h3 className="text-xl font-semibold mb-2">{banners[currentBannerIndex].title}</h3>
-              <p className="text-muted-foreground">{banners[currentBannerIndex].description}</p>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 bg-background/80" 
-              onClick={nextBanner}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
-        
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="mentee">Mentee Journey</TabsTrigger>
             <TabsTrigger value="mentor">Mentor Journey</TabsTrigger>
           </TabsList>
           
+          {/* Shared banner - moved outside of tab content to be shown for both tabs */}
+          <Card className="mb-6 overflow-hidden">
+            <BannerCarousel banners={banners} />
+          </Card>
+          
           <TabsContent value="mentee">
-            {/* Banner */}
+            {/* Banner removed and moved above tabs */}
             <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
               <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
                 <div>
@@ -220,7 +186,7 @@ const Mentoring = () => {
               </CardContent>
             </Card>
             
-            {/* Recommended Mentors */}
+            {/* Recommended Mentors - keep this section */}
             <div className="mb-10">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Recommended Mentors</h2>
