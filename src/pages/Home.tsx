@@ -137,7 +137,7 @@ const mockCoursesData = {
     },
     {
       id: '13',
-4 title: 'Cybersecurity Fundamentals',
+      title: 'Cybersecurity Fundamentals',
       description: 'Essential knowledge for protecting digital assets',
       imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3',
       category: 'Security',
