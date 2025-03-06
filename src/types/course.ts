@@ -28,4 +28,6 @@ export interface Course {
   certificates: string[];
   videoUrl: string;
   modules: Module[];
+  isHot?: boolean;
+  isNew?: boolean;
 }
