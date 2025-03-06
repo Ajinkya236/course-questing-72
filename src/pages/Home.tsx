@@ -5,7 +5,7 @@ import CourseCarousel from '@/components/CourseCarousel';
 import MyRewardsBadges from '@/components/MyRewardsBadges';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Leaderboard from '@/components/LeaderboardEnhanced';
-import { PointsOverview } from '@/components/PointsOverview';
+import PointsOverview from '@/components/PointsOverview';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SpinTheWheel from '@/components/gamification/SpinTheWheel';
@@ -19,7 +19,6 @@ import BannerCarousel from '@/components/BannerCarousel';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
 import LearningStreakDialog from '@/components/LearningStreakDialog';
 
-// Mock data for banners
 const banners = [
   {
     id: 1,
@@ -41,8 +40,149 @@ const banners = [
   },
 ];
 
-// Change for smaller welcome card
 const welcomeCardClasses = "mb-6 bg-gradient-to-r from-primary/80 to-primary border border-primary/20 text-primary-foreground";
+
+const mockLeaderboardUsers = [
+  {
+    id: "1",
+    name: "John Doe",
+    avatar: "https://i.pravatar.cc/150?u=1",
+    points: 2450,
+    position: 1,
+    positionChange: 0,
+    details: {
+      assessmentScore: 95,
+      engagementScore: 88,
+      completionRate: 100
+    },
+    team: "Frontend",
+    department: "Engineering",
+    location: "New York",
+    role: "Developer"
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    avatar: "https://i.pravatar.cc/150?u=2",
+    points: 2320,
+    position: 2,
+    positionChange: 1,
+    details: {
+      assessmentScore: 90,
+      engagementScore: 95,
+      completionRate: 92
+    },
+    team: "Backend",
+    department: "Engineering",
+    location: "San Francisco",
+    role: "Developer"
+  },
+  {
+    id: "3",
+    name: "Robert Johnson",
+    avatar: "https://i.pravatar.cc/150?u=3",
+    points: 2180,
+    position: 3,
+    positionChange: -1,
+    details: {
+      assessmentScore: 88,
+      engagementScore: 82,
+      completionRate: 95
+    },
+    team: "Design",
+    department: "Marketing",
+    location: "London",
+    role: "Designer"
+  },
+  {
+    id: "4",
+    name: "Emily Davis",
+    avatar: "https://i.pravatar.cc/150?u=4",
+    points: 2050,
+    position: 4,
+    positionChange: 2,
+    details: {
+      assessmentScore: 92,
+      engagementScore: 78,
+      completionRate: 89
+    },
+    team: "Content",
+    department: "Marketing",
+    location: "Berlin",
+    role: "Manager"
+  },
+  {
+    id: "5",
+    name: "Michael Wilson",
+    avatar: "https://i.pravatar.cc/150?u=5",
+    points: 1950,
+    position: 5,
+    positionChange: -2,
+    details: {
+      assessmentScore: 85,
+      engagementScore: 90,
+      completionRate: 85
+    },
+    team: "DevOps",
+    department: "Engineering",
+    location: "Tokyo",
+    role: "Developer"
+  },
+];
+
+const currentUser = {
+  id: "4",
+  name: "Emily Davis",
+  avatar: "https://i.pravatar.cc/150?u=4",
+  points: 2050,
+  position: 4,
+  positionChange: 2,
+  details: {
+    assessmentScore: 92,
+    engagementScore: 78,
+    completionRate: 89
+  },
+  team: "Content",
+  department: "Marketing",
+  location: "Berlin",
+  role: "Manager"
+};
+
+const mockPointsData = {
+  totalPoints: 8750,
+  coursesCompleted: 42,
+  hoursSpent: 128,
+  pointsThisWeek: 450,
+  pointsLastWeek: 380,
+  pointsBreakdown: [
+    {
+      category: "Course Completion",
+      points: 4200,
+      color: "#4CAF50"
+    },
+    {
+      category: "Assessment Scores",
+      points: 2100,
+      color: "#2196F3"
+    },
+    {
+      category: "Engagement",
+      points: 1500,
+      color: "#FFC107"
+    },
+    {
+      category: "Community Contribution",
+      points: 950,
+      color: "#9C27B0"
+    }
+  ],
+  streakDays: 18,
+  nextMilestone: {
+    name: "Gold Badge",
+    points: 10000
+  },
+  redeemablePoints: 3500
+};
 
 const Home = () => {
   const { toast } = useToast();
@@ -58,18 +198,28 @@ const Home = () => {
     });
   };
 
+  const handleViewStreakDetails = () => {
+    setOpenStreakDialog(true);
+  };
+
+  const handleRedeemPoints = () => {
+    toast({
+      title: "Redeem Points",
+      description: "Opening the rewards catalog...",
+    });
+    // Additional logic for redeeming points would go here
+  };
+
   return (
     <>
       <Helmet>
         <title>Learning Management System</title>
       </Helmet>
       <div className="container py-8 mb-20">
-        {/* Banner Carousel */}
         <Card className="mb-6 overflow-hidden">
           <BannerCarousel banners={banners} />
         </Card>
 
-        {/* Welcome Section - MADE SMALLER */}
         <Card className={welcomeCardClasses}>
           <CardContent className="p-6 md:p-8 max-w-3xl mx-auto">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-center">
@@ -91,10 +241,8 @@ const Home = () => {
           </CardContent>
         </Card>
 
-        {/* My Rewards and Badges */}
         <MyRewardsBadges />
 
-        {/* Quick Access Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Quick Access</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -128,13 +276,11 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Recommended Learning Paths */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Recommended Learning Paths</h2>
-          <CourseCarousel category="Recommended" />
+          <CourseCarousel courses={[]} title="Recommended" />
         </section>
 
-        {/* Gamification Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Gamification & Rewards</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -157,7 +303,13 @@ const Home = () => {
                     <DialogHeader>
                       <DialogTitle>Spin the Wheel</DialogTitle>
                     </DialogHeader>
-                    <SpinTheWheel onRewardClaim={handleRewardClaim} />
+                    <SpinTheWheel 
+                      spinning={false} 
+                      segments={[
+                        { id: 1, name: "500 Points", value: 500, type: "points", color: "#4CAF50" },
+                        { id: 2, name: "Badge", value: "Badge", type: "badge", color: "#2196F3" }
+                      ]}
+                    />
                   </DialogContent>
                 </Dialog>
 
@@ -171,7 +323,7 @@ const Home = () => {
                     <DialogHeader>
                       <DialogTitle>Open Mystery Box</DialogTitle>
                     </DialogHeader>
-                    <MysteryBox onRewardClaim={handleRewardClaim} />
+                    <MysteryBox />
                   </DialogContent>
                 </Dialog>
               </CardContent>
@@ -195,16 +347,21 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Points Overview and Leaderboard */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Points & Leaderboard</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PointsOverview />
-            <Leaderboard />
+            <PointsOverview 
+              data={mockPointsData}
+              onViewStreakDetails={handleViewStreakDetails}
+              onRedeemPoints={handleRedeemPoints}
+            />
+            <Leaderboard 
+              users={mockLeaderboardUsers}
+              currentUser={currentUser}
+            />
           </div>
         </section>
 
-        {/* Training Categories Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Explore Training Categories</h2>
           <Tabs defaultValue="ready-for-role" className="w-full">
@@ -215,21 +372,20 @@ const Home = () => {
               <TabsTrigger value="technical">Technical</TabsTrigger>
             </TabsList>
             <TabsContent value="ready-for-role">
-              <CourseCarousel category="Ready for Role" />
+              <CourseCarousel courses={[]} title="Ready for Role" />
             </TabsContent>
             <TabsContent value="mandatory">
-              <CourseCarousel category="Mandatory" />
+              <CourseCarousel courses={[]} title="Mandatory" />
             </TabsContent>
             <TabsContent value="leadership">
-              <CourseCarousel category="Leadership" />
+              <CourseCarousel courses={[]} title="Leadership" />
             </TabsContent>
             <TabsContent value="technical">
-              <CourseCarousel category="Technical" />
+              <CourseCarousel courses={[]} title="Technical" />
             </TabsContent>
           </Tabs>
         </section>
 
-        {/* Skills for Role Section */}
         <section className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-4">Skills for Your Next Role</h2>
           <Card className="bg-secondary/10">
@@ -246,27 +402,21 @@ const Home = () => {
         </section>
       </div>
 
-      {/* Spin the Wheel Dialog */}
       <SpinTheWheelDialog
-        showSpinTheWheel={showSpinTheWheel}
-        setShowSpinTheWheel={setShowSpinTheWheel}
-        handleRewardClaim={handleRewardClaim}
+        open={showSpinTheWheel}
+        onOpenChange={setShowSpinTheWheel}
       />
 
-      {/* Mystery Box Dialog */}
       <MysteryBoxDialog
-        showMysteryBox={showMysteryBox}
-        setShowMysteryBox={setShowMysteryBox}
-        handleRewardClaim={handleRewardClaim}
+        open={showMysteryBox}
+        onOpenChange={setShowMysteryBox}
       />
 
-      {/* Skills for Role Dialog */}
       <SkillsForRoleDialog
         open={openSkillsDialog}
         onOpenChange={setOpenSkillsDialog}
       />
 
-      {/* Learning Streak Dialog */}
       <LearningStreakDialog
         open={openStreakDialog}
         onOpenChange={setOpenStreakDialog}
