@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,10 @@ interface MockCoursesData {
   similarUsers: Course[];
   topPicks?: Course[];
   skillInterestsFollowed?: Course[];
+  chosenForMe?: Course[];
+  skillsForJobRole?: Course[];
+  basedOnInterest?: Course[];
+  academyCourses?: Course[];
 }
 
 const mockCoursesData: MockCoursesData = {
@@ -401,6 +404,304 @@ const mockCoursesData: MockCoursesData = {
       videoUrl: '',
       modules: []
     },
+  ],
+  chosenForMe: [
+    {
+      id: '51',
+      title: 'Personalized Leadership Development',
+      description: 'Tailored for your leadership style and career aspirations',
+      imageUrl: 'https://images.unsplash.com/photo-1507662228758-08d030c4820b',
+      category: 'Leadership',
+      duration: '6h 15m',
+      rating: 4.9,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '52',
+      title: 'Advanced Excel for Analysts',
+      description: 'Master complex Excel functions relevant to your role',
+      imageUrl: 'https://images.unsplash.com/photo-1535572290543-960a8046f5af',
+      category: 'Technical Skills',
+      duration: '4h 45m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '53',
+      title: 'Design Thinking for Problem Solving',
+      description: 'Apply innovative thinking to business challenges',
+      imageUrl: 'https://images.unsplash.com/photo-1580894894513-541e068a3e2b',
+      category: 'Innovation',
+      duration: '3h 30m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '54',
+      title: 'Strategic Communication',
+      description: 'Enhance your communication impact in organizational settings',
+      imageUrl: 'https://images.unsplash.com/photo-1558403194-611308249627',
+      category: 'Communication',
+      duration: '2h 50m',
+      rating: 4.6,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '55',
+      title: 'Effective Team Management',
+      description: 'Build and lead high-performing teams',
+      imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952',
+      category: 'Management',
+      duration: '5h 15m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ],
+  skillsForJobRole: [
+    {
+      id: '61',
+      title: 'Strategic Planning',
+      description: 'Essential strategic planning skills for managers',
+      imageUrl: 'https://images.unsplash.com/photo-1517292987719-0369a794ec0f',
+      category: 'Strategy',
+      duration: '5h 30m',
+      rating: 4.7,
+      trainingCategory: 'Leadership',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '62',
+      title: 'Team Leadership',
+      description: 'Lead teams effectively in a modern work environment',
+      imageUrl: 'https://images.unsplash.com/photo-1521791136064-7986c2920216',
+      category: 'Leadership',
+      duration: '4h 15m',
+      rating: 4.8,
+      trainingCategory: 'Management',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '63',
+      title: 'Business Analytics',
+      description: 'Use data to drive business decisions',
+      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f',
+      category: 'Analytics',
+      duration: '6h 45m',
+      rating: 4.9,
+      trainingCategory: 'Technical',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '64',
+      title: 'Project Management',
+      description: 'Deliver projects on time and within budget',
+      imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978',
+      category: 'Project Management',
+      duration: '5h 30m',
+      rating: 4.7,
+      trainingCategory: 'Technical',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '65',
+      title: 'Critical Problem Solving',
+      description: 'Analytical approaches to complex business problems',
+      imageUrl: 'https://images.unsplash.com/photo-1512758017271-d7b84c2113f1',
+      category: 'Problem Solving',
+      duration: '3h 45m',
+      rating: 4.6,
+      trainingCategory: 'Critical Thinking',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ],
+  basedOnInterest: [
+    {
+      id: '71',
+      title: 'Digital Marketing Fundamentals',
+      description: 'Essential skills for modern marketing professionals',
+      imageUrl: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf',
+      category: 'Marketing',
+      duration: '4h 30m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '72',
+      title: 'Introduction to UX Design',
+      description: 'User-centered design principles and practices',
+      imageUrl: 'https://images.unsplash.com/photo-1541462608143-67571c6738dd',
+      category: 'Design',
+      duration: '5h 15m',
+      rating: 4.8,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '73',
+      title: 'Python for Data Analysis',
+      description: 'Use Python to manipulate and visualize data',
+      imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb',
+      category: 'Programming',
+      duration: '6h 45m',
+      rating: 4.9,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '74',
+      title: 'Product Management Essentials',
+      description: 'Core skills for successful product managers',
+      imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+      category: 'Product Management',
+      duration: '5h 30m',
+      rating: 4.7,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '75',
+      title: 'Creative Writing Workshop',
+      description: 'Develop your storytelling and writing skills',
+      imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a',
+      category: 'Writing',
+      duration: '3h 45m',
+      rating: 4.6,
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+  ],
+  academyCourses: [
+    {
+      id: '81',
+      title: 'Introduction to Leadership Academy',
+      description: 'Core leadership principles and frameworks',
+      imageUrl: 'https://images.unsplash.com/photo-1519834785169-98be25ec3f84',
+      category: 'Leadership Academy',
+      duration: '8h 30m',
+      rating: 4.9,
+      trainingCategory: 'Foundational',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '82',
+      title: 'Data Science Bootcamp',
+      description: 'Comprehensive data science curriculum',
+      imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+      category: 'Data Academy',
+      duration: '12h 45m',
+      rating: 4.8,
+      trainingCategory: 'Technical',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '83',
+      title: 'Digital Marketing Certificate',
+      description: 'Complete digital marketing skill development',
+      imageUrl: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec',
+      category: 'Marketing Academy',
+      duration: '10h 15m',
+      rating: 4.7,
+      trainingCategory: 'Specialized',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '84',
+      title: 'Project Management Professional',
+      description: 'PMP certification preparation',
+      imageUrl: 'https://images.unsplash.com/photo-1494859802809-d069c3b71a8a',
+      category: 'PM Academy',
+      duration: '15h 30m',
+      rating: 4.9,
+      trainingCategory: 'Certification',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
+    {
+      id: '85',
+      title: 'Design Thinking Masterclass',
+      description: 'Advanced design methodologies',
+      imageUrl: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634',
+      category: 'Innovation Academy',
+      duration: '9h 45m',
+      rating: 4.8,
+      trainingCategory: 'Advanced',
+      learningObjectives: [],
+      skills: [],
+      certificates: [],
+      videoUrl: '',
+      modules: []
+    },
   ]
 };
 
@@ -420,6 +721,16 @@ const skillsYouFollow = [
   { id: 5, name: 'Cloud Architecture', proficiency: 50 },
 ];
 
+const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
+const subAcademyFilters = {
+  'All Academies': ['All Sub-Academies'],
+  'Leadership Academy': ['All Sub-Academies', 'Foundational', 'Advanced', 'Executive'],
+  'Data Academy': ['All Sub-Academies', 'Technical', 'Analytics', 'Machine Learning'],
+  'Marketing Academy': ['All Sub-Academies', 'Digital', 'Content', 'Strategy', 'Specialized'],
+  'PM Academy': ['All Sub-Academies', 'Agile', 'Traditional', 'Certification'],
+  'Innovation Academy': ['All Sub-Academies', 'Design Thinking', 'Advanced', 'Specialized'],
+};
+
 const Home = () => {
   const navigate = useNavigate();
   const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
@@ -427,6 +738,7 @@ const Home = () => {
   const [isStreakDialogOpen, setIsStreakDialogOpen] = useState(false);
   const [isSkillsForRoleOpen, setIsSkillsForRoleOpen] = useState(false);
   const [skillsTab, setSkillsTab] = useState('follow');
+  const [selectedAcademy, setSelectedAcademy] = useState('All Academies');
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
@@ -739,6 +1051,40 @@ const Home = () => {
           </div>
           
           <CourseCarousel 
+            title="Chosen For You" 
+            courses={mockCoursesData.chosenForMe || []} 
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Chosen For You')}
+          />
+          
+          <CourseCarousel 
+            title="Skills For Your Job Role" 
+            courses={mockCoursesData.skillsForJobRole || []} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Skills For Your Job Role')}
+            filterOptions={['All Skills', 'Leadership', 'Management', 'Technical', 'Critical Thinking', 'Problem Solving', 'Strategy']}
+          />
+          
+          <CourseCarousel 
+            title="Based On Your Interest" 
+            courses={mockCoursesData.basedOnInterest || []} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Based On Your Interest')}
+            filterOptions={['All Skills', 'Marketing', 'Design', 'Programming', 'Product Management', 'Writing']}
+          />
+          
+          <CourseCarousel 
+            title="Academy Courses" 
+            courses={mockCoursesData.academyCourses || []} 
+            showSkillFilters={true}
+            onCourseClick={handleCourseClick}
+            onViewAllClick={() => handleViewAllCategory('Academy Courses')}
+            filterOptions={academyFilters}
+          />
+          
+          <CourseCarousel 
             title="Popular with Similar Learners" 
             courses={mockCoursesData.similarUsers} 
             onCourseClick={handleCourseClick}
@@ -753,10 +1099,10 @@ const Home = () => {
           />
           
           <CourseCarousel 
-            title="New Courses" 
+            title="Newly Added" 
             courses={mockCoursesData.newCourses} 
             onCourseClick={handleCourseClick}
-            onViewAllClick={() => handleViewAllCategory('New Courses')}
+            onViewAllClick={() => handleViewAllCategory('Newly Added')}
           />
         </section>
       </div>
