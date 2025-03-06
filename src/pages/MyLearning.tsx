@@ -2,23 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
 import { 
   Award, 
   BookOpen, 
   Gift, 
-  Medal, 
-  Target, 
-  ChevronRight, 
-  Trophy,
-  Star,
-  Clock
+  Target
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
 import BadgesTab from './my-learning/BadgesTab';
+import LearningGoalsTab from './my-learning/LearningGoalsTab';
 
 const MyLearning = () => {
   const location = useLocation();
@@ -46,10 +41,14 @@ const MyLearning = () => {
         <h1 className="text-3xl font-bold tracking-tight mb-6">My Learning</h1>
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
             <TabsTrigger value="courses" className="flex items-center gap-1">
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Courses</span>
+            </TabsTrigger>
+            <TabsTrigger value="goals" className="flex items-center gap-1">
+              <Target className="h-4 w-4" />
+              <span className="hidden sm:inline">Learning Goals FY 24-25</span>
             </TabsTrigger>
             <TabsTrigger value="rewards" className="flex items-center gap-1">
               <Gift className="h-4 w-4" />
@@ -68,6 +67,10 @@ const MyLearning = () => {
           
           <TabsContent value="courses">
             <CoursesTab initialActiveTab={location.state?.courseTab} />
+          </TabsContent>
+          
+          <TabsContent value="goals">
+            <LearningGoalsTab />
           </TabsContent>
           
           <TabsContent value="rewards">

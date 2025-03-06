@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { User, Users, UserPlus, Target, ListChecks } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Person {
   id: string;
@@ -18,7 +19,7 @@ interface Person {
 
 interface CourseActionDialogProps {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   title: string;
   courseId: string;
   courseName: string;
@@ -27,13 +28,14 @@ interface CourseActionDialogProps {
 
 const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
   open,
-  onClose,
+  onOpenChange,
   title,
   courseId,
   courseName,
   actionType
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [emails, setEmails] = useState('');
   const [assignTab, setAssignTab] = useState('me');
   
@@ -68,16 +70,20 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
       description: `"${courseName}" has been shared successfully`,
     });
     
-    onClose();
+    onOpenChange(false);
     setEmails('');
   };
   
   const handleAssign = () => {
     let message = '';
+    let shouldNavigateToMyLearning = false;
+    let shouldNavigateToLearningGoals = false;
+    let courseTabToNavigate = 'assigned';
     
     switch (assignTab) {
       case 'me':
         message = `"${courseName}" has been assigned to you`;
+        shouldNavigateToMyLearning = true;
         break;
       case 'team':
         if (selectedTeamMembers.length === 0) {
@@ -103,6 +109,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
         break;
       case 'mygoals':
         message = `"${courseName}" has been added to your learning goals`;
+        shouldNavigateToLearningGoals = true;
         break;
       case 'teamgoals':
         if (selectedTeamMembers.length === 0) {
@@ -122,9 +129,16 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
       description: message,
     });
     
-    onClose();
+    onOpenChange(false);
     setSelectedTeamMembers([]);
     setSelectedMentees([]);
+    
+    // Navigate to appropriate page after assignment
+    if (shouldNavigateToMyLearning) {
+      navigate('/my-learning', { state: { activeTab: 'courses', courseTab: courseTabToNavigate } });
+    } else if (shouldNavigateToLearningGoals) {
+      navigate('/my-learning', { state: { activeTab: 'goals' } });
+    }
   };
   
   const handleCheckboxChange = (id: string, type: 'team' | 'mentee') => {
@@ -144,7 +158,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -164,7 +178,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleShare}>Share Course</Button>
             </DialogFooter>
           </>
@@ -274,13 +288,13 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               
               <TabsContent value="mygoals" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  This course will be added to your learning goals.
+                  This course will be added to your learning goals under "Courses Assigned by You".
                 </p>
               </TabsContent>
               
               <TabsContent value="teamgoals" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Select team members to add this course to their learning goals:
+                  Select team members to add this course to their learning goals under "Courses Assigned by Manager":
                 </p>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {teamMembers.map(member => (
@@ -315,7 +329,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
             </Tabs>
             
             <DialogFooter>
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleAssign}>Assign Course</Button>
             </DialogFooter>
           </>

@@ -222,7 +222,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
       {/* Share Dialog */}
       <CourseActionDialog
         open={showShareDialog}
-        onClose={() => setShowShareDialog(false)}
+        onOpenChange={setShowShareDialog}
         title={`Share "${title}"`}
         courseId={id}
         courseName={title}
@@ -232,7 +232,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
       {/* Assign Dialog */}
       <CourseActionDialog
         open={showAssignDialog}
-        onClose={() => setShowAssignDialog(false)}
+        onOpenChange={setShowAssignDialog}
         title={`Assign "${title}"`}
         courseId={id}
         courseName={title}
