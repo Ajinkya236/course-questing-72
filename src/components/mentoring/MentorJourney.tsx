@@ -7,19 +7,12 @@ import MentorshipHistory from './mentor/MentorshipHistory';
 import { 
   ClipboardList, 
   Users, 
-  History,
-  ChevronLeft,
-  ChevronRight
+  History
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 const MentorJourney = () => {
   const [activeTab, setActiveTab] = useState('requests');
   
-  // We're removing the banner from this component as it will be managed in the Mentoring.tsx page
-  // according to the requirement #11
-
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">My Mentor Journey</h2>

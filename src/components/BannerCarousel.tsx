@@ -32,7 +32,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners, className = ''
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative overflow-hidden rounded-md ${className}`}>
       <div className="absolute inset-0">
         <img 
           src={banners[currentBannerIndex].imageUrl} 
@@ -46,6 +46,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners, className = ''
           size="icon" 
           className="rounded-full h-8 w-8 bg-background/80" 
           onClick={prevBanner}
+          aria-label="Previous banner"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -60,10 +61,25 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners, className = ''
           size="icon" 
           className="rounded-full h-8 w-8 bg-background/80" 
           onClick={nextBanner}
+          aria-label="Next banner"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </CardContent>
+      
+      {/* Banner indicators */}
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-20">
+        {banners.map((_, index) => (
+          <button
+            key={index}
+            className={`h-1.5 rounded-full transition-all ${
+              currentBannerIndex === index ? "w-4 bg-primary" : "w-1.5 bg-primary/30"
+            }`}
+            onClick={() => setCurrentBannerIndex(index)}
+            aria-label={`Go to banner ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };

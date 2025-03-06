@@ -1,302 +1,277 @@
+
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  ClipboardList,
-  UserCheck,
-  UserX,
-  Calendar,
-  Clock
-} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Check, X, Briefcase, GraduationCap, Clock, Building } from 'lucide-react';
 
-// Define types for the different request statuses
-interface BaseRequest {
-  id: number;
-  menteeName: string;
-  menteeTitle: string;
-  topic: string;
-  date: string;
-  message: string;
-  imageUrl: string;
-}
-
-interface PendingRequest extends BaseRequest {
-  status: 'pending';
-}
-
-interface AcceptedRequest extends BaseRequest {
-  status: 'accepted';
-}
-
-interface RejectedRequest extends BaseRequest {
-  status: 'rejected';
-  rejectionReason: string;
-}
-
-type MenteeRequest = PendingRequest | AcceptedRequest | RejectedRequest;
+// Mock data for mentee requests
+const mockMenteeRequests = [
+  {
+    id: 1,
+    mentee: {
+      id: 'mentee3',
+      name: 'Thomas Lee',
+      role: 'Marketing Specialist',
+      avatar: 'https://i.pravatar.cc/150?img=8',
+      department: 'Marketing'
+    },
+    requestDate: '2023-09-28',
+    message: "I'm looking to improve my digital marketing skills and learn more about data-driven marketing strategies. I've been in the industry for 2 years but want to specialize in analytics and performance marketing.",
+    skills: ['Digital Marketing', 'Content Strategy', 'Analytics'],
+    expectedDuration: '3 months'
+  },
+  {
+    id: 2,
+    mentee: {
+      id: 'mentee4',
+      name: 'Emily Chen',
+      role: 'Product Analyst',
+      avatar: 'https://i.pravatar.cc/150?img=20',
+      department: 'Product'
+    },
+    requestDate: '2023-09-25',
+    message: "I'm transitioning from analytics to product management and would love guidance on building the right skillset. I have a strong data background but need to learn more about product strategy and user experience.",
+    skills: ['Data Analysis', 'Product Strategy', 'SQL'],
+    expectedDuration: '6 months'
+  }
+];
 
 const MenteeRequests = () => {
   const { toast } = useToast();
-  const [requests, setRequests] = useState<MenteeRequest[]>([
-    {
-      id: 1,
-      menteeName: "Alex Chen",
-      menteeTitle: "Junior Developer",
-      topic: "Web Development",
-      status: "pending",
-      date: "2023-10-15",
-      message: "I'm looking to improve my front-end development skills, especially with React. I've been working with basic HTML/CSS/JS for about a year, but I want to level up my skills to build more complex applications. I'm particularly interested in learning about component architecture and state management.",
-      imageUrl: "https://randomuser.me/api/portraits/men/32.jpg"
-    },
-    {
-      id: 2,
-      menteeName: "Sarah Johnson",
-      menteeTitle: "Product Designer",
-      topic: "UX Design",
-      status: "pending",
-      date: "2023-10-10",
-      message: "I'm a product designer looking to enhance my UX research skills. I have experience in creating wireframes and prototypes, but I want to learn more about user research methodologies and how to effectively incorporate user feedback into the design process.",
-      imageUrl: "https://randomuser.me/api/portraits/women/44.jpg"
-    },
-    {
-      id: 3,
-      menteeName: "Michael Brown",
-      menteeTitle: "Data Analyst",
-      topic: "Data Science",
-      status: "pending",
-      date: "2023-10-05",
-      message: "I'm currently working as a data analyst and want to transition into data science. I'm comfortable with SQL and Excel, but I need guidance on learning Python for data analysis, machine learning basics, and how to build a portfolio of data science projects.",
-      imageUrl: "https://randomuser.me/api/portraits/men/67.jpg"
-    }
-  ]);
+  const [menteeRequests, setMenteeRequests] = useState(mockMenteeRequests);
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [responseMessage, setResponseMessage] = useState('');
   
-  const [selectedRequest, setSelectedRequest] = useState<MenteeRequest | null>(null);
-  const [showRejectionDialog, setShowRejectionDialog] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
+  const handleAcceptDialogOpen = (request) => {
+    setSelectedRequest(request);
+    setResponseMessage(`Hi ${request.mentee.name}, I'd be happy to mentor you on your journey to improve your ${request.skills.join(', ')} skills. Let's schedule our first session soon to discuss your goals in more detail.`);
+    setAcceptDialogOpen(true);
+  };
   
-  const pendingRequests = requests.filter(req => req.status === 'pending');
-  const historyRequests = requests.filter(req => req.status !== 'pending');
+  const handleDeclineDialogOpen = (request) => {
+    setSelectedRequest(request);
+    setResponseMessage(`Hi ${request.mentee.name}, unfortunately I'm not able to take on this mentorship opportunity at this time due to my current workload. I wish you all the best in your professional development.`);
+    setDeclineDialogOpen(true);
+  };
   
-  const handleAcceptRequest = (request: PendingRequest) => {
-    const acceptedRequest: AcceptedRequest = {
-      ...request,
-      status: 'accepted'
-    };
+  const handleAcceptRequest = () => {
+    if (!selectedRequest) return;
     
-    setRequests(requests.map(req => 
-      req.id === request.id ? acceptedRequest : req
-    ));
+    setMenteeRequests(menteeRequests.filter(req => req.id !== selectedRequest.id));
+    setAcceptDialogOpen(false);
     
     toast({
       title: "Request Accepted",
-      description: `You are now mentoring ${request.menteeName}`,
+      description: `You are now mentoring ${selectedRequest.mentee.name}. A notification has been sent to the mentee.`,
     });
   };
   
-  const openRejectionDialog = (request: PendingRequest) => {
-    setSelectedRequest(request);
-    setShowRejectionDialog(true);
-  };
-  
-  const handleRejectRequest = () => {
-    if (!selectedRequest || selectedRequest.status !== 'pending' || !rejectionReason.trim()) return;
+  const handleDeclineRequest = () => {
+    if (!selectedRequest) return;
     
-    const rejectedRequest: RejectedRequest = {
-      ...selectedRequest,
-      status: 'rejected',
-      rejectionReason: rejectionReason
-    };
-    
-    setRequests(requests.map(req => 
-      req.id === selectedRequest.id ? rejectedRequest : req
-    ));
+    setMenteeRequests(menteeRequests.filter(req => req.id !== selectedRequest.id));
+    setDeclineDialogOpen(false);
     
     toast({
-      title: "Request Rejected",
-      description: `You have declined ${selectedRequest.menteeName}'s mentoring request`,
+      title: "Request Declined",
+      description: `You have declined the mentorship request from ${selectedRequest.mentee.name}.`,
     });
-    
-    setShowRejectionDialog(false);
-    setRejectionReason('');
-    setSelectedRequest(null);
   };
-
+  
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-primary" />
-            Mentee Requests
-          </CardTitle>
-          <CardDescription>
-            Review and respond to mentoring requests from potential mentees
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-8">
-            {/* Pending Requests */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">Pending Requests</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Mentee Requests</h3>
+      </div>
+      
+      {menteeRequests.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <div className="rounded-full bg-muted p-3 mb-3">
+              <GraduationCap className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium mb-1">No Pending Requests</h3>
+            <p className="text-sm text-muted-foreground mb-4 text-center">
+              You don't have any pending mentorship requests at the moment. Check back later!
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+          {menteeRequests.map((request) => (
+            <Card key={request.id}>
+              <CardHeader className="pb-2">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={request.mentee.avatar} alt={request.mentee.name} />
+                      <AvatarFallback>{request.mentee.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <CardTitle>{request.mentee.name}</CardTitle>
+                      <CardDescription>{request.mentee.role} - {request.mentee.department}</CardDescription>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                    <Clock className="h-3.5 w-3.5" />
+                    <span>Requested: {request.requestDate}</span>
+                  </Badge>
+                </div>
+              </CardHeader>
               
-              {pendingRequests.length === 0 ? (
-                <div className="text-center py-8 border rounded-md bg-muted/20">
-                  <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <h4 className="text-base font-medium">No Pending Requests</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    You don't have any pending mentoring requests at the moment.
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Message from mentee</h4>
+                  <p className="text-sm text-muted-foreground bg-secondary/10 p-3 rounded-md">
+                    "{request.message}"
                   </p>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {pendingRequests.map(request => (
-                    <Card key={request.id}>
-                      <div className="p-5">
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-full overflow-hidden">
-                              <img 
-                                src={request.imageUrl} 
-                                alt={request.menteeName} 
-                                className="w-full h-full object-cover" 
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-medium">{request.menteeName}</h4>
-                              <p className="text-sm text-muted-foreground">{request.menteeTitle}</p>
-                              <Badge variant="outline" className="mt-1">{request.topic}</Badge>
-                            </div>
-                          </div>
-                          <div className="flex items-center">
-                            <Badge variant="outline" className="gap-1 text-xs">
-                              <Calendar className="h-3 w-3" />
-                              {new Date(request.date).toLocaleDateString()}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 bg-muted/20 p-3 rounded-md">
-                          <p className="text-sm">{request.message}</p>
-                        </div>
-                        
-                        <div className="mt-4 flex justify-end gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="gap-1 text-destructive"
-                            onClick={() => openRejectionDialog(request)}
-                          >
-                            <UserX className="h-4 w-4" />
-                            Decline
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            className="gap-1"
-                            onClick={() => handleAcceptRequest(request)}
-                          >
-                            <UserCheck className="h-4 w-4" />
-                            Accept
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">Skills Interested In</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {request.skills.map((skill) => (
+                        <Badge key={skill} variant="secondary" className="bg-primary/10">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">Expected Duration</h4>
+                    <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{request.expectedDuration}</span>
+                    </Badge>
+                  </div>
                 </div>
-              )}
-            </div>
-            
-            {/* History */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">Request History</h3>
+              </CardContent>
               
-              {historyRequests.length === 0 ? (
-                <div className="text-center py-8 border rounded-md bg-muted/20">
-                  <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <h4 className="text-base font-medium">No Request History</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Your past mentoring request responses will appear here.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {historyRequests.map(request => (
-                    <Card key={request.id} className="overflow-hidden">
-                      <div className="p-3 flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-                            <img 
-                              src={request.imageUrl} 
-                              alt={request.menteeName} 
-                              className="w-full h-full object-cover" 
-                            />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-sm">{request.menteeName}</h4>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="secondary" className="text-xs">{request.topic}</Badge>
-                              <Badge 
-                                variant={request.status === 'accepted' ? 'default' : 'outline'}
-                                className="text-xs"
-                              >
-                                {request.status === 'accepted' ? 'Accepted' : 'Declined'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(request.date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      {request.status === 'rejected' && (
-                        <div className="px-3 pb-3 ml-12 mr-3">
-                          <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">Reason:</span> {request.rejectionReason}
-                          </div>
-                        </div>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+              <CardFooter className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => handleDeclineDialogOpen(request)}
+                >
+                  <X className="h-4 w-4 mr-1.5" />
+                  Decline
+                </Button>
+                <Button
+                  onClick={() => handleAcceptDialogOpen(request)}
+                >
+                  <Check className="h-4 w-4 mr-1.5" />
+                  Accept
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+      
+      {/* Accept Request Dialog */}
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Accept Mentorship Request</DialogTitle>
+            <DialogDescription>
+              Send a message to the mentee along with your acceptance.
+            </DialogDescription>
+          </DialogHeader>
           
-          {/* Rejection Dialog */}
-          <Dialog open={showRejectionDialog} onOpenChange={setShowRejectionDialog}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Decline Mentoring Request</DialogTitle>
-                <DialogDescription>
-                  Please provide a reason for declining this mentoring request
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4">
+          {selectedRequest && (
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-3 pb-2 border-b">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={selectedRequest.mentee.avatar} alt={selectedRequest.mentee.name} />
+                  <AvatarFallback>{selectedRequest.mentee.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{selectedRequest.mentee.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.mentee.role}</p>
+                </div>
+              </div>
+              
+              <div className="grid w-full items-center gap-1.5">
+                <label htmlFor="response-message" className="text-sm font-medium">Your Message</label>
                 <Textarea 
-                  placeholder="Explain why you're declining the request..."
-                  value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value)}
-                  className="resize-none"
+                  id="response-message"
                   rows={4}
+                  value={responseMessage}
+                  onChange={(e) => setResponseMessage(e.target.value)}
                 />
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowRejectionDialog(false)}>Cancel</Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={handleRejectRequest}
-                  disabled={!rejectionReason.trim()}
-                >
-                  Decline Request
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </CardContent>
-      </Card>
+              
+              <div className="rounded-md bg-secondary/20 p-3">
+                <p className="text-sm">
+                  <strong>What happens next:</strong>
+                </p>
+                <ul className="list-disc pl-5 mt-1 space-y-1 text-sm text-muted-foreground">
+                  <li>The mentee will be notified of your acceptance</li>
+                  <li>They will appear in your Active Mentorships</li>
+                  <li>You can set up your first session and assign tasks</li>
+                </ul>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAcceptDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAcceptRequest}>Accept Request</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Decline Request Dialog */}
+      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Decline Mentorship Request</DialogTitle>
+            <DialogDescription>
+              Send a message to the mentee explaining why you're declining.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedRequest && (
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-3 pb-2 border-b">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={selectedRequest.mentee.avatar} alt={selectedRequest.mentee.name} />
+                  <AvatarFallback>{selectedRequest.mentee.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{selectedRequest.mentee.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.mentee.role}</p>
+                </div>
+              </div>
+              
+              <div className="grid w-full items-center gap-1.5">
+                <label htmlFor="decline-message" className="text-sm font-medium">Your Message (Optional)</label>
+                <Textarea 
+                  id="decline-message"
+                  rows={4}
+                  value={responseMessage}
+                  onChange={(e) => setResponseMessage(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Providing a reason helps the mentee understand your decision.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeclineDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDeclineRequest}>Decline Request</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

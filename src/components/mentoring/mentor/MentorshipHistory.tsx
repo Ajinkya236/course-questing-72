@@ -1,563 +1,515 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { History, Calendar, CheckCircle, Star, Download, Award, Users, FileText, BookOpen, ArrowDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  CalendarDays, 
+  Download, 
+  FileEdit, 
+  Star, 
+  CheckCircle, 
+  MessageSquare, 
+  FileText, 
+  Award,
+  Filter,
+  FileDown,
+  BookOpen,
+  Clock
+} from 'lucide-react';
 
-// Define types for our components
-interface Session {
-  id: number;
-  title: string;
-  date: string;
-  status: 'completed' | 'upcoming' | 'cancelled';
-  mentorNotes?: string;
-  menteeNotes?: string;
-}
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  dueDate: string;
-  status: 'completed' | 'pending';
-  submission?: string;
-  feedback?: string;
-}
-
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  progress: number;
-}
-
-interface CompletedMentorship {
-  id: number;
-  menteeName: string;
-  menteeTitle: string;
-  menteeImage: string;
-  topic: string;
-  startDate: string;
-  endDate: string;
-  duration: string;
-  status: 'completed' | 'withdrawn';
-  progress: number;
-  sessions: Session[];
-  tasks: Task[];
-  courses: Course[];
-  sessionsCompleted: number;
-  tasksCompleted: number;
-  coursesCompleted: number;
-  certificate: boolean;
-  goalsSet: boolean;
-  mentorFeedback?: string;
-  menteeFeedback?: {
-    rating: number;
-    comment: string;
-  };
-}
+// Mock data for completed mentorships
+const mockCompletedMentorships = [
+  {
+    id: 1,
+    mentee: {
+      id: 'mentee5',
+      name: 'Michael Brown',
+      role: 'Frontend Developer',
+      avatar: 'https://i.pravatar.cc/150?img=12',
+      department: 'Engineering'
+    },
+    startDate: '2023-01-10',
+    endDate: '2023-06-10',
+    progress: 100,
+    goalsSet: true,
+    sessionsCompleted: 12,
+    totalSessions: 12,
+    status: 'completed',
+    feedback: {
+      mentorRating: 4.8,
+      menteeRating: 4.9,
+      mentorComment: "Michael showed exceptional growth during our mentorship. He was always prepared and implemented feedback promptly.",
+      menteeComment: "This mentorship has been invaluable to my career development. I learned practical skills that I've already applied to my work."
+    },
+    tasks: [
+      {
+        id: 't5',
+        title: 'Build a React Component Library',
+        description: 'Create a reusable component library with documentation.',
+        dueDate: '2023-03-15',
+        status: 'completed',
+        feedback: {
+          rating: 5,
+          comment: "Excellent work! The components are well-structured and documented.",
+          date: '2023-03-16'
+        }
+      },
+      {
+        id: 't6',
+        title: 'Implement State Management',
+        description: 'Add Redux or Context API to manage application state.',
+        dueDate: '2023-04-20',
+        status: 'completed',
+        feedback: {
+          rating: 4,
+          comment: "Good implementation of Redux, but could use more comments in complex reducers.",
+          date: '2023-04-22'
+        }
+      }
+    ],
+    notes: [
+      {
+        id: 'n5',
+        date: '2023-02-15',
+        content: 'Michael is progressing well with React fundamentals, moving to advanced patterns next session.',
+      },
+      {
+        id: 'n6',
+        date: '2023-04-01',
+        content: 'Discussed career progression and specific skills Michael needs to reach senior level.',
+      }
+    ],
+    recommendedCourses: [
+      {
+        id: 'c5',
+        title: 'Advanced React Patterns',
+      },
+      {
+        id: 'c6',
+        title: 'Modern Frontend Testing',
+      }
+    ]
+  },
+  {
+    id: 2,
+    mentee: {
+      id: 'mentee6',
+      name: 'Lisa Wong',
+      role: 'Product Manager',
+      avatar: 'https://i.pravatar.cc/150?img=25',
+      department: 'Product'
+    },
+    startDate: '2022-11-05',
+    endDate: '2023-05-05',
+    progress: 100,
+    goalsSet: true,
+    sessionsCompleted: 10,
+    totalSessions: 10,
+    status: 'completed',
+    feedback: {
+      mentorRating: 5.0,
+      menteeRating: 4.7,
+      mentorComment: "Lisa showed exceptional leadership potential and strategic thinking. Her growth in stakeholder management was particularly impressive.",
+      menteeComment: "I gained valuable insights into product strategy and roadmap planning. Would highly recommend this mentor!"
+    },
+    tasks: [
+      {
+        id: 't7',
+        title: 'Product Roadmap Creation',
+        description: 'Develop a 12-month roadmap for your product area.',
+        dueDate: '2023-01-15',
+        status: 'completed',
+        feedback: {
+          rating: 5,
+          comment: "Comprehensive roadmap with clear priorities and success metrics.",
+          date: '2023-01-17'
+        }
+      },
+      {
+        id: 't8',
+        title: 'Competitive Analysis',
+        description: 'Analyze 3 key competitors and identify opportunities.',
+        dueDate: '2023-02-28',
+        status: 'completed',
+        feedback: {
+          rating: 4,
+          comment: "Good analysis with clear insights, consider adding more quantitative data next time.",
+          date: '2023-03-01'
+        }
+      }
+    ],
+    notes: [
+      {
+        id: 'n7',
+        date: '2022-12-10',
+        content: 'Lisa has strong communication skills but needs more practice with technical discussions.',
+      },
+      {
+        id: 'n8',
+        date: '2023-03-15',
+        content: 'Significant improvement in stakeholder management and technical conversations.',
+      }
+    ],
+    recommendedCourses: [
+      {
+        id: 'c7',
+        title: 'Product Strategy Fundamentals',
+      },
+      {
+        id: 'c8',
+        title: 'Metrics that Matter for Product Managers',
+      }
+    ]
+  }
+];
 
 const MentorshipHistory = () => {
   const { toast } = useToast();
-  const [completedMentorships, setCompletedMentorships] = useState<CompletedMentorship[]>([
-    {
-      id: 1,
-      menteeName: "John Doe",
-      menteeTitle: "Software Developer",
-      menteeImage: "https://randomuser.me/api/portraits/men/32.jpg",
-      topic: "React Development",
-      startDate: "2023-06-10",
-      endDate: "2023-09-15",
-      duration: "3 months",
-      status: 'completed',
-      progress: 100,
-      sessionsCompleted: 8,
-      tasksCompleted: 6,
-      coursesCompleted: 2,
-      certificate: true,
-      goalsSet: true,
-      sessions: [
-        { id: 1, title: "Introduction to React", date: "2023-06-15", status: "completed", mentorNotes: "Covered basic concepts, John seems to grasp them well", menteeNotes: "Learned about components and JSX" },
-        { id: 2, title: "State Management", date: "2023-07-01", status: "completed", mentorNotes: "Discussed Redux and Context API", menteeNotes: "Context API seems simpler for smaller apps" },
-        { id: 3, title: "Advanced Hooks", date: "2023-07-15", status: "completed", mentorNotes: "John is making good progress with custom hooks" },
-        { id: 4, title: "Performance Optimization", date: "2023-08-01", status: "completed" },
-        { id: 5, title: "Final Project Review", date: "2023-09-01", status: "completed" }
-      ],
-      tasks: [
-        { id: 1, title: "Create a Component Library", dueDate: "2023-06-25", status: "completed", description: "Build 5 reusable components", feedback: "Excellent work, very clean code" },
-        { id: 2, title: "Implement Context API", dueDate: "2023-07-10", status: "completed", description: "Create a theme switcher using Context API", feedback: "Good implementation" },
-        { id: 3, title: "Build a Mini Project", dueDate: "2023-08-15", status: "completed", description: "Create a todo app with React", feedback: "Feature complete and works well" }
-      ],
-      courses: [
-        { id: 1, title: "Advanced React Patterns", description: "Learn advanced patterns used in React applications", progress: 100 },
-        { id: 2, title: "Testing React Applications", description: "Unit and integration testing for React apps", progress: 100 }
-      ],
-      mentorFeedback: "John has been an exceptional mentee. He consistently completed assignments on time and showed great aptitude for React development. His final project demonstrated a solid understanding of React concepts.",
-      menteeFeedback: {
-        rating: 5,
-        comment: "The mentorship program was extremely valuable. My mentor provided clear guidance and constructive feedback that helped me grow as a developer."
-      }
-    },
-    {
-      id: 2,
-      menteeName: "Emily Johnson",
-      menteeTitle: "UX Designer",
-      menteeImage: "https://randomuser.me/api/portraits/women/44.jpg",
-      topic: "UI/UX Design",
-      startDate: "2023-04-05",
-      endDate: "2023-07-15",
-      duration: "3.5 months",
-      status: 'withdrawn',
-      progress: 65,
-      sessionsCompleted: 5,
-      tasksCompleted: 3,
-      coursesCompleted: 1,
-      certificate: false,
-      goalsSet: true,
-      sessions: [
-        { id: 1, title: "Design Principles", date: "2023-04-10", status: "completed", mentorNotes: "Covered fundamental design principles" },
-        { id: 2, title: "User Research", date: "2023-04-25", status: "completed", mentorNotes: "Discussed various research methods" },
-        { id: 3, title: "Wireframing", date: "2023-05-10", status: "completed" },
-        { id: 4, title: "Prototyping", date: "2023-05-25", status: "completed" },
-        { id: 5, title: "User Testing", date: "2023-06-10", status: "completed" },
-        { id: 6, title: "Final Review", date: "2023-07-10", status: "cancelled" }
-      ],
-      tasks: [
-        { id: 1, title: "Competitor Analysis", dueDate: "2023-04-20", status: "completed", description: "Analyze 3 competing products", feedback: "Good insights" },
-        { id: 2, title: "Create User Personas", dueDate: "2023-05-05", status: "completed", description: "Develop 2-3 user personas", feedback: "Well thought out" },
-        { id: 3, title: "Design System", dueDate: "2023-05-30", status: "completed", description: "Create a simple design system", feedback: "Needs more consistency" },
-        { id: 4, title: "Final Project", dueDate: "2023-06-30", status: "pending", description: "Complete app redesign" }
-      ],
-      courses: [
-        { id: 1, title: "Interaction Design", description: "Learn principles of good interaction design", progress: 100 },
-        { id: 2, title: "Figma Masterclass", description: "Advanced Figma techniques", progress: 40 }
-      ],
-      mentorFeedback: "Emily showed promise but withdrew from the program due to personal reasons. She had made good progress up to that point.",
-      menteeFeedback: {
-        rating: 4,
-        comment: "The mentorship was going well but I had to withdraw due to unexpected work commitments. The guidance I received was very helpful."
-      }
-    }
-  ]);
+  const [completedMentorships, setCompletedMentorships] = useState(mockCompletedMentorships);
+  const [certificateDialogOpen, setCertificateDialogOpen] = useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const [selectedMentorship, setSelectedMentorship] = useState(null);
   
-  const [activeEngagement, setActiveEngagement] = useState<CompletedMentorship | null>(
-    completedMentorships.length > 0 ? completedMentorships[0] : null
-  );
+  // Filter state
+  const [filterStatus, setFilterStatus] = useState('all');
   
-  const [showCertificateDialog, setShowCertificateDialog] = useState(false);
-  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
-  const [showSessionDetailsSheet, setShowSessionDetailsSheet] = useState(false);
-  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  
-  const handleDownloadAllMaterials = () => {
-    toast({
-      title: "Download Started",
-      description: "All tasks, notes and materials are being prepared for download."
-    });
+  const handleViewCertificate = (mentorship) => {
+    setSelectedMentorship(mentorship);
+    setCertificateDialogOpen(true);
   };
-
+  
+  const handleViewFeedback = (mentorship) => {
+    setSelectedMentorship(mentorship);
+    setFeedbackDialogOpen(true);
+  };
+  
+  const handleDownloadCertificate = () => {
+    toast({
+      title: "Certificate Downloaded",
+      description: "Your mentorship certificate has been downloaded successfully.",
+    });
+    // In a real app, this would trigger the download
+  };
+  
+  const handleDownloadAllMaterials = (mentorship) => {
+    toast({
+      title: "Downloading Materials",
+      description: "All tasks and notes for this mentorship are being downloaded as a zip file.",
+    });
+    // In a real app, this would trigger an actual zip file download
+  };
+  
+  const filteredMentorships = completedMentorships.filter(mentorship => {
+    if (filterStatus === 'all') return true;
+    return mentorship.status === filterStatus;
+  });
+  
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5 text-primary" />
-            Mentorship History
-          </CardTitle>
-          <CardDescription>
-            View your completed and withdrawn mentorships
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {completedMentorships.length === 0 ? (
-            <div className="text-center py-12">
-              <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Completed Mentorships</h3>
-              <p className="text-muted-foreground">You haven't completed any mentorships yet.</p>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Mentorship History</h3>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Filter className="h-4 w-4" />
+            <span>Filter</span>
+          </Button>
+        </div>
+      </div>
+      
+      {filteredMentorships.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <div className="rounded-full bg-muted p-3 mb-3">
+              <Clock className="h-6 w-6 text-muted-foreground" />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-1">
-                <h3 className="text-lg font-medium mb-4">Completed Mentorships</h3>
-                <div className="space-y-3">
-                  {completedMentorships.map(mentorship => (
-                    <Card 
-                      key={mentorship.id} 
-                      className={`overflow-hidden cursor-pointer hover:border-primary/50 transition-colors ${
-                        activeEngagement?.id === mentorship.id ? 'border-primary bg-primary/5' : ''
-                      }`}
-                      onClick={() => setActiveEngagement(mentorship)}
-                    >
-                      <div className="flex p-3">
-                        <div className="mr-3">
-                          <div className="w-10 h-10 rounded-full overflow-hidden">
-                            <img src={mentorship.menteeImage} alt={mentorship.menteeName} className="w-full h-full object-cover" />
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm">{mentorship.menteeName}</h4>
-                          <Badge variant="secondary" className="mt-1">{mentorship.topic}</Badge>
-                          <div className="flex flex-col gap-1 mt-2">
-                            <div className="flex items-center text-xs">
-                              <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
-                              <span>{mentorship.startDate} - {mentorship.endDate}</span>
-                            </div>
-                            <div className="flex items-center text-xs">
-                              <Badge variant={mentorship.status === 'completed' ? 'default' : 'outline'} className="text-xs">
-                                {mentorship.status === 'completed' ? 'Completed' : 'Withdrawn'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+            <h3 className="text-lg font-medium mb-1">No Completed Mentorships</h3>
+            <p className="text-sm text-muted-foreground mb-4 text-center">
+              You haven't completed any mentorships yet. They will appear here once finished.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+          {filteredMentorships.map((mentorship) => (
+            <Card key={mentorship.id} className="overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={mentorship.mentee.avatar} alt={mentorship.mentee.name} />
+                      <AvatarFallback>{mentorship.mentee.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <CardTitle>{mentorship.mentee.name}</CardTitle>
+                      <CardDescription>{mentorship.mentee.role} - {mentorship.mentee.department}</CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <CalendarDays className="h-3.5 w-3.5" />
+                      <span>{mentorship.startDate} - {mentorship.endDate}</span>
+                    </Badge>
+                    <Badge className="bg-green-500/10 text-green-700 dark:text-green-500">
+                      Completed
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <span className="font-medium">{mentorship.feedback.menteeRating}</span>
+                    <span className="text-xs text-muted-foreground">mentee rating</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <span className="font-medium">{mentorship.feedback.mentorRating}</span>
+                    <span className="text-xs text-muted-foreground">your rating</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs"
+                    onClick={() => handleViewFeedback(mentorship)}
+                  >
+                    View Feedback
+                  </Button>
                 </div>
                 
-                {activeEngagement && (
-                  <div className="mt-6 space-y-2">                      
-                    <Button variant="outline" className="w-full gap-2" size="sm" onClick={handleDownloadAllMaterials}>
-                      <Download className="h-4 w-4" />
-                      Download All Materials
-                    </Button>
+                <Tabs defaultValue="tasks" className="w-full">
+                  <TabsList className="grid grid-cols-4 mb-4">
+                    <TabsTrigger value="tasks" className="text-xs">Tasks</TabsTrigger>
+                    <TabsTrigger value="sessions" className="text-xs">Sessions</TabsTrigger>
+                    <TabsTrigger value="notes" className="text-xs">Notes</TabsTrigger>
+                    <TabsTrigger value="courses" className="text-xs">Courses</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="tasks" className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Completed Tasks</h4>
+                    </div>
                     
-                    {activeEngagement.certificate && (
-                      <Dialog open={showCertificateDialog} onOpenChange={setShowCertificateDialog}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" className="w-full gap-2" size="sm">
-                            <Award className="h-4 w-4" />
-                            View Certificate
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Certificate of Completion</DialogTitle>
-                          </DialogHeader>
-                          <div className="py-6">
-                            {activeEngagement.status === 'completed' ? (
-                              <div className="border p-8 rounded-md text-center space-y-4">
-                                <Award className="h-12 w-12 mx-auto text-primary" />
-                                <h3 className="text-xl font-bold">Certificate of Achievement</h3>
-                                <p className="text-muted-foreground">This certifies that</p>
-                                <p className="text-xl">{activeEngagement.menteeName}</p>
-                                <p className="text-muted-foreground">has successfully completed</p>
-                                <p className="text-lg font-medium">{activeEngagement.topic} Mentorship</p>
-                                <p className="text-muted-foreground">under the guidance of</p>
-                                <p className="text-lg">[Mentor Name]</p>
-                                <p className="text-sm text-muted-foreground mt-4">
-                                  {activeEngagement.startDate} - {activeEngagement.endDate}
-                                </p>
+                    {mentorship.tasks.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">No tasks were assigned.</div>
+                    ) : (
+                      <div className="space-y-3">
+                        {mentorship.tasks.map((task) => (
+                          <Card key={task.id} className="bg-secondary/10">
+                            <CardContent className="p-3">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <h5 className="font-semibold text-sm">{task.title}</h5>
+                                    <Badge variant="default">Completed</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <div className="flex items-center gap-0.5">
+                                      {Array.from({ length: 5 }).map((_, index) => (
+                                        <Star 
+                                          key={index} 
+                                          className={`h-3.5 w-3.5 ${index < task.feedback.rating ? 'text-amber-500 fill-amber-500' : 'text-muted'}`} 
+                                        />
+                                      ))}
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">{task.feedback.date}</span>
+                                  </div>
+                                  <p className="text-xs mt-1 italic">"{task.feedback.comment}"</p>
+                                </div>
                               </div>
-                            ) : (
-                              <div className="text-center py-6">
-                                <Award className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-medium mb-2">Certificate Not Available</h3>
-                                <p className="text-muted-foreground mb-4">
-                                  This mentorship was withdrawn before completion, so no certificate is available.
-                                </p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="sessions" className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Mentoring Sessions</h4>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Session History</h5>
+                      <div className="space-y-2">
+                        {Array.from({ length: mentorship.sessionsCompleted }).map((_, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-secondary/5 rounded-md">
+                            <div>
+                              <p className="text-xs font-medium">Session {index + 1}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(new Date(mentorship.startDate).getTime() + index * 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                              </p>
+                            </div>
+                            <Button size="sm" variant="ghost">
+                              <FileText className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="notes" className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Mentoring Notes</h4>
+                    </div>
+                    
+                    {mentorship.notes.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">No notes were added.</div>
+                    ) : (
+                      <div className="space-y-3">
+                        {mentorship.notes.map((note) => (
+                          <Card key={note.id} className="bg-secondary/10">
+                            <CardContent className="p-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <h5 className="font-medium text-sm">{note.date}</h5>
                               </div>
-                            )}
-                            
-                            {activeEngagement.status === 'completed' && (
-                              <div className="flex justify-center mt-4">
-                                <Button className="gap-2">
-                                  <Download className="h-4 w-4" />
-                                  Download Certificate
+                              <p className="text-xs">{note.content}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="courses" className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Recommended Courses</h4>
+                    </div>
+                    
+                    {mentorship.recommendedCourses.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">No courses were recommended.</div>
+                    ) : (
+                      <div className="space-y-3">
+                        {mentorship.recommendedCourses.map((course) => (
+                          <Card key={course.id} className="bg-secondary/10">
+                            <CardContent className="p-3">
+                              <div className="flex items-center justify-between">
+                                <h5 className="font-medium text-sm">{course.title}</h5>
+                                <Button size="sm" variant="ghost" className="h-7">
+                                  <BookOpen className="h-3.5 w-3.5" />
                                 </Button>
                               </div>
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
                     )}
-                  </div>
-                )}
-              </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
               
-              <div className="md:col-span-2">
-                {activeEngagement && (
-                  <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">Mentorship with {activeEngagement.menteeName}</h3>
-                      <Badge variant={activeEngagement.status === 'completed' ? 'default' : 'outline'}>
-                        {activeEngagement.status === 'completed' ? 'Completed' : 'Withdrawn'}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          <Calendar className="inline-block h-3.5 w-3.5 mr-1" />
-                          {activeEngagement.startDate} - {activeEngagement.endDate} ({activeEngagement.duration})
-                        </p>
-                      </div>
-                      <div className="flex gap-3 text-sm">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                          {activeEngagement.sessionsCompleted} sessions
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                          {activeEngagement.tasksCompleted} tasks
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
-                          {activeEngagement.coursesCompleted} courses
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {activeEngagement.menteeFeedback && (
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium mb-2">Mentee Feedback</h4>
-                        <div className="bg-muted/30 p-3 rounded-md">
-                          <div className="flex items-center mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i} 
-                                className={`h-4 w-4 ${
-                                  i < activeEngagement.menteeFeedback!.rating 
-                                    ? 'text-amber-500 fill-amber-500' 
-                                    : 'text-muted'
-                                }`} 
-                              />
-                            ))}
-                            <span className="ml-2 text-sm font-medium">
-                              {activeEngagement.menteeFeedback.rating}/5
-                            </span>
-                          </div>
-                          <p className="text-sm">{activeEngagement.menteeFeedback.comment}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {activeEngagement.mentorFeedback && (
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium mb-2">Your Feedback</h4>
-                        <div className="bg-primary/5 p-3 rounded-md">
-                          <p className="text-sm">{activeEngagement.mentorFeedback}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <Tabs defaultValue="sessions" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 mb-6">
-                        <TabsTrigger value="sessions" className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>Sessions</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="tasks" className="flex items-center gap-1">
-                          <FileText className="h-4 w-4" />
-                          <span>Tasks</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="courses" className="flex items-center gap-1">
-                          <BookOpen className="h-4 w-4" />
-                          <span>Courses</span>
-                        </TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="sessions">
-                        <div className="space-y-4">
-                          {activeEngagement.sessions.map(session => (
-                            <Card key={session.id}>
-                              <div className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                  <h4 className="font-medium">{session.title}</h4>
-                                  <Badge 
-                                    variant={
-                                      session.status === 'completed' 
-                                        ? 'default' 
-                                        : session.status === 'cancelled' 
-                                          ? 'outline'
-                                          : 'secondary'
-                                    }
-                                  >
-                                    {session.status}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-3">
-                                  {new Date(session.date).toLocaleDateString('en-US', {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                  })}
-                                </p>
-                                
-                                <Sheet 
-                                  open={showSessionDetailsSheet && selectedSession?.id === session.id} 
-                                  onOpenChange={(open) => {
-                                    setShowSessionDetailsSheet(open);
-                                    if (open) setSelectedSession(session);
-                                  }}
-                                >
-                                  <SheetTrigger asChild>
-                                    <Button variant="outline" size="sm">
-                                      View Session Details
-                                    </Button>
-                                  </SheetTrigger>
-                                  <SheetContent className="sm:max-w-md">
-                                    <SheetHeader>
-                                      <SheetTitle>{session.title}</SheetTitle>
-                                      <SheetDescription>
-                                        {new Date(session.date).toLocaleDateString('en-US', {
-                                          weekday: 'long',
-                                          year: 'numeric',
-                                          month: 'long',
-                                          day: 'numeric'
-                                        })}
-                                      </SheetDescription>
-                                    </SheetHeader>
-                                    <div className="py-6 space-y-6">
-                                      {session.mentorNotes && (
-                                        <div>
-                                          <h4 className="text-sm font-medium mb-2">Your Notes</h4>
-                                          <div className="bg-primary/5 p-3 rounded-md">
-                                            <p className="text-sm">{session.mentorNotes}</p>
-                                          </div>
-                                        </div>
-                                      )}
-                                      
-                                      {session.menteeNotes && (
-                                        <div>
-                                          <h4 className="text-sm font-medium mb-2">Mentee's Notes</h4>
-                                          <div className="bg-muted/30 p-3 rounded-md">
-                                            <p className="text-sm">{session.menteeNotes}</p>
-                                          </div>
-                                        </div>
-                                      )}
-                                      
-                                      {!session.mentorNotes && !session.menteeNotes && (
-                                        <div className="text-center py-6">
-                                          <p className="text-muted-foreground">No notes available for this session.</p>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </SheetContent>
-                                </Sheet>
-                              </div>
-                            </Card>
-                          ))}
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="tasks">
-                        <div className="space-y-4">
-                          {activeEngagement.tasks.map(task => (
-                            <Card key={task.id}>
-                              <div className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                  <h4 className="font-medium">{task.title}</h4>
-                                  <Badge 
-                                    variant={task.status === 'completed' ? 'default' : 'outline'}
-                                  >
-                                    {task.status}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-3">
-                                  Due: {new Date(task.dueDate).toLocaleDateString()}
-                                </p>
-                                
-                                <div className="bg-muted/30 p-3 rounded-md mb-3">
-                                  <p className="text-sm">{task.description}</p>
-                                </div>
-                                
-                                {task.feedback && task.status === 'completed' && (
-                                  <div className="bg-primary/5 p-3 rounded-md mb-3">
-                                    <h5 className="text-sm font-medium mb-1">Your Feedback</h5>
-                                    <p className="text-sm">{task.feedback}</p>
-                                  </div>
-                                )}
-                              </div>
-                            </Card>
-                          ))}
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="courses">
-                        <div className="space-y-4">
-                          {activeEngagement.courses.map(course => (
-                            <Card key={course.id}>
-                              <div className="p-4">
-                                <h4 className="font-medium mb-2">{course.title}</h4>
-                                <p className="text-sm text-muted-foreground mb-3">{course.description}</p>
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium">{course.progress}% completed</span>
-                                </div>
-                                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                  <div 
-                                    className="h-full bg-primary rounded-full" 
-                                    style={{ width: `${course.progress}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </Card>
-                          ))}
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                    
-                    <Dialog open={showFeedbackDialog} onOpenChange={setShowFeedbackDialog}>
-                      <DialogTrigger asChild>
-                        <Button variant="link" size="sm" className="mt-4 p-0">
-                          View Complete Feedback Details
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-lg">
-                        <DialogHeader>
-                          <DialogTitle>Mentorship Feedback</DialogTitle>
-                          <DialogDescription>
-                            Feedback exchanged between you and {activeEngagement.menteeName}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4 space-y-6">
-                          {activeEngagement.menteeFeedback && (
-                            <div>
-                              <h4 className="font-medium mb-2">Mentee's Feedback</h4>
-                              <div className="bg-muted/30 p-4 rounded-md">
-                                <div className="flex items-center mb-2">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star 
-                                      key={i} 
-                                      className={`h-4 w-4 ${
-                                        i < activeEngagement.menteeFeedback!.rating 
-                                          ? 'text-amber-500 fill-amber-500' 
-                                          : 'text-muted'
-                                      }`} 
-                                    />
-                                  ))}
-                                  <span className="ml-2 text-sm font-medium">
-                                    {activeEngagement.menteeFeedback.rating}/5
-                                  </span>
-                                </div>
-                                <p>{activeEngagement.menteeFeedback.comment}</p>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {activeEngagement.mentorFeedback && (
-                            <div>
-                              <h4 className="font-medium mb-2">Your Feedback</h4>
-                              <div className="bg-primary/5 p-4 rounded-md">
-                                <p>{activeEngagement.mentorFeedback}</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
+              <CardFooter className="flex flex-wrap justify-between gap-2 pt-0 pb-4 px-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mr-2"
+                  onClick={() => handleDownloadAllMaterials(mentorship)}
+                >
+                  <FileDown className="h-4 w-4 mr-1.5" />
+                  Download Materials
+                </Button>
+                
+                <Button
+                  size="sm"
+                  onClick={() => handleViewCertificate(mentorship)}
+                >
+                  <Award className="h-4 w-4 mr-1.5" />
+                  View Certificate
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+      
+      {/* Certificate Dialog */}
+      <Dialog open={certificateDialogOpen} onOpenChange={setCertificateDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Mentorship Certificate</DialogTitle>
+            <DialogDescription>
+              This certificate recognizes your successful completion of the mentorship program.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMentorship && (
+            <div className="py-6">
+              <div className="border border-solid border-primary/30 rounded-md p-8 flex flex-col items-center justify-center text-center bg-primary/5">
+                <Award className="h-16 w-16 text-primary mb-4" />
+                <h3 className="text-xl font-semibold text-primary">Certificate of Completion</h3>
+                <p className="mt-2 mb-4 text-muted-foreground">This certifies that</p>
+                <p className="text-lg font-medium">{selectedMentorship.mentee.name}</p>
+                <p className="mt-2 mb-1 text-muted-foreground">has successfully completed</p>
+                <p className="text-lg font-medium">Professional Mentorship Program</p>
+                <p className="mt-4 mb-6 text-sm text-muted-foreground">
+                  {selectedMentorship.startDate} - {selectedMentorship.endDate}
+                </p>
+                <div className="w-32 border-t border-primary/20 mt-2 mb-4"></div>
+                <p className="font-medium">Your Name</p>
+                <p className="text-sm text-muted-foreground">Mentor</p>
+                
+                <Button className="mt-6" onClick={handleDownloadCertificate}>
+                  <Download className="h-4 w-4 mr-1.5" />
+                  Download Certificate
+                </Button>
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCertificateDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Feedback Dialog */}
+      <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Mentorship Feedback</DialogTitle>
+            <DialogDescription>
+              Review feedback exchanged at the end of the mentorship.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMentorship && (
+            <div className="space-y-6 py-4">
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                  Mentee Feedback ({selectedMentorship.feedback.menteeRating}/5)
+                </h4>
+                <div className="bg-secondary/10 p-3 rounded-md">
+                  <p className="text-sm italic">"{selectedMentorship.feedback.menteeComment}"</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                  Your Feedback ({selectedMentorship.feedback.mentorRating}/5)
+                </h4>
+                <div className="bg-secondary/10 p-3 rounded-md">
+                  <p className="text-sm italic">"{selectedMentorship.feedback.mentorComment}"</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button onClick={() => setFeedbackDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

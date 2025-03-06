@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   UserCog, 
   Search, 
@@ -19,7 +21,10 @@ import {
   Briefcase,
   GraduationCap,
   BookOpen,
-  FilePlus
+  FilePlus,
+  Calendar,
+  Download,
+  FileDown
 } from 'lucide-react';
 import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
@@ -43,25 +48,25 @@ const Mentoring = () => {
     philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
   });
   
-  // Mock HR and user guide banner data - this is now a shared banner for both mentee and mentor tabs
+  // HR and user guide banner data - shared banner for both tabs
   const banners = [
     {
       id: 1,
       title: "HR Update: New Mentoring Guidelines",
       description: "Learn about the updated mentoring program policies and best practices.",
-      imageUrl: "/lovable-uploads/a0e176e9-79b3-47b4-8e35-d6e6d19e40fc.png"
+      imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     },
     {
       id: 2,
       title: "Mentoring Excellence Workshop",
       description: "Join our upcoming workshop to enhance your mentoring skills - Thursday at 2 PM.",
-      imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81"
+      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80"
     },
     {
       id: 3,
       title: "Mentoring Resources Hub",
       description: "Access our updated knowledge base with templates and guides for effective mentoring.",
-      imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+      imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
     }
   ];
 
@@ -157,7 +162,6 @@ const Mentoring = () => {
           </Card>
           
           <TabsContent value="mentee">
-            {/* Banner removed and moved above tabs */}
             <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
               <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
                 <div>
