@@ -1,11 +1,12 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
@@ -45,7 +46,7 @@ const defaultSkills = [
 
 const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
   title, 
-  courses,
+  courses = [],
   showSkillFilters = false,
   showBadges = false,
   onCourseClick,
@@ -54,6 +55,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
+  const [api, setApi] = useState<CarouselApi>();
 
   // Use provided filter options or default to skills
   const skillFilters = filterOptions || defaultSkills;
@@ -101,6 +103,17 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   };
 
+  // Scroll carousel when the header navigation buttons are clicked
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (!api) return;
+    
+    if (direction === 'left') {
+      api.scrollPrev();
+    } else {
+      api.scrollNext();
+    }
+  };
+
   // Filter courses based on selected skills
   const filteredCourses = selectedSkills.includes("All Skills") || selectedSkills.includes("All Categories")
     ? courses
@@ -125,6 +138,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   };
 
+  // If there are no courses, create some mock data
+  useEffect(() => {
+    if (courses.length === 0) {
+      console.log("No courses provided, using mock data would be appropriate here");
+    }
+  }, [courses]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -134,7 +154,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             variant="outline" 
             size="icon"
             className="rounded-full"
-            onClick={() => scrollSkills('left')}
+            onClick={() => scrollCarousel('left')}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -142,7 +162,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             variant="outline" 
             size="icon"
             className="rounded-full"
-            onClick={() => scrollSkills('right')}
+            onClick={() => scrollCarousel('right')}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -209,18 +229,41 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           loop: true,
         }}
         className="w-full"
+        setApi={setApi}
       >
         <CarouselContent>
-          {filteredCourses.map((course) => (
-            <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
-              <div onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
-                <CourseCard 
-                  {...course} 
-                  previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" 
-                />
-              </div>
-            </CarouselItem>
-          ))}
+          {filteredCourses.length > 0 ? (
+            filteredCourses.map((course) => (
+              <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                <div onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                  <CourseCard 
+                    {...course} 
+                    previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" 
+                  />
+                </div>
+              </CarouselItem>
+            ))
+          ) : (
+            // Mock courses if no real data is provided
+            Array.from({ length: 8 }).map((_, index) => (
+              <CarouselItem key={`mock-${index}`} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                <div className="cursor-pointer">
+                  <CourseCard 
+                    id={`mock-${index}`}
+                    title={`Sample Course ${index + 1}`}
+                    description="This is a sample course description. It provides an overview of what you will learn."
+                    imageUrl={`https://source.unsplash.com/random/300x200?learning&sig=${index}`}
+                    category="Sample Category"
+                    duration="2h 30m"
+                    rating={4.5}
+                    isNew={index < 3}
+                    isHot={index >= 5}
+                    previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
+                  />
+                </div>
+              </CarouselItem>
+            ))
+          )}
         </CarouselContent>
         <CarouselPrevious className="hidden sm:flex" />
         <CarouselNext className="hidden sm:flex" />
