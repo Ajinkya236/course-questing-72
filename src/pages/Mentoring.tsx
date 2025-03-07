@@ -1,82 +1,20 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  UserCog, 
-  Search, 
-  Users, 
-  Star, 
-  ChevronLeft, 
-  ChevronRight, 
-  X, 
-  Plus,
-  Briefcase,
-  GraduationCap,
-  BookOpen,
-  FilePlus,
-  Calendar,
-  Download,
-  FileDown
-} from 'lucide-react';
-import MenteePreferences from '@/components/mentoring/mentee/MenteePreferences';
+import { Card, CardContent } from '@/components/ui/card';
 import MenteeJourney from '@/components/mentoring/MenteeJourney';
 import MentorJourney from '@/components/mentoring/MentorJourney';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import BannerCarousel from '@/components/BannerCarousel';
+import RecommendedMentorsCarousel from '@/components/mentoring/mentee/RecommendedMentorsCarousel';
 
 const Mentoring = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('mentee');
-  const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
-  const [showMentorPreferencesDialog, setShowMentorPreferencesDialog] = useState(false);
   
-  const [newTopic, setNewTopic] = useState('');
-
-  const handleAddTopic = () => {
-    if (newTopic.trim() && !mentorPreferences.topics.includes(newTopic.trim())) {
-      setMentorPreferences({
-        ...mentorPreferences,
-        topics: [...mentorPreferences.topics, newTopic.trim()]
-      });
-      setNewTopic('');
-    }
-  };
-
-  const handleRemoveTopic = (topic) => {
-    setMentorPreferences({
-      ...mentorPreferences,
-      topics: mentorPreferences.topics.filter(t => t !== topic)
-    });
-  };
-
-  const handleMentorPreferencesSave = () => {
-    setShowMentorPreferencesDialog(false);
-    toast({
-      title: "Preferences Saved",
-      description: "Your mentor preferences have been updated successfully."
-    });
-  };
-
-  const handleDiscoverRedirect = () => {
-    navigate('/discover');
-  };
-
-  const [mentorPreferences, setMentorPreferences] = useState({
-    bio: "Senior technology professional with 15+ years of experience in software development and leadership roles.",
-    topics: ["Software Development", "Leadership", "Career Growth"],
-    idealMentee: "Ambitious professionals looking to grow their technical and leadership skills.",
-    philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
-  });
-
   const banners = [
     {
       id: 1,
@@ -166,49 +104,7 @@ const Mentoring = () => {
             </Card>
             
             <div className="mb-10">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Recommended Mentors</h2>
-                <Button variant="link" size="sm" className="gap-1">
-                  <Search className="h-4 w-4" />
-                  View All
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {recommendedMentors.map(mentor => (
-                  <Card key={mentor.id} className="overflow-hidden">
-                    <CardContent className="p-4">
-                      <div className="flex flex-col items-center text-center">
-                        <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
-                          <img 
-                            src={mentor.image} 
-                            alt={mentor.name} 
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                        <h3 className="font-medium">{mentor.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
-                        <div className="flex items-center gap-1 mb-3">
-                          <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                          <span className="text-sm font-medium">{mentor.rating}</span>
-                          <span className="text-xs text-muted-foreground">({mentor.reviews} reviews)</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1 justify-center">
-                          {mentor.topics.slice(0, 2).map(topic => (
-                            <span key={topic} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                              {topic}
-                            </span>
-                          ))}
-                          {mentor.topics.length > 2 && (
-                            <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                              +{mentor.topics.length - 2}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <RecommendedMentorsCarousel mentors={recommendedMentors} />
             </div>
             
             <MenteeJourney />
