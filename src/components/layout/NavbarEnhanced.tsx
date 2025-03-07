@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -269,7 +270,7 @@ const NavbarEnhanced = () => {
       
       {/* Notifications panel */}
       {showNotifications && (
-        <NotificationsPanel open={showNotifications} onOpenChange={setShowNotifications} />
+        <NotificationsPanel onClose={() => setShowNotifications(false)} />
       )}
     </header>
   );

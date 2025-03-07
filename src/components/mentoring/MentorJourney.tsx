@@ -97,7 +97,8 @@ const MentorJourney = () => {
               </div>
             </div>
             <div className="flex-1">
-              <ActiveMentorships selectedMenteeId={selectedMentee} />
+              {/* Pass the selectedMentee as a regular prop instead of selectedMenteeId */}
+              <ActiveMentorships selectedMentee={selectedMentee} />
             </div>
           </div>
         </TabsContent>
