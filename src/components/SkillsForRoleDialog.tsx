@@ -122,7 +122,7 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onOpenC
             Skills for Your Role
           </DialogTitle>
           <DialogDescription>
-            These are the key skills required for your current role. Track your progress in developing these skills.
+            These are the key skills required for your current role. Track your progress and find relevant courses.
           </DialogDescription>
         </DialogHeader>
         
@@ -154,6 +154,29 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onOpenC
                         Target: {skill.proficiencyRequired}%
                       </span>
                       <span className="text-muted-foreground">100%</span>
+                    </div>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Recommended Courses</h4>
+                    <div className="space-y-2">
+                      {skill.courses.map((course) => (
+                        <div key={course.id} className="flex items-center justify-between bg-secondary/10 p-2 rounded-md">
+                          <div className="flex items-center gap-2">
+                            {course.completed ? (
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Clock className="h-4 w-4 text-amber-500" />
+                            )}
+                            <span className="text-sm">{course.title}</span>
+                          </div>
+                          <Badge variant={course.completed ? "default" : "outline"}>
+                            {course.completed ? 'Completed' : 'To Do'}
+                          </Badge>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

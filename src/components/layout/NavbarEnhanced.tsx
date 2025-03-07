@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -76,6 +77,10 @@ const NavbarEnhanced = () => {
     setIsNotificationsPanelOpen(!isNotificationsPanelOpen);
   };
   
+  const closeNotificationsPanel = () => {
+    setIsNotificationsPanelOpen(false);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -209,10 +214,7 @@ const NavbarEnhanced = () => {
             
             {isNotificationsPanelOpen && (
               <div className="absolute top-16 right-4 z-50 w-80 md:w-96 shadow-lg rounded-md border bg-card overflow-hidden">
-                <NotificationsPanel 
-                  open={isNotificationsPanelOpen} 
-                  onOpenChange={setIsNotificationsPanelOpen} 
-                />
+                <NotificationsPanel onClose={closeNotificationsPanel} />
               </div>
             )}
             

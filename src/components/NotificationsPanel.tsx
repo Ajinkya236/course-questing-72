@@ -18,8 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from 'react-router-dom';
 
 interface NotificationsPanelProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
 }
 
 // Sample notification data
@@ -81,17 +80,17 @@ const notifications = [
   }
 ];
 
-const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onOpenChange }) => {
+const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose }) => {
   const navigate = useNavigate();
   
   const handleNotificationClick = (link: string) => {
     navigate(link);
-    onOpenChange(false);
+    onClose();
   };
   
   const handleViewAll = () => {
     navigate('/notifications');
-    onOpenChange(false);
+    onClose();
   };
   
   return (

@@ -201,10 +201,7 @@ const Navbar: React.FC = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0" align="end">
-              <NotificationsPanel 
-                open={notificationsOpen} 
-                onOpenChange={setNotificationsOpen} 
-              />
+              <NotificationsPanel onClose={() => setNotificationsOpen(false)} />
             </PopoverContent>
           </Popover>
           
