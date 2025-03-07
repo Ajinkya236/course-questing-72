@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,7 +31,10 @@ import {
   Users
 } from 'lucide-react';
 
-// Mock data for active mentorships
+interface ActiveMentorshipsProps {
+  selectedMenteeId?: number | null;
+}
+
 const mockActiveMentorships = [
   {
     id: 1,
@@ -153,7 +155,7 @@ const mockActiveMentorships = [
   }
 ];
 
-const ActiveMentorships = () => {
+const ActiveMentorships: React.FC<ActiveMentorshipsProps> = ({ selectedMenteeId }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeMentorships, setActiveMentorships] = useState(mockActiveMentorships);
@@ -164,12 +166,10 @@ const ActiveMentorships = () => {
   const [completionDialogOpen, setCompletionDialogOpen] = useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   
-  // Task editing and feedback states
   const [editingTask, setEditingTask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [taskFeedback, setTaskFeedback] = useState({ rating: 0, comment: '' });
   
-  // Task form state
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -177,8 +177,11 @@ const ActiveMentorships = () => {
     sampleFile: null
   });
 
-  // Filter state
   const [filterDepartment, setFilterDepartment] = useState('All');
+  
+  const filteredMentorships = selectedMenteeId 
+    ? activeMentorships.filter(m => m.id === selectedMenteeId)
+    : activeMentorships;
   
   const handleEditTask = (mentorshipId, task) => {
     const mentorship = activeMentorships.find(m => m.id === mentorshipId);
@@ -250,7 +253,6 @@ const ActiveMentorships = () => {
       title: "Downloading Submission",
       description: `Downloading ${task.submission.files.join(', ')}`,
     });
-    // In a real app, this would trigger an actual file download
   };
   
   const handleProvideFeedback = (mentorshipId, task) => {
@@ -337,11 +339,9 @@ const ActiveMentorships = () => {
       title: "Downloading Materials",
       description: "All tasks and notes for this mentorship are being downloaded as a zip file.",
     });
-    // In a real app, this would trigger an actual zip file download
   };
   
   const handleRecommendCourse = () => {
-    // Redirect to discover page
     navigate('/discover');
   };
   
@@ -364,7 +364,7 @@ const ActiveMentorships = () => {
         </p>
       </div>
       
-      {activeMentorships.length === 0 ? (
+      {filteredMentorships.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">
             <div className="rounded-full bg-muted p-3 mb-3">
@@ -378,7 +378,7 @@ const ActiveMentorships = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {activeMentorships.map((mentorship) => (
+          {filteredMentorships.map((mentorship) => (
             <Card key={mentorship.id} className="overflow-hidden">
               <CardHeader className="pb-2">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -663,7 +663,6 @@ const ActiveMentorships = () => {
         </div>
       )}
       
-      {/* Edit Task Dialog */}
       <Dialog open={editingTask !== null} onOpenChange={(open) => !open && setEditingTask(null)}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -713,7 +712,6 @@ const ActiveMentorships = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Add Task Dialog */}
       <Dialog open={taskFormOpen} onOpenChange={setTaskFormOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -782,7 +780,6 @@ const ActiveMentorships = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Feedback Dialog */}
       <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -841,7 +838,6 @@ const ActiveMentorships = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Certificate Dialog */}
       <Dialog open={completionDialogOpen} onOpenChange={setCompletionDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -871,7 +867,6 @@ const ActiveMentorships = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Withdraw Dialog */}
       <Dialog open={withdrawDialogOpen} onOpenChange={setWithdrawDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
