@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,19 +19,28 @@ interface Mentor {
 
 interface RecommendedMentorsCarouselProps {
   mentors: Mentor[];
+  selectedTopics?: string[];
 }
 
-const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({ mentors }) => {
+const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({ 
+  mentors, 
+  selectedTopics = [] 
+}) => {
   const navigate = useNavigate();
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
   
   // Extract all unique topics from mentors for filters
-  const allTopics = Array.from(
-    new Set(mentors.flatMap(mentor => mentor.topics))
-  );
+  const allTopics = selectedTopics.length > 0 
+    ? selectedTopics 
+    : Array.from(new Set(mentors.flatMap(mentor => mentor.topics)));
   
   // Add "All" as the first filter option
   const filterTopics = ["All", ...allTopics];
+  
+  // Reset active filter index if selected topics change
+  useEffect(() => {
+    setActiveFilterIndex(0);
+  }, [selectedTopics]);
   
   // Filter mentors based on selected topic
   const filteredMentors = filterTopics[activeFilterIndex] === "All" 

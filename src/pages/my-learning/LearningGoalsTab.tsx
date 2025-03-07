@@ -6,8 +6,18 @@ import CourseCard from '@/components/CourseCard';
 import { coursesList } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Award, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
+
+// Mock skills data that would be gained from courses
+const skillsData = [
+  { id: 1, name: 'Leadership', currentProficiency: 45, targetProficiency: 75, related: ['leadership', 'management'] },
+  { id: 2, name: 'Data Analysis', currentProficiency: 60, targetProficiency: 80, related: ['analysis', 'data science'] },
+  { id: 3, name: 'UX/UI Design', currentProficiency: 30, targetProficiency: 70, related: ['design', 'user experience'] },
+  { id: 4, name: 'Project Management', currentProficiency: 55, targetProficiency: 85, related: ['management', 'planning'] },
+  { id: 5, name: 'Communication', currentProficiency: 70, targetProficiency: 90, related: ['presentation', 'writing'] }
+];
 
 const LearningGoalsTab: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +52,13 @@ const LearningGoalsTab: React.FC = () => {
     }
   };
   
+  // Calculate overall proficiency
+  const calculateOverallProficiency = () => {
+    const totalTarget = skillsData.reduce((sum, skill) => sum + skill.targetProficiency, 0);
+    const totalCurrent = skillsData.reduce((sum, skill) => sum + skill.currentProficiency, 0);
+    return Math.round((totalCurrent / totalTarget) * 100);
+  };
+  
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <Tabs defaultValue="selfAssigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -49,6 +66,47 @@ const LearningGoalsTab: React.FC = () => {
           <TabsTrigger value="selfAssigned">Courses Assigned by You</TabsTrigger>
           <TabsTrigger value="managerAssigned">Courses Assigned by Manager</TabsTrigger>
         </TabsList>
+        
+        {/* Skills Proficiency Overview */}
+        <div className="mb-8 p-6 bg-muted/20 rounded-lg border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              Skills Proficiency
+            </h3>
+            <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
+              {calculateOverallProficiency()}% Overall
+            </span>
+          </div>
+          
+          <div className="space-y-4">
+            {skillsData.map(skill => (
+              <div key={skill.id} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">{skill.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {skill.currentProficiency}% / {skill.targetProficiency}%
+                  </span>
+                </div>
+                <Progress value={(skill.currentProficiency / skill.targetProficiency) * 100} className="h-2" />
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-4 pt-4 border-t border-border/40">
+            <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-muted-foreground" />
+              Skills From Your Courses
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {skillsData.map(skill => (
+                <span key={skill.id} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
+                  {skill.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
         
         <TabsContent value="selfAssigned">
           <CardContent className="p-0">

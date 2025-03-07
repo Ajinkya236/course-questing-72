@@ -19,6 +19,7 @@ import Mentoring from "./pages/Mentoring"; // New Mentoring page
 import SearchResults from "./pages/SearchResults"; // New Search Results page
 import { Helmet } from "react-helmet";
 import RecommendedMentorsPage from "./pages/RecommendedMentorsPage"; // New Recommended Mentors page
+import { SpinTheWheelProvider } from "./contexts/SpinTheWheelContext";
 
 const queryClient = new QueryClient();
 
@@ -29,30 +30,32 @@ const App = () => (
         <title>Learning Management System</title>
         <meta name="description" content="A modern learning management system with gamification features" />
       </Helmet>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/discover" element={<Discover />} />
-              <Route path="/my-learning" element={<MyLearning />} />
-              <Route path="/course/:courseId" element={<CoursePlayer />} />
-              <Route path="/view-all/:category" element={<ViewAllPage />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/milestones" element={<Milestones />} />
-              <Route path="/actionables" element={<Actionables />} />
-              <Route path="/mentoring" element={<Mentoring />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
+      <SpinTheWheelProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/discover" element={<Discover />} />
+                <Route path="/my-learning" element={<MyLearning />} />
+                <Route path="/course/:courseId" element={<CoursePlayer />} />
+                <Route path="/view-all/:category" element={<ViewAllPage />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/milestones" element={<Milestones />} />
+                <Route path="/actionables" element={<Actionables />} />
+                <Route path="/mentoring" element={<Mentoring />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </div>
+        </BrowserRouter>
+      </SpinTheWheelProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -1,394 +1,237 @@
+
 import React, { useState } from 'react';
-import PointsOverview from '@/components/PointsOverview';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Gift, Box, Shuffle, Target, TrendingUp } from 'lucide-react';
-import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
-import { useNavigate } from 'react-router-dom';
-import LearningStreakDialog from '@/components/LearningStreakDialog';
-import RedeemPointsDialog from '@/components/RedeemPointsDialog';
+import { Award, Gift, Trophy, Coins, Ticket, GiftIcon, Sparkles } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useSpinTheWheel } from '@/contexts/SpinTheWheelContext';
+import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
+import MysteryBox from '@/components/gamification/MysteryBox';
+import SpinTheWheel from '@/components/gamification/SpinTheWheel';
 
-// Mock data for points overview
-const pointsData = {
-  totalPoints: 12465,
-  coursesCompleted: 28,
-  hoursSpent: 142,
-  pointsThisWeek: 450,
-  pointsLastWeek: 380,
-  pointsBreakdown: [
-    {
-      category: 'Course Completion',
-      points: 6500,
-      color: '#3b82f6', // blue-500
-    },
-    {
-      category: 'Quizzes & Assessments',
-      points: 2800,
-      color: '#8b5cf6', // violet-500
-    },
-    {
-      category: 'Engagement & Activities',
-      points: 1850,
-      color: '#10b981', // emerald-500
-    },
-    {
-      category: 'Daily Logins',
-      points: 915,
-      color: '#f97316', // orange-500
-    },
-    {
-      category: 'Bonus Points',
-      points: 400,
-      color: '#ef4444', // red-500
-    },
-  ],
-  streakDays: 18,
-  nextMilestone: {
-    name: 'Gold Achiever',
-    points: 15000,
-  },
-  redeemablePoints: 8000,
-};
-
-// Mock data for leaderboard
-const leaderboardUsers = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    points: 18750,
-    position: 1,
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    avatar: 'https://i.pravatar.cc/150?img=2',
-    points: 16320,
-    position: 2,
-  },
-  {
-    id: '3',
-    name: 'Emma Rodriguez',
-    avatar: 'https://i.pravatar.cc/150?img=3',
-    points: 15480,
-    position: 3,
-  },
-  {
-    id: '4',
-    name: 'David Kim',
-    avatar: 'https://i.pravatar.cc/150?img=4',
-    points: 13950,
-    position: 4,
-  },
-  {
-    id: '5',
-    name: 'Jessica Liu',
-    avatar: 'https://i.pravatar.cc/150?img=5',
-    points: 13240,
-    position: 5,
-  },
-  {
-    id: '6',
-    name: 'Robert Taylor',
-    avatar: 'https://i.pravatar.cc/150?img=6',
-    points: 12980,
-    position: 6,
-  },
-  {
-    id: '7',
-    name: 'Lisa Wang',
-    avatar: 'https://i.pravatar.cc/150?img=7',
-    points: 12790,
-    position: 7,
-  },
-  {
-    id: '8',
-    name: 'John Doe',
-    avatar: 'https://i.pravatar.cc/150?img=22',
-    points: 12465,
-    position: 8,
-  },
-  {
-    id: '9',
-    name: 'Mark Wilson',
-    avatar: 'https://i.pravatar.cc/150?img=9',
-    points: 12100,
-    position: 9,
-  },
-  {
-    id: '10',
-    name: 'Amy Martinez',
-    avatar: 'https://i.pravatar.cc/150?img=10',
-    points: 11890,
-    position: 10,
-  },
-];
-
-// Current user data for leaderboard
-const currentUser = {
-  id: '8',
-  name: 'John Doe',
-  avatar: 'https://i.pravatar.cc/150?img=22',
-  points: 12465,
-  position: 8,
-};
-
-// Redeemable rewards data
-const redeemableRewards = [
-  {
-    id: '1',
-    title: 'Amazon Gift Card',
-    points: 5000,
-    imageUrl: 'https://placehold.co/200x100/e5f7ff/0369a1?text=Amazon',
-    category: 'Gift Card',
-  },
-  {
-    id: '2',
-    title: 'Premium Course Access',
-    points: 3000,
-    imageUrl: 'https://placehold.co/200x100/fdf2f8/be185d?text=Course',
-    category: 'Learning',
-  },
-  {
-    id: '3',
-    title: 'Company Branded Mug',
-    points: 1500,
-    imageUrl: 'https://placehold.co/200x100/f0fdf4/166534?text=Mug',
-    category: 'Merchandise',
-  },
-  {
-    id: '4',
-    title: 'Lunch with CEO',
-    points: 10000,
-    imageUrl: 'https://placehold.co/200x100/fef3c7/92400e?text=Lunch',
-    category: 'Experience',
-  },
-];
-
-// Mystery rewards data
-const mysteryRewards = [
-  {
-    id: 'mystery1',
-    title: 'Mystery Box',
-    description: 'Unlock a random reward. Could be points, badges, or exclusive content!',
-    points: 2000,
-    chance: '80% for small rewards, 20% for premium rewards',
-  },
-  {
-    id: 'mystery2',
-    title: 'Spin the Wheel',
-    description: 'Spin the wheel to win various rewards - from point multipliers to special badges.',
-    points: 1000,
-    chance: 'Equal chances for all prizes on the wheel',
-  },
-  {
-    id: 'mystery3',
-    title: 'Limited Time Offer',
-    description: 'Available only this week! Double points for all completed courses.',
-    points: 0,
-    chance: '100% chance of activation',
-  },
+const rewards = [
+  { id: 1, name: "500 Points", value: 500, type: "points", color: "#4CAF50" },
+  { id: 2, name: "Leadership Badge", value: "Leadership", type: "badge", color: "#2196F3" },
+  { id: 3, name: "100 Points", value: 100, type: "points", color: "#FFC107" },
+  { id: 4, name: "2x Multiplier", value: "2x", type: "multiplier", color: "#9C27B0" },
+  { id: 5, name: "200 Points", value: 200, type: "points", color: "#F44336" },
+  { id: 6, name: "Premium Course", value: "Premium", type: "course", color: "#3F51B5" },
+  { id: 7, name: "50 Points", value: 50, type: "points", color: "#FF9800" },
+  { id: 8, name: "Mystery Reward", value: "Mystery", type: "mystery", color: "#607D8B" },
 ];
 
 const RewardsTab = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const [timeRange, setTimeRange] = useState('all-time');
-  const [mysteryBoxOpen, setMysteryBoxOpen] = useState(false);
-  const [streakDialogOpen, setStreakDialogOpen] = useState(false);
-  const [redeemDialogOpen, setRedeemDialogOpen] = useState(false);
+  const [activeRewardsTab, setActiveRewardsTab] = useState('activities');
+  const { openSpinTheWheel } = useSpinTheWheel();
+  const [openMysteryBox, setOpenMysteryBox] = useState(false);
+  const [mysteryBoxSpinning, setMysteryBoxSpinning] = useState(false);
+  const [wheelSpinning, setWheelSpinning] = useState(false);
   
-  const handleRedeemReward = (rewardTitle: string, points: number) => {
-    setRedeemDialogOpen(true);
-  };
+  // Current points balance
+  const currentPoints = 3750;
+  // Points needed for next level
+  const pointsForNextLevel = 5000;
   
-  const handleOpenMysteryBox = (mysteryTitle: string) => {
-    setMysteryBoxOpen(true);
-    
-    // Simulate random reward after 1 second
-    setTimeout(() => {
-      const rewards = [
-        "You earned 500 bonus points!",
-        "You unlocked a special badge!",
-        "You got a 2x point multiplier for your next course!",
-        "You earned early access to a premium course!"
-      ];
-      
-      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-      
-      toast({
-        title: `${mysteryTitle} Opened!`,
-        description: randomReward,
-      });
-      
-      setMysteryBoxOpen(false);
-    }, 1000);
-  };
-
+  // Calculate progress percentage
+  const progressPercentage = (currentPoints / pointsForNextLevel) * 100;
+  
   return (
-    <div className="space-y-8">
-      <PointsOverview data={pointsData} />
+    <div className="space-y-6">
+      {/* Mystery Box Dialog */}
+      <MysteryBoxDialog open={openMysteryBox} onOpenChange={setOpenMysteryBox} />
       
+      {/* Points Overview Card */}
+      <Card className="bg-gradient-to-r from-primary/20 to-primary/5">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <h3 className="text-2xl font-bold flex items-center">
+                <Coins className="mr-2 h-6 w-6 text-primary" />
+                <span>{currentPoints.toLocaleString()}</span>
+                <Badge className="ml-2 bg-primary/20 text-primary hover:bg-primary/30">Level 8</Badge>
+              </h3>
+              <p className="text-muted-foreground">Learning Points</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={openSpinTheWheel} className="gap-1">
+                <Trophy className="h-4 w-4" />
+                Spin Wheel
+              </Button>
+              <Button onClick={() => setOpenMysteryBox(true)} variant="outline" className="gap-1">
+                <Gift className="h-4 w-4" />
+                Mystery Box
+              </Button>
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Progress to Level 9</span>
+              <span>{currentPoints} / {pointsForNextLevel}</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Reward Activities and Game Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <LeaderboardEnhanced 
-            users={leaderboardUsers} 
-            currentUser={currentUser}
-            title="Leaderboard"
-          />
-          
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                <span>Primary Milestone Goal</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold">Gold Achiever</h4>
-                  <p className="text-sm text-muted-foreground">Earn 15,000 points to unlock exclusive rewards</p>
-                  <p className="text-sm text-muted-foreground">You need 2,535 more points to reach this milestone</p>
-                </div>
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-              <div className="mt-4 bg-secondary h-2 rounded-full overflow-hidden">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '83%' }}></div>
-              </div>
+        {/* Spin the Wheel Card */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-md">Spin the Wheel</CardTitle>
+            <CardDescription>Spin to win amazing rewards</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="aspect-square relative">
+              <SpinTheWheel 
+                spinning={wheelSpinning} 
+                segments={rewards} 
+                onSpinComplete={() => setWheelSpinning(false)}
+              />
               <Button 
-                className="w-full mt-4" 
-                variant="outline" 
-                onClick={() => navigate('/milestones')}
+                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2"
+                onClick={() => {
+                  setWheelSpinning(true);
+                  setTimeout(() => openSpinTheWheel(), 300);
+                }}
               >
-                <Target className="h-4 w-4 mr-2" />
-                View All Milestones
+                Spin Now
               </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                <span>Weekly Progress Goal</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold">Weekly Points Champion</h4>
-                  <p className="text-sm text-muted-foreground">Earn 500 points this week to stay ahead of your team</p>
-                  <p className="text-sm text-muted-foreground">You need 120 more points to reach this goal</p>
-                </div>
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-green-500" />
-                </div>
-              </div>
-              <div className="mt-4 bg-secondary h-2 rounded-full overflow-hidden">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '76%' }}></div>
-              </div>
-              <Button 
-                className="w-full mt-4" 
-                variant="outline" 
-                onClick={() => navigate('/milestones')}
-              >
-                View Weekly Goals
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
         
-        <div className="space-y-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Box className="h-5 w-5 text-primary" />
-                Mystery Rewards
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {mysteryRewards.map((reward) => (
-                  <div key={reward.id} className="bg-secondary/20 rounded-lg p-4 hover-scale">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium text-sm flex items-center gap-1">
-                        {reward.title}
-                      </h4>
-                      <span className="text-xs bg-primary/10 px-2 py-1 rounded-full">
-                        {reward.points > 0 ? `${reward.points} pts` : 'Free'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3">{reward.description}</p>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => handleOpenMysteryBox(reward.title)}
-                    >
-                      <Shuffle className="h-4 w-4 mr-1" />
-                      {mysteryBoxOpen ? 'Opening...' : 'Try Your Luck'}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Gift className="h-5 w-5 text-primary" />
-                Redeem Points
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {redeemableRewards.map((reward) => (
-                  <div key={reward.id} className="bg-secondary/20 rounded-lg p-4 hover-scale">
-                    <div className="flex justify-between mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{reward.title}</h4>
-                        <span className="text-xs text-muted-foreground">{reward.category}</span>
-                      </div>
-                      <img 
-                        src={reward.imageUrl} 
-                        alt={reward.title} 
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold">{reward.points} pts</span>
-                      <Button 
-                        size="sm" 
-                        disabled={pointsData.redeemablePoints < reward.points}
-                        onClick={() => handleRedeemReward(reward.title, reward.points)}
-                      >
-                        Redeem
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Mystery Box Card */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-md">Mystery Box</CardTitle>
+            <CardDescription>Open to discover surprise rewards</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="aspect-square relative">
+              <MysteryBox isOpening={mysteryBoxSpinning} />
+              <Button 
+                variant="outline"
+                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2"
+                onClick={() => {
+                  setMysteryBoxSpinning(true);
+                  setTimeout(() => {
+                    setOpenMysteryBox(true);
+                    setMysteryBoxSpinning(false);
+                  }, 300);
+                }}
+              >
+                Open Box
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Daily Rewards Card */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-md">Daily Rewards</CardTitle>
+            <CardDescription>Check in daily for bonus rewards</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-1 mb-4">
+              {Array.from({ length: 7 }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={`aspect-square rounded-md flex items-center justify-center border ${
+                    i < 3 ? 'bg-primary/10 border-primary' : 'bg-muted/50 border-border'
+                  }`}
+                >
+                  {i < 3 && <Sparkles className="h-5 w-5 text-primary" />}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">3/7 days completed this week</p>
+            <Button className="w-full gap-1">
+              <GiftIcon className="h-4 w-4" />
+              Claim Daily Reward
+            </Button>
+          </CardContent>
+        </Card>
       </div>
       
-      <LearningStreakDialog 
-        open={streakDialogOpen} 
-        onOpenChange={setStreakDialogOpen} 
-      />
-      
-      <RedeemPointsDialog 
-        open={redeemDialogOpen} 
-        onOpenChange={setRedeemDialogOpen}
-        availablePoints={pointsData.redeemablePoints}
-      />
+      {/* Rewards Tabs */}
+      <Tabs value={activeRewardsTab} onValueChange={setActiveRewardsTab} className="mt-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="activities">Reward Activities</TabsTrigger>
+          <TabsTrigger value="history">Reward History</TabsTrigger>
+          <TabsTrigger value="redeem">Redeem Rewards</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="activities" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }, (_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-4">
+                    <h3 className="font-medium mb-1">Complete Leadership Course</h3>
+                    <p className="text-sm text-muted-foreground mb-2">Finish all modules to earn bonus points</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="gap-1">
+                        <Coins className="h-3 w-3" />
+                        500 Points
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="history" className="mt-6">
+          <div className="space-y-4">
+            {Array.from({ length: 5 }, (_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Trophy className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Wheel Spin Reward</h3>
+                      <p className="text-sm text-muted-foreground">200 Points</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="shrink-0">
+                    May 15, 2023
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="redeem" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }, (_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <div className="aspect-video bg-muted rounded-md mb-3 flex items-center justify-center">
+                    <Gift className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-medium mb-1">Premium Course Access</h3>
+                  <div className="flex justify-between items-center">
+                    <Badge variant="outline" className="gap-1">
+                      <Coins className="h-3 w-3" />
+                      1500 Points
+                    </Badge>
+                    <Button size="sm">Redeem</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

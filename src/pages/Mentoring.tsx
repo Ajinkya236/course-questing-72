@@ -103,9 +103,7 @@ const Mentoring = () => {
               </CardContent>
             </Card>
             
-            <div className="mb-10">
-              <RecommendedMentorsCarousel mentors={recommendedMentors} />
-            </div>
+            {/* We don't show RecommendedMentorsCarousel directly here anymore since it should only show after preferences are set */}
             
             <MenteeJourney />
           </TabsContent>

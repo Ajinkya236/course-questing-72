@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { UserCog, Plus, X, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const topics = [
+export const topics = [
   "Leadership", "Project Management", "Public Speaking", "Data Analysis", 
   "Machine Learning", "UX Design", "Software Development", "Marketing",
   "Sales", "Customer Service", "Financial Planning", "Career Development",
@@ -27,7 +27,7 @@ const topics = [
 
 interface MenteePreferencesProps {
   inDialog?: boolean;
-  onSave?: () => void;
+  onSave?: (selectedTopics: string[]) => void;
 }
 
 const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false, onSave }) => {
@@ -63,7 +63,7 @@ const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false,
     });
     
     if (onSave) {
-      onSave();
+      onSave(selectedTopics);
     }
   };
 

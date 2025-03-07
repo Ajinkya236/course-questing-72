@@ -107,9 +107,7 @@ const Profile = () => {
                 </div>
               </div>
               
-              <Button variant="outline" className="w-full mt-6">
-                Edit Profile
-              </Button>
+              {/* Edit Profile button removed as requested */}
             </CardContent>
           </Card>
           

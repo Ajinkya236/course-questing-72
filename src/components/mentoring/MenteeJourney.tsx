@@ -22,6 +22,8 @@ const MenteeJourney = () => {
   const [preferencesSet, setPreferencesSet] = useState(false);
   // Track if we need to show the preferences dialog
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
+  // Store selected topics
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -35,7 +37,8 @@ const MenteeJourney = () => {
   };
   
   // Handler for when preferences are saved
-  const handlePreferencesSaved = () => {
+  const handlePreferencesSaved = (topics: string[]) => {
+    setSelectedTopics(topics);
     setPreferencesSet(true);
     setShowPreferencesDialog(false);
     toast({
@@ -89,7 +92,7 @@ const MenteeJourney = () => {
         
         <TabsContent value="discovery">
           {preferencesSet ? (
-            <MentorDiscovery />
+            <MentorDiscovery selectedTopics={selectedTopics} />
           ) : (
             <div className="p-8 text-center border rounded-lg bg-muted/50">
               <p className="text-lg font-medium mb-4">Please set your preferences to access mentor discovery</p>
