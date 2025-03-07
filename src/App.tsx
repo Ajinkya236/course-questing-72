@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Toaster } from "@/components/ui/toaster";
 import Home from '@/pages/Home';
-import Home from '@/pages/Home';
 import Mentoring from '@/pages/Mentoring';
 import Discover from '@/pages/Discover';
 import MyLearning from '@/pages/MyLearning';
@@ -18,7 +17,7 @@ import Actionables from '@/pages/Actionables';
 import Milestones from '@/pages/Milestones';
 import Profile from '@/pages/Profile';
 import HeaderWithThemeToggle from '@/components/layout/HeaderWithThemeToggle';
-import { Footer } from '@/components/layout/Footer';
+import Footer from '@/components/layout/Footer';
 import { ThemeProvider } from '@/ThemeProvider';
 
 function App() {
