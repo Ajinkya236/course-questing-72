@@ -5,26 +5,69 @@ import MentorDiscovery from './mentee/MentorDiscovery';
 import MentorshipRequests from './mentee/MentorshipRequests';
 import ActiveEngagements from './mentee/ActiveEngagements';
 import MentoringHistory from './mentee/MentoringHistory';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  UserCog, 
   Search, 
   ClipboardList, 
   Users, 
   History,
-  BookOpen,
-  Clock,
-  Target
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import MenteePreferences from './mentee/MenteePreferences';
+import { useToast } from '@/hooks/use-toast';
 
 const MenteeJourney = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('discovery');
+  // Track whether preferences are set
+  const [preferencesSet, setPreferencesSet] = useState(false);
+  // Track if we need to show the preferences dialog
+  const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
+  
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    // If preferences aren't set, show the dialog
+    if (!preferencesSet) {
+      setShowPreferencesDialog(true);
+      // Don't change the tab until preferences are set
+      return;
+    }
+    setActiveTab(value);
+  };
+  
+  // Handler for when preferences are saved
+  const handlePreferencesSaved = () => {
+    setPreferencesSet(true);
+    setShowPreferencesDialog(false);
+    toast({
+      title: "Preferences Saved",
+      description: "Your mentee preferences have been saved successfully."
+    });
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">My Mentee Journey</h2>
       
-      <Tabs defaultValue="discovery" value={activeTab} onValueChange={setActiveTab} className="w-full">
+      {/* Preferences Dialog */}
+      <Dialog open={showPreferencesDialog} onOpenChange={(open) => {
+        // If preferences aren't set, don't allow closing the dialog by clicking outside
+        if (!preferencesSet && !open) return;
+        setShowPreferencesDialog(open);
+      }}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Set Your Mentee Preferences</DialogTitle>
+            <DialogDescription>
+              Please set your preferences before accessing mentee features
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <MenteePreferences inDialog={true} onSave={handlePreferencesSaved} />
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Tabs defaultValue="discovery" value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full grid grid-cols-4 mb-6">
           <TabsTrigger value="discovery" className="flex items-center gap-1">
             <Search className="h-4 w-4 md:mr-1" />
@@ -45,19 +88,47 @@ const MenteeJourney = () => {
         </TabsList>
         
         <TabsContent value="discovery">
-          <MentorDiscovery />
+          {preferencesSet ? (
+            <MentorDiscovery />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access mentor discovery</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us match you with the most relevant mentors</p>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="requests">
-          <MentorshipRequests />
+          {preferencesSet ? (
+            <MentorshipRequests />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access your mentorship requests</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us better manage your mentorship requests</p>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="active">
-          <ActiveEngagements />
+          {preferencesSet ? (
+            <ActiveEngagements />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access your active engagements</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us better manage your mentorship experiences</p>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="history">
-          <MentoringHistory />
+          {preferencesSet ? (
+            <MentoringHistory />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access your mentoring history</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us better track your mentoring progress</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

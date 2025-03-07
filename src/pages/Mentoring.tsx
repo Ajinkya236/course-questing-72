@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,37 +39,6 @@ const Mentoring = () => {
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   const [showMentorPreferencesDialog, setShowMentorPreferencesDialog] = useState(false);
   
-  // Mock mentor preferences data
-  const [mentorPreferences, setMentorPreferences] = useState({
-    bio: "Senior technology professional with 15+ years of experience in software development and leadership roles.",
-    topics: ["Software Development", "Leadership", "Career Growth"],
-    idealMentee: "Ambitious professionals looking to grow their technical and leadership skills.",
-    philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
-  });
-  
-  // HR and user guide banner data - shared banner for both tabs
-  const banners = [
-    {
-      id: 1,
-      title: "HR Update: New Mentoring Guidelines",
-      description: "Learn about the updated mentoring program policies and best practices.",
-      imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    },
-    {
-      id: 2,
-      title: "Mentoring Excellence Workshop",
-      description: "Join our upcoming workshop to enhance your mentoring skills - Thursday at 2 PM.",
-      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80"
-    },
-    {
-      id: 3,
-      title: "Mentoring Resources Hub",
-      description: "Access our updated knowledge base with templates and guides for effective mentoring.",
-      imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-    }
-  ];
-
-  // For adding/removing topics
   const [newTopic, setNewTopic] = useState('');
 
   const handleAddTopic = () => {
@@ -102,7 +70,34 @@ const Mentoring = () => {
     navigate('/discover');
   };
 
-  // Mock recommended mentors data
+  const [mentorPreferences, setMentorPreferences] = useState({
+    bio: "Senior technology professional with 15+ years of experience in software development and leadership roles.",
+    topics: ["Software Development", "Leadership", "Career Growth"],
+    idealMentee: "Ambitious professionals looking to grow their technical and leadership skills.",
+    philosophy: "I believe in practical, hands-on learning and focusing on real-world applications."
+  });
+
+  const banners = [
+    {
+      id: 1,
+      title: "HR Update: New Mentoring Guidelines",
+      description: "Learn about the updated mentoring program policies and best practices.",
+      imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    },
+    {
+      id: 2,
+      title: "Mentoring Excellence Workshop",
+      description: "Join our upcoming workshop to enhance your mentoring skills - Thursday at 2 PM.",
+      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80"
+    },
+    {
+      id: 3,
+      title: "Mentoring Resources Hub",
+      description: "Access our updated knowledge base with templates and guides for effective mentoring.",
+      imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    }
+  ];
+
   const recommendedMentors = [
     {
       id: 1,
@@ -156,7 +151,6 @@ const Mentoring = () => {
             <TabsTrigger value="mentor">Mentor Journey</TabsTrigger>
           </TabsList>
           
-          {/* Shared banner - moved outside of tab content to be shown for both tabs */}
           <Card className="mb-6 overflow-hidden">
             <BannerCarousel banners={banners} />
           </Card>
@@ -168,29 +162,9 @@ const Mentoring = () => {
                   <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentee Journey</h2>
                   <p className="text-muted-foreground">Set your preferences, connect with mentors, and track your progress</p>
                 </div>
-                <Dialog open={showPreferencesDialog} onOpenChange={setShowPreferencesDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="mt-4 md:mt-0 gap-2">
-                      <UserCog className="h-4 w-4" />
-                      Set Preferences
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                      <DialogTitle>Mentee Preferences</DialogTitle>
-                      <DialogDescription>
-                        Configure your mentoring preferences to help us match you with the right mentors
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                      <MenteePreferences inDialog={true} onSave={() => setShowPreferencesDialog(false)} />
-                    </div>
-                  </DialogContent>
-                </Dialog>
               </CardContent>
             </Card>
             
-            {/* Recommended Mentors - keep this section */}
             <div className="mb-10">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Recommended Mentors</h2>
@@ -237,7 +211,6 @@ const Mentoring = () => {
               </div>
             </div>
             
-            {/* Mentee Journey */}
             <MenteeJourney />
           </TabsContent>
           
@@ -248,111 +221,9 @@ const Mentoring = () => {
                   <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentor Journey</h2>
                   <p className="text-muted-foreground">Set up your mentor profile, manage requests, and guide your mentees to success</p>
                 </div>
-                <Dialog open={showMentorPreferencesDialog} onOpenChange={setShowMentorPreferencesDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="mt-4 md:mt-0 gap-2">
-                      <UserCog className="h-4 w-4" />
-                      Set Preferences
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[600px]">
-                    <DialogHeader>
-                      <DialogTitle>Mentor Preferences</DialogTitle>
-                      <DialogDescription>
-                        Configure your mentoring profile to attract the right mentees
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1" htmlFor="bio">
-                          Professional Bio
-                        </label>
-                        <Textarea
-                          id="bio"
-                          placeholder="Share your professional background and expertise..."
-                          value={mentorPreferences.bio}
-                          onChange={(e) => setMentorPreferences({...mentorPreferences, bio: e.target.value})}
-                          className="resize-none"
-                          rows={4}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Mentoring Topics
-                        </label>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {mentorPreferences.topics.map(topic => (
-                            <Badge key={topic} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
-                              {topic}
-                              <X 
-                                className="h-3.5 w-3.5 ml-1 cursor-pointer" 
-                                onClick={() => handleRemoveTopic(topic)}
-                              />
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Add a topic..."
-                            value={newTopic}
-                            onChange={(e) => setNewTopic(e.target.value)}
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleAddTopic();
-                              }
-                            }}
-                          />
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            onClick={handleAddTopic}
-                            disabled={!newTopic.trim()}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium mb-1" htmlFor="ideal-mentee">
-                          Ideal Mentee
-                        </label>
-                        <Textarea
-                          id="ideal-mentee"
-                          placeholder="Describe your ideal mentee..."
-                          value={mentorPreferences.idealMentee}
-                          onChange={(e) => setMentorPreferences({...mentorPreferences, idealMentee: e.target.value})}
-                          className="resize-none"
-                          rows={3}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium mb-1" htmlFor="philosophy">
-                          Mentoring Philosophy
-                        </label>
-                        <Textarea
-                          id="philosophy"
-                          placeholder="Share your approach to mentoring..."
-                          value={mentorPreferences.philosophy}
-                          onChange={(e) => setMentorPreferences({...mentorPreferences, philosophy: e.target.value})}
-                          className="resize-none"
-                          rows={3}
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowMentorPreferencesDialog(false)}>Cancel</Button>
-                      <Button onClick={handleMentorPreferencesSave}>Save Preferences</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
               </CardContent>
             </Card>
             
-            {/* Mentor Journey */}
             <MentorJourney />
           </TabsContent>
         </Tabs>

@@ -12,6 +12,9 @@ import {
   Filter
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import MentorPreferences from './mentor/MentorPreferences';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock data for the banners
 const mentorBanners = [
@@ -45,15 +48,60 @@ const activeMentees = [
 ];
 
 const MentorJourney = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('requests');
   const [selectedMentee, setSelectedMentee] = useState(1);
+  // Track whether preferences are set
+  const [preferencesSet, setPreferencesSet] = useState(false);
+  // Track if we need to show the preferences dialog
+  const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
+  
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    // If preferences aren't set, show the dialog
+    if (!preferencesSet) {
+      setShowPreferencesDialog(true);
+      // Don't change the tab until preferences are set
+      return;
+    }
+    setActiveTab(value);
+  };
+  
+  // Handler for when preferences are saved
+  const handlePreferencesSaved = () => {
+    setPreferencesSet(true);
+    setShowPreferencesDialog(false);
+    toast({
+      title: "Preferences Saved",
+      description: "Your mentor preferences have been saved successfully."
+    });
+  };
   
   return (
     <div className="space-y-6">
       <BannerCarousel banners={mentorBanners} smallSize={true} className="mb-4" />
       <h2 className="text-xl font-semibold mb-4">My Mentor Journey</h2>
       
-      <Tabs defaultValue="requests" value={activeTab} onValueChange={setActiveTab} className="w-full">
+      {/* Preferences Dialog */}
+      <Dialog open={showPreferencesDialog} onOpenChange={(open) => {
+        // If preferences aren't set, don't allow closing the dialog by clicking outside
+        if (!preferencesSet && !open) return;
+        setShowPreferencesDialog(open);
+      }}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Set Your Mentor Preferences</DialogTitle>
+            <DialogDescription>
+              Please set your preferences before accessing mentor features
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <MentorPreferences inDialog={true} onSave={handlePreferencesSaved} />
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Tabs defaultValue="requests" value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full grid grid-cols-3 mb-6">
           <TabsTrigger value="requests" className="flex items-center gap-1">
             <ClipboardList className="h-4 w-4 md:mr-1" />
@@ -70,41 +118,61 @@ const MentorJourney = () => {
         </TabsList>
         
         <TabsContent value="requests">
-          <MenteeRequests />
+          {preferencesSet ? (
+            <MenteeRequests />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access mentee requests</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us match you with the right mentees</p>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="active">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-64 lg:w-72 border rounded-lg p-4 h-fit">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium">Active Mentees</h3>
-                <Button variant="ghost" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
+          {preferencesSet ? (
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="md:w-64 lg:w-72 border rounded-lg p-4 h-fit">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-medium">Active Mentees</h3>
+                  <Button variant="ghost" size="icon">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {activeMentees.map(mentee => (
+                    <div 
+                      key={mentee.id}
+                      onClick={() => setSelectedMentee(mentee.id)}
+                      className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMentee === mentee.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary'}`}
+                    >
+                      <div className="font-medium">{mentee.name}</div>
+                      <div className="text-sm text-muted-foreground">{mentee.role}</div>
+                      <div className="text-xs text-muted-foreground mt-1">Last active: {mentee.lastActivity}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                {activeMentees.map(mentee => (
-                  <div 
-                    key={mentee.id}
-                    onClick={() => setSelectedMentee(mentee.id)}
-                    className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMentee === mentee.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary'}`}
-                  >
-                    <div className="font-medium">{mentee.name}</div>
-                    <div className="text-sm text-muted-foreground">{mentee.role}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Last active: {mentee.lastActivity}</div>
-                  </div>
-                ))}
+              <div className="flex-1">
+                <ActiveMentorships selectedMentee={selectedMentee} />
               </div>
             </div>
-            <div className="flex-1">
-              {/* Pass the selectedMentee as a regular prop instead of selectedMenteeId */}
-              <ActiveMentorships selectedMentee={selectedMentee} />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access active mentorships</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us better manage your mentoring relationships</p>
             </div>
-          </div>
+          )}
         </TabsContent>
         
         <TabsContent value="history">
-          <MentorshipHistory />
+          {preferencesSet ? (
+            <MentorshipHistory />
+          ) : (
+            <div className="p-8 text-center border rounded-lg bg-muted/50">
+              <p className="text-lg font-medium mb-4">Please set your preferences to access your mentorship history</p>
+              <p className="text-muted-foreground mb-4">Your preferences help us better track your mentoring impact</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
