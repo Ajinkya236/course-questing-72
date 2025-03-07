@@ -8,8 +8,11 @@ import BannerCarousel from '@/components/BannerCarousel';
 import { 
   ClipboardList, 
   Users, 
-  History
+  History,
+  Filter
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 // Mock data for the banners
 const mentorBanners = [
@@ -33,8 +36,18 @@ const mentorBanners = [
   }
 ];
 
+// Mock data for active mentees
+const activeMentees = [
+  { id: 1, name: "Alex Johnson", role: "Junior Developer", progress: 45 },
+  { id: 2, name: "Sarah Williams", role: "Content Creator", progress: 70 },
+  { id: 3, name: "Michael Chen", role: "UX Designer", progress: 30 },
+  { id: 4, name: "Priya Sharma", role: "Data Analyst", progress: 60 },
+  { id: 5, name: "Thomas Miller", role: "Product Manager", progress: 25 },
+];
+
 const MentorJourney = () => {
   const [activeTab, setActiveTab] = useState('requests');
+  const [selectedMentee, setSelectedMentee] = useState<number | null>(null);
   
   return (
     <div className="space-y-6">
@@ -62,7 +75,32 @@ const MentorJourney = () => {
         </TabsContent>
         
         <TabsContent value="active">
-          <ActiveMentorships />
+          <div className="grid grid-cols-4 gap-6">
+            <div className="col-span-1 border rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold">Active Mentees</h3>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Filter className="h-4 w-4" />
+                </Button>
+              </div>
+              <Separator className="mb-3" />
+              <div className="space-y-2">
+                {activeMentees.map((mentee) => (
+                  <div 
+                    key={mentee.id}
+                    className={`p-2 rounded-md cursor-pointer transition-colors ${selectedMentee === mentee.id ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}
+                    onClick={() => setSelectedMentee(mentee.id)}
+                  >
+                    <div className="font-medium text-sm">{mentee.name}</div>
+                    <div className="text-xs opacity-80">{mentee.role}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="col-span-3">
+              <ActiveMentorships selectedMenteeId={selectedMentee} />
+            </div>
+          </div>
         </TabsContent>
         
         <TabsContent value="history">

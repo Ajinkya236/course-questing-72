@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -95,13 +96,13 @@ const Home = () => {
         <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
-        <section className="relative rounded-xl overflow-hidden max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent py-4 px-6 md:px-8">
-            <div className="max-w-xl space-y-2">
-              <h1 className="text-xl md:text-2xl font-bold text-white">
+        <section className="relative rounded-xl overflow-hidden max-w-full mx-auto">
+          <div className="bg-gradient-to-r from-primary via-primary/90 to-accent py-3 px-6 md:px-8">
+            <div className="max-w-xl">
+              <h1 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Unlock Your Potential with Personalized Learning
               </h1>
-              <form onSubmit={handleSearch} className="flex gap-2 pt-1">
+              <form onSubmit={handleSearch} className="flex gap-2">
                 <Input 
                   type="text" 
                   placeholder="Search for courses, skills, topics..." 
@@ -113,7 +114,7 @@ const Home = () => {
                   <Search className="h-4 w-4" />
                 </Button>
               </form>
-              <div className="flex flex-wrap gap-3 pt-1">
+              <div className="flex flex-wrap gap-3 mt-2">
                 <Button 
                   size="sm" 
                   className="gap-1 bg-white text-primary hover:bg-white/90" 
