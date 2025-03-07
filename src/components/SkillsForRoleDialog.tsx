@@ -8,10 +8,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from '@/components/ui/progress';
-import { Star, BarChart, Award, Target, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Target, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface SkillsForRoleDialogProps {
@@ -29,11 +28,6 @@ const roleSkills = [
     proficiencyRequired: 80,
     currentProficiency: 65,
     status: 'in-progress',
-    courses: [
-      { id: 'pm1', title: 'Project Management Fundamentals', completed: true },
-      { id: 'pm2', title: 'Advanced Project Planning', completed: false },
-      { id: 'pm3', title: 'Risk Management for Projects', completed: false },
-    ]
   },
   {
     id: 2,
@@ -42,10 +36,6 @@ const roleSkills = [
     proficiencyRequired: 75,
     currentProficiency: 60,
     status: 'in-progress',
-    courses: [
-      { id: 'l1', title: 'Leadership for New Managers', completed: true },
-      { id: 'l2', title: 'Coaching and Mentoring Skills', completed: false },
-    ]
   },
   {
     id: 3,
@@ -54,10 +44,6 @@ const roleSkills = [
     proficiencyRequired: 70,
     currentProficiency: 45,
     status: 'not-started',
-    courses: [
-      { id: 'st1', title: 'Strategic Decision Making', completed: false },
-      { id: 'st2', title: 'Business Strategy Essentials', completed: false },
-    ]
   },
   {
     id: 4,
@@ -66,11 +52,6 @@ const roleSkills = [
     proficiencyRequired: 85,
     currentProficiency: 85,
     status: 'completed',
-    courses: [
-      { id: 'c1', title: 'Effective Team Communication', completed: true },
-      { id: 'c2', title: 'Presentation Skills Mastery', completed: true },
-      { id: 'c3', title: 'Negotiation Skills', completed: true },
-    ]
   },
   {
     id: 5,
@@ -79,10 +60,6 @@ const roleSkills = [
     proficiencyRequired: 60,
     currentProficiency: 30,
     status: 'not-started',
-    courses: [
-      { id: 'd1', title: 'Data-Driven Decision Making', completed: false },
-      { id: 'd2', title: 'Business Analytics Fundamentals', completed: false },
-    ]
   },
 ];
 
@@ -122,7 +99,7 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onOpenC
             Skills for Your Role
           </DialogTitle>
           <DialogDescription>
-            These are the key skills required for your current role. Track your progress and find relevant courses.
+            These are the key skills required for your current role. Track your progress to reach proficiency targets.
           </DialogDescription>
         </DialogHeader>
         
@@ -154,29 +131,6 @@ const SkillsForRoleDialog: React.FC<SkillsForRoleDialogProps> = ({ open, onOpenC
                         Target: {skill.proficiencyRequired}%
                       </span>
                       <span className="text-muted-foreground">100%</span>
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">Recommended Courses</h4>
-                    <div className="space-y-2">
-                      {skill.courses.map((course) => (
-                        <div key={course.id} className="flex items-center justify-between bg-secondary/10 p-2 rounded-md">
-                          <div className="flex items-center gap-2">
-                            {course.completed ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <Clock className="h-4 w-4 text-amber-500" />
-                            )}
-                            <span className="text-sm">{course.title}</span>
-                          </div>
-                          <Badge variant={course.completed ? "default" : "outline"}>
-                            {course.completed ? 'Completed' : 'To Do'}
-                          </Badge>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </div>

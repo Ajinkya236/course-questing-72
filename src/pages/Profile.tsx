@@ -1,49 +1,40 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ChevronLeft, Mail, MapPin, Briefcase, Building, Users, Star, Award, Trophy, User, Calendar } from 'lucide-react';
+import { ChevronLeft, Mail, MapPin, Briefcase, Building, Users, Star, Award, Trophy, User, Calendar, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 
-// Mock data for personal stats over time
-const mockTimeStats = [
-  { period: 'Last Month', points: 850, rank: 18, completed: 3 },
-  { period: 'Two Months Ago', points: 720, rank: 22, completed: 2 },
-  { period: '3 Months Ago', points: 640, rank: 25, completed: 2 },
-  { period: '4 Months Ago', points: 450, rank: 31, completed: 1 },
-  { period: '5 Months Ago', points: 380, rank: 35, completed: 1 },
-  { period: '6 Months Ago', points: 320, rank: 38, completed: 1 },
+// Role skills data
+const roleSkills = [
+  { id: 1, name: 'Project Management', proficiency: 65, target: 80 },
+  { id: 2, name: 'Leadership', proficiency: 60, target: 75 },
+  { id: 3, name: 'Strategic Thinking', proficiency: 45, target: 70 },
+  { id: 4, name: 'Communication', proficiency: 85, target: 85 },
+  { id: 5, name: 'Data Analysis', proficiency: 30, target: 60 },
 ];
-
-// Mock leaderboard data
-const mockLeaderboardUsers = Array.from({ length: 50 }, (_, i) => ({
-  id: `user-${i + 1}`,
-  name: `User ${i + 1}`,
-  avatar: `https://randomuser.me/api/portraits/${i % 2 ? 'women' : 'men'}/${(i % 70) + 1}.jpg`,
-  points: Math.floor(10000 - i * (100 + Math.random() * 50)),
-  position: i + 1,
-  positionChange: i % 5 === 0 ? 2 : i % 7 === 0 ? -1 : 0,
-  department: ['Engineering', 'Marketing', 'Sales', 'Finance', 'HR', 'Operations'][i % 6],
-  team: ['Frontend', 'Backend', 'DevOps', 'Design', 'Content', 'Support'][i % 6],
-  location: ['New York', 'San Francisco', 'London', 'Tokyo', 'Singapore', 'Berlin'][i % 6],
-  role: ['Developer', 'Manager', 'Director', 'VP', 'C-Level', 'Analyst'][i % 6],
-  jobFamily: ['Technology', 'Business', 'Creative', 'Support', 'Leadership'][i % 5],
-  details: {
-    assessmentScore: Math.floor(70 + Math.random() * 30),
-    engagementScore: Math.floor(60 + Math.random() * 40),
-    completionRate: Math.floor(75 + Math.random() * 25)
-  }
-}));
-
-// Current user is the one at position 15
-const currentUser = mockLeaderboardUsers.find(user => user.position === 15);
 
 const Profile = () => {
   const navigate = useNavigate();
+  
+  // Calculate overall role readiness percentage
+  const calculateRoleReadiness = () => {
+    const totalTargets = roleSkills.reduce((sum, skill) => sum + skill.target, 0);
+    const currentTotal = roleSkills.reduce((sum, skill) => {
+      // Cap the proficiency at the target value
+      const cappedProficiency = Math.min(skill.proficiency, skill.target);
+      return sum + cappedProficiency;
+    }, 0);
+    
+    return Math.round((currentTotal / totalTargets) * 100);
+  };
+  
+  const roleReadiness = calculateRoleReadiness();
+  const isRoleReady = roleReadiness === 100;
   
   return (
     <>
@@ -122,102 +113,70 @@ const Profile = () => {
             </CardContent>
           </Card>
           
-          {/* Leaderboard and Stats */}
+          {/* Role Readiness section */}
           <div className="md:col-span-2 space-y-6">
-            <Tabs defaultValue="leaderboard">
-              <TabsList className="w-full grid grid-cols-3">
-                <TabsTrigger value="leaderboard">
-                  <Trophy className="h-4 w-4 mr-2" /> Leaderboard
-                </TabsTrigger>
-                <TabsTrigger value="personal">
-                  <User className="h-4 w-4 mr-2" /> Personal Progress
-                </TabsTrigger>
-                <TabsTrigger value="achievements">
-                  <Award className="h-4 w-4 mr-2" /> Achievements
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="leaderboard" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Leaderboard</CardTitle>
-                    <CardDescription>See how you compare to others</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <LeaderboardEnhanced 
-                      users={mockLeaderboardUsers.slice(0, 10)} 
-                      currentUser={currentUser} 
-                    />
-                    <Button className="w-full mt-4" onClick={() => navigate('/leaderboard')}>
-                      View Full Leaderboard
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="personal" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Progress Over Time</CardTitle>
-                    <CardDescription>See how your learning journey has progressed</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {mockTimeStats.map((stat, index) => (
-                        <div key={index} className="p-3 rounded-lg border flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">{stat.period}</p>
-                            <div className="flex items-center gap-6 mt-1 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Trophy className="h-3 w-3" /> Rank: #{stat.rank}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Star className="h-3 w-3" /> Points: {stat.points}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Award className="h-3 w-3" /> Completed: {stat.completed}
-                              </span>
-                            </div>
-                          </div>
-                          <div className={`text-sm ${index > 0 && stat.rank < mockTimeStats[index-1].rank ? 'text-green-500' : index > 0 && stat.rank > mockTimeStats[index-1].rank ? 'text-red-500' : ''}`}>
-                            {index > 0 && stat.rank < mockTimeStats[index-1].rank 
-                              ? `↑${mockTimeStats[index-1].rank - stat.rank}` 
-                              : index > 0 && stat.rank > mockTimeStats[index-1].rank 
-                                ? `↓${stat.rank - mockTimeStats[index-1].rank}` 
-                                : '-'}
-                          </div>
-                        </div>
-                      ))}
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Ready for Role Progress</CardTitle>
+                  {isRoleReady ? (
+                    <Badge className="bg-green-500">Role Ready</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-amber-500 border-amber-500">In Progress</Badge>
+                  )}
+                </div>
+                <CardDescription>
+                  Track your progress towards becoming fully prepared for your current role
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Overall Role Readiness</span>
+                    <span className="text-sm font-medium">{roleReadiness}%</span>
+                  </div>
+                  <Progress value={roleReadiness} className="h-2" />
+                  
+                  {isRoleReady ? (
+                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-md flex items-center gap-3">
+                      <Award className="h-6 w-6 text-green-500" />
+                      <div>
+                        <p className="font-medium text-green-600">Congratulations!</p>
+                        <p className="text-sm text-muted-foreground">You've achieved 100% role readiness and earned the Role Ready badge!</p>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="achievements" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Achievements</CardTitle>
-                    <CardDescription>Badges and rewards you've earned</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="flex flex-col items-center text-center p-4 border rounded-lg">
-                          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-2">
-                            <Award className="h-8 w-8 text-primary" />
-                          </div>
-                          <h3 className="font-medium text-sm">Achievement {i+1}</h3>
-                          <p className="text-xs text-muted-foreground mt-1">Earned 2 months ago</p>
-                        </div>
-                      ))}
+                  ) : (
+                    <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-md flex items-center gap-3">
+                      <EyeOff className="h-6 w-6 text-amber-500" />
+                      <div>
+                        <p className="font-medium text-amber-600">Role Ready Badge Locked</p>
+                        <p className="text-sm text-muted-foreground">Complete your role readiness to unlock this achievement</p>
+                      </div>
                     </div>
-                    <Button variant="outline" className="w-full mt-6">
-                      View All Achievements
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                  )}
+                </div>
+                
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium">Role Skills</h3>
+                  {roleSkills.map(skill => (
+                    <div key={skill.id} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">{skill.name}</span>
+                        <span className="text-xs bg-secondary/80 px-2 py-0.5 rounded-full">
+                          {skill.proficiency}% / {skill.target}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${skill.proficiency >= skill.target ? 'bg-green-500' : 'bg-primary'}`}
+                          style={{ width: `${(skill.proficiency / skill.target) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

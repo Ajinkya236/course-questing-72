@@ -1,253 +1,276 @@
-
-import React, { useState, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import {
+  Bell,
+  BookOpen,
+  Home,
+  Search,
+  Trophy,
+  Menu,
+  X,
+  User,
+  LogOut,
+  Settings,
+  HelpCircle,
+  Rss,
+  MessageSquare,
+  Users,
+  ChevronDown,
+  BrainCircuit
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Bell, 
-  BookOpen, 
-  ChevronDown, 
-  Home, 
-  Layers, 
-  LogOut, 
-  Menu,
-  Search,
-  Settings,
-  Star,
-  User,
-  HelpCircle,
-  BarChart3,
-  GraduationCap,
-  Award,
-  Target,
-  Zap,
-  TrendingUp,
-  Users,
-  X
-} from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from "@/hooks/use-toast";
+import { useMediaQuery } from '@/hooks/use-mobile';
+import ThemeToggle from '@/components/ThemeToggle';
+
+// Correct import for NotificationsPanel
 import NotificationsPanel from '@/components/NotificationsPanel';
 
 const NavbarEnhanced = () => {
-  const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const location = useLocation();
-  const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const notificationsRef = useRef<HTMLButtonElement>(null);
-  
-  // Mock unread notifications count
-  const unreadNotificationsCount = 3;
-  
-  const navLinks = [
-    { href: '/', label: 'Home', icon: <Home className="h-4 w-4" /> },
-    { 
-      href: '/discover', 
-      label: 'Discover', 
-      icon: <Search className="h-4 w-4" />,
-      dropdown: false
-    },
-    { href: '/my-learning', label: 'My Learning', icon: <Layers className="h-4 w-4" /> },
-    { href: '/mentoring', label: 'Mentoring', icon: <Users className="h-4 w-4" /> }
-  ];
-  
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery();
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-  
-  const toggleNotificationsPanel = () => {
-    setIsNotificationsPanelOpen(!isNotificationsPanelOpen);
-  };
-  
-  const closeNotificationsPanel = () => {
-    setIsNotificationsPanelOpen(false);
-  };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
-      setIsSearchVisible(false);
-    }
+  const handleLogout = () => {
+    // Implement your logout logic here
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
+    navigate('/');
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b shadow-sm bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-primary text-white p-1.5 rounded-lg">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <span className="hidden font-bold text-lg sm:inline-block">
-              Learning Platform
-            </span>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link to="/" className="flex items-center gap-1 font-semibold">
+            <BrainCircuit className="h-5 w-5 text-primary" /> 
+            <span className="hidden md:inline">Learning Portal</span>
           </Link>
-          <NavigationMenu className="ml-8">
-            <NavigationMenuList className="gap-1">
-              {navLinks.map((link) => (
-                <NavigationMenuItem key={link.href}>
-                  <Link to={link.href} className="group">
-                    <NavigationMenuLink
-                      className={cn(
-                        "relative flex items-center gap-1.5 px-4 py-2 font-medium",
-                        isActive(link.href) && "text-primary"
-                      )}
-                    >
-                      {link.icon}
-                      <span>{link.label}</span>
-                      <span className={cn(
-                        "absolute inset-x-0 -bottom-[1px] h-[2px] bg-primary transform scale-x-0 transition-transform",
-                        isActive(link.href) ? "scale-x-100" : "group-hover:scale-x-100"
-                      )} />
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
+          
+          <nav className="hidden md:flex items-center gap-1">
+            <Link 
+              to="/" 
+              className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
+            >
+              <Home className="mr-1 h-4 w-4" />
+              Home
+            </Link>
+            <Link 
+              to="/discover" 
+              className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/discover') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
+            >
+              <BookOpen className="mr-1 h-4 w-4" />
+              Discover
+            </Link>
+            <Link 
+              to="/my-learning" 
+              className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/my-learning') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
+            >
+              <Trophy className="mr-1 h-4 w-4" />
+              My Learning
+            </Link>
+            <Link 
+              to="/mentoring" 
+              className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/mentoring') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
+            >
+              <Users className="mr-1 h-4 w-4" />
+              Mentoring
+            </Link>
+          </nav>
         </div>
         
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="mr-2 md:hidden"
-            >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="pr-0">
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="bg-primary text-white p-1.5 rounded-lg">
-                <GraduationCap className="h-6 w-6" />
-              </div>
-              <span className="font-bold">Learning Platform</span>
-            </Link>
-            <div className="grid gap-2 py-4">
-              {navLinks.map((link) => (
-                <Button
-                  key={link.href}
-                  variant={isActive(link.href) ? "default" : "ghost"}
-                  className="justify-start"
-                  onClick={() => navigate(link.href)}
-                >
-                  {link.icon}
-                  <span className="ml-2">{link.label}</span>
-                </Button>
-              ))}
-            </div>
-          </SheetContent>
-        </Sheet>
-        
-        <div className="flex flex-1 items-center justify-end">
-          <div className="flex items-center gap-2">
-            {isSearchVisible ? (
-              <form onSubmit={handleSearch} className="relative flex-1 mr-2">
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-[200px] md:w-[300px] pr-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="icon" 
-                  className="absolute right-0 top-0 h-10 w-10"
-                  onClick={() => setIsSearchVisible(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </form>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Search"
-                onClick={() => setIsSearchVisible(true)}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            )}
-            
-            <Button
-              ref={notificationsRef}
-              variant="ghost"
-              size="icon"
-              aria-label="Notifications"
-              className="relative"
-              onClick={toggleNotificationsPanel}
+        <div className="flex items-center gap-2">
+          <div className="relative hidden md:block w-48 lg:w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              className="w-full rounded-lg pl-8 bg-background"
+              onFocus={() => navigate('/search')}
+            />
+          </div>
+          
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative" 
+              onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-5 w-5" />
-              {unreadNotificationsCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center"
-                >
-                  {unreadNotificationsCount}
-                </Badge>
-              )}
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
+                4
+              </Badge>
             </Button>
             
-            {isNotificationsPanelOpen && (
-              <div className="absolute top-16 right-4 z-50 w-80 md:w-96 shadow-lg rounded-md border bg-card overflow-hidden">
-                <NotificationsPanel onClose={closeNotificationsPanel} />
-              </div>
-            )}
+            {/* Add Theme Toggle */}
+            <ThemeToggle />
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-2 p-2 hover:bg-secondary/50">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>SC</AvatarFallback>
                   </Avatar>
-                  <span className="hidden md:inline font-medium">John Doe</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="flex items-center gap-2" onClick={() => navigate('/profile')}>
-                  <User className="h-4 w-4" />
-                  <span>My Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2" onClick={() => navigate('/faq')}>
-                  <HelpCircle className="h-4 w-4" />
-                  <span>FAQs</span>
-                </DropdownMenuItem>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2 text-destructive">
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => navigate('/my-learning')}>
+                    <Trophy className="mr-2 h-4 w-4" />
+                    <span>My Learning</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/notifications')}>
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Notifications</span>
+                    <Badge className="ml-auto h-4 px-1 text-[10px]">4</Badge>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/milestones')}>
+                    <Trophy className="mr-2 h-4 w-4" />
+                    <span>Milestones</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => navigate('/support')}>
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help & Support</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/feedback')}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    <span>Send Feedback</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+            >
+              {showMobileMenu ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
           </div>
         </div>
       </div>
+      
+      {/* Mobile menu */}
+      {showMobileMenu && (
+        <div className="md:hidden border-t p-4">
+          <nav className="grid gap-2">
+            <Link
+              to="/"
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+                isActive('/') ? 'bg-secondary' : 'hover:bg-secondary/50'
+              }`}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Link>
+            <Link
+              to="/discover"
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+                isActive('/discover') ? 'bg-secondary' : 'hover:bg-secondary/50'
+              }`}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              <BookOpen className="h-4 w-4" />
+              Discover
+            </Link>
+            <Link
+              to="/my-learning"
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+                isActive('/my-learning') ? 'bg-secondary' : 'hover:bg-secondary/50'
+              }`}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              <Trophy className="h-4 w-4" />
+              My Learning
+            </Link>
+            <Link
+              to="/mentoring"
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+                isActive('/mentoring') ? 'bg-secondary' : 'hover:bg-secondary/50'
+              }`}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              <Users className="h-4 w-4" />
+              Mentoring
+            </Link>
+            <div className="relative w-full mt-2">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full pl-9"
+                onFocus={() => {
+                  navigate('/search');
+                  setShowMobileMenu(false);
+                }}
+              />
+            </div>
+          </nav>
+        </div>
+      )}
+      
+      {/* Notifications panel */}
+      {showNotifications && (
+        <NotificationsPanel open={showNotifications} onOpenChange={setShowNotifications} />
+      )}
     </header>
   );
 };
