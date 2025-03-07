@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +9,7 @@ import { useSpinTheWheel } from '@/contexts/SpinTheWheelContext';
 import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
 import MysteryBox from '@/components/gamification/MysteryBox';
 import SpinTheWheel from '@/components/gamification/SpinTheWheel';
+import LeaderboardSection from '@/components/leaderboard/LeaderboardSection';
 
 const rewards = [
   { id: 1, name: "500 Points", value: 500, type: "points", color: "#4CAF50" },
@@ -75,6 +75,9 @@ const RewardsTab = () => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Leaderboard Section */}
+      <LeaderboardSection />
       
       {/* Reward Activities and Game Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
