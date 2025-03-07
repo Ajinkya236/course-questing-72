@@ -67,47 +67,6 @@ const LearningGoalsTab: React.FC = () => {
           <TabsTrigger value="managerAssigned">Courses Assigned by Manager</TabsTrigger>
         </TabsList>
         
-        {/* Skills Proficiency Overview */}
-        <div className="mb-8 p-6 bg-muted/20 rounded-lg border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Award className="h-5 w-5 text-primary" />
-              Skills Proficiency
-            </h3>
-            <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
-              {calculateOverallProficiency()}% Overall
-            </span>
-          </div>
-          
-          <div className="space-y-4">
-            {skillsData.map(skill => (
-              <div key={skill.id} className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">{skill.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {skill.currentProficiency}% / {skill.targetProficiency}%
-                  </span>
-                </div>
-                <Progress value={(skill.currentProficiency / skill.targetProficiency) * 100} className="h-2" />
-              </div>
-            ))}
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-border/40">
-            <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-              Skills From Your Courses
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {skillsData.map(skill => (
-                <span key={skill.id} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                  {skill.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-        
         <TabsContent value="selfAssigned">
           <CardContent className="p-0">
             {selfAssignedCourses.length > 0 ? (
@@ -152,6 +111,47 @@ const LearningGoalsTab: React.FC = () => {
           </CardContent>
         </TabsContent>
       </Tabs>
+      
+      {/* Skills Proficiency Overview - Moved below courses */}
+      <div className="mt-8 p-6 bg-muted/20 rounded-lg border">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Award className="h-5 w-5 text-primary" />
+            Skills Proficiency
+          </h3>
+          <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
+            {calculateOverallProficiency()}% Overall
+          </span>
+        </div>
+        
+        <div className="space-y-4">
+          {skillsData.map(skill => (
+            <div key={skill.id} className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">{skill.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {skill.currentProficiency}% / {skill.targetProficiency}%
+                </span>
+              </div>
+              <Progress value={(skill.currentProficiency / skill.targetProficiency) * 100} className="h-2" />
+            </div>
+          ))}
+        </div>
+        
+        <div className="mt-4 pt-4 border-t border-border/40">
+          <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            Skills From Your Courses
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {skillsData.map(skill => (
+              <span key={skill.id} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
+                {skill.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
