@@ -12,6 +12,7 @@ import {
   SlidersHorizontal
 } from 'lucide-react';
 import { coursesList } from '@/data/mockData';
+import { CarouselFilters } from '@/components/ui/carousel';
 
 // Mock skills for filters
 const mockSkills = [
@@ -20,13 +21,17 @@ const mockSkills = [
   "Problem Solving", "Critical Thinking", "Teamwork", "Innovation", "Strategy"
 ];
 
-const trainingCategories = ["All Categories", "Ready for Role", "Mandatory", "Leadership", "Technical"];
+const trainingCategories = [
+  "All Categories", "Self-assigned", "Manager-assigned", "Ready for Role", 
+  "Leadership", "Mandatory", "Special Drive"
+];
 
 const ViewAllPage = () => {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [filteredCourses, setFilteredCourses] = useState(coursesList);
   const [displayedCourseCount, setDisplayedCourseCount] = useState(12);
   
@@ -79,6 +84,13 @@ const ViewAllPage = () => {
         selectedSkills.includes(course.category)
       );
     }
+
+    // Filter by training category (if not "All Categories")
+    if (selectedCategory !== "All Categories") {
+      tempFilteredCourses = tempFilteredCourses.filter(course => 
+        course.trainingCategory === selectedCategory
+      );
+    }
     
     // Additional category-specific filtering could be added here
     if (category === 'top-picks') {
@@ -87,15 +99,15 @@ const ViewAllPage = () => {
     } else if (category === 'role-based-skills') {
       // Could filter by role-specific skills
     } else if (category === 'assigned-courses') {
-      // Add training category for assigned courses
+      // Add training category for assigned courses if not already present
       tempFilteredCourses = tempFilteredCourses.map(course => ({
         ...course,
-        trainingCategory: trainingCategories[Math.floor(Math.random() * trainingCategories.length)]
+        trainingCategory: course.trainingCategory || trainingCategories[Math.floor(Math.random() * (trainingCategories.length - 1)) + 1]
       }));
     }
     
     setFilteredCourses(tempFilteredCourses);
-  }, [searchQuery, selectedSkills, category]);
+  }, [searchQuery, selectedSkills, selectedCategory, category]);
   
   // Handle course click
   const handleCourseClick = (courseId: string) => {
@@ -105,6 +117,11 @@ const ViewAllPage = () => {
   // Load more courses
   const loadMoreCourses = () => {
     setDisplayedCourseCount(prevCount => Math.min(prevCount + 12, filteredCourses.length));
+  };
+
+  // Handle training category selection
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
   };
   
   return (
@@ -140,20 +157,23 @@ const ViewAllPage = () => {
           </Button>
         </div>
         
-        {/* Skill filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {mockSkills.map((skill) => (
-            <Button
-              key={skill}
-              variant={selectedSkills.includes(skill) ? "default" : "outline"}
-              size="sm"
-              className="rounded-full"
-              onClick={() => toggleSkill(skill)}
-            >
-              {skill}
-            </Button>
-          ))}
-        </div>
+        {/* Skill filters with carousel navigation */}
+        <CarouselFilters 
+          className="mb-4"
+          filters={mockSkills}
+          selectedFilter={selectedSkills[0]} // Using first selected skill for simplicity
+          onFilterSelect={toggleSkill}
+        />
+        
+        {/* Training category filters - show for assigned courses */}
+        {category === 'assigned-courses' && (
+          <CarouselFilters 
+            className="mb-4"
+            filters={trainingCategories}
+            selectedFilter={selectedCategory}
+            onFilterSelect={handleCategorySelect}
+          />
+        )}
         
         {/* Course grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
@@ -167,7 +187,12 @@ const ViewAllPage = () => {
               >
                 <CourseCard 
                   {...course} 
-                  trainingCategory={category === 'assigned-courses' ? course.trainingCategory : undefined}
+                  trainingCategory={course.trainingCategory || 
+                    (category === 'assigned-courses' ? 
+                      trainingCategories[Math.floor(Math.random() * (trainingCategories.length - 1)) + 1] : 
+                      undefined
+                    )
+                  }
                   previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
                 />
               </div>

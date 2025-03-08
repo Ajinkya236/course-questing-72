@@ -32,6 +32,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const subFiltersRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [visibleItems, setVisibleItems] = useState(4.25); // Show 25% of the last item
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
@@ -79,6 +81,30 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         return 'bg-blue-500';
       default:
         return 'bg-gray-500';
+    }
+  };
+
+  const scrollFiltersLeft = () => {
+    if (filtersRef.current) {
+      filtersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollFiltersRight = () => {
+    if (filtersRef.current) {
+      filtersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollSubFiltersLeft = () => {
+    if (subFiltersRef.current) {
+      subFiltersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollSubFiltersRight = () => {
+    if (subFiltersRef.current) {
+      subFiltersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
 
@@ -149,48 +175,88 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       </div>
       
-      {/* Main filters carousel */}
+      {/* Main filters carousel with navigation buttons */}
       {showSkillFilters && filterOptions.length > 0 && (
-        <div className="mb-4 overflow-hidden">
-          <div className="relative">
-            <div className="overflow-x-auto scrollbar-hide">
-              <div className="flex gap-2 pb-2">
-                {filterOptions.map((filter) => (
-                  <Button
-                    key={filter}
-                    variant={selectedFilter === filter ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleFilterClick(filter)}
-                    className="rounded-full whitespace-nowrap"
-                  >
-                    {filter}
-                  </Button>
-                ))}
-              </div>
+        <div className="mb-4 relative">
+          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 shadow-md"
+              onClick={scrollFiltersLeft}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="overflow-x-auto scrollbar-hide px-4" ref={filtersRef}>
+            <div className="flex gap-2 pb-2">
+              {filterOptions.map((filter) => (
+                <Button
+                  key={filter}
+                  variant={selectedFilter === filter ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleFilterClick(filter)}
+                  className="rounded-full whitespace-nowrap"
+                >
+                  {filter}
+                </Button>
+              ))}
             </div>
+          </div>
+          
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 shadow-md"
+              onClick={scrollFiltersRight}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       )}
       
-      {/* Sub-filters carousel - only show if sub-filters exist for selected filter */}
+      {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
       {showSkillFilters && title === "Academy Courses" && availableSubFilters.length > 0 && (
-        <div className="mb-4 overflow-hidden">
-          <div className="relative">
-            <div className="overflow-x-auto scrollbar-hide">
-              <div className="flex gap-2 pb-2">
-                {availableSubFilters.map((subFilter) => (
-                  <Button
-                    key={subFilter}
-                    variant={selectedSubFilter === subFilter ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleSubFilterClick(subFilter)}
-                    className="rounded-full whitespace-nowrap"
-                  >
-                    {subFilter}
-                  </Button>
-                ))}
-              </div>
+        <div className="mb-4 relative">
+          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 shadow-md"
+              onClick={scrollSubFiltersLeft}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="overflow-x-auto scrollbar-hide px-4" ref={subFiltersRef}>
+            <div className="flex gap-2 pb-2">
+              {availableSubFilters.map((subFilter) => (
+                <Button
+                  key={subFilter}
+                  variant={selectedSubFilter === subFilter ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleSubFilterClick(subFilter)}
+                  className="rounded-full whitespace-nowrap"
+                >
+                  {subFilter}
+                </Button>
+              ))}
             </div>
+          </div>
+          
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full h-8 w-8 shadow-md"
+              onClick={scrollSubFiltersRight}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       )}
@@ -223,6 +289,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     <div className="absolute top-2 right-2">
                       <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
                         {course.enrollmentStatus}
+                      </Badge>
+                    </div>
+                  )}
+                  {course.trainingCategory && (
+                    <div className="absolute bottom-2 left-2">
+                      <Badge variant="outline" className="bg-black/60 text-white border-none">
+                        {course.trainingCategory}
                       </Badge>
                     </div>
                   )}

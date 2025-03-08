@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,9 @@ import {
   User,
   LogOut,
   HelpCircle,
-  GraduationCap
+  GraduationCap,
+  Sun,
+  Moon
 } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -41,11 +42,14 @@ import {
 } from "@/components/ui/hover-card";
 import { toast } from "@/hooks/use-toast";
 import NotificationsPanel from '../NotificationsPanel';
+import { useTheme } from '@/components/ThemeProvider';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  const { theme, setTheme } = useTheme();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -182,7 +186,6 @@ const Navbar: React.FC = () => {
               My Learning
             </Link>
 
-            {/* Added Mentoring tab */}
             <Link 
               to="/mentoring" 
               className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -195,7 +198,6 @@ const Navbar: React.FC = () => {
               </span>
             </Link>
 
-            {/* Added My Team tab */}
             <Link 
               to="/my-team" 
               className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -205,6 +207,18 @@ const Navbar: React.FC = () => {
               <span className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
                 My Team
+              </span>
+            </Link>
+
+            <Link 
+              to="/faq" 
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/faq') ? 'text-primary' : 'text-foreground/60'
+              }`}
+            >
+              <span className="flex items-center gap-1">
+                <HelpCircle className="h-4 w-4" />
+                FAQ
               </span>
             </Link>
           </nav>
@@ -219,6 +233,19 @@ const Navbar: React.FC = () => {
               className="rounded-full bg-secondary px-9 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
           
           <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
             <PopoverTrigger asChild>
@@ -270,3 +297,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

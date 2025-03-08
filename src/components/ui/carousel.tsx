@@ -1,8 +1,9 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -204,7 +205,7 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute  h-8 w-8 rounded-full",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -250,6 +251,73 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
+// New component for filter carousels with navigation buttons
+const CarouselFilters = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    filters: string[];
+    selectedFilter: string;
+    onFilterSelect: (filter: string) => void;
+  }
+>(({ className, filters, selectedFilter, onFilterSelect, ...props }, ref) => {
+  const filtersRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (filtersRef.current) {
+      filtersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (filtersRef.current) {
+      filtersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className={cn("relative mb-4", className)} {...props}>
+      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="rounded-full h-8 w-8 shadow-md"
+          onClick={scrollLeft}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="overflow-x-auto scrollbar-hide px-10" ref={filtersRef}>
+        <div className="flex gap-2 pb-2" ref={ref}>
+          {filters.map((filter) => (
+            <Button
+              key={filter}
+              variant={selectedFilter === filter ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterSelect(filter)}
+              className="rounded-full whitespace-nowrap"
+            >
+              {filter}
+            </Button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="rounded-full h-8 w-8 shadow-md"
+          onClick={scrollRight}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+})
+CarouselFilters.displayName = "CarouselFilters"
+
 export {
   type CarouselApi,
   Carousel,
@@ -257,4 +325,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselFilters
 }

@@ -10,7 +10,7 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import Navbar from "./components/layout/Navbar"; // Fixed casing to match the file
+import Navbar from "./components/layout/Navbar";
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
@@ -22,6 +22,8 @@ import RecommendedMentorsPage from "./pages/RecommendedMentorsPage";
 import { SpinTheWheelProvider } from "./contexts/SpinTheWheelContext";
 import MyTeam from "./pages/MyTeam";
 import SignIn from "./pages/SignIn";
+import FAQ from "./pages/FAQ";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const queryClient = new QueryClient();
 
@@ -93,41 +95,44 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SpinTheWheelProvider>
-          <AuthContext.Provider value={{ user, login, logout }}>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Navbar />
-              <Routes>
-                <Route path="/signin" element={<SignIn />} />
-                
-                <Route element={
-                  <ProtectedRoute>
-                    <PageLayout />
-                  </ProtectedRoute>
-                }>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/discover" element={<Discover />} />
-                  <Route path="/my-learning" element={<MyLearning />} />
-                  <Route path="/course/:courseId" element={<CoursePlayer />} />
-                  <Route path="/view-all/:category" element={<ViewAllPage />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/milestones" element={<Milestones />} />
-                  <Route path="/actionables" element={<Actionables />} />
-                  <Route path="/mentoring" element={<Mentoring />} />
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
-                  <Route path="/my-team" element={<MyTeam />} />
-                  <Route path="/my-team/member/:memberId/learning" element={<MyLearning initialTab="courses" />} />
-                  <Route path="/my-team/member/:memberId/goals" element={<MyLearning initialTab="goals" />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </AuthContext.Provider>
-        </SpinTheWheelProvider>
+        <ThemeProvider>
+          <SpinTheWheelProvider>
+            <AuthContext.Provider value={{ user, login, logout }}>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Navbar />
+                <Routes>
+                  <Route path="/signin" element={<SignIn />} />
+                  
+                  <Route element={
+                    <ProtectedRoute>
+                      <PageLayout />
+                    </ProtectedRoute>
+                  }>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route path="/my-learning" element={<MyLearning />} />
+                    <Route path="/course/:courseId" element={<CoursePlayer />} />
+                    <Route path="/view-all/:category" element={<ViewAllPage />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/milestones" element={<Milestones />} />
+                    <Route path="/actionables" element={<Actionables />} />
+                    <Route path="/mentoring" element={<Mentoring />} />
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
+                    <Route path="/my-team" element={<MyTeam />} />
+                    <Route path="/my-team/member/:memberId/learning" element={<MyLearning initialTab="courses" />} />
+                    <Route path="/my-team/member/:memberId/goals" element={<MyLearning initialTab="goals" />} />
+                    <Route path="/faq" element={<FAQ />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </AuthContext.Provider>
+          </SpinTheWheelProvider>
+        </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
