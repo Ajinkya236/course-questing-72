@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +16,8 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
-  BrainCircuit
+  BrainCircuit,
+  Briefcase
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -62,7 +62,6 @@ const NavbarWithSidebar = () => {
   };
 
   const handleLogout = () => {
-    // Implement your logout logic here
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
@@ -71,17 +70,15 @@ const NavbarWithSidebar = () => {
   };
 
   useEffect(() => {
-    // Close mobile menu when route changes
     setShowMobileMenu(false);
   }, [location.pathname]);
 
-  // Navigation items
   const navItems = [
     { path: '/', label: 'Home', icon: <Home className="h-5 w-5" /> },
     { path: '/discover', label: 'Discover', icon: <BookOpen className="h-5 w-5" /> },
     { path: '/my-learning', label: 'My Learning', icon: <Trophy className="h-5 w-5" /> },
-    { path: '/mentoring', label: 'Mentoring', icon: <Users className="h-5 w-5" /> },
-    { path: '/my-team', label: 'My Team', icon: <Users className="h-5 w-5" /> },
+    { path: '/mentoring', label: 'Mentoring', icon: <MessageSquare className="h-5 w-5" /> },
+    { path: '/my-team', label: 'My Team', icon: <Briefcase className="h-5 w-5" /> },
   ];
 
   const toggleSidebar = () => {
@@ -157,7 +154,6 @@ const NavbarWithSidebar = () => {
 
   return (
     <div className="flex h-full min-h-screen">
-      {/* Desktop Sidebar */}
       {!isMobile && (
         <div className={cn(
           "hidden md:block sticky top-0 h-screen",
@@ -167,7 +163,6 @@ const NavbarWithSidebar = () => {
         </div>
       )}
 
-      {/* Mobile Sidebar */}
       {isMobile && (
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent side="left" className="p-0 w-[250px]">
@@ -178,7 +173,7 @@ const NavbarWithSidebar = () => {
 
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 items-center">
+          <div className="container flex h-12 items-center">
             <Button
               variant="ghost"
               size="icon"
@@ -267,9 +262,8 @@ const NavbarWithSidebar = () => {
             </div>
           </div>
           
-          {/* Mobile search */}
           {isMobile && (
-            <div className="md:hidden px-4 pb-3">
+            <div className="md:hidden px-4 pb-2">
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -282,14 +276,13 @@ const NavbarWithSidebar = () => {
             </div>
           )}
         </header>
-          
-        {/* Notifications panel */}
+        
         {showNotifications && (
           <NotificationsPanel onClose={() => setShowNotifications(false)} />
         )}
         
         <main className="flex-1">
-          <div className="container py-6">
+          <div className="container py-3">
             {/* Page content will be rendered here */}
           </div>
         </main>

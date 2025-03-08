@@ -81,22 +81,22 @@ const Mentoring = () => {
       <Helmet>
         <title>Mentoring | Learning Management System</title>
       </Helmet>
-      <div className="container py-6 mb-20">
+      <div className="container py-4 mb-20">
         <h1 className="text-3xl font-bold tracking-tight mb-4">Mentoring</h1>
         
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6">
+          <TabsList className="mb-4">
             <TabsTrigger value="mentee">Mentee Journey</TabsTrigger>
             <TabsTrigger value="mentor">Mentor Journey</TabsTrigger>
           </TabsList>
           
-          <Card className="mb-6 overflow-hidden">
+          <Card className="mb-4 overflow-hidden">
             <BannerCarousel banners={banners} />
           </Card>
           
           <TabsContent value="mentee">
             {/* Recommended Mentors Section placed above the Mentee Journey */}
-            <Card className="mb-6">
+            <Card className="mb-4">
               <CardContent className="p-6">
                 <RecommendedMentorsCarousel 
                   mentors={recommendedMentors} 
@@ -105,8 +105,8 @@ const Mentoring = () => {
               </CardContent>
             </Card>
             
-            <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
-              <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
+            <Card className="mb-4 bg-gradient-to-r from-primary/10 to-primary/5">
+              <CardContent className="p-4 flex flex-col md:flex-row items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentee Journey</h2>
                   <p className="text-muted-foreground">Set your preferences, connect with mentors, and track your progress</p>
@@ -118,8 +118,8 @@ const Mentoring = () => {
           </TabsContent>
           
           <TabsContent value="mentor">
-            <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
-              <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
+            <Card className="mb-4 bg-gradient-to-r from-primary/10 to-primary/5">
+              <CardContent className="p-4 flex flex-col md:flex-row items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold mb-2">Welcome to Your Mentor Journey</h2>
                   <p className="text-muted-foreground">Set up your mentor profile, manage requests, and guide your mentees to success</p>
