@@ -252,7 +252,7 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
-// Create a self-contained CarouselFilters component that includes its own Carousel context
+// Completely standalone component that doesn't use the carousel context
 const CarouselFilters = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
@@ -261,7 +261,7 @@ const CarouselFilters = React.forwardRef<
     onFilterSelect: (filter: string) => void
   }
 >(({ filters, selectedFilter, onFilterSelect, className, ...props }, ref) => {
-  const [filterCarouselRef, filterApi] = useEmblaCarousel({
+  const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
   })
@@ -270,34 +270,34 @@ const CarouselFilters = React.forwardRef<
   const [canScrollNext, setCanScrollNext] = React.useState(false)
 
   const scrollPrev = React.useCallback(() => {
-    if (filterApi) filterApi.scrollPrev()
-  }, [filterApi])
+    if (emblaApi) emblaApi.scrollPrev()
+  }, [emblaApi])
 
   const scrollNext = React.useCallback(() => {
-    if (filterApi) filterApi.scrollNext()
-  }, [filterApi])
+    if (emblaApi) emblaApi.scrollNext()
+  }, [emblaApi])
 
   React.useEffect(() => {
-    if (!filterApi) return
+    if (!emblaApi) return
 
     const onSelect = () => {
-      setCanScrollPrev(filterApi.canScrollPrev())
-      setCanScrollNext(filterApi.canScrollNext())
+      setCanScrollPrev(emblaApi.canScrollPrev())
+      setCanScrollNext(emblaApi.canScrollNext())
     }
 
-    filterApi.on("select", onSelect)
-    filterApi.on("reInit", onSelect)
+    emblaApi.on("select", onSelect)
+    emblaApi.on("reInit", onSelect)
     onSelect()
 
     return () => {
-      filterApi.off("select", onSelect)
-      filterApi.off("reInit", onSelect)
+      emblaApi.off("select", onSelect)
+      emblaApi.off("reInit", onSelect)
     }
-  }, [filterApi])
+  }, [emblaApi])
 
   return (
-    <div className="relative flex items-center mb-2" ref={ref} {...props}>
-      <div className="overflow-hidden flex-grow" ref={filterCarouselRef}>
+    <div className={cn("relative flex items-center mb-2", className)} ref={ref} {...props}>
+      <div className="overflow-hidden flex-grow" ref={emblaRef}>
         <div className="flex gap-2 py-1">
           {filters.map((filter) => (
             <Button

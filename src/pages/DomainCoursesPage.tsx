@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -21,7 +22,7 @@ interface Domain {
   description: string;
 }
 
-// Filter component specifically for this page
+// Standalone filter component with self-contained carousel implementation
 const FilterCarousel = ({ 
   filters, 
   selectedFilter, 
@@ -31,26 +32,95 @@ const FilterCarousel = ({
   selectedFilter: string, 
   onFilterSelect: (filter: string) => void 
 }) => {
+  const [emblaRef, emblaApi] = React.useState<HTMLDivElement | null>(null);
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
+  const [canScrollNext, setCanScrollNext] = React.useState(true);
+  
+  // Set up scroll controls
+  const scrollPrev = () => {
+    if (emblaRef) {
+      emblaRef.scrollBy({ left: -200, behavior: 'smooth' });
+      setTimeout(() => {
+        setCanScrollPrev(emblaRef.scrollLeft > 0);
+        setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
+      }, 300);
+    }
+  };
+  
+  const scrollNext = () => {
+    if (emblaRef) {
+      emblaRef.scrollBy({ left: 200, behavior: 'smooth' });
+      setTimeout(() => {
+        setCanScrollPrev(emblaRef.scrollLeft > 0);
+        setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
+      }, 300);
+    }
+  };
+  
+  // Track scroll position to update button states
+  const handleScroll = () => {
+    if (emblaRef) {
+      setCanScrollPrev(emblaRef.scrollLeft > 0);
+      setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
+    }
+  };
+  
+  // Set up event listeners when ref changes
+  React.useEffect(() => {
+    if (emblaRef) {
+      emblaRef.addEventListener('scroll', handleScroll);
+      // Initial check
+      setCanScrollPrev(emblaRef.scrollLeft > 0);
+      setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
+      
+      return () => {
+        emblaRef.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [emblaRef]);
+
   return (
-    <Carousel className="w-full">
-      <CarouselContent className="ml-1">
-        {filters.map((filter) => (
-          <CarouselItem key={filter} className="pl-1 basis-auto">
+    <div className="w-full relative">
+      <div className="overflow-hidden">
+        <div 
+          className="flex gap-2 py-1 pl-1 overflow-x-auto no-scrollbar"
+          ref={ref => setEmblaRef(ref)}
+        >
+          {filters.map((filter) => (
             <Button
+              key={filter}
               variant={selectedFilter === filter ? "default" : "outline"}
-              className="rounded-full whitespace-nowrap"
+              className="rounded-full whitespace-nowrap flex-shrink-0"
               onClick={() => onFilterSelect(filter)}
             >
               {filter}
             </Button>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <div className="flex items-center ml-2">
-        <CarouselPrevious className="static translate-y-0 h-8 w-8" />
-        <CarouselNext className="static translate-y-0 h-8 w-8" />
+          ))}
+        </div>
       </div>
-    </Carousel>
+      <div className="flex items-center ml-2 absolute right-0 top-1">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 w-8 rounded-full p-0 mr-1"
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="sr-only">Previous</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 w-8 rounded-full p-0"
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+        >
+          <ArrowLeft className="h-4 w-4 transform rotate-180" />
+          <span className="sr-only">Next</span>
+        </Button>
+      </div>
+    </div>
   );
 };
 
