@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MentorDiscovery from './mentee/MentorDiscovery';
 import MentorshipRequests from './mentee/MentorshipRequests';
@@ -26,6 +27,27 @@ const MenteeJourney = () => {
   // Store selected topics
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   
+  // Check if preferences have been set previously when component mounts
+  useEffect(() => {
+    const savedPreferences = localStorage.getItem('menteePreferencesSet');
+    const savedTopics = localStorage.getItem('menteeSelectedTopics');
+    
+    if (savedPreferences === 'true') {
+      setPreferencesSet(true);
+      
+      if (savedTopics) {
+        try {
+          setSelectedTopics(JSON.parse(savedTopics));
+        } catch (e) {
+          console.error("Failed to parse saved topics", e);
+        }
+      }
+    } else {
+      // If preferences aren't set, show the dialog on initial load
+      setShowPreferencesDialog(true);
+    }
+  }, []);
+  
   // Handle tab change
   const handleTabChange = (value: string) => {
     // If preferences aren't set, show the dialog
@@ -42,6 +64,8 @@ const MenteeJourney = () => {
     setSelectedTopics(topics);
     setPreferencesSet(true);
     setShowPreferencesDialog(false);
+    // Save that preferences are set in localStorage
+    localStorage.setItem('menteePreferencesSet', 'true');
     toast({
       title: "Preferences Saved",
       description: "Your mentee preferences have been saved successfully."

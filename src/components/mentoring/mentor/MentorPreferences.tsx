@@ -34,7 +34,12 @@ const MentorPreferences: React.FC<MentorPreferencesProps> = ({ inDialog = false,
       setBio(savedBio);
     }
     if (savedTopics) {
-      setTopics(JSON.parse(savedTopics));
+      try {
+        setTopics(JSON.parse(savedTopics));
+      } catch (e) {
+        console.error("Failed to parse saved topics", e);
+        setTopics([]);
+      }
     }
     if (savedIdealMentee) {
       setIdealMentee(savedIdealMentee);

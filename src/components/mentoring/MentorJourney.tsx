@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MenteeRequests from './mentor/MenteeRequests';
@@ -63,6 +64,17 @@ const MentorJourney = () => {
   // Track if we need to show the preferences dialog
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   
+  // Check if preferences have been set previously
+  useEffect(() => {
+    const savedPreferences = localStorage.getItem('mentorPreferencesSet');
+    if (savedPreferences === 'true') {
+      setPreferencesSet(true);
+    } else {
+      // If not set, show the preferences dialog on initial load
+      setShowPreferencesDialog(true);
+    }
+  }, []);
+  
   // Handle tab change
   const handleTabChange = (value: string) => {
     // If preferences aren't set, show the dialog
@@ -85,14 +97,6 @@ const MentorJourney = () => {
       description: "Your mentor preferences have been saved successfully."
     });
   };
-  
-  // Check if preferences have been set previously
-  useEffect(() => {
-    const savedPreferences = localStorage.getItem('mentorPreferencesSet');
-    if (savedPreferences === 'true') {
-      setPreferencesSet(true);
-    }
-  }, []);
   
   return (
     <div className="space-y-6">
@@ -188,6 +192,22 @@ const MentorJourney = () => {
                       <div className="text-xs text-muted-foreground mt-1 pl-11">Last active: {mentee.lastActivity}</div>
                     </div>
                   ))}
+                </div>
+                
+                {/* Mentor journey buttons for editing goals, view certificates, etc. */}
+                <div className="mt-6 space-y-2">
+                  <Button variant="outline" size="sm" className="w-full gap-2">
+                    Edit Mentee Goals
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full gap-2">
+                    View Certificate
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full gap-2 text-destructive">
+                    Withdraw from Engagement
+                  </Button>
+                  <Button variant="default" size="sm" className="w-full">
+                    Complete Engagement
+                  </Button>
                 </div>
               </div>
               <div className="flex-1">

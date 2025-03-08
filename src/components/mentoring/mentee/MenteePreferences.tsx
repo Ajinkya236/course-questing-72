@@ -45,11 +45,20 @@ const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false,
     const savedIdealMentor = localStorage.getItem('menteeIdealMentor');
     
     if (savedTopics) {
-      setSelectedTopics(JSON.parse(savedTopics));
+      try {
+        const parsedTopics = JSON.parse(savedTopics);
+        if (Array.isArray(parsedTopics)) {
+          setSelectedTopics(parsedTopics);
+        }
+      } catch (e) {
+        console.error("Failed to parse saved topics", e);
+      }
     }
+    
     if (savedLearningObjective) {
       setLearningObjective(savedLearningObjective);
     }
+    
     if (savedIdealMentor) {
       setIdealMentor(savedIdealMentor);
     }
@@ -74,6 +83,15 @@ const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false,
   };
 
   const handleSavePreferences = () => {
+    if (selectedTopics.length === 0) {
+      toast({
+        title: "Topics Required",
+        description: "Please select at least one topic of interest",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Save to localStorage
     localStorage.setItem('menteeSelectedTopics', JSON.stringify(selectedTopics));
     localStorage.setItem('menteeLearningObjective', learningObjective);

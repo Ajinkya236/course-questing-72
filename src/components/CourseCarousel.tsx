@@ -36,11 +36,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   useEffect(() => {
     const updateVisibleItems = () => {
       const width = window.innerWidth;
-      if (width >= 1280) setVisibleItems(4.3); // Show partial of the last item for information scent
-      else if (width >= 1024) setVisibleItems(3.3);
-      else if (width >= 768) setVisibleItems(2.3);
-      else if (width >= 640) setVisibleItems(1.8);
-      else setVisibleItems(1.3);
+      // Show one additional course with only 25% visible for information scent
+      if (width >= 1280) setVisibleItems(4.25); // Show 25% of the 5th item
+      else if (width >= 1024) setVisibleItems(3.25);
+      else if (width >= 768) setVisibleItems(2.25);
+      else if (width >= 640) setVisibleItems(1.25);
+      else setVisibleItems(1.25);
     };
 
     updateVisibleItems();

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
   const [searchTerm, setSearchTerm] = useState("");
   const [expertiseFilter, setExpertiseFilter] = useState("all");
   const [sortBy, setSortBy] = useState("relevance");
+  const [filteredMentors, setFilteredMentors] = useState<any[]>([]);
 
   const recommendedMentors = [
     {
@@ -55,56 +56,61 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
     }
   ];
 
-  // Filter mentors based on search term and filters
-  const filteredMentors = recommendedMentors.filter(mentor => {
-    // Search term filter
-    if (searchTerm && !mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()))) {
-      return false;
-    }
-    
-    // Expertise filter
-    if (expertiseFilter !== "all") {
-      const matchesExpertise = mentor.topics.some(topic => {
-        switch (expertiseFilter) {
-          case "technical":
-            return ["Data Analysis", "Machine Learning", "Software Development", "Cloud Computing", "System Architecture"].includes(topic);
-          case "leadership":
-            return ["Leadership", "Communication", "Team Building"].includes(topic);
-          case "career":
-            return ["Career Development", "Professional Growth"].includes(topic);
-          default:
-            return true;
-        }
-      });
+  // Filter and sort mentors whenever search, filter or sort criteria change
+  useEffect(() => {
+    // Filter mentors based on search term and filters
+    const filtered = recommendedMentors.filter(mentor => {
+      // Search term filter
+      if (searchTerm && !mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()))) {
+        return false;
+      }
       
-      if (!matchesExpertise) return false;
-    }
-    
-    return true;
-  });
+      // Expertise filter
+      if (expertiseFilter !== "all") {
+        const matchesExpertise = mentor.topics.some(topic => {
+          switch (expertiseFilter) {
+            case "technical":
+              return ["Data Analysis", "Machine Learning", "Software Development", "Cloud Computing", "System Architecture"].includes(topic);
+            case "leadership":
+              return ["Leadership", "Communication", "Team Building"].includes(topic);
+            case "career":
+              return ["Career Development", "Professional Growth"].includes(topic);
+            default:
+              return true;
+          }
+        });
+        
+        if (!matchesExpertise) return false;
+      }
+      
+      return true;
+    });
 
-  // Sort mentors based on sortBy
-  const sortedMentors = [...filteredMentors].sort((a, b) => {
-    switch (sortBy) {
-      case "rating":
-        return b.rating - a.rating;
-      case "reviews":
-        return b.reviews - a.reviews;
-      case "newest":
-        // For this example, we're just using the id as a proxy for "newest"
-        return a.id - b.id;
-      default:
-        // For relevance, prefer mentors with matching topics
-        if (selectedTopics.length > 0) {
-          const aMatchCount = a.topics.filter(topic => selectedTopics.includes(topic)).length;
-          const bMatchCount = b.topics.filter(topic => selectedTopics.includes(topic)).length;
-          return bMatchCount - aMatchCount;
-        }
-        return 0;
-    }
-  });
+    // Sort mentors based on sortBy
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "rating":
+          return b.rating - a.rating;
+        case "reviews":
+          return b.reviews - a.reviews;
+        case "newest":
+          // For this example, we're just using the id as a proxy for "newest"
+          return a.id - b.id;
+        default:
+          // For relevance, prefer mentors with matching topics
+          if (selectedTopics.length > 0) {
+            const aMatchCount = a.topics.filter(topic => selectedTopics.includes(topic)).length;
+            const bMatchCount = b.topics.filter(topic => selectedTopics.includes(topic)).length;
+            return bMatchCount - aMatchCount;
+          }
+          return 0;
+      }
+    });
+
+    setFilteredMentors(sorted);
+  }, [searchTerm, expertiseFilter, sortBy, selectedTopics]);
 
   return (
     <div className="space-y-8">
@@ -157,7 +163,7 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
 
       {/* Recommended mentors carousel */}
       <RecommendedMentorsCarousel 
-        mentors={sortedMentors} 
+        mentors={filteredMentors} 
         selectedTopics={selectedTopics}
       />
 
