@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -209,18 +210,6 @@ const Navbar: React.FC = () => {
                 My Team
               </span>
             </Link>
-
-            <Link 
-              to="/faq" 
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive('/faq') ? 'text-primary' : 'text-foreground/60'
-              }`}
-            >
-              <span className="flex items-center gap-1">
-                <HelpCircle className="h-4 w-4" />
-                FAQ
-              </span>
-            </Link>
           </nav>
         </div>
         
@@ -277,7 +266,7 @@ const Navbar: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/faq')} className="flex items-center gap-2">
                 <HelpCircle className="h-4 w-4" />
-                <span>View FAQs</span>
+                <span>FAQ</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-500">
@@ -297,4 +286,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-

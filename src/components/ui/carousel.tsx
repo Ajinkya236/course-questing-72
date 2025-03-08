@@ -61,6 +61,7 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
+        loop: true, // Add loop option for circular scrolling
       },
       plugins
     )
@@ -211,7 +212,7 @@ const CarouselPrevious = React.forwardRef<
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      disabled={!canScrollPrev}
+      // Always enabled for circular carousel
       onClick={scrollPrev}
       {...props}
     >
@@ -240,7 +241,7 @@ const CarouselNext = React.forwardRef<
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      disabled={!canScrollNext}
+      // Always enabled for circular carousel
       onClick={scrollNext}
       {...props}
     >
@@ -258,21 +259,46 @@ const CarouselFilters = React.forwardRef<
     filters: string[];
     selectedFilter: string;
     onFilterSelect: (filter: string) => void;
+    loop?: boolean;
   }
->(({ className, filters, selectedFilter, onFilterSelect, ...props }, ref) => {
+>(({ className, filters, selectedFilter, onFilterSelect, loop = true, ...props }, ref) => {
   const filtersRef = React.useRef<HTMLDivElement>(null);
+  const [position, setPosition] = React.useState(0);
+  const maxPosition = Math.max(0, filters.length - 6); // Show 6 filters at a time
 
   const scrollLeft = () => {
     if (filtersRef.current) {
-      filtersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+      if (loop && position === 0) {
+        setPosition(maxPosition);
+      } else {
+        setPosition(prev => Math.max(0, prev - 1));
+      }
     }
   };
 
   const scrollRight = () => {
     if (filtersRef.current) {
-      filtersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+      if (loop && position >= maxPosition) {
+        setPosition(0);
+      } else {
+        setPosition(prev => Math.min(maxPosition, prev + 1));
+      }
     }
   };
+
+  // Calculate visible filters based on position
+  const getVisibleFilters = () => {
+    if (!loop) return filters;
+    
+    // Create a circular array effect by duplicating the array
+    const extendedFilters = [...filters, ...filters, ...filters];
+    // Start from the middle copy to allow backward scrolling
+    const startIndex = filters.length + position;
+    // Take enough items for display
+    return extendedFilters.slice(startIndex, startIndex + 6);
+  };
+
+  const visibleFilters = getVisibleFilters();
 
   return (
     <div className={cn("relative mb-4", className)} {...props}>
@@ -287,15 +313,18 @@ const CarouselFilters = React.forwardRef<
         </Button>
       </div>
       
-      <div className="overflow-x-auto scrollbar-hide px-10" ref={filtersRef}>
-        <div className="flex gap-2 pb-2" ref={ref}>
-          {filters.map((filter) => (
+      <div className="overflow-hidden px-10">
+        <div 
+          ref={filtersRef} 
+          className="flex transition-transform duration-300 justify-center"
+        >
+          {visibleFilters.map((filter, index) => (
             <Button
-              key={filter}
+              key={`${filter}-${index}`}
               variant={selectedFilter === filter ? "default" : "outline"}
               size="sm"
               onClick={() => onFilterSelect(filter)}
-              className="rounded-full whitespace-nowrap"
+              className="rounded-full whitespace-nowrap mx-1"
             >
               {filter}
             </Button>

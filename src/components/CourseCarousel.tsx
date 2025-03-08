@@ -8,6 +8,13 @@ import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselPrevious, 
+  CarouselNext 
+} from '@/components/ui/carousel';
 
 interface CourseCarouselProps {
   title: string;
@@ -30,46 +37,46 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   viewAllUrl = '/view-all',
   subFilterOptions = {}
 }) => {
-  const [currentPosition, setCurrentPosition] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
+  const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const filtersRef = useRef<HTMLDivElement>(null);
   const subFiltersRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [visibleItems, setVisibleItems] = useState(4.25); // Show 25% of the last item
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
-  const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const isMobile = useIsMobile();
   
-  useEffect(() => {
-    const updateVisibleItems = () => {
-      const width = window.innerWidth;
-      // Show one additional course with only 25% visible for information scent
-      if (width >= 1280) setVisibleItems(4.25); // Show 25% of the 5th item
-      else if (width >= 1024) setVisibleItems(3.25);
-      else if (width >= 768) setVisibleItems(2.25);
-      else if (width >= 640) setVisibleItems(1.25);
-      else setVisibleItems(1.25);
-    };
-
-    updateVisibleItems();
-    window.addEventListener('resize', updateVisibleItems);
-    return () => window.removeEventListener('resize', updateVisibleItems);
-  }, []);
-
-  const nextSlide = () => {
-    const maxPosition = Math.max(0, courses.length - Math.floor(visibleItems));
-    setCurrentPosition(prev => (prev < maxPosition ? prev + 1 : prev));
-  };
-
-  const prevSlide = () => {
-    setCurrentPosition(prev => (prev > 0 ? prev - 1 : 0));
+  // Function to ensure we have exactly 12 courses for the carousel
+  const normalizeCoursesCount = (coursesArray: Course[]) => {
+    if (coursesArray.length === 0) return [];
+    
+    // If less than 12 courses, duplicate to reach 12
+    if (coursesArray.length < 12) {
+      const repeatedCourses = [];
+      let i = 0;
+      while (repeatedCourses.length < 12) {
+        repeatedCourses.push({
+          ...coursesArray[i % coursesArray.length],
+          id: `${coursesArray[i % coursesArray.length].id}-clone-${Math.floor(i / coursesArray.length)}`
+        });
+        i++;
+      }
+      return repeatedCourses.slice(0, 12);
+    }
+    
+    // If more than 12 courses, take the first 12
+    if (coursesArray.length > 12) {
+      return coursesArray.slice(0, 12);
+    }
+    
+    return coursesArray;
   };
 
   const handleCardClick = (courseId: string) => {
+    // Remove any clone suffix for handling clicks on duplicated courses
+    const originalId = courseId.split('-clone-')[0];
     if (onCourseClick) {
-      onCourseClick(courseId);
+      onCourseClick(originalId);
     } else {
-      navigate(`/course/${courseId}`);
+      navigate(`/course/${originalId}`);
     }
   };
 
@@ -116,63 +123,39 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     } else {
       setSelectedSubFilter('All Sub-Academies');
     }
-    // Reset position when filter changes
-    setCurrentPosition(0);
   };
 
   const handleSubFilterClick = (subFilter: string) => {
     setSelectedSubFilter(subFilter);
-    // Reset position when sub-filter changes
-    setCurrentPosition(0);
   };
 
   // Get available sub-filters based on selected main filter
   const availableSubFilters = subFilterOptions[selectedFilter] || [];
 
   // Create a fallback for courses that don't have all required properties
-  const normalizedCourses = courses.map(course => ({
+  const normalizedCourses = normalizeCoursesCount(courses.map(course => ({
     ...course,
     level: course.level || course.skillLevel || 'All Levels',
     instructor: course.instructor || {
       name: 'Instructor',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
     }
-  }));
+  })));
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         
-        <div className="flex items-center gap-2 ml-auto">
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={prevSlide}
-            disabled={currentPosition === 0}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={nextSlide}
-            disabled={currentPosition >= normalizedCourses.length - Math.floor(visibleItems)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="gap-1" 
-            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-          >
-            View All
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="ml-auto gap-1" 
+          onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+        >
+          View All
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
       
       {/* Main filters carousel with navigation buttons */}
@@ -189,7 +172,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             </Button>
           </div>
           
-          <div className="overflow-x-auto scrollbar-hide px-4" ref={filtersRef}>
+          <div className="overflow-x-auto scrollbar-hide px-10" ref={filtersRef}>
             <div className="flex gap-2 pb-2">
               {filterOptions.map((filter) => (
                 <Button
@@ -232,7 +215,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             </Button>
           </div>
           
-          <div className="overflow-x-auto scrollbar-hide px-4" ref={subFiltersRef}>
+          <div className="overflow-x-auto scrollbar-hide px-10" ref={subFiltersRef}>
             <div className="flex gap-2 pb-2">
               {availableSubFilters.map((subFilter) => (
                 <Button
@@ -261,20 +244,17 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       )}
 
-      <div className="relative overflow-hidden">
-        <div
-          ref={containerRef}
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(-${currentPosition * (100 / visibleItems)}%)`,
-          }}
-        >
+      {/* Use the Carousel component with circular navigation */}
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent>
           {normalizedCourses.map((course) => (
-            <div
-              key={course.id}
-              className="flex-none transition-all duration-300"
-              style={{ width: `${100 / visibleItems}%`, padding: '0 0.5rem' }}
-            >
+            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/4"}>
               <Card
                 className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => handleCardClick(course.id)}
@@ -333,10 +313,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                   <span className="text-sm">{course.instructor.name}</span>
                 </CardFooter>
               </Card>
-            </div>
+            </CarouselItem>
           ))}
+        </CarouselContent>
+        <div className="flex items-center justify-end gap-2 mt-4">
+          <CarouselPrevious className="static transform-none" />
+          <CarouselNext className="static transform-none" />
         </div>
-      </div>
+      </Carousel>
     </div>
   );
 };

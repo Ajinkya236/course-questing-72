@@ -68,8 +68,26 @@ const trainingCategories = [
   { id: 'special', name: 'Special Drive', count: 6, color: 'bg-yellow-500' },
 ];
 
+// Calculate team totals
+const calculateTeamTotals = () => {
+  return teamMembers.reduce((acc, member) => {
+    acc.assigned += member.notStartedCourses;
+    acc.inProgress += member.inProgressCourses;
+    acc.completed += member.completedCourses;
+    return acc;
+  }, { assigned: 0, inProgress: 0, completed: 0 });
+};
+
+// Mock goals data
+const goalsData = {
+  set: 24,
+  completed: 16
+};
+
 const MyTeam: React.FC = () => {
   const navigate = useNavigate();
+  const teamTotals = calculateTeamTotals();
+  const totalCourses = teamTotals.assigned + teamTotals.inProgress + teamTotals.completed;
   
   return (
     <>
@@ -79,6 +97,83 @@ const MyTeam: React.FC = () => {
       
       <div className="container mx-auto space-y-8">
         <h1 className="text-3xl font-bold">My Team</h1>
+        
+        {/* Team Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Total Courses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{totalCourses}</div>
+              <div className="text-sm text-muted-foreground mt-2">All assigned courses</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">In Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-500">{teamTotals.inProgress}</div>
+              <div className="text-sm text-muted-foreground mt-2">Courses being taken</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Completed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-500">{teamTotals.completed}</div>
+              <div className="text-sm text-muted-foreground mt-2">Finished courses</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Not Started</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-orange-500">{teamTotals.assigned}</div>
+              <div className="text-sm text-muted-foreground mt-2">Yet to start</div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Goals Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Goals Set</CardTitle>
+              <CardDescription>Total goals set for the year</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">{goalsData.set}</div>
+              <div className="flex items-center mt-2">
+                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary rounded-full" 
+                    style={{width: `${(goalsData.completed / goalsData.set) * 100}%`}}
+                  ></div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Goals Completed</CardTitle>
+              <CardDescription>Goals achieved this year</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-green-500">{goalsData.completed}</div>
+              <div className="text-sm text-muted-foreground mt-2">
+                {Math.round((goalsData.completed / goalsData.set) * 100)}% completion rate
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Team learning activity chart */}
