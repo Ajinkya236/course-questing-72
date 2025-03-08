@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -130,7 +131,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                       rating={course.rating}
                       trainingCategory={course.trainingCategory}
                       isBookmarked={course.isBookmarked}
-                      previewUrl={course.videoUrl || course.imageUrl}
+                      previewUrl={course.imageUrl} // Use imageUrl as fallback since videoUrl might not exist
                       isHot={course.isHot}
                       isNew={course.isNew}
                     />

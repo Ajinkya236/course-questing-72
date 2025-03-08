@@ -243,28 +243,40 @@ const Home = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <BadgeCard 
+              id="badge-1"
               title="Learning Explorer" 
               description="Completed 5 courses from different categories" 
-              date="2 days ago"
               imageUrl="/placeholder.svg"
+              category="Achievement"
+              isUnlocked={true}
+              earnedDate="2023-06-15"
             />
             <BadgeCard 
+              id="badge-2"
               title="Perfect Score!" 
               description="Got 100% on 'Advanced React Patterns' quiz" 
-              date="1 week ago"
               imageUrl="/placeholder.svg"
+              category="Excellence"
+              isUnlocked={true}
+              earnedDate="2023-06-08"
             />
             <BadgeCard 
+              id="badge-3"
               title="Helping Hand" 
               description="Answered 20 questions in the forum" 
-              date="2 weeks ago"
               imageUrl="/placeholder.svg"
+              category="Mastery"
+              isUnlocked={true}
+              earnedDate="2023-05-30"
             />
             <BadgeCard 
+              id="badge-4"
               title="Learning Streak" 
               description="Maintained a 30-day learning streak" 
-              date="1 month ago"
               imageUrl="/placeholder.svg"
+              category="Consistency"
+              isUnlocked={true}
+              earnedDate="2023-05-15"
             />
           </div>
         </div>
