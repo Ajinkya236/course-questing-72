@@ -1,11 +1,10 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CourseCarousel from '@/components/CourseCarousel';
+import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Check, Clock, Bookmark, Share } from 'lucide-react';
@@ -19,27 +18,21 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const navigate = useNavigate();
   
-  // Process courses to ensure they have previewUrl
-  const processedCourses = mockCourses.map(course => ({
-    ...course,
-    previewUrl: course.previewUrl || ''
-  }));
-  
-  // In a real app, we'd filter based on teamMemberId if provided
-  const assignedCourses = processedCourses.filter(course => 
+  // Filter courses based on status
+  const assignedCourses = mockCourses.filter(course => 
     course.status === 'assigned'
   );
   
-  const completedCourses = processedCourses.filter(course => 
+  const completedCourses = mockCourses.filter(course => 
     course.status === 'completed'
   );
   
-  const inProgressCourses = processedCourses.filter(course => 
+  const inProgressCourses = mockCourses.filter(course => 
     course.status === 'in-progress'
   );
   
   // Mock data for saved and shared courses
-  const savedCourses = processedCourses.filter(course => 
+  const savedCourses = mockCourses.filter(course => 
     course.isBookmarked === true
   );
   
@@ -229,41 +222,21 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         {getFilteredCourses().length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {getFilteredCourses().map(course => (
-              <div key={course.id}>
-                {/* Replace CourseCarousel with individual CourseCards */}
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto w-full" 
-                  onClick={() => navigate(`/course/${course.id}`)}
-                >
-                  <div className="w-full rounded-lg border overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="aspect-video relative">
-                      <img 
-                        src={course.imageUrl} 
-                        alt={course.title} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        {course.isHot && (
-                          <Badge variant="destructive">Hot</Badge>
-                        )}
-                        {course.isNew && (
-                          <Badge variant="secondary">New</Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-medium text-sm line-clamp-2 text-left">{course.title}</h3>
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{course.category}</span>
-                        <span>{course.duration}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              </div>
+              <CourseCard
+                key={course.id}
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating}
+                trainingCategory={course.trainingCategory}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.previewUrl || ''}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
             ))}
           </div>
         ) : (

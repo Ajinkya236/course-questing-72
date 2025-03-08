@@ -1,10 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  BookOpen, 
   Clock, 
   Star, 
   Share2, 
@@ -43,7 +42,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   rating,
   trainingCategory,
   isBookmarked = false,
-  previewUrl,
+  previewUrl = "",
   isHot,
   isNew
 }) => {
@@ -143,12 +142,13 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className="w-full hover-scale overflow-hidden group cursor-pointer"
+        className="w-full overflow-hidden cursor-pointer transition-all hover:shadow-md"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}
       >
-        <div className="relative h-40 overflow-hidden">
+        {/* Course Header with Image/Video */}
+        <div className="relative aspect-video overflow-hidden">
           {previewUrl && isHovered ? (
             <>
               <video 
@@ -171,26 +171,37 @@ const CourseCard: React.FC<CourseCardProps> = ({
             <img
               src={imageUrl || "/placeholder.svg"}
               alt={title}
-              className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+              className="w-full h-full object-cover"
             />
           )}
-          <Badge className="absolute top-2 right-2 bg-primary/80">{category}</Badge>
-          {trainingCategory && (
-            <Badge className="absolute top-2 left-2 bg-accent/80">{trainingCategory}</Badge>
-          )}
-          {isHot && (
-            <Badge className="absolute top-10 right-2 bg-orange-500/90">Hot</Badge>
-          )}
-          {isNew && (
-            <Badge className="absolute top-10 right-2 bg-green-500/90">New</Badge>
-          )}
+          
+          {/* Categories and Tags */}
+          <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+            {trainingCategory && (
+              <Badge className="bg-primary/90">{trainingCategory}</Badge>
+            )}
+            {category && (
+              <Badge className="bg-secondary/90">{category}</Badge>
+            )}
+          </div>
+          
+          <div className="absolute top-2 right-2 flex gap-1">
+            {isHot && (
+              <Badge variant="destructive">Hot</Badge>
+            )}
+            {isNew && (
+              <Badge variant="secondary" className="bg-green-500 text-white">New</Badge>
+            )}
+          </div>
         </div>
-        <CardHeader className="p-4 pb-2">
-          <h3 className="font-semibold text-base">{title}</h3>
-        </CardHeader>
-        <CardContent className="p-4 pt-2">
-          <p className="text-sm text-muted-foreground mb-2">{description}</p>
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+        
+        {/* Course Content */}
+        <div className="p-3">
+          <h3 className="font-medium text-base line-clamp-2 mb-1">{title}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{description}</p>
+          
+          {/* Course Meta Information */}
+          <div className="flex justify-between text-sm text-muted-foreground mb-3">
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
               <span>{duration}</span>
@@ -200,23 +211,25 @@ const CourseCard: React.FC<CourseCardProps> = ({
               <span>{rating.toFixed(1)}</span>
             </div>
           </div>
-        </CardContent>
-        <CardFooter className="p-4 pt-0">
-          <div className="w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-between gap-2">
-            <Button variant="default" size="sm" className="gap-1 flex-1" onClick={handleWatchClick}>
+          
+          {/* Action Buttons - Only visible on hover */}
+          <div className="flex justify-between gap-2 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity">
+            <Button variant="default" size="sm" className="flex-1 gap-1" onClick={handleWatchClick}>
               <Play className="h-4 w-4" /> Watch
             </Button>
-            <Button variant="outline" size="sm" className="px-2" onClick={handleShareClick}>
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" className="px-2" onClick={handleBookmarkToggle}>
-              <Bookmark className={`h-4 w-4 ${currentBookmarked ? "fill-primary" : ""}`} />
-            </Button>
-            <Button variant="outline" size="sm" className="px-2" onClick={handleAssignClick}>
-              <UserPlus className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-1">
+              <Button variant="outline" size="icon" className="h-8 w-8 p-0" onClick={handleShareClick}>
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-8 w-8 p-0" onClick={handleBookmarkToggle}>
+                <Bookmark className={`h-4 w-4 ${currentBookmarked ? "fill-primary" : ""}`} />
+              </Button>
+              <Button variant="outline" size="icon" className="h-8 w-8 p-0" onClick={handleAssignClick}>
+                <UserPlus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </CardFooter>
+        </div>
       </Card>
 
       {/* Share Dialog */}

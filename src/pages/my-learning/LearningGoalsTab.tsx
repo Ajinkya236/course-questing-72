@@ -18,13 +18,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
   
-  // Process courses to ensure they have previewUrl
-  const processedCourses = mockCourses.map(course => ({
-    ...course,
-    previewUrl: course.previewUrl || ''
-  }));
-  
-  // Mock learning goals data
+  // Self assigned goals
   const selfAssignedGoals = [
     {
       id: 1,
@@ -32,7 +26,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
       description: 'Develop better leadership capabilities to lead a team effectively',
       progress: 60,
       deadline: '2023-12-31',
-      courses: processedCourses.filter((_, index) => index < 3),
+      courses: mockCourses.filter((_, index) => index < 3),
     },
     {
       id: 2, 
@@ -40,10 +34,11 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
       description: 'Learn advanced data analysis techniques for better decision making',
       progress: 30,
       deadline: '2023-11-15',
-      courses: processedCourses.filter((_, index) => index >= 3 && index < 6),
+      courses: mockCourses.filter((_, index) => index >= 3 && index < 6),
     }
   ];
   
+  // Manager assigned goals
   const managerAssignedGoals = [
     {
       id: 3,
@@ -51,7 +46,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
       description: 'Complete certification for project management',
       progress: 45,
       deadline: '2023-10-30',
-      courses: processedCourses.filter((_, index) => index >= 6 && index < 9),
+      courses: mockCourses.filter((_, index) => index >= 6 && index < 9),
     },
     {
       id: 4,
@@ -59,7 +54,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
       description: 'Improve skills for better client interactions and management',
       progress: 20,
       deadline: '2023-12-15',
-      courses: processedCourses.filter((_, index) => index >= 9 && index < 12),
+      courses: mockCourses.filter((_, index) => index >= 9 && index < 12),
     }
   ];
 
