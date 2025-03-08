@@ -37,11 +37,11 @@ const MyLearning = () => {
       <Helmet>
         <title>My Learning | Learning Management System</title>
       </Helmet>
-      <div className="py-4 px-4 md:px-6">
-        <h1 className="text-2xl font-bold tracking-tight mb-4">My Learning</h1>
+      <div className="container py-8 mb-20">
+        <h1 className="text-3xl font-bold tracking-tight mb-6">My Learning</h1>
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-6">
+          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
             <TabsTrigger value="courses" className="flex items-center gap-1">
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Courses</span>

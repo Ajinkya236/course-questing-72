@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import { mockCoursesData } from '@/data/mockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import TopicsCatalog from '@/components/TopicsCatalog';
 
+// Define academies and sub-academies
 const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
 const subAcademyFilters = {
   'All Academies': ['All Sub-Academies'],
@@ -96,7 +98,7 @@ const Home = () => {
       <Helmet>
         <title>Home | Learning Management System</title>
       </Helmet>
-      <div className="py-6 px-4 md:px-6 space-y-8">
+      <div className="container py-8 space-y-12 mb-20">
         <section className="relative rounded-xl overflow-hidden max-w-full mx-auto">
           <div className="bg-gradient-to-r from-primary via-primary/90 to-accent py-3 px-6 md:px-8">
             <div className="max-w-xl space-y-2">
@@ -141,7 +143,7 @@ const Home = () => {
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/20 rounded-full translate-y-1/3 -translate-x-1/3 blur-xl"></div>
         </section>
 
-        <section className="space-y-8">
+        <section className="space-y-12">
           <CourseCarousel 
             title="Continue Learning" 
             courses={mockCoursesData.usageHistory} 
@@ -433,6 +435,7 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Newly Added')}
           />
           
+          {/* HR Banner at the bottom */}
           <div className="border rounded-xl overflow-hidden">
             <div className="bg-primary/10 p-4 md:p-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -490,6 +493,7 @@ const Home = () => {
             </div>
           </div>
           
+          {/* Topics Catalog */}
           <TopicsCatalog />
         </section>
       </div>
@@ -506,6 +510,7 @@ const Home = () => {
   );
 };
 
+// Import the necessary components for the HR banner
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 export default Home;

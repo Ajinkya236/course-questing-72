@@ -9,7 +9,7 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import NavbarWithSidebar from "./components/layout/NavbarWithSidebar"; 
+import NavbarWithSidebar from "./components/layout/NavbarWithSidebar"; // New sidebar navbar
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
@@ -30,26 +30,24 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen">
-            <NavbarWithSidebar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/discover" element={<Discover />} />
-              <Route path="/my-learning" element={<MyLearning />} />
-              <Route path="/course/:courseId" element={<CoursePlayer />} />
-              <Route path="/view-all/:category" element={<ViewAllPage />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/milestones" element={<Milestones />} />
-              <Route path="/actionables" element={<Actionables />} />
-              <Route path="/mentoring" element={<Mentoring />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
-              <Route path="/my-team" element={<MyTeam />} />
-              <Route path="/my-team/member/:memberId/:tab" element={<MyLearning />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <NavbarWithSidebar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/discover" element={<Discover />} />
+            <Route path="/my-learning" element={<MyLearning />} />
+            <Route path="/course/:courseId" element={<CoursePlayer />} />
+            <Route path="/view-all/:category" element={<ViewAllPage />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/milestones" element={<Milestones />} />
+            <Route path="/actionables" element={<Actionables />} />
+            <Route path="/mentoring" element={<Mentoring />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
+            <Route path="/my-team" element={<MyTeam />} />
+            <Route path="/my-team/member/:memberId/:tab" element={<MyLearning />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </SpinTheWheelProvider>
     </TooltipProvider>
