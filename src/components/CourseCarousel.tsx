@@ -9,7 +9,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Info } from "lucide-react";
 import CourseCard from './CourseCard';
 
 interface Course {
@@ -54,11 +54,25 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   filterOptions
 }) => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["All Skills"]);
+  const [currentPage, setCurrentPage] = useState(0);
   const skillsContainerRef = useRef<HTMLDivElement>(null);
   const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
 
   // Use provided filter options or default to skills
   const skillFilters = filterOptions || defaultSkills;
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const toggleSkill = (skill: string) => {
     if (skill === "All Skills" || skill === "All Categories") {
@@ -145,16 +159,32 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   }, [courses]);
 
+  // Calculate the total pages based on the number of items and items per page
+  const totalPages = Math.ceil(filteredCourses.length / 5);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
         <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full bg-muted hover:bg-muted/80"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="text-sm text-muted-foreground mr-2">
+            {current + 1} of {Math.max(1, count)}
+          </div>
           <Button 
             variant="outline" 
             size="icon"
             className="rounded-full"
             onClick={() => scrollCarousel('left')}
+            disabled={current === 0}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -163,6 +193,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             size="icon"
             className="rounded-full"
             onClick={() => scrollCarousel('right')}
+            disabled={current === count - 1}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -226,7 +257,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       <Carousel
         opts={{
           align: "start",
-          loop: true,
+          loop: false,
         }}
         className="w-full"
         setApi={setApi}
@@ -234,7 +265,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         <CarouselContent>
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
-              <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+              <CarouselItem key={course.id} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 relative group">
+                {/* Add a subtle indicator for items at the end of the carousel to improve information scent */}
+                <div 
+                  className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-r from-transparent to-muted/20 pointer-events-none transition-opacity ${
+                    course.id === filteredCourses[filteredCourses.length - 1].id ? 'opacity-100' : 'opacity-0'
+                  }`}
+                ></div>
                 <div onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
                   <CourseCard 
                     {...course} 
@@ -246,7 +283,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           ) : (
             // Mock courses if no real data is provided
             Array.from({ length: 8 }).map((_, index) => (
-              <CarouselItem key={`mock-${index}`} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+              <CarouselItem key={`mock-${index}`} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4 relative group">
+                {/* Indicator for the last item */}
+                {index === 7 && (
+                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-r from-transparent to-muted/20 pointer-events-none"></div>
+                )}
                 <div className="cursor-pointer">
                   <CourseCard 
                     id={`mock-${index}`}
@@ -265,9 +306,26 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             ))
           )}
         </CarouselContent>
-        <CarouselPrevious className="hidden sm:flex" />
-        <CarouselNext className="hidden sm:flex" />
+        <CarouselPrevious className="hidden sm:flex left-2" />
+        <CarouselNext className="hidden sm:flex right-2" />
       </Carousel>
+      
+      {/* Pagination indicators */}
+      {count > 1 && (
+        <div className="flex justify-center gap-1 mt-4">
+          {Array.from({ length: count }).map((_, index) => (
+            <Button
+              key={index}
+              variant="ghost"
+              size="icon"
+              className={`w-2 h-2 rounded-full p-0 ${
+                index === current ? 'bg-primary' : 'bg-muted'
+              }`}
+              onClick={() => api?.scrollTo(index)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

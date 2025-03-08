@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,10 @@ interface MentorDiscoveryProps {
 }
 
 const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expertiseFilter, setExpertiseFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("relevance");
+
   const recommendedMentors = [
     {
       id: 1,
@@ -51,6 +55,57 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
     }
   ];
 
+  // Filter mentors based on search term and filters
+  const filteredMentors = recommendedMentors.filter(mentor => {
+    // Search term filter
+    if (searchTerm && !mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()))) {
+      return false;
+    }
+    
+    // Expertise filter
+    if (expertiseFilter !== "all") {
+      const matchesExpertise = mentor.topics.some(topic => {
+        switch (expertiseFilter) {
+          case "technical":
+            return ["Data Analysis", "Machine Learning", "Software Development", "Cloud Computing", "System Architecture"].includes(topic);
+          case "leadership":
+            return ["Leadership", "Communication", "Team Building"].includes(topic);
+          case "career":
+            return ["Career Development", "Professional Growth"].includes(topic);
+          default:
+            return true;
+        }
+      });
+      
+      if (!matchesExpertise) return false;
+    }
+    
+    return true;
+  });
+
+  // Sort mentors based on sortBy
+  const sortedMentors = [...filteredMentors].sort((a, b) => {
+    switch (sortBy) {
+      case "rating":
+        return b.rating - a.rating;
+      case "reviews":
+        return b.reviews - a.reviews;
+      case "newest":
+        // For this example, we're just using the id as a proxy for "newest"
+        return a.id - b.id;
+      default:
+        // For relevance, prefer mentors with matching topics
+        if (selectedTopics.length > 0) {
+          const aMatchCount = a.topics.filter(topic => selectedTopics.includes(topic)).length;
+          const bMatchCount = b.topics.filter(topic => selectedTopics.includes(topic)).length;
+          return bMatchCount - aMatchCount;
+        }
+        return 0;
+    }
+  });
+
   return (
     <div className="space-y-8">
       {/* Search and filter section */}
@@ -62,9 +117,15 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
               <Input 
                 placeholder="Search mentors..." 
                 className="pl-9"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select defaultValue="all">
+            <Select 
+              defaultValue="all" 
+              value={expertiseFilter}
+              onValueChange={setExpertiseFilter}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Filter by expertise" />
               </SelectTrigger>
@@ -75,7 +136,11 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
                 <SelectItem value="career">Career Development</SelectItem>
               </SelectContent>
             </Select>
-            <Select defaultValue="relevance">
+            <Select 
+              defaultValue="relevance" 
+              value={sortBy}
+              onValueChange={setSortBy}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -92,7 +157,7 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
 
       {/* Recommended mentors carousel */}
       <RecommendedMentorsCarousel 
-        mentors={recommendedMentors} 
+        mentors={sortedMentors} 
         selectedTopics={selectedTopics}
       />
 

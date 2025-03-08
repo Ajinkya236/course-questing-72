@@ -23,29 +23,59 @@ const mentorBanners = [
     id: 1,
     title: "Mentoring Best Practices",
     description: "Learn effective strategies to provide valuable guidance to your mentees",
-    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
   },
   {
     id: 2,
     title: "Monthly Mentorship Workshops",
     description: "Join our upcoming workshops to enhance your mentoring skills",
-    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978"
+    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80"
   },
   {
     id: 3,
     title: "Guide: Providing Effective Feedback",
     description: "Tips for delivering constructive and motivating feedback to mentees",
-    imageUrl: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca"
+    imageUrl: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
   }
 ];
 
 // Mock data for active mentees
 const activeMentees = [
-  { id: 1, name: "Emma Johnson", role: "Junior Developer", lastActivity: "2 days ago" },
-  { id: 2, name: "Michael Chen", role: "Marketing Specialist", lastActivity: "Yesterday" },
-  { id: 3, name: "Sarah Williams", role: "Product Manager", lastActivity: "Today" },
-  { id: 4, name: "David Kim", role: "Data Scientist", lastActivity: "3 days ago" },
-  { id: 5, name: "Olivia Martinez", role: "UX Designer", lastActivity: "5 days ago" }
+  { 
+    id: 1, 
+    name: "Emma Johnson", 
+    role: "Junior Developer", 
+    lastActivity: "2 days ago", 
+    avatar: "https://randomuser.me/api/portraits/women/33.jpg" 
+  },
+  { 
+    id: 2, 
+    name: "Michael Chen", 
+    role: "Marketing Specialist", 
+    lastActivity: "Yesterday", 
+    avatar: "https://randomuser.me/api/portraits/men/42.jpg" 
+  },
+  { 
+    id: 3, 
+    name: "Sarah Williams", 
+    role: "Product Manager", 
+    lastActivity: "Today", 
+    avatar: "https://randomuser.me/api/portraits/women/64.jpg" 
+  },
+  { 
+    id: 4, 
+    name: "David Kim", 
+    role: "Data Scientist", 
+    lastActivity: "3 days ago", 
+    avatar: "https://randomuser.me/api/portraits/men/58.jpg" 
+  },
+  { 
+    id: 5, 
+    name: "Olivia Martinez", 
+    role: "UX Designer", 
+    lastActivity: "5 days ago", 
+    avatar: "https://randomuser.me/api/portraits/women/57.jpg" 
+  }
 ];
 
 const MentorJourney = () => {
@@ -158,9 +188,20 @@ const MentorJourney = () => {
                       onClick={() => setSelectedMentee(mentee.id)}
                       className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMentee === mentee.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary'}`}
                     >
-                      <div className="font-medium">{mentee.name}</div>
-                      <div className="text-sm text-muted-foreground">{mentee.role}</div>
-                      <div className="text-xs text-muted-foreground mt-1">Last active: {mentee.lastActivity}</div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
+                          <img 
+                            src={mentee.avatar} 
+                            alt={mentee.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">{mentee.name}</div>
+                          <div className="text-xs text-muted-foreground">{mentee.role}</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1 pl-11">Last active: {mentee.lastActivity}</div>
                     </div>
                   ))}
                 </div>
