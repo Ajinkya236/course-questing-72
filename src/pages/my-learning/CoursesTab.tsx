@@ -19,21 +19,27 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const navigate = useNavigate();
   
+  // Process courses to ensure they have previewUrl
+  const processedCourses = mockCourses.map(course => ({
+    ...course,
+    previewUrl: course.previewUrl || ''
+  }));
+  
   // In a real app, we'd filter based on teamMemberId if provided
-  const assignedCourses = mockCourses.filter(course => 
+  const assignedCourses = processedCourses.filter(course => 
     course.status === 'assigned'
   );
   
-  const completedCourses = mockCourses.filter(course => 
+  const completedCourses = processedCourses.filter(course => 
     course.status === 'completed'
   );
   
-  const inProgressCourses = mockCourses.filter(course => 
+  const inProgressCourses = processedCourses.filter(course => 
     course.status === 'in-progress'
   );
   
   // Mock data for saved and shared courses
-  const savedCourses = mockCourses.filter(course => 
+  const savedCourses = processedCourses.filter(course => 
     course.isBookmarked === true
   );
   
@@ -49,8 +55,9 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       rating: 4.7,
       isBookmarked: false,
       trainingCategory: "Strategy",
-      status: 'assigned', // Now using the correct union type
-      sharedBy: "Alex Thompson (Manager)"
+      status: 'assigned',
+      sharedBy: "Alex Thompson (Manager)",
+      previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
     },
     {
       id: "shared-002",
@@ -62,8 +69,9 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       rating: 4.8,
       isBookmarked: false,
       trainingCategory: "Technical",
-      status: 'assigned', // Now using the correct union type
-      sharedBy: "Ryan Miller (Team Lead)"
+      status: 'assigned',
+      sharedBy: "Ryan Miller (Team Lead)",
+      previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
     }
   ];
 
@@ -219,11 +227,45 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         }</h3>
         
         {getFilteredCourses().length > 0 ? (
-          <CourseCarousel 
-            title="" 
-            courses={getFilteredCourses()} 
-            showTrainingCategory={true}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {getFilteredCourses().map(course => (
+              <div key={course.id}>
+                {/* Replace CourseCarousel with individual CourseCards */}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto w-full" 
+                  onClick={() => navigate(`/course/${course.id}`)}
+                >
+                  <div className="w-full rounded-lg border overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="aspect-video relative">
+                      <img 
+                        src={course.imageUrl} 
+                        alt={course.title} 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        {course.isHot && (
+                          <Badge variant="destructive">Hot</Badge>
+                        )}
+                        {course.isNew && (
+                          <Badge variant="secondary">New</Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-medium text-sm line-clamp-2 text-left">{course.title}</h3>
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{course.category}</span>
+                        <span>{course.duration}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Button>
+              </div>
+            ))}
+          </div>
         ) : (
           <Card className="bg-muted/20">
             <CardContent className="flex flex-col items-center justify-center py-10">

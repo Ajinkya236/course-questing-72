@@ -1,3 +1,4 @@
+
 export const mockCourses = [
   {
     id: "course-001",
@@ -64,7 +65,8 @@ export const mockCourses = [
     isBookmarked: true,
     trainingCategory: "Marketing",
     isHot: true,
-    status: "in-progress" as 'in-progress'
+    status: "in-progress" as 'in-progress',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-006",
@@ -77,7 +79,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Technical",
     isNew: true,
-    status: "completed" as 'completed'
+    status: "completed" as 'completed',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-007",
@@ -89,7 +92,8 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Creative",
-    status: "assigned" as 'assigned'
+    status: "assigned" as 'assigned',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-008",
@@ -101,7 +105,8 @@ export const mockCourses = [
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Finance",
-    status: "in-progress" as 'in-progress'
+    status: "in-progress" as 'in-progress',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-009",
@@ -114,7 +119,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Soft Skills",
     isHot: true,
-    status: "completed" as 'completed'
+    status: "completed" as 'completed',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-010",
@@ -126,7 +132,8 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    status: "assigned" as 'assigned'
+    status: "assigned" as 'assigned',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-011",
@@ -139,7 +146,8 @@ export const mockCourses = [
     isBookmarked: true,
     trainingCategory: "Leadership",
     isNew: true,
-    status: "in-progress" as 'in-progress'
+    status: "in-progress" as 'in-progress',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-012",
@@ -151,7 +159,8 @@ export const mockCourses = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Creative",
-    status: "completed" as 'completed'
+    status: "completed" as 'completed',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-013",
@@ -164,7 +173,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Management",
     isHot: true,
-    status: "assigned" as 'assigned'
+    status: "assigned" as 'assigned',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-014",
@@ -176,7 +186,8 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: true,
     trainingCategory: "Soft Skills",
-    status: "in-progress" as 'in-progress'
+    status: "in-progress" as 'in-progress',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-015",
@@ -189,7 +200,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Technical",
     isNew: true,
-    status: "completed" as 'completed'
+    status: "completed" as 'completed',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   }
 ];
 

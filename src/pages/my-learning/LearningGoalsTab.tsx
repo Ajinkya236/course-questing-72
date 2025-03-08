@@ -22,7 +22,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   const processedCourses = mockCourses.map(course => ({
     ...course,
     previewUrl: course.previewUrl || ''
-  } as Course));
+  }));
   
   // Mock learning goals data
   const selfAssignedGoals = [
@@ -138,7 +138,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                       rating={course.rating}
                       trainingCategory={course.trainingCategory}
                       isBookmarked={course.isBookmarked}
-                      previewUrl={course.previewUrl}
+                      previewUrl={course.previewUrl || ''}
                       isHot={course.isHot}
                       isNew={course.isNew}
                     />
