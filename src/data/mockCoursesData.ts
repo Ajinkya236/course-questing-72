@@ -1,4 +1,3 @@
-
 export const mockCourses = [
   {
     id: "course-001",
@@ -11,7 +10,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Leadership",
     isHot: true,
-    status: "assigned" as 'assigned'
+    status: "assigned" as 'assigned',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-002",
@@ -23,7 +23,8 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Technical",
-    status: "in-progress" as 'in-progress'
+    status: "in-progress" as 'in-progress',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-003",
@@ -36,7 +37,8 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Soft Skills",
     isNew: true,
-    status: "completed" as 'completed'
+    status: "completed" as 'completed',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-004",

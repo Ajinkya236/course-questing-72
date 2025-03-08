@@ -17,11 +17,12 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
   
-  // Ensure courses have the previewUrl property by adding it if missing
+  // Use type assertion to make TypeScript understand we're adding the missing properties
+  // This is safe because we're just adding a default empty string for previewUrl if it's missing
   const processedCourses = mockCourses.map(course => ({
     ...course,
-    previewUrl: course.previewUrl || ''  // We don't use videoUrl as fallback since it might not exist
-  }));
+    previewUrl: course.previewUrl || ''
+  } as Course));
   
   // Mock learning goals data
   const selfAssignedGoals = [
