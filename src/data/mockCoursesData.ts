@@ -11,7 +11,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Leadership",
     isHot: true,
-    status: "assigned"
+    status: "assigned" as 'assigned'
   },
   {
     id: "course-002",
@@ -23,7 +23,7 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Technical",
-    status: "in-progress"
+    status: "in-progress" as 'in-progress'
   },
   {
     id: "course-003",
@@ -36,7 +36,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Soft Skills",
     isNew: true,
-    status: "completed"
+    status: "completed" as 'completed'
   },
   {
     id: "course-004",
@@ -48,7 +48,7 @@ export const mockCourses = [
     rating: 4.6,
     isBookmarked: false,
     trainingCategory: "Management",
-    status: "assigned"
+    status: "assigned" as 'assigned'
   },
   {
     id: "course-005",
@@ -61,7 +61,7 @@ export const mockCourses = [
     isBookmarked: true,
     trainingCategory: "Marketing",
     isHot: true,
-    status: "in-progress"
+    status: "in-progress" as 'in-progress'
   },
   {
     id: "course-006",
@@ -74,7 +74,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Technical",
     isNew: true,
-    status: "completed"
+    status: "completed" as 'completed'
   },
   {
     id: "course-007",
@@ -86,7 +86,7 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Creative",
-    status: "assigned"
+    status: "assigned" as 'assigned'
   },
   {
     id: "course-008",
@@ -98,7 +98,7 @@ export const mockCourses = [
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Finance",
-    status: "in-progress"
+    status: "in-progress" as 'in-progress'
   },
   {
     id: "course-009",
@@ -111,7 +111,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Soft Skills",
     isHot: true,
-    status: "completed"
+    status: "completed" as 'completed'
   },
   {
     id: "course-010",
@@ -123,7 +123,7 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    status: "assigned"
+    status: "assigned" as 'assigned'
   },
   {
     id: "course-011",
@@ -136,7 +136,7 @@ export const mockCourses = [
     isBookmarked: true,
     trainingCategory: "Leadership",
     isNew: true,
-    status: "in-progress"
+    status: "in-progress" as 'in-progress'
   },
   {
     id: "course-012",
@@ -148,7 +148,7 @@ export const mockCourses = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Creative",
-    status: "completed"
+    status: "completed" as 'completed'
   },
   {
     id: "course-013",
@@ -161,7 +161,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Management",
     isHot: true,
-    status: "assigned"
+    status: "assigned" as 'assigned'
   },
   {
     id: "course-014",
@@ -173,7 +173,7 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: true,
     trainingCategory: "Soft Skills",
-    status: "in-progress"
+    status: "in-progress" as 'in-progress'
   },
   {
     id: "course-015",
@@ -186,7 +186,7 @@ export const mockCourses = [
     isBookmarked: false,
     trainingCategory: "Technical",
     isNew: true,
-    status: "completed"
+    status: "completed" as 'completed'
   }
 ];
 
