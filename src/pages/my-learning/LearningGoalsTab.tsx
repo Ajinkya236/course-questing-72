@@ -19,7 +19,11 @@ const skillsData = [
   { id: 5, name: 'Communication', currentProficiency: 70, targetProficiency: 90, related: ['presentation', 'writing'] }
 ];
 
-const LearningGoalsTab: React.FC = () => {
+interface LearningGoalsTabProps {
+  teamMemberId?: string | null;
+}
+
+const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('selfAssigned');
@@ -43,7 +47,7 @@ const LearningGoalsTab: React.FC = () => {
 
   const handleUnassignCourse = (courseId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (activeTab === 'selfAssigned') {
+    if (activeTab === 'selfAssigned' && !teamMemberId) {
       setSelfAssignedCourses(prev => prev.filter(course => course.id !== courseId));
       toast({
         title: "Course Unassigned",
@@ -63,7 +67,9 @@ const LearningGoalsTab: React.FC = () => {
     <div onClick={(e) => e.stopPropagation()}>
       <Tabs defaultValue="selfAssigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-2 mb-8">
-          <TabsTrigger value="selfAssigned">Courses Assigned by You</TabsTrigger>
+          <TabsTrigger value="selfAssigned">
+            {teamMemberId ? "Courses Assigned by Team Member" : "Courses Assigned by You"}
+          </TabsTrigger>
           <TabsTrigger value="managerAssigned">Courses Assigned by Manager</TabsTrigger>
         </TabsList>
         
@@ -74,20 +80,24 @@ const LearningGoalsTab: React.FC = () => {
                 {selfAssignedCourses.map((course) => (
                   <div key={course.id} className="cursor-pointer relative group">
                     <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
-                    <Button 
-                      variant="destructive" 
-                      size="icon" 
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={(e) => handleUnassignCourse(course.id, e)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {!teamMemberId && (
+                      <Button 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => handleUnassignCourse(course.id, e)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">You haven't assigned any courses to your learning goals yet.</p>
+                <p className="text-muted-foreground">
+                  {teamMemberId ? "This team member hasn't assigned any courses to their learning goals yet." : "You haven't assigned any courses to your learning goals yet."}
+                </p>
               </div>
             )}
           </CardContent>
@@ -105,14 +115,16 @@ const LearningGoalsTab: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">Your manager hasn't assigned any courses to your learning goals yet.</p>
+                <p className="text-muted-foreground">
+                  {teamMemberId ? "You haven't assigned any courses to this team member's learning goals yet." : "Your manager hasn't assigned any courses to your learning goals yet."}
+                </p>
               </div>
             )}
           </CardContent>
         </TabsContent>
       </Tabs>
       
-      {/* Skills Proficiency Overview - Moved below courses */}
+      {/* Skills Proficiency Overview */}
       <div className="mt-8 p-6 bg-muted/20 rounded-lg border">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -141,7 +153,7 @@ const LearningGoalsTab: React.FC = () => {
         <div className="mt-4 pt-4 border-t border-border/40">
           <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
-            Skills From Your Courses
+            Skills From {teamMemberId ? "Team Member's" : "Your"} Courses
           </h4>
           <div className="flex flex-wrap gap-2">
             {skillsData.map(skill => (

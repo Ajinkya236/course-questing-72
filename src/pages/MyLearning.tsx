@@ -8,37 +8,60 @@ import {
   Gift, 
   Target
 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
 import BadgesTab from './my-learning/BadgesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
 
-const MyLearning = () => {
+interface MyLearningProps {
+  initialTab?: string;
+}
+
+const MyLearning: React.FC<MyLearningProps> = ({ initialTab }) => {
   const location = useLocation();
+  const params = useParams();
   const [activeTab, setActiveTab] = useState('courses');
+  const [teamMemberView, setTeamMemberView] = useState<string | null>(null);
   
   // Get badge count for badge number indicator
   const badgeCount = 3; // This would come from a real data source/API
   
-  // Check if we have state with a specified tab
+  // Check if we have state with a specified tab or initialTab prop
   useEffect(() => {
-    if (location.state) {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    } else if (location.state) {
       const { activeTab: tabFromState } = location.state as { activeTab?: string, courseTab?: string };
       if (tabFromState) {
         setActiveTab(tabFromState);
       }
     }
-  }, [location.state]);
+  }, [location.state, initialTab]);
+
+  // Check if viewing a team member's learning
+  useEffect(() => {
+    if (params.memberId) {
+      setTeamMemberView(params.memberId);
+    }
+  }, [params.memberId]);
+
+  // Get title based on context
+  const getTitle = () => {
+    if (teamMemberView) {
+      return "Team Member Learning";
+    }
+    return "My Learning";
+  };
 
   return (
     <>
       <Helmet>
-        <title>My Learning | Learning Management System</title>
+        <title>{getTitle()} | Learning Management System</title>
       </Helmet>
       <div className="container mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight mb-6">My Learning</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-6">{getTitle()}</h1>
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
@@ -66,11 +89,14 @@ const MyLearning = () => {
           </TabsList>
           
           <TabsContent value="courses">
-            <CoursesTab initialActiveTab={location.state?.courseTab} />
+            <CoursesTab 
+              initialActiveTab={location.state?.courseTab} 
+              teamMemberId={teamMemberView} 
+            />
           </TabsContent>
           
           <TabsContent value="goals">
-            <LearningGoalsTab />
+            <LearningGoalsTab teamMemberId={teamMemberView} />
           </TabsContent>
           
           <TabsContent value="rewards">
