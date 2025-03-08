@@ -37,7 +37,7 @@ const MyLearning = () => {
       <Helmet>
         <title>My Learning | Learning Management System</title>
       </Helmet>
-      <div className="container py-8 mb-20">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight mb-6">My Learning</h1>
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
