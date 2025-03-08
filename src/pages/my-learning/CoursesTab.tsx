@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Check, Clock, Bookmark, Share } from 'lucide-react';
+import { Course } from '@/types/course';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -34,7 +35,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
     course.isBookmarked === true
   );
   
-  const sharedWithMeCourses = [
+  // Fixed shared courses to use the correct status type - changed from string to a union type
+  const sharedWithMeCourses: Course[] = [
     {
       id: "shared-001",
       title: "Business Strategy Masterclass",
@@ -45,7 +47,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       rating: 4.7,
       isBookmarked: false,
       trainingCategory: "Strategy",
-      status: 'assigned',
+      status: 'assigned', // Now using the correct union type
       sharedBy: "Alex Thompson (Manager)"
     },
     {
@@ -58,7 +60,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       rating: 4.8,
       isBookmarked: false,
       trainingCategory: "Technical",
-      status: 'assigned',
+      status: 'assigned', // Now using the correct union type
       sharedBy: "Ryan Miller (Team Lead)"
     }
   ];

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
 import { useTheme } from "./components/hooks/use-theme"
@@ -78,6 +78,9 @@ const courseCategories = [
 ];
 
 const TopNavigation: React.FC = () => {
+  // New state to manage hover of the Discover dropdown
+  const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
+
   return (
     <div className="w-full border-b bg-background sticky top-0 z-10">
       <div className="container flex h-14 items-center justify-between">
@@ -91,15 +94,29 @@ const TopNavigation: React.FC = () => {
               </Link>
             </Button>
             
-            <DropdownMenu>
+            <DropdownMenu open={isDiscoverHovered} onOpenChange={setIsDiscoverHovered}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                  <Compass className="h-4 w-4" />
-                  <span>Discover</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onMouseEnter={() => setIsDiscoverHovered(true)}
+                  onMouseLeave={() => setIsDiscoverHovered(false)}
+                  asChild
+                >
+                  <Link to="/discover" className="flex items-center gap-1">
+                    <Compass className="h-4 w-4" />
+                    <span>Discover</span>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </Link>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent 
+                align="start" 
+                className="w-56"
+                onMouseEnter={() => setIsDiscoverHovered(true)}
+                onMouseLeave={() => setIsDiscoverHovered(false)}
+              >
                 {courseCategories.map((category) => (
                   <DropdownMenuItem key={category} asChild>
                     <Link to={`/discover?category=${encodeURIComponent(category)}`}>

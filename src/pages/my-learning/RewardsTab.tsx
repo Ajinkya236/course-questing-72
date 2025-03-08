@@ -4,128 +4,61 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp } from 'lucide-react';
+import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp, ExternalLink } from 'lucide-react';
 import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import MysteryBoxDialog from '@/components/gamification/MysteryBoxDialog';
 import SpinTheWheelDialog from '@/components/gamification/SpinTheWheelDialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 // Mock data for leaderboard users
-const mockLeaderboardUsers = [
-  {
-    id: 'user-1',
-    name: 'John Doe',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    points: 1850,
-    position: 1,
-    positionChange: 2,
-    department: 'Engineering',
-    team: 'Frontend',
-    location: 'New York',
-    role: 'Developer',
-    jobFamily: 'Technology',
+// Generate 50 users but we'll only display relative to the current user
+const generateMockLeaderboardUsers = () => {
+  return Array.from({ length: 50 }, (_, i) => ({
+    id: `user-${i + 1}`,
+    name: `User ${i + 1}`,
+    avatar: `https://randomuser.me/api/portraits/${i % 2 ? 'women' : 'men'}/${(i % 70) + 1}.jpg`,
+    points: Math.floor(10000 - i * (100 + Math.random() * 50)),
+    position: i + 1,
+    positionChange: i % 5 === 0 ? 2 : i % 7 === 0 ? -1 : 0,
+    department: ['Engineering', 'Marketing', 'Sales', 'Finance', 'HR', 'Operations'][i % 6],
+    team: ['Frontend', 'Backend', 'DevOps', 'Design', 'Content', 'Support'][i % 6],
+    location: ['New York', 'San Francisco', 'London', 'Tokyo', 'Singapore', 'Berlin'][i % 6],
+    role: ['Developer', 'Manager', 'Director', 'VP', 'C-Level', 'Analyst'][i % 6],
+    jobFamily: ['Technology', 'Business', 'Creative', 'Support', 'Leadership'][i % 5],
     details: {
-      assessmentScore: 95,
-      engagementScore: 92,
-      completionRate: 98
+      assessmentScore: Math.floor(70 + Math.random() * 30),
+      engagementScore: Math.floor(60 + Math.random() * 40),
+      completionRate: Math.floor(75 + Math.random() * 25)
     }
-  },
-  {
-    id: 'user-2',
-    name: 'Jane Smith',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-    points: 1720,
-    position: 2,
-    positionChange: 1,
-    department: 'Engineering',
-    team: 'Frontend',
-    location: 'New York',
-    role: 'Developer',
-    jobFamily: 'Technology',
-    details: {
-      assessmentScore: 90,
-      engagementScore: 88,
-      completionRate: 95
-    }
-  },
-  {
-    id: 'user-3',
-    name: 'Robert Johnson',
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-    points: 1680,
-    position: 3,
-    positionChange: -1,
-    department: 'Engineering',
-    team: 'Backend',
-    location: 'San Francisco',
-    role: 'Developer',
-    jobFamily: 'Technology',
-    details: {
-      assessmentScore: 87,
-      engagementScore: 84,
-      completionRate: 92
-    }
-  },
-  {
-    id: 'current-user',
-    name: 'You',
-    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-    points: 1250,
-    position: 4,
-    positionChange: 0,
-    department: 'Engineering',
-    team: 'Frontend',
-    location: 'New York',
-    role: 'Developer',
-    jobFamily: 'Technology',
-    details: {
-      assessmentScore: 85,
-      engagementScore: 80,
-      completionRate: 88
-    }
-  },
-  {
-    id: 'user-5',
-    name: 'Emily Chen',
-    avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
-    points: 1150,
-    position: 5,
-    positionChange: 3,
-    department: 'Engineering',
-    team: 'Design',
-    location: 'San Francisco',
-    role: 'Designer',
-    jobFamily: 'Creative',
-    details: {
-      assessmentScore: 82,
-      engagementScore: 79,
-      completionRate: 85
-    }
-  },
-  {
-    id: 'user-6',
-    name: 'Michael Wang',
-    avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
-    points: 1050,
-    position: 6,
-    positionChange: -2,
-    department: 'Marketing',
-    team: 'Content',
-    location: 'London',
-    role: 'Manager',
-    jobFamily: 'Business',
-    details: {
-      assessmentScore: 80,
-      engagementScore: 76,
-      completionRate: 82
-    }
-  }
-];
+  }));
+};
 
-// Current user is the one with ID 'current-user'
-const currentUser = mockLeaderboardUsers.find(user => user.id === 'current-user');
+const mockLeaderboardUsers = generateMockLeaderboardUsers();
+
+// Current user has position 15
+const currentUserPosition = 15;
+const currentUser = mockLeaderboardUsers.find(user => user.position === currentUserPosition);
+
+// Get a relative view - 5 users above and 5 users below
+const getRelativeLeaderboard = () => {
+  const startIndex = Math.max(0, currentUserPosition - 6); // -6 to include 5 users above
+  const endIndex = Math.min(mockLeaderboardUsers.length - 1, currentUserPosition + 4); // +4 to include 5 users below
+  
+  // Get top 3 users to always show them
+  const topUsers = mockLeaderboardUsers.slice(0, 3);
+  
+  // Get users relative to current user (excluding top 3 if they overlap)
+  const relativeUsers = mockLeaderboardUsers
+    .slice(startIndex, endIndex + 1)
+    .filter(user => !topUsers.some(topUser => topUser.id === user.id));
+  
+  // Return combined array with top 3 followed by relative users
+  return [...topUsers, ...relativeUsers];
+};
 
 interface RewardsTabProps {
   teamMemberId?: string;
@@ -137,7 +70,11 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
   const [showMysteryBox, setShowMysteryBox] = useState(false);
   const [showSpinWheel, setShowSpinWheel] = useState(false);
   const [activePointsTab, setActivePointsTab] = useState("overview");
+  const [showRedeemDialog, setShowRedeemDialog] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
+  const [redeemStep, setRedeemStep] = useState(1);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Mock data - in a real app, we'd fetch based on teamMemberId if provided
   const rewardsData = {
@@ -171,12 +108,12 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
       { id: 4, courseName: 'Project Management Essentials', totalPoints: 180, breakdown: { completion: 80, quizzes: 50, assignments: 40, participation: 10 } },
     ],
     redemptionOptions: [
-      { id: 1, name: 'Amazon Gift Card', points: 2000, image: '📱' },
-      { id: 2, name: 'Extra Day Off', points: 5000, image: '🏖️' },
-      { id: 3, name: 'Coffee Voucher', points: 1000, image: '☕' },
-      { id: 4, name: 'Virtual Lunch with CEO', points: 3000, image: '🍽️' },
-      { id: 5, name: 'Premium Learning Path Access', points: 1500, image: '🎓' },
-      { id: 6, name: 'Professional Development Book', points: 800, image: '📚' },
+      { id: 1, name: 'Amazon Gift Card', points: 2000, image: '📱', description: 'A $20 Amazon gift card to spend on anything you want.' },
+      { id: 2, name: 'Extra Day Off', points: 5000, image: '🏖️', description: 'Take an extra day off work, subject to manager approval.' },
+      { id: 3, name: 'Coffee Voucher', points: 1000, image: '☕', description: 'A $10 voucher for the office café or local coffee shop.' },
+      { id: 4, name: 'Virtual Lunch with CEO', points: 3000, image: '🍽️', description: 'Schedule a virtual lunch meeting with the company CEO.' },
+      { id: 5, name: 'Premium Learning Path Access', points: 1500, image: '🎓', description: 'Unlock premium learning content for 3 months.' },
+      { id: 6, name: 'Professional Development Book', points: 800, image: '📚', description: 'Choose from a selection of professional development books.' },
     ]
   };
 
@@ -189,6 +126,56 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
 
   const handleSpinWheel = () => {
     setShowSpinWheel(true);
+  };
+
+  const handleViewFullLeaderboard = () => {
+    navigate('/leaderboard');
+  };
+
+  const handleRedeemReward = (reward: any) => {
+    setSelectedReward(reward);
+    setRedeemStep(1);
+    setShowRedeemDialog(true);
+  };
+
+  const confirmRedemption = () => {
+    setRedeemStep(2);
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      setRedeemStep(3);
+    }, 1500);
+  };
+
+  const finishRedemption = () => {
+    setShowRedeemDialog(false);
+    
+    // Reset for next time
+    setTimeout(() => {
+      setRedeemStep(1);
+      setSelectedReward(null);
+    }, 500);
+    
+    toast({
+      title: "Reward Redeemed Successfully!",
+      description: `You have successfully redeemed ${selectedReward.name}.`,
+    });
+  };
+
+  // Get filtered leaderboard based on user preferences
+  const getFilteredLeaderboard = () => {
+    let filteredUsers = getRelativeLeaderboard();
+    
+    if (leaderboardFilter !== "all") {
+      const filterProperty = leaderboardFilter;
+      const currentUserValue = currentUser?.[filterProperty as keyof typeof currentUser];
+      
+      filteredUsers = filteredUsers.filter(user => {
+        return user[filterProperty as keyof typeof user] === currentUserValue;
+      });
+    }
+    
+    return filteredUsers;
   };
 
   return (
@@ -353,13 +340,16 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
               <div>
                 <span className="text-sm text-muted-foreground">Your personal best: 1380 points (achieved on October 15)</span>
               </div>
-              <Button variant="outline" size="sm">View Progression</Button>
+              <Button variant="outline" size="sm" onClick={handleViewFullLeaderboard} className="flex items-center gap-1">
+                View Full Leaderboard
+                <ExternalLink className="h-3 w-3 ml-1" />
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         <LeaderboardEnhanced
-          users={mockLeaderboardUsers}
+          users={getFilteredLeaderboard()}
           currentUser={currentUser}
           title="Learning Leaderboard"
         />
@@ -379,6 +369,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
                   disabled={rewardsData.totalPoints < option.points}
                   size="sm" 
                   className="w-full"
+                  onClick={() => handleRedeemReward(option)}
                 >
                   Redeem
                 </Button>
@@ -453,6 +444,100 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
       {/* Dialogs */}
       <MysteryBoxDialog open={showMysteryBox} onOpenChange={setShowMysteryBox} />
       <SpinTheWheelDialog open={showSpinWheel} onOpenChange={setShowSpinWheel} />
+      
+      {/* Redeem Dialog */}
+      {selectedReward && (
+        <Dialog open={showRedeemDialog} onOpenChange={setShowRedeemDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Redeem Reward</DialogTitle>
+              <DialogDescription>
+                {redeemStep === 1 && `You are about to redeem ${selectedReward.name} for ${selectedReward.points} points.`}
+                {redeemStep === 2 && 'Processing your redemption...'}
+                {redeemStep === 3 && 'Redemption completed successfully!'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {redeemStep === 1 && (
+              <div className="space-y-4 my-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 flex items-center justify-center text-4xl">
+                    {selectedReward.image}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">{selectedReward.name}</h3>
+                    <p className="text-sm text-muted-foreground">{selectedReward.description}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-secondary/20 p-4 rounded-md">
+                  <div className="flex justify-between mb-2">
+                    <span>Your current points:</span>
+                    <span className="font-medium">{rewardsData.totalPoints} pts</span>
+                  </div>
+                  <div className="flex justify-between mb-2">
+                    <span>Reward cost:</span>
+                    <span className="font-medium text-amber-500">-{selectedReward.points} pts</span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-medium">
+                    <span>Remaining points:</span>
+                    <span>{rewardsData.totalPoints - selectedReward.points} pts</span>
+                  </div>
+                </div>
+                
+                <DialogFooter className="flex gap-2 mt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowRedeemDialog(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={confirmRedemption}
+                    className="flex-1"
+                  >
+                    Confirm Redemption
+                  </Button>
+                </DialogFooter>
+              </div>
+            )}
+            
+            {redeemStep === 2 && (
+              <div className="flex flex-col items-center justify-center py-10">
+                <div className="animate-spin h-12 w-12 border-4 border-primary/20 rounded-full border-t-primary mb-4"></div>
+                <p>Processing your redemption...</p>
+              </div>
+            )}
+            
+            {redeemStep === 3 && (
+              <div className="flex flex-col items-center justify-center py-6">
+                <div className="bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 h-16 w-16 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-medium mb-2">Redemption Successful!</h3>
+                <p className="text-center text-muted-foreground mb-4">
+                  You have successfully redeemed {selectedReward.name}. Your points have been deducted.
+                </p>
+                {selectedReward.id === 1 && (
+                  <div className="bg-secondary/20 p-4 rounded-md w-full mb-4">
+                    <h4 className="font-medium mb-2">Gift Card Code:</h4>
+                    <div className="bg-background p-3 rounded font-mono text-center">
+                      AMZN-GIFT-12345-ABCDE
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Use this code on amazon.com to redeem your gift card.
+                    </p>
+                  </div>
+                )}
+                <Button onClick={finishRedemption} className="w-full">
+                  Done
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
