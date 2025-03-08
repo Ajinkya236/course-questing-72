@@ -206,13 +206,12 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-8 w-8 rounded-full",
+        "h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      // Always enabled for circular carousel
       onClick={scrollPrev}
       {...props}
     >
@@ -235,13 +234,12 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-8 w-8 rounded-full",
+        "h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-right-12 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      // Always enabled for circular carousel
       onClick={scrollNext}
       {...props}
     >
@@ -306,14 +304,14 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-7 w-7 shadow-sm"
           onClick={scrollLeft}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
         </Button>
       </div>
       
-      <div className="overflow-hidden px-10">
+      <div className="overflow-hidden px-9">
         <div 
           ref={filtersRef} 
           className="flex transition-transform duration-300 justify-center"
@@ -336,10 +334,10 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-7 w-7 shadow-sm"
           onClick={scrollRight}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>

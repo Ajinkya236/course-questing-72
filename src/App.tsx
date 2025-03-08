@@ -7,7 +7,17 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
-import { Home as HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle } from 'lucide-react';
+import { 
+  Home as HomeIcon, 
+  Compass, 
+  BookOpen, 
+  Bell, 
+  User, 
+  Users, 
+  Headphones, 
+  HelpCircle,
+  LogOut
+} from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 
 import SignIn from './pages/SignIn';
@@ -29,6 +39,14 @@ import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
 
 import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
 import DomainCoursesPage from './pages/DomainCoursesPage';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -53,7 +71,7 @@ const TopNavigation: React.FC = () => {
     <div className="w-full border-b bg-background sticky top-0 z-10">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg">LMS</h1>
+          <h1 className="font-bold text-lg">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
             <Button variant="ghost" asChild size="sm">
               <Link to="/" className="flex items-center gap-1">
@@ -61,12 +79,28 @@ const TopNavigation: React.FC = () => {
                 <span>Home</span>
               </Link>
             </Button>
-            <Button variant="ghost" asChild size="sm">
-              <Link to="/discover" className="flex items-center gap-1">
-                <Compass className="h-4 w-4" />
-                <span>Discover</span>
-              </Link>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                  <Compass className="h-4 w-4" />
+                  <span>Discover</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/view-all/domains" className="w-full cursor-pointer">Domain Courses</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/discover" className="w-full cursor-pointer">All Courses</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/discover?filter=popular" className="w-full cursor-pointer">Popular Courses</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/discover?filter=new" className="w-full cursor-pointer">New Courses</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" asChild size="sm">
               <Link to="/my-learning" className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4" />
@@ -93,16 +127,35 @@ const TopNavigation: React.FC = () => {
               <Bell className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/faq">
-              <HelpCircle className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/profile">
-              <User className="h-5 w-5" />
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 p-0">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="https://github.com/shadcn.png" alt="User Profile" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center gap-2 w-full cursor-pointer">
+                  <User className="h-4 w-4" />
+                  <span>View Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/faq" className="flex items-center gap-2 w-full cursor-pointer">
+                  <HelpCircle className="h-4 w-4" />
+                  <span>FAQs</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ModeToggle />
         </div>
       </div>
