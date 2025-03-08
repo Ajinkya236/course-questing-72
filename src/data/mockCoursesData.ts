@@ -10,7 +10,8 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Leadership",
-    isHot: true
+    isHot: true,
+    status: "assigned"
   },
   {
     id: "course-002",
@@ -21,7 +22,8 @@ export const mockCourses = [
     duration: "5h 45m",
     rating: 4.7,
     isBookmarked: true,
-    trainingCategory: "Technical"
+    trainingCategory: "Technical",
+    status: "in-progress"
   },
   {
     id: "course-003",
@@ -33,7 +35,8 @@ export const mockCourses = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    isNew: true
+    isNew: true,
+    status: "completed"
   },
   {
     id: "course-004",
@@ -44,7 +47,8 @@ export const mockCourses = [
     duration: "4h 20m",
     rating: 4.6,
     isBookmarked: false,
-    trainingCategory: "Management"
+    trainingCategory: "Management",
+    status: "assigned"
   },
   {
     id: "course-005",
@@ -56,7 +60,8 @@ export const mockCourses = [
     rating: 4.5,
     isBookmarked: true,
     trainingCategory: "Marketing",
-    isHot: true
+    isHot: true,
+    status: "in-progress"
   },
   {
     id: "course-006",
@@ -68,7 +73,8 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Technical",
-    isNew: true
+    isNew: true,
+    status: "completed"
   },
   {
     id: "course-007",
@@ -79,7 +85,8 @@ export const mockCourses = [
     duration: "2h 50m",
     rating: 4.8,
     isBookmarked: false,
-    trainingCategory: "Creative"
+    trainingCategory: "Creative",
+    status: "assigned"
   },
   {
     id: "course-008",
@@ -90,7 +97,8 @@ export const mockCourses = [
     duration: "4h 15m",
     rating: 4.6,
     isBookmarked: true,
-    trainingCategory: "Finance"
+    trainingCategory: "Finance",
+    status: "in-progress"
   },
   {
     id: "course-009",
@@ -102,7 +110,8 @@ export const mockCourses = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    isHot: true
+    isHot: true,
+    status: "completed"
   },
   {
     id: "course-010",
@@ -113,7 +122,8 @@ export const mockCourses = [
     duration: "2h 40m",
     rating: 4.7,
     isBookmarked: false,
-    trainingCategory: "Soft Skills"
+    trainingCategory: "Soft Skills",
+    status: "assigned"
   },
   {
     id: "course-011",
@@ -125,7 +135,8 @@ export const mockCourses = [
     rating: 4.8,
     isBookmarked: true,
     trainingCategory: "Leadership",
-    isNew: true
+    isNew: true,
+    status: "in-progress"
   },
   {
     id: "course-012",
@@ -136,7 +147,8 @@ export const mockCourses = [
     duration: "3h 10m",
     rating: 4.9,
     isBookmarked: false,
-    trainingCategory: "Creative"
+    trainingCategory: "Creative",
+    status: "completed"
   },
   {
     id: "course-013",
@@ -148,7 +160,8 @@ export const mockCourses = [
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Management",
-    isHot: true
+    isHot: true,
+    status: "assigned"
   },
   {
     id: "course-014",
@@ -159,7 +172,8 @@ export const mockCourses = [
     duration: "4h 00m",
     rating: 4.8,
     isBookmarked: true,
-    trainingCategory: "Soft Skills"
+    trainingCategory: "Soft Skills",
+    status: "in-progress"
   },
   {
     id: "course-015",
@@ -171,7 +185,8 @@ export const mockCourses = [
     rating: 4.6,
     isBookmarked: false,
     trainingCategory: "Technical",
-    isNew: true
+    isNew: true,
+    status: "completed"
   }
 ];
 

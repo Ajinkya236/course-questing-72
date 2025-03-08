@@ -1,3 +1,4 @@
+
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -7,6 +8,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
   DropdownMenu,
@@ -39,17 +41,17 @@ const NavBarUnused = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger>
-                <Link to="/" className={NavigationMenuLink}>Home</Link>
+                <Link to="/">Home</Link>
               </NavigationMenuTrigger>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuTrigger>
-                <Link to="/discover" className={NavigationMenuLink}>Discover</Link>
+                <Link to="/discover">Discover</Link>
               </NavigationMenuTrigger>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuTrigger>
-                <Link to="/my-learning" className={NavigationMenuLink}>My Learning</Link>
+                <Link to="/my-learning">My Learning</Link>
               </NavigationMenuTrigger>
             </NavigationMenuItem>
           </NavigationMenuList>

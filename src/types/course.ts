@@ -31,6 +31,7 @@ export interface Course {
   isHot?: boolean;
   isNew?: boolean;
   createdAt?: string;
+  status?: 'assigned' | 'in-progress' | 'completed';
   
   // These fields from CourseCarousel interface
   level?: string;
