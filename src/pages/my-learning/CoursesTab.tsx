@@ -22,6 +22,9 @@ const skillsData = [
   { id: 5, name: 'Communication', currentProficiency: 70, targetProficiency: 90, related: ['presentation', 'writing'] }
 ];
 
+// Training categories for assigned courses
+const trainingCategories = ['Self-assigned', 'Manager-assigned', 'Ready for Role', 'Leadership', 'Mandatory', 'Special Drive'];
+
 const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab, teamMemberId }) => {
   const [activeTab, setActiveTab] = useState('assigned');
   const navigate = useNavigate();
@@ -40,12 +43,12 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab, teamMemberId 
   // In a real application, you would have different lists of courses based on their status
   const assignedCourses = coursesList.slice(0, 4).map(course => ({
     ...course,
-    trainingCategory: course.trainingCategory || ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+    trainingCategory: trainingCategories[Math.floor(Math.random() * trainingCategories.length)]
   }));
   
   const notStartedCourses = coursesList.slice(0, 4).map(course => ({
     ...course,
-    trainingCategory: 'Not Started'
+    trainingCategory: trainingCategories[Math.floor(Math.random() * trainingCategories.length)]
   }));
   
   const inProgressCourses = coursesList.slice(4, 8);
@@ -107,7 +110,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab, teamMemberId 
         <TabsContent value="assigned">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {assignedCourses.map((course) => (
-              <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
                 <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
               </div>
             ))}

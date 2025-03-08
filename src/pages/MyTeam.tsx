@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronRight, FileSpreadsheet, LineChart, BarChart, ChevronDownSquare } from 'lucide-react';
+import { ChevronRight, Bell, Gift, Award, Star, Zap, Target, Trophy, Flame, Target as TargetIcon, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import TeamLearningActivity from '../components/TeamLearningActivity';
@@ -175,37 +175,7 @@ const MyTeam: React.FC = () => {
           </Card>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Team learning activity chart */}
-          <div className="lg:col-span-2">
-            <TeamLearningActivity />
-          </div>
-          
-          {/* Training categories */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Training Categories</CardTitle>
-                <CardDescription>Course distribution by category</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {trainingCategories.map((category) => (
-                    <div key={category.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
-                        <span>{category.name}</span>
-                      </div>
-                      <Badge variant="outline">{category.count} courses</Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        
-        {/* Team members section */}
+        {/* Team members section moved here - right after goals */}
         <div>
           <Card>
             <CardHeader>
@@ -267,6 +237,36 @@ const MyTeam: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Team learning activity chart */}
+          <div className="lg:col-span-2">
+            <TeamLearningActivity />
+          </div>
+          
+          {/* Training categories */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Training Categories</CardTitle>
+                <CardDescription>Course distribution by category</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {trainingCategories.map((category) => (
+                    <div key={category.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
+                        <span>{category.name}</span>
+                      </div>
+                      <Badge variant="outline">{category.count} courses</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </>

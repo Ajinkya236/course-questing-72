@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -14,9 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
 import { mockCoursesData } from '@/data/mockData';
 import { useIsMobile } from '@/hooks/use-mobile';
-import TopicsCatalog from '@/components/TopicsCatalog';
+import DomainCatalog from '@/components/DomainCatalog';
 
-// Define academies and sub-academies
 const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
 const subAcademyFilters = {
   'All Academies': ['All Sub-Academies'],
@@ -160,6 +158,7 @@ const Home = () => {
             onCourseClick={handleCourseClick}
             onViewAllClick={() => handleViewAllCategory('Assigned Courses')}
             filterOptions={['All Categories', 'Ready for Role', 'Mandatory', 'Leadership', 'Technical']}
+            showTrainingCategory={true}
           />
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -435,7 +434,6 @@ const Home = () => {
             onViewAllClick={() => handleViewAllCategory('Newly Added')}
           />
           
-          {/* HR Banner at the bottom */}
           <div className="border rounded-xl overflow-hidden">
             <div className="bg-primary/10 p-4 md:p-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -493,8 +491,7 @@ const Home = () => {
             </div>
           </div>
           
-          {/* Topics Catalog */}
-          <TopicsCatalog />
+          <DomainCatalog />
         </section>
       </div>
       
@@ -510,7 +507,6 @@ const Home = () => {
   );
 };
 
-// Import the necessary components for the HR banner
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 export default Home;

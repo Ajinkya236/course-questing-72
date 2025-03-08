@@ -13,7 +13,8 @@ import {
   CarouselContent, 
   CarouselItem, 
   CarouselPrevious, 
-  CarouselNext 
+  CarouselNext,
+  CarouselFilters
 } from '@/components/ui/carousel';
 
 interface CourseCarouselProps {
@@ -25,6 +26,7 @@ interface CourseCarouselProps {
   filterOptions?: string[];
   viewAllUrl?: string;
   subFilterOptions?: Record<string, string[]>;
+  showTrainingCategory?: boolean;
 }
 
 const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
@@ -35,12 +37,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   onViewAllClick,
   filterOptions = [],
   viewAllUrl = '/view-all',
-  subFilterOptions = {}
+  subFilterOptions = {},
+  showTrainingCategory = false // Only show for assigned courses
 }) => {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
-  const filtersRef = useRef<HTMLDivElement>(null);
-  const subFiltersRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
@@ -91,31 +92,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   };
 
-  const scrollFiltersLeft = () => {
-    if (filtersRef.current) {
-      filtersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
-    }
-  };
-
-  const scrollFiltersRight = () => {
-    if (filtersRef.current) {
-      filtersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
-    }
-  };
-
-  const scrollSubFiltersLeft = () => {
-    if (subFiltersRef.current) {
-      subFiltersRef.current.scrollBy({ left: -200, behavior: 'smooth' });
-    }
-  };
-
-  const scrollSubFiltersRight = () => {
-    if (subFiltersRef.current) {
-      subFiltersRef.current.scrollBy({ left: 200, behavior: 'smooth' });
-    }
-  };
-
-  const handleFilterClick = (filter: string) => {
+  const handleFilterSelect = (filter: string) => {
     setSelectedFilter(filter);
     // Reset sub-filter when main filter changes
     if (subFilterOptions && subFilterOptions[filter]) {
@@ -160,88 +137,20 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       
       {/* Main filters carousel with navigation buttons */}
       {showSkillFilters && filterOptions.length > 0 && (
-        <div className="mb-4 relative">
-          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 shadow-md"
-              onClick={scrollFiltersLeft}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="overflow-x-auto scrollbar-hide px-10" ref={filtersRef}>
-            <div className="flex gap-2 pb-2">
-              {filterOptions.map((filter) => (
-                <Button
-                  key={filter}
-                  variant={selectedFilter === filter ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleFilterClick(filter)}
-                  className="rounded-full whitespace-nowrap"
-                >
-                  {filter}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 shadow-md"
-              onClick={scrollFiltersRight}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <CarouselFilters
+          filters={filterOptions}
+          selectedFilter={selectedFilter}
+          onFilterSelect={handleFilterSelect}
+        />
       )}
       
       {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
-      {showSkillFilters && title === "Academy Courses" && availableSubFilters.length > 0 && (
-        <div className="mb-4 relative">
-          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 shadow-md"
-              onClick={scrollSubFiltersLeft}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="overflow-x-auto scrollbar-hide px-10" ref={subFiltersRef}>
-            <div className="flex gap-2 pb-2">
-              {availableSubFilters.map((subFilter) => (
-                <Button
-                  key={subFilter}
-                  variant={selectedSubFilter === subFilter ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleSubFilterClick(subFilter)}
-                  className="rounded-full whitespace-nowrap"
-                >
-                  {subFilter}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-8 w-8 shadow-md"
-              onClick={scrollSubFiltersRight}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+      {showSkillFilters && availableSubFilters.length > 0 && (
+        <CarouselFilters
+          filters={availableSubFilters}
+          selectedFilter={selectedSubFilter}
+          onFilterSelect={handleSubFilterClick}
+        />
       )}
 
       {/* Use the Carousel component with circular navigation */}
@@ -272,7 +181,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                       </Badge>
                     </div>
                   )}
-                  {course.trainingCategory && (
+                  {/* Only show training category if showTrainingCategory is true and trainingCategory exists */}
+                  {showTrainingCategory && course.trainingCategory && (
                     <div className="absolute bottom-2 left-2">
                       <Badge variant="outline" className="bg-black/60 text-white border-none">
                         {course.trainingCategory}
