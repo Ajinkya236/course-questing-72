@@ -20,9 +20,7 @@ import {
   TrendingUp,
   MapPin,
   Briefcase,
-  BarChart,
   PieChart,
-  TrendingDown,
   Clock
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -76,7 +74,6 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState("this-week");
   const [showDetails, setShowDetails] = useState(false);
-  const [leaderboardType, setLeaderboardType] = useState("relative");
   const [leaderboardView, setLeaderboardView] = useState("individual");
   const [filterType, setFilterType] = useState("all");
   const [filterValue, setFilterValue] = useState("");
@@ -168,23 +165,25 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
   
   // For relative leaderboard - highlight users close to current user
   const getRelativeUsers = () => {
-    if (!currentUser) return filteredUsers.slice(0, 10);
+    if (!currentUser) return filteredUsers.slice(0, 5);
     
     const currentUserIndex = filteredUsers.findIndex(u => u.id === currentUser.id);
-    if (currentUserIndex === -1) return filteredUsers.slice(0, 10);
+    if (currentUserIndex === -1) return filteredUsers.slice(0, 5);
     
-    // Get 5 users above and 5 users below current user
+    // Get 2 users above and 2 users below current user (total 5 users)
     let usersToShow = [];
     
     // Always include #1 ranked user if not already in the selection
-    if (topUser && topUser.id !== currentUser.id && 
-        (currentUserIndex <= 0 || currentUserIndex > 5)) {
+    const aboveUsers = Math.min(2, currentUserIndex);
+    const hasTopUser = currentUserIndex <= 2 || topUser?.id === currentUser.id;
+    
+    if (topUser && !hasTopUser) {
       usersToShow.push(topUser);
     }
     
-    // Get users above the current user (up to 5)
+    // Get users above the current user (up to 2)
     if (currentUserIndex > 0) {
-      const startIndex = Math.max(0, currentUserIndex - 5);
+      const startIndex = Math.max(0, currentUserIndex - 2);
       usersToShow = [
         ...usersToShow,
         ...filteredUsers.slice(startIndex, currentUserIndex)
@@ -194,11 +193,11 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     // Add current user
     usersToShow.push(currentUser);
     
-    // Get users below the current user (up to 5)
+    // Get users below the current user (up to 2)
     if (currentUserIndex < filteredUsers.length - 1) {
       usersToShow = [
         ...usersToShow,
-        ...filteredUsers.slice(currentUserIndex + 1, Math.min(filteredUsers.length, currentUserIndex + 6))
+        ...filteredUsers.slice(currentUserIndex + 1, Math.min(filteredUsers.length, currentUserIndex + 3))
       ];
     }
     
@@ -206,11 +205,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
     return [...new Map(usersToShow.map(user => [user.id, user])).values()];
   };
   
-  const displayedUsers = isFullView 
-    ? filteredUsers 
-    : leaderboardType === 'relative' 
-      ? getRelativeUsers() 
-      : filteredUsers.slice(0, 10);
+  const displayedUsers = getRelativeUsers();
   
   const getNextMilestone = () => {
     if (!currentUser) return null;
@@ -284,7 +279,7 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
               <Users className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
-            <TabsTrigger value="personal" onClick={() => { setLeaderboardType('relative'); setFilterType('all'); }}>
+            <TabsTrigger value="personal" onClick={() => { setFilterType('all'); }}>
               <UserCircle className="h-4 w-4 mr-1.5" />
               <span className="hidden sm:inline">Personal</span>
             </TabsTrigger>
@@ -292,25 +287,6 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
         </Tabs>
         
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div className="flex gap-2">
-            <Button 
-              variant={leaderboardType === 'relative' ? "default" : "outline"} 
-              size="sm" 
-              className="text-xs" 
-              onClick={() => setLeaderboardType('relative')}
-            >
-              Relative
-            </Button>
-            <Button 
-              variant={leaderboardType === 'absolute' ? "default" : "outline"} 
-              size="sm" 
-              className="text-xs" 
-              onClick={() => setLeaderboardType('absolute')}
-            >
-              Absolute
-            </Button>
-          </div>
-          
           <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
@@ -499,69 +475,6 @@ const LeaderboardEnhanced: React.FC<LeaderboardEnhancedProps> = ({
                 )}
               </div>
             ))}
-
-            {currentUser && !displayedUsers.some(u => u.id === currentUser.id) && leaderboardType === 'absolute' && (
-              <>
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-background px-2 text-xs text-muted-foreground">
-                      Your Ranking
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col rounded-lg bg-primary/10">
-                  <div className="flex items-center justify-between p-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 relative">
-                        <span className="font-medium text-muted-foreground">{currentUser.position}</span>
-                        {currentUser.positionChange !== undefined && (
-                          <div className="absolute -top-1 -right-1 bg-background rounded-full">
-                            {getPositionChangeIcon(currentUser.positionChange)}
-                          </div>
-                        )}
-                      </div>
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                        <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{currentUser.name}</span>
-                    </div>
-                    <div className="badge-glow">
-                      <span className="font-bold bg-primary/20 text-primary px-2 py-1 rounded-full">
-                        {currentUser.points.toLocaleString()} pts
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {showDetails && currentUser.details && (
-                    <div className="bg-secondary/20 p-2 text-xs grid grid-cols-3 gap-2 rounded-b-lg">
-                      {currentUser.details.assessmentScore !== undefined && (
-                        <div className="text-center">
-                          <p className="text-muted-foreground">Assessment</p>
-                          <p className="font-semibold">{currentUser.details.assessmentScore}%</p>
-                        </div>
-                      )}
-                      {currentUser.details.engagementScore !== undefined && (
-                        <div className="text-center">
-                          <p className="text-muted-foreground">Engagement</p>
-                          <p className="font-semibold">{currentUser.details.engagementScore}%</p>
-                        </div>
-                      )}
-                      {currentUser.details.completionRate !== undefined && (
-                        <div className="text-center">
-                          <p className="text-muted-foreground">Completion</p>
-                          <p className="font-semibold">{currentUser.details.completionRate}%</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
           </div>
         </ScrollArea>
         

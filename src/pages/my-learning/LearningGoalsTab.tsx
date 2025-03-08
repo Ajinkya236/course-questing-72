@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, ChevronRight, BookOpen, User, Users, Award, Check } from 'lucide-react';
+import { Calendar, Target, User, Users } from 'lucide-react';
 import CourseCarousel from '@/components/CourseCarousel';
 import { mockCourses } from '@/data/mockCoursesData';
 

@@ -152,21 +152,23 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       </div>
       
-      {/* Main filters carousel with navigation buttons */}
+      {/* Main filters carousel with navigation buttons - left aligned */}
       {showSkillFilters && uniqueFilterOptions.length > 0 && (
         <CarouselFilters
           filters={uniqueFilterOptions}
           selectedFilter={selectedFilter}
           onFilterSelect={handleFilterSelect}
+          className="justify-start"
         />
       )}
       
-      {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
+      {/* Sub-filters carousel with navigation buttons - left aligned */}
       {showSkillFilters && availableSubFilters.length > 0 && (
         <CarouselFilters
           filters={availableSubFilters}
           selectedFilter={selectedSubFilter}
           onFilterSelect={handleSubFilterClick}
+          className="justify-start"
         />
       )}
 
