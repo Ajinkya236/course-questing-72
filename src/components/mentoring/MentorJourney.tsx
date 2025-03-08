@@ -9,7 +9,8 @@ import {
   ClipboardList, 
   Users, 
   History,
-  Filter
+  Filter,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -80,7 +81,19 @@ const MentorJourney = () => {
   return (
     <div className="space-y-6">
       <BannerCarousel banners={mentorBanners} smallSize={true} className="mb-4" />
-      <h2 className="text-xl font-semibold mb-4">My Mentor Journey</h2>
+      
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">My Mentor Journey</h2>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-2"
+          onClick={() => setShowPreferencesDialog(true)}
+        >
+          <Settings className="h-4 w-4" />
+          Set Preferences
+        </Button>
+      </div>
       
       {/* Preferences Dialog */}
       <Dialog open={showPreferencesDialog} onOpenChange={(open) => {

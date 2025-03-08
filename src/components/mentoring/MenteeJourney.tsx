@@ -10,10 +10,12 @@ import {
   ClipboardList, 
   Users, 
   History,
+  Settings
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MenteePreferences from './mentee/MenteePreferences';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 const MenteeJourney = () => {
   const { toast } = useToast();
@@ -49,7 +51,18 @@ const MenteeJourney = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4">My Mentee Journey</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">My Mentee Journey</h2>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-2"
+          onClick={() => setShowPreferencesDialog(true)}
+        >
+          <Settings className="h-4 w-4" />
+          Set Preferences
+        </Button>
+      </div>
       
       {/* Preferences Dialog */}
       <Dialog open={showPreferencesDialog} onOpenChange={(open) => {
