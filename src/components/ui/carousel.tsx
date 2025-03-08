@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -61,7 +60,7 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: true, // Add loop option for circular scrolling
+        loop: true,
       },
       plugins
     )
@@ -212,7 +211,6 @@ const CarouselPrevious = React.forwardRef<
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      // Always enabled for circular carousel
       onClick={scrollPrev}
       {...props}
     >
@@ -241,7 +239,6 @@ const CarouselNext = React.forwardRef<
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
-      // Always enabled for circular carousel
       onClick={scrollNext}
       {...props}
     >
@@ -252,7 +249,6 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
-// New component for filter carousels with navigation buttons
 const CarouselFilters = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
@@ -264,7 +260,8 @@ const CarouselFilters = React.forwardRef<
 >(({ className, filters, selectedFilter, onFilterSelect, loop = true, ...props }, ref) => {
   const filtersRef = React.useRef<HTMLDivElement>(null);
   const [position, setPosition] = React.useState(0);
-  const maxPosition = Math.max(0, filters.length - 6); // Show 6 filters at a time
+  const uniqueFilters = [...new Set(filters)];
+  const maxPosition = Math.max(0, uniqueFilters.length - 6);
 
   const scrollLeft = () => {
     if (filtersRef.current) {
@@ -286,15 +283,11 @@ const CarouselFilters = React.forwardRef<
     }
   };
 
-  // Calculate visible filters based on position
   const getVisibleFilters = () => {
-    if (!loop) return filters;
+    if (!loop) return uniqueFilters;
     
-    // Create a circular array effect by duplicating the array
-    const extendedFilters = [...filters, ...filters, ...filters];
-    // Start from the middle copy to allow backward scrolling
-    const startIndex = filters.length + position;
-    // Take enough items for display
+    const extendedFilters = [...uniqueFilters, ...uniqueFilters, ...uniqueFilters];
+    const startIndex = uniqueFilters.length + position;
     return extendedFilters.slice(startIndex, startIndex + 6);
   };
 
@@ -306,7 +299,7 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-7 w-7 shadow-md"
           onClick={scrollLeft}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -336,7 +329,7 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-7 w-7 shadow-md"
           onClick={scrollRight}
         >
           <ChevronRight className="h-4 w-4" />

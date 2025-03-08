@@ -39,7 +39,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subFilterOptions = {},
   showTrainingCategory = false
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions.length > 0 ? filterOptions[0] : 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -120,29 +120,32 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+      <div className="flex flex-row items-center gap-2 mb-2">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        
-        <div className="flex items-center">
+        <div className="flex items-center group">
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer ml-1" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          />
           <Button 
             variant="ghost" 
             size="sm" 
-            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity pl-0 pr-2 py-0" 
             onClick={onViewAllClick || (() => navigate(viewAllUrl))}
           >
             View All
           </Button>
-          <ChevronRight 
-            className="h-4 w-4 cursor-pointer" 
-            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-          />
+          <div className="flex items-center">
+            <CarouselPrevious className="relative transform-none h-7 w-7 ml-0 mr-1 border-none" />
+            <CarouselNext className="relative transform-none h-7 w-7 border-none" />
+          </div>
         </div>
       </div>
       
-      {/* Main filters carousel with navigation buttons */}
+      {/* Main filters carousel with navigation buttons - improved positioning */}
       {showSkillFilters && filterOptions.length > 0 && (
         <CarouselFilters
-          filters={filterOptions}
+          filters={[...new Set(filterOptions)]} // Remove duplicates
           selectedFilter={selectedFilter}
           onFilterSelect={handleFilterSelect}
         />
@@ -151,7 +154,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
       {showSkillFilters && availableSubFilters.length > 0 && (
         <CarouselFilters
-          filters={availableSubFilters}
+          filters={[...new Set(availableSubFilters)]} // Remove duplicates
           selectedFilter={selectedSubFilter}
           onFilterSelect={handleSubFilterClick}
         />
@@ -219,15 +222,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     </div>
                   )}
                 </CardContent>
-                {/* Removed instructor footer section */}
               </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex items-center justify-end gap-2 mt-4">
-          <CarouselPrevious className="static transform-none" />
-          <CarouselNext className="static transform-none" />
-        </div>
       </Carousel>
     </div>
   );
