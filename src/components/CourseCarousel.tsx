@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -118,6 +118,16 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   })));
 
+  // Filter out duplicate filter options
+  const uniqueFilterOptions = filterOptions.length > 0 ? 
+    [filterOptions[0], ...filterOptions.slice(1).filter(option => option !== filterOptions[0])] : 
+    [];
+
+  // Filter out duplicate sub-filter options
+  const uniqueSubFilterOptions = availableSubFilters.length > 0 ? 
+    [availableSubFilters[0], ...availableSubFilters.slice(1).filter(option => option !== availableSubFilters[0])] : 
+    [];
+
   return (
     <div className="space-y-4">
       <div className="flex flex-row items-center gap-2 mb-2">
@@ -142,19 +152,19 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       </div>
       
-      {/* Main filters carousel with navigation buttons - improved positioning */}
-      {showSkillFilters && filterOptions.length > 0 && (
+      {/* Main filters carousel with navigation buttons */}
+      {showSkillFilters && uniqueFilterOptions.length > 0 && (
         <CarouselFilters
-          filters={[...new Set(filterOptions)]} // Remove duplicates
+          filters={uniqueFilterOptions}
           selectedFilter={selectedFilter}
           onFilterSelect={handleFilterSelect}
         />
       )}
       
       {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
-      {showSkillFilters && availableSubFilters.length > 0 && (
+      {showSkillFilters && uniqueSubFilterOptions.length > 0 && (
         <CarouselFilters
-          filters={[...new Set(availableSubFilters)]} // Remove duplicates
+          filters={uniqueSubFilterOptions}
           selectedFilter={selectedSubFilter}
           onFilterSelect={handleSubFilterClick}
         />

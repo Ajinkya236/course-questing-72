@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"

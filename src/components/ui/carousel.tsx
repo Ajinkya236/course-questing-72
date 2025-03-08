@@ -1,8 +1,9 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -60,7 +61,6 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: true,
       },
       plugins
     )
@@ -111,11 +111,12 @@ const Carousel = React.forwardRef<
       }
 
       onSelect(api)
-      api.on("reInit", onSelect)
       api.on("select", onSelect)
+      api.on("reInit", onSelect)
 
       return () => {
-        api?.off("select", onSelect)
+        api.off("select", onSelect)
+        api.off("reInit", onSelect)
       }
     }, [api, onSelect])
 
@@ -123,7 +124,7 @@ const Carousel = React.forwardRef<
       <CarouselContext.Provider
         value={{
           carouselRef,
-          api: api,
+          api,
           opts,
           orientation:
             orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
@@ -211,6 +212,7 @@ const CarouselPrevious = React.forwardRef<
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
+      disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
@@ -239,6 +241,7 @@ const CarouselNext = React.forwardRef<
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         className
       )}
+      disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
@@ -249,94 +252,90 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
+// Create a self-contained CarouselFilters component that includes its own Carousel context
 const CarouselFilters = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    filters: string[];
-    selectedFilter: string;
-    onFilterSelect: (filter: string) => void;
-    loop?: boolean;
+    filters: string[]
+    selectedFilter: string
+    onFilterSelect: (filter: string) => void
   }
->(({ className, filters, selectedFilter, onFilterSelect, loop = true, ...props }, ref) => {
-  const filtersRef = React.useRef<HTMLDivElement>(null);
-  const [position, setPosition] = React.useState(0);
-  const uniqueFilters = [...new Set(filters)];
-  const maxPosition = Math.max(0, uniqueFilters.length - 6);
+>(({ filters, selectedFilter, onFilterSelect, className, ...props }, ref) => {
+  const [filterCarouselRef, filterApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+  })
+  
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false)
+  const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-  const scrollLeft = () => {
-    if (filtersRef.current) {
-      if (loop && position === 0) {
-        setPosition(maxPosition);
-      } else {
-        setPosition(prev => Math.max(0, prev - 1));
-      }
+  const scrollPrev = React.useCallback(() => {
+    if (filterApi) filterApi.scrollPrev()
+  }, [filterApi])
+
+  const scrollNext = React.useCallback(() => {
+    if (filterApi) filterApi.scrollNext()
+  }, [filterApi])
+
+  React.useEffect(() => {
+    if (!filterApi) return
+
+    const onSelect = () => {
+      setCanScrollPrev(filterApi.canScrollPrev())
+      setCanScrollNext(filterApi.canScrollNext())
     }
-  };
 
-  const scrollRight = () => {
-    if (filtersRef.current) {
-      if (loop && position >= maxPosition) {
-        setPosition(0);
-      } else {
-        setPosition(prev => Math.min(maxPosition, prev + 1));
-      }
+    filterApi.on("select", onSelect)
+    filterApi.on("reInit", onSelect)
+    onSelect()
+
+    return () => {
+      filterApi.off("select", onSelect)
+      filterApi.off("reInit", onSelect)
     }
-  };
-
-  const getVisibleFilters = () => {
-    if (!loop) return uniqueFilters;
-    
-    const extendedFilters = [...uniqueFilters, ...uniqueFilters, ...uniqueFilters];
-    const startIndex = uniqueFilters.length + position;
-    return extendedFilters.slice(startIndex, startIndex + 6);
-  };
-
-  const visibleFilters = getVisibleFilters();
+  }, [filterApi])
 
   return (
-    <div className={cn("relative mb-4", className)} {...props}>
-      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="rounded-full h-7 w-7 shadow-md"
-          onClick={scrollLeft}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div className="overflow-hidden px-10">
-        <div 
-          ref={filtersRef} 
-          className="flex transition-transform duration-300 justify-center"
-        >
-          {visibleFilters.map((filter, index) => (
+    <div className="relative flex items-center mb-2" ref={ref} {...props}>
+      <div className="overflow-hidden flex-grow" ref={filterCarouselRef}>
+        <div className="flex gap-2 py-1">
+          {filters.map((filter) => (
             <Button
-              key={`${filter}-${index}`}
+              key={filter}
               variant={selectedFilter === filter ? "default" : "outline"}
               size="sm"
+              className="whitespace-nowrap"
               onClick={() => onFilterSelect(filter)}
-              className="rounded-full whitespace-nowrap mx-1"
             >
               {filter}
             </Button>
           ))}
         </div>
       </div>
-      
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="rounded-full h-7 w-7 shadow-md"
-          onClick={scrollRight}
+      <div className="flex items-center ml-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 mr-1"
+          disabled={!canScrollPrev}
+          onClick={scrollPrev}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
+          <span className="sr-only">Previous filters</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          disabled={!canScrollNext}
+          onClick={scrollNext}
+        >
+          <ArrowRight className="h-4 w-4" />
+          <span className="sr-only">Next filters</span>
         </Button>
       </div>
     </div>
-  );
+  )
 })
 CarouselFilters.displayName = "CarouselFilters"
 
@@ -347,5 +346,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-  CarouselFilters
+  CarouselFilters,
 }
