@@ -278,7 +278,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
                 </Badge>
                 
                 {currentUser?.positionChange !== 0 && (
-                  <Badge variant={currentUser?.positionChange > 0 ? "success" : "destructive"} className="gap-1 flex items-center">
+                  <Badge variant={currentUser?.positionChange > 0 ? "secondary" : "destructive"} className="gap-1 flex items-center">
                     <ArrowUp className={`h-3 w-3 ${currentUser?.positionChange < 0 ? "rotate-180" : ""}`} />
                     {Math.abs(currentUser?.positionChange || 0)} Position{Math.abs(currentUser?.positionChange || 0) > 1 ? 's' : ''}
                   </Badge>

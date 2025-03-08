@@ -131,7 +131,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                       rating={course.rating}
                       trainingCategory={course.trainingCategory}
                       isBookmarked={course.isBookmarked}
-                      previewUrl={course.videoUrl}
+                      previewUrl={course.videoUrl || undefined}
                       isHot={course.isHot}
                       isNew={course.isNew}
                     />

@@ -18,6 +18,153 @@ const trendingCourses = mockCourses.filter((_, index) => index >= 12 && index < 
 const newCourses = mockCourses.filter((_, index) => index >= 24 && index < 36);
 const savedCourses = mockCourses.filter((course) => course.isBookmarked);
 
+// Mock banner data for BannerCarousel
+const mockBanners = [
+  {
+    id: 1,
+    title: "New Leadership Course Available",
+    description: "Enhance your leadership skills with our new comprehensive course",
+    imageUrl: "/placeholder.svg",
+    link: "/discover"
+  },
+  {
+    id: 2,
+    title: "Technical Certification Paths",
+    description: "Advance your career with industry recognized certifications",
+    imageUrl: "/placeholder.svg",
+    link: "/discover"
+  }
+];
+
+// Mock data for PointsOverview
+const mockPointsData = {
+  totalPoints: 1250,
+  coursesCompleted: 12,
+  hoursSpent: 48,
+  pointsThisWeek: 150,
+  pointsLastWeek: 120,
+  pointsBreakdown: [
+    { category: 'Course Completion', points: 650, color: '#4338ca' },
+    { category: 'Quizzes', points: 350, color: '#0ea5e9' },
+    { category: 'Assignments', points: 150, color: '#10b981' },
+    { category: 'Participation', points: 100, color: '#f59e0b' },
+  ],
+  streakDays: 15,
+  nextMilestone: {
+    name: 'Coffee Voucher',
+    points: 1500,
+  },
+  redeemablePoints: 800
+};
+
+// Mock data for LeaderboardCard
+const mockLeaderboardUsers = [
+  {
+    id: 'user-1',
+    name: 'Jane Smith',
+    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+    points: 2450,
+    position: 1,
+    positionChange: 0,
+    details: {
+      assessmentScore: 92,
+      engagementScore: 88,
+      completionRate: 95
+    },
+    team: 'Marketing',
+    department: 'Sales',
+    location: 'New York',
+    role: 'Manager'
+  },
+  {
+    id: 'user-2',
+    name: 'John Doe',
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    points: 2280,
+    position: 2,
+    positionChange: 1,
+    details: {
+      assessmentScore: 88,
+      engagementScore: 92,
+      completionRate: 90
+    },
+    team: 'Engineering',
+    department: 'Technology',
+    location: 'San Francisco',
+    role: 'Developer'
+  },
+  {
+    id: 'user-3',
+    name: 'Alice Johnson',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+    points: 2150,
+    position: 3,
+    positionChange: -1,
+    details: {
+      assessmentScore: 90,
+      engagementScore: 85,
+      completionRate: 88
+    },
+    team: 'Design',
+    department: 'Creative',
+    location: 'London',
+    role: 'Designer'
+  },
+  {
+    id: 'user-4',
+    name: 'Michael Brown',
+    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
+    points: 1950,
+    position: 4,
+    positionChange: 0,
+    details: {
+      assessmentScore: 85,
+      engagementScore: 80,
+      completionRate: 92
+    },
+    team: 'Operations',
+    department: 'Administration',
+    location: 'Chicago',
+    role: 'Analyst'
+  },
+  {
+    id: 'user-5',
+    name: 'Sarah Wilson',
+    avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
+    points: 1820,
+    position: 5,
+    positionChange: 2,
+    details: {
+      assessmentScore: 82,
+      engagementScore: 78,
+      completionRate: 85
+    },
+    team: 'Finance',
+    department: 'Accounting',
+    location: 'Toronto',
+    role: 'Manager'
+  }
+];
+
+// Current user for LeaderboardCard
+const currentUser = {
+  id: 'current-user',
+  name: 'You',
+  avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+  points: 1650,
+  position: 8,
+  positionChange: 1,
+  details: {
+    assessmentScore: 78,
+    engagementScore: 75,
+    completionRate: 82
+  },
+  team: 'Product',
+  department: 'Technology',
+  location: 'Austin',
+  role: 'Product Manager'
+};
+
 const Home = () => {
   const navigate = useNavigate();
   
@@ -29,7 +176,7 @@ const Home = () => {
       
       <div className="space-y-8">
         {/* Banner Carousel */}
-        <BannerCarousel />
+        <BannerCarousel banners={mockBanners} />
         
         {/* Skills Selection Section */}
         <FollowSkills 
@@ -54,10 +201,10 @@ const Home = () => {
         {/* Points Overview and Leaderboard */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            <PointsOverview />
+            <PointsOverview data={mockPointsData} />
           </div>
           <div>
-            <LeaderboardCard />
+            <LeaderboardCard users={mockLeaderboardUsers} currentUser={currentUser} />
           </div>
         </div>
         
