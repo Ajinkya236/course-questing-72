@@ -1,16 +1,16 @@
 
+import React, { useState, useEffect, createContext } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { useState, useEffect, createContext } from "react";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import NavBar from "./components/layout/NavBar"; // Updated component name
+import NavBar from "./components/layout/NavBar"; // Keeping same casing as the file
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
