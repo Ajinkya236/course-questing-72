@@ -5,6 +5,122 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Award, Gift, ChevronRight, Star } from 'lucide-react';
+import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
+
+// Mock data for leaderboard users
+const mockLeaderboardUsers = [
+  {
+    id: 'user-1',
+    name: 'John Doe',
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    points: 1850,
+    position: 1,
+    positionChange: 2,
+    department: 'Engineering',
+    team: 'Frontend',
+    location: 'New York',
+    role: 'Developer',
+    jobFamily: 'Technology',
+    details: {
+      assessmentScore: 95,
+      engagementScore: 92,
+      completionRate: 98
+    }
+  },
+  {
+    id: 'user-2',
+    name: 'Jane Smith',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+    points: 1720,
+    position: 2,
+    positionChange: 1,
+    department: 'Engineering',
+    team: 'Frontend',
+    location: 'New York',
+    role: 'Developer',
+    jobFamily: 'Technology',
+    details: {
+      assessmentScore: 90,
+      engagementScore: 88,
+      completionRate: 95
+    }
+  },
+  {
+    id: 'user-3',
+    name: 'Robert Johnson',
+    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+    points: 1680,
+    position: 3,
+    positionChange: -1,
+    department: 'Engineering',
+    team: 'Backend',
+    location: 'San Francisco',
+    role: 'Developer',
+    jobFamily: 'Technology',
+    details: {
+      assessmentScore: 87,
+      engagementScore: 84,
+      completionRate: 92
+    }
+  },
+  {
+    id: 'current-user',
+    name: 'You',
+    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+    points: 1250,
+    position: 4,
+    positionChange: 0,
+    department: 'Engineering',
+    team: 'Frontend',
+    location: 'New York',
+    role: 'Developer',
+    jobFamily: 'Technology',
+    details: {
+      assessmentScore: 85,
+      engagementScore: 80,
+      completionRate: 88
+    }
+  },
+  {
+    id: 'user-5',
+    name: 'Emily Chen',
+    avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
+    points: 1150,
+    position: 5,
+    positionChange: 3,
+    department: 'Engineering',
+    team: 'Design',
+    location: 'San Francisco',
+    role: 'Designer',
+    jobFamily: 'Creative',
+    details: {
+      assessmentScore: 82,
+      engagementScore: 79,
+      completionRate: 85
+    }
+  },
+  {
+    id: 'user-6',
+    name: 'Michael Wang',
+    avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
+    points: 1050,
+    position: 6,
+    positionChange: -2,
+    department: 'Marketing',
+    team: 'Content',
+    location: 'London',
+    role: 'Manager',
+    jobFamily: 'Business',
+    details: {
+      assessmentScore: 80,
+      engagementScore: 76,
+      completionRate: 82
+    }
+  }
+];
+
+// Current user is the one with ID 'current-user'
+const currentUser = mockLeaderboardUsers.find(user => user.id === 'current-user');
 
 interface RewardsTabProps {
   teamMemberId?: string;
@@ -59,6 +175,16 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Leaderboard Section */}
+      <div>
+        <h3 className="text-xl font-medium mb-4">Learning Leaderboard</h3>
+        <LeaderboardEnhanced
+          users={mockLeaderboardUsers}
+          currentUser={currentUser}
+          title="Learning Leaderboard"
+        />
+      </div>
 
       {/* Redeem Rewards */}
       <div>
