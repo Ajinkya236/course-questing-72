@@ -120,7 +120,8 @@ const App = () => {
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
                   <Route path="/my-team" element={<MyTeam />} />
-                  <Route path="/my-team/member/:memberId/:tab" element={<MyLearning />} />
+                  <Route path="/my-team/member/:memberId/learning" element={<MyLearning />} />
+                  <Route path="/my-team/member/:memberId/goals" element={<MyLearning initialTab="goals" />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
