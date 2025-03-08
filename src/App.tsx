@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
 import { useTheme } from "./components/hooks/use-theme"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -17,7 +18,7 @@ import {
   HelpCircle,
   ChevronDown
 } from 'lucide-react';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,26 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+
+// Import all the page components that are referenced in routes
+import Home from './pages/Home';
+import Discover from './pages/Discover';
+import MyLearning from './pages/MyLearning';
+import CoursePlayer from './pages/CoursePlayer';
+import Notifications from './pages/Notifications';
+import Profile from './pages/Profile';
+import ViewAllPage from './pages/ViewAllPage';
+import SearchResults from './pages/SearchResults';
+import Actionables from './pages/Actionables';
+import LeaderboardFullView from './pages/LeaderboardFullView';
+import Mentoring from './pages/Mentoring';
+import MyTeam from './pages/MyTeam';
+import FAQ from './pages/FAQ';
+import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
+import DomainCoursesPage from './pages/DomainCoursesPage';
+import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
+import NotFound from './pages/NotFound';
+import SignIn from './pages/SignIn';
 
 const courseCategories = [
   "Leadership & Management",
@@ -152,7 +173,11 @@ const TopNavigation: React.FC = () => {
   );
 };
 
-const PageLayout: React.FC = ({ children }) => {
+interface PageLayoutProps {
+  children: React.ReactNode;
+}
+
+const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col h-screen bg-background">
       <TopNavigation />
@@ -165,6 +190,22 @@ const PageLayout: React.FC = ({ children }) => {
       </div>
     </div>
   );
+};
+
+// Create ProtectedRoute component
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+  
+  if (!user) {
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
+  }
+  
+  return <>{children}</>;
 };
 
 function SkillsFollowDialog() {

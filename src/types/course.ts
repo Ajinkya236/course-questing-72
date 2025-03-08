@@ -27,6 +27,7 @@ export interface Course {
   skills?: { name: string; proficiency: string }[];
   certificates?: string[];
   videoUrl?: string;
+  previewUrl?: string; // Add previewUrl property
   modules?: Module[];
   isHot?: boolean;
   isNew?: boolean;
