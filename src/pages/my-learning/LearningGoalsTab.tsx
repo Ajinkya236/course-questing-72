@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -131,7 +130,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                       rating={course.rating}
                       trainingCategory={course.trainingCategory}
                       isBookmarked={course.isBookmarked}
-                      previewUrl={course.videoUrl || undefined}
+                      previewUrl={course.videoUrl || course.imageUrl}
                       isHot={course.isHot}
                       isNew={course.isNew}
                     />
