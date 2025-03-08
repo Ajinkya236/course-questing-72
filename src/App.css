@@ -42,3 +42,9 @@
 .read-the-docs {
   color: #003f9c;
 }
+
+/* Main content styles */
+.main-content {
+  width: 100%;
+  padding-top: 1rem;
+}
