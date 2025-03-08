@@ -19,12 +19,7 @@ const skillsData = [
   { id: 5, name: 'Communication', currentProficiency: 70, targetProficiency: 90, related: ['presentation', 'writing'] }
 ];
 
-interface LearningGoalsTabProps {
-  isTeamMemberView?: boolean;
-  teamMemberId?: string;
-}
-
-const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ isTeamMemberView = false, teamMemberId }) => {
+const LearningGoalsTab: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('selfAssigned');
@@ -48,7 +43,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ isTeamMemberView = 
 
   const handleUnassignCourse = (courseId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (activeTab === 'selfAssigned' && !isTeamMemberView) {
+    if (activeTab === 'selfAssigned') {
       setSelfAssignedCourses(prev => prev.filter(course => course.id !== courseId));
       toast({
         title: "Course Unassigned",
@@ -68,12 +63,8 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ isTeamMemberView = 
     <div onClick={(e) => e.stopPropagation()}>
       <Tabs defaultValue="selfAssigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-2 mb-8">
-          <TabsTrigger value="selfAssigned">
-            {isTeamMemberView ? "Courses Assigned by Team Member" : "Courses Assigned by You"}
-          </TabsTrigger>
-          <TabsTrigger value="managerAssigned">
-            {isTeamMemberView ? "Courses You Assigned" : "Courses Assigned by Manager"}
-          </TabsTrigger>
+          <TabsTrigger value="selfAssigned">Courses Assigned by You</TabsTrigger>
+          <TabsTrigger value="managerAssigned">Courses Assigned by Manager</TabsTrigger>
         </TabsList>
         
         <TabsContent value="selfAssigned">
@@ -83,26 +74,20 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ isTeamMemberView = 
                 {selfAssignedCourses.map((course) => (
                   <div key={course.id} className="cursor-pointer relative group">
                     <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
-                    {!isTeamMemberView && (
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => handleUnassignCourse(course.id, e)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
+                    <Button 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => handleUnassignCourse(course.id, e)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  {isTeamMemberView 
-                    ? "This team member hasn't assigned any courses to their learning goals yet." 
-                    : "You haven't assigned any courses to your learning goals yet."}
-                </p>
+                <p className="text-muted-foreground">You haven't assigned any courses to your learning goals yet.</p>
               </div>
             )}
           </CardContent>
@@ -120,11 +105,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ isTeamMemberView = 
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  {isTeamMemberView 
-                    ? "You haven't assigned any courses to this team member's learning goals yet." 
-                    : "Your manager hasn't assigned any courses to your learning goals yet."}
-                </p>
+                <p className="text-muted-foreground">Your manager hasn't assigned any courses to your learning goals yet.</p>
               </div>
             )}
           </CardContent>

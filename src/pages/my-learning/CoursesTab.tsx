@@ -7,10 +7,9 @@ import { useNavigate } from 'react-router-dom';
 
 interface CoursesTabProps {
   initialActiveTab?: string;
-  isTeamMemberView?: boolean;
 }
 
-const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab, isTeamMemberView = false }) => {
+const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab }) => {
   const [activeTab, setActiveTab] = useState('assigned');
   const navigate = useNavigate();
   
@@ -41,9 +40,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ initialActiveTab, isTeamMemberV
     <div>
       <Tabs defaultValue="assigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-5 mb-8">
-          <TabsTrigger value="assigned">
-            {isTeamMemberView ? "Not Started" : "Assigned"}
-          </TabsTrigger>
+          <TabsTrigger value="assigned">Assigned</TabsTrigger>
           <TabsTrigger value="in-progress">In Progress</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="saved">Saved</TabsTrigger>

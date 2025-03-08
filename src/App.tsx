@@ -10,7 +10,7 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import Navbar from "./components/layout/Navbar"; // Using consistent name with lowercase 'b'
+import NavBar from "./components/layout/NavBar"; // Keeping same casing as the file
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
@@ -98,7 +98,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <Navbar />
+              <NavBar />
               <Routes>
                 <Route path="/signin" element={<SignIn />} />
                 
@@ -120,8 +120,7 @@ const App = () => {
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
                   <Route path="/my-team" element={<MyTeam />} />
-                  <Route path="/my-team/member/:memberId/learning" element={<MyLearning />} />
-                  <Route path="/my-team/member/:memberId/goals" element={<MyLearning initialTab="goals" />} />
+                  <Route path="/my-team/member/:memberId/:tab" element={<MyLearning />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>

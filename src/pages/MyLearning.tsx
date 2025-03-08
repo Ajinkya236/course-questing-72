@@ -8,22 +8,16 @@ import {
   Gift, 
   Target
 } from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import RewardsTab from './my-learning/RewardsTab';
 import BadgesTab from './my-learning/BadgesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
 
-interface MyLearningProps {
-  initialTab?: string;
-}
-
-const MyLearning: React.FC<MyLearningProps> = ({ initialTab }) => {
+const MyLearning = () => {
   const location = useLocation();
-  const params = useParams();
-  const [activeTab, setActiveTab] = useState(initialTab || 'courses');
-  const { memberId } = params;
+  const [activeTab, setActiveTab] = useState('courses');
   
   // Get badge count for badge number indicator
   const badgeCount = 3; // This would come from a real data source/API
@@ -36,28 +30,15 @@ const MyLearning: React.FC<MyLearningProps> = ({ initialTab }) => {
         setActiveTab(tabFromState);
       }
     }
-    
-    if (initialTab) {
-      setActiveTab(initialTab);
-    }
-  }, [location.state, initialTab]);
-
-  // Determine if we're viewing a team member's learning
-  const isViewingTeamMember = !!memberId;
-  const memberName = isViewingTeamMember ? 
-    // Find the team member name based on ID (in a real app, fetch from API)
-    ["Sofia Rodriguez", "James Wilson", "Aisha Johnson", "Michael Chen", "Elena Petrova"][Number(memberId) - 1] || "Team Member" 
-    : "";
+  }, [location.state]);
 
   return (
     <>
       <Helmet>
-        <title>{isViewingTeamMember ? `${memberName}'s Learning` : 'My Learning'} | Learning Management System</title>
+        <title>My Learning | Learning Management System</title>
       </Helmet>
       <div className="container mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight mb-6">
-          {isViewingTeamMember ? `${memberName}'s Learning` : 'My Learning'}
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-6">My Learning</h1>
         
         <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
@@ -85,11 +66,11 @@ const MyLearning: React.FC<MyLearningProps> = ({ initialTab }) => {
           </TabsList>
           
           <TabsContent value="courses">
-            <CoursesTab initialActiveTab={location.state?.courseTab} isTeamMemberView={isViewingTeamMember} />
+            <CoursesTab initialActiveTab={location.state?.courseTab} />
           </TabsContent>
           
           <TabsContent value="goals">
-            <LearningGoalsTab isTeamMemberView={isViewingTeamMember} teamMemberId={memberId} />
+            <LearningGoalsTab />
           </TabsContent>
           
           <TabsContent value="rewards">
