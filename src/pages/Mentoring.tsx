@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -36,7 +35,6 @@ const Mentoring = () => {
     }
   ];
 
-  // Mock recommended mentors data
   const recommendedMentors = [
     {
       id: 1,
@@ -81,8 +79,8 @@ const Mentoring = () => {
       <Helmet>
         <title>Mentoring | Learning Management System</title>
       </Helmet>
-      <div className="container py-4 px-4">
-        <h1 className="text-3xl font-bold tracking-tight mb-4">Mentoring</h1>
+      <div className="py-4 px-4 md:px-6">
+        <h1 className="text-2xl font-bold tracking-tight mb-4">Mentoring</h1>
         
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
@@ -95,7 +93,6 @@ const Mentoring = () => {
           </Card>
           
           <TabsContent value="mentee">
-            {/* Recommended Mentors Section placed above the Mentee Journey */}
             <Card className="mb-4">
               <CardContent className="p-6">
                 <RecommendedMentorsCarousel 

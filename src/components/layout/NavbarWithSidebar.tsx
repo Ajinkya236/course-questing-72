@@ -51,7 +51,6 @@ import {
 
 const NavbarWithSidebar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
@@ -71,7 +70,7 @@ const NavbarWithSidebar = () => {
   };
 
   useEffect(() => {
-    setShowMobileMenu(false);
+    setSidebarOpen(false);
   }, [location.pathname]);
 
   const navItems = [
@@ -91,10 +90,7 @@ const NavbarWithSidebar = () => {
   };
 
   const renderSidebarContent = () => (
-    <div className={cn(
-      "h-full flex flex-col bg-background border-r",
-      sidebarCollapsed ? "w-16" : "w-64"
-    )}>
+    <div className="h-full flex flex-col bg-background border-r">
       <div className="p-4 flex items-center justify-between border-b">
         <div className={cn(
           "flex items-center gap-2",
@@ -154,9 +150,10 @@ const NavbarWithSidebar = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-12 items-center px-2 md:px-4">
+    <>
+      {/* Fixed header */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-12 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-full items-center px-2 md:px-4">
           <Button
             variant="ghost"
             size="icon"
@@ -260,11 +257,12 @@ const NavbarWithSidebar = () => {
         )}
       </header>
       
-      <div className="flex flex-1 overflow-hidden">
-        {/* Desktop Sidebar */}
+      {/* Main content area with fixed sidebar */}
+      <div className="pt-12 flex min-h-screen">
+        {/* Desktop Sidebar - Fixed position */}
         {!isMobile && (
           <aside className={cn(
-            "hidden md:block h-[calc(100vh-3rem)] sticky top-12",
+            "fixed top-12 bottom-0 left-0 z-40 transition-all duration-300",
             sidebarCollapsed ? "w-16" : "w-64"
           )}>
             {renderSidebarContent()}
@@ -274,20 +272,23 @@ const NavbarWithSidebar = () => {
         {/* Mobile Sidebar Sheet */}
         {isMobile && (
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetContent side="left" className="p-0 w-[250px]">
+            <SheetContent side="left" className="p-0 w-[250px] max-w-[calc(100vw-3rem)]">
               {renderSidebarContent()}
             </SheetContent>
           </Sheet>
         )}
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Main Content Area - Content starts right of sidebar */}
+        <main className={cn(
+          "flex-1 transition-all duration-300",
+          !isMobile && (sidebarCollapsed ? "ml-16" : "ml-64")
+        )}>
           {showNotifications && (
             <NotificationsPanel onClose={() => setShowNotifications(false)} />
           )}
         </main>
       </div>
-    </div>
+    </>
   );
 };
 
