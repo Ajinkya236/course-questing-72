@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -34,24 +33,22 @@ const FilterCarousel = ({
 }) => {
   return (
     <Carousel className="w-full">
-      <div className="flex items-center">
-        <CarouselContent className="ml-1">
-          {filters.map((filter) => (
-            <CarouselItem key={filter} className="pl-1 basis-auto">
-              <Button
-                variant={selectedFilter === filter ? "default" : "outline"}
-                className="rounded-full whitespace-nowrap"
-                onClick={() => onFilterSelect(filter)}
-              >
-                {filter}
-              </Button>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <div className="flex items-center ml-2">
-          <CarouselPrevious className="static translate-y-0 h-8 w-8" />
-          <CarouselNext className="static translate-y-0 h-8 w-8" />
-        </div>
+      <CarouselContent className="ml-1">
+        {filters.map((filter) => (
+          <CarouselItem key={filter} className="pl-1 basis-auto">
+            <Button
+              variant={selectedFilter === filter ? "default" : "outline"}
+              className="rounded-full whitespace-nowrap"
+              onClick={() => onFilterSelect(filter)}
+            >
+              {filter}
+            </Button>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <div className="flex items-center ml-2">
+        <CarouselPrevious className="static translate-y-0 h-8 w-8" />
+        <CarouselNext className="static translate-y-0 h-8 w-8" />
       </div>
     </Carousel>
   );
@@ -197,7 +194,7 @@ const DomainCoursesPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{domain.name} Courses | Learning Management System</title>
+        <title>{domain?.name} Courses | Learning Management System</title>
       </Helmet>
 
       <div className="container py-8">
@@ -212,10 +209,10 @@ const DomainCoursesPage: React.FC = () => {
         </Button>
 
         <div className="flex items-center gap-4 mb-8">
-          <div className="text-5xl">{domain.icon}</div>
+          <div className="text-5xl">{domain?.icon}</div>
           <div>
-            <h1 className="text-3xl font-bold">{domain.name}</h1>
-            <p className="text-muted-foreground">{domain.description}</p>
+            <h1 className="text-3xl font-bold">{domain?.name}</h1>
+            <p className="text-muted-foreground">{domain?.description}</p>
           </div>
         </div>
 
@@ -224,7 +221,7 @@ const DomainCoursesPage: React.FC = () => {
           <h3 className="text-lg font-medium mb-3">Browse Domains</h3>
           <FilterCarousel
             filters={domains.map(d => d.name)}
-            selectedFilter={domain.name}
+            selectedFilter={domain?.name || ''}
             onFilterSelect={(name) => {
               const selected = domains.find(d => d.name === name);
               if (selected) navigate(`/domain/${selected.id}`);
