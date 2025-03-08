@@ -1,151 +1,187 @@
 
-import React, { useState, useRef } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ChevronRight, ChevronLeft, Search, Plus, Check, Award } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState, useRef, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { X, ChevronDown, Plus, Search } from 'lucide-react';
 
-const mockSkills = [
-  "Leadership", "Management", "Communication", "Project Management", 
-  "Data Analysis", "Marketing", "Programming", "Design", "Finance",
-  "Problem Solving", "Critical Thinking", "Teamwork", "Innovation", "Strategy",
-  "Artificial Intelligence", "Machine Learning", "Cloud Computing", "DevOps",
-  "UX/UI Design", "Digital Marketing", "Content Creation", "SEO", "Data Science"
-];
+interface FollowSkillsProps {
+  title?: string;
+  subtitle?: string;
+  className?: string;
+}
 
-const FollowSkillsWidget: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [followedSkills, setFollowedSkills] = useState<string[]>([]);
-  const skillsContainerRef = useRef<HTMLDivElement>(null);
+const FollowSkills: React.FC<FollowSkillsProps> = ({ 
+  title = "Follow Skills",
+  subtitle = "Select skills to personalize your learning experience",
+  className = ""
+}) => {
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([
+    "JavaScript", "React", "TypeScript", "Node.js", "Design"
+  ]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const filteredSkills = searchTerm 
-    ? mockSkills.filter(skill => 
-        skill.toLowerCase().includes(searchTerm.toLowerCase()))
-    : mockSkills;
-
-  const toggleFollowSkill = (skill: string) => {
-    if (followedSkills.includes(skill)) {
-      setFollowedSkills(followedSkills.filter(s => s !== skill));
-      toast.info(`Unfollowed: ${skill}`);
-    } else {
-      if (followedSkills.length >= 15) {
-        toast.error("You can follow up to 15 skills");
-        return;
-      }
-      setFollowedSkills([...followedSkills, skill]);
-      toast.success(`Following: ${skill}`);
+  // Sample skills list
+  const allSkills = [
+    "JavaScript", "React", "TypeScript", "Node.js", "Python", "Java", "C#", "PHP", 
+    "Ruby", "Swift", "Kotlin", "Go", "Rust", "SQL", "MongoDB", "Redis", "AWS", 
+    "Azure", "Docker", "Kubernetes", "DevOps", "Machine Learning", "AI", "Data Science", 
+    "Blockchain", "UX/UI", "Design", "Product Management", "Agile", "Scrum", 
+    "Leadership", "Communication", "Project Management", "Marketing"
+  ];
+  
+  // Filter skills based on search query and exclude already selected skills
+  const filteredSkills = allSkills
+    .filter(skill => 
+      skill.toLowerCase().includes(searchQuery.toLowerCase()) && 
+      !selectedSkills.includes(skill)
+    )
+    .slice(0, 10); // Limit to 10 results for better UX
+  
+  const handleAddSkill = (skill: string) => {
+    if (!selectedSkills.includes(skill)) {
+      setSelectedSkills([...selectedSkills, skill]);
+    }
+    // Clear search after adding
+    setSearchQuery('');
+    // Focus back on input after selection
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
-
-  // Scroll skills container
-  const scrollSkills = (direction: 'left' | 'right') => {
-    if (skillsContainerRef.current) {
-      const scrollAmount = 200;
-      const container = skillsContainerRef.current;
-      
-      if (direction === 'left') {
-        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      } else {
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-    }
+  
+  const handleRemoveSkill = (skill: string) => {
+    setSelectedSkills(selectedSkills.filter(s => s !== skill));
   };
+  
+  // Focus input when popover opens
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-full h-full flex flex-col items-center justify-center gap-2 p-4 border rounded-xl">
-          <Award className="h-8 w-8 text-primary" />
-          <span className="font-semibold">Skills You Follow</span>
-          <span className="text-sm text-muted-foreground">{followedSkills.length} of 15</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Follow Skills (Up to 15)</DialogTitle>
-        </DialogHeader>
+    <div className={`space-y-3 ${className}`}>
+      <div>
+        <h3 className="text-lg font-medium">{title}</h3>
+        <p className="text-sm text-muted-foreground">{subtitle}</p>
+      </div>
+      
+      <div className="flex flex-wrap gap-2">
+        {selectedSkills.map(skill => (
+          <Badge key={skill} variant="secondary" className="flex items-center gap-1 pl-2 pr-1 py-1">
+            <span>{skill}</span>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-4 w-4 p-0 ml-1 hover:bg-muted rounded-full"
+              onClick={() => handleRemoveSkill(skill)}
+            >
+              <X className="h-3 w-3" />
+              <span className="sr-only">Remove {skill}</span>
+            </Button>
+          </Badge>
+        ))}
         
-        <div className="space-y-4">
-          <div className="relative flex items-center">
-            <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search skills..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          
-          <div className="relative">
-            {/* Scroll left button */}
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="absolute -left-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md"
-              onClick={() => scrollSkills('left')}
-            >
-              <ChevronLeft className="h-4 w-4" />
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-1">
+              View All Skills
+              <ChevronDown className="h-3 w-3 opacity-70" />
             </Button>
-            
-            {/* Skills bubbles container */}
-            <div 
-              ref={skillsContainerRef}
-              className="flex overflow-x-auto py-2 px-2 scrollbar-hide scroll-smooth"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              <div className="flex gap-2 flex-wrap">
-                {filteredSkills.map((skill) => (
-                  <Button
-                    key={skill}
-                    variant={followedSkills.includes(skill) ? "default" : "outline"}
-                    size="sm"
-                    className={`rounded-full text-sm px-4 transition-all flex gap-1 items-center my-1 ${
-                      followedSkills.includes(skill) ? "bg-primary text-white" : "bg-white dark:bg-gray-800"
-                    }`}
-                    onClick={() => toggleFollowSkill(skill)}
-                  >
-                    {followedSkills.includes(skill) ? (
-                      <Check className="h-3 w-3" />
-                    ) : (
-                      <Plus className="h-3 w-3" />
-                    )}
-                    {skill}
-                  </Button>
-                ))}
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-3" align="start">
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm">Add Skills</h4>
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  ref={inputRef}
+                  placeholder="Search skills..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
-            </div>
-            
-            {/* Scroll right button */}
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="absolute -right-4 top-1/2 transform -translate-y-1/2 rounded-full z-10 bg-background shadow-md"
-              onClick={() => scrollSkills('right')}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="mt-4">
-            <h3 className="text-sm font-medium mb-2">Your followed skills:</h3>
-            <div className="flex flex-wrap gap-2">
-              {followedSkills.length > 0 ? (
-                followedSkills.map(skill => (
-                  <Badge key={skill} variant="outline" className="bg-primary/10 text-primary">
-                    {skill}
-                  </Badge>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">You haven't followed any skills yet.</p>
+              
+              {searchQuery && filteredSkills.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {filteredSkills.map(skill => (
+                    <Button
+                      key={skill}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start gap-2 text-left"
+                      onClick={() => handleAddSkill(skill)}
+                    >
+                      <Plus className="h-3 w-3" />
+                      {skill}
+                    </Button>
+                  ))}
+                </div>
+              )}
+              
+              {searchQuery && filteredSkills.length === 0 && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  No skills found matching "{searchQuery}"
+                </p>
+              )}
+              
+              {!searchQuery && (
+                <div className="grid grid-cols-2 gap-1 mt-2">
+                  {allSkills
+                    .filter(skill => !selectedSkills.includes(skill))
+                    .slice(0, 10)
+                    .map(skill => (
+                      <Button
+                        key={skill}
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start gap-1 text-left"
+                        onClick={() => handleAddSkill(skill)}
+                      >
+                        <Plus className="h-3 w-3" />
+                        {skill}
+                      </Button>
+                    ))}
+                </div>
+              )}
+              
+              {selectedSkills.length > 0 && (
+                <div className="mt-3 pt-3 border-t">
+                  <h4 className="font-medium text-sm mb-2">Your Selected Skills</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSkills.map(skill => (
+                      <Badge key={skill} variant="secondary" className="flex items-center gap-1 pl-2 pr-1 py-1">
+                        <span>{skill}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-4 w-4 p-0 ml-1 hover:bg-muted rounded-full"
+                          onClick={() => handleRemoveSkill(skill)}
+                        >
+                          <X className="h-3 w-3" />
+                          <span className="sr-only">Remove {skill}</span>
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
   );
 };
 
-export default FollowSkillsWidget;
+export default FollowSkills;

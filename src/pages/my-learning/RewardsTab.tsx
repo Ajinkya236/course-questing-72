@@ -3,8 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp, ExternalLink, Check } from 'lucide-react';
-import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
+import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp, ExternalLink, Check, Compass } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
@@ -42,33 +41,14 @@ const mockLeaderboardUsers = generateMockLeaderboardUsers();
 const currentUserPosition = 15;
 const currentUser = mockLeaderboardUsers.find(user => user.position === currentUserPosition);
 
-// Get a relative view - 2 users above and 5 users below
-const getRelativeLeaderboard = () => {
-  const startIndex = Math.max(0, currentUserPosition - 3); // -3 to include 2 users above
-  const endIndex = Math.min(mockLeaderboardUsers.length - 1, currentUserPosition + 5); // +5 to include 5 users below
-  
-  // Get top 3 users to always show them
-  const topUsers = mockLeaderboardUsers.slice(0, 3);
-  
-  // Get users relative to current user (excluding top 3 if they overlap)
-  const relativeUsers = mockLeaderboardUsers
-    .slice(startIndex, endIndex + 1)
-    .filter(user => !topUsers.some(topUser => topUser.id === user.id));
-  
-  // Return combined array with top 3 followed by relative users
-  return [...topUsers, ...relativeUsers];
-};
-
 interface RewardsTabProps {
   teamMemberId?: string;
 }
 
 const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
-  const [leaderboardFilter, setLeaderboardFilter] = useState("all");
-  const [leaderboardTimeframe, setLeaderboardTimeframe] = useState("all-time");
+  const [activePointsTab, setActivePointsTab] = useState("overview");
   const [showMysteryBox, setShowMysteryBox] = useState(false);
   const [showSpinWheel, setShowSpinWheel] = useState(false);
-  const [activePointsTab, setActivePointsTab] = useState("overview");
   const [showRedeemDialog, setShowRedeemDialog] = useState(false);
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [redeemStep, setRedeemStep] = useState(1);
@@ -161,20 +141,9 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
     });
   };
 
-  // Get filtered leaderboard based on user preferences
-  const getFilteredLeaderboard = () => {
-    let filteredUsers = getRelativeLeaderboard();
-    
-    if (leaderboardFilter !== "all") {
-      const filterProperty = leaderboardFilter;
-      const currentUserValue = currentUser?.[filterProperty as keyof typeof currentUser];
-      
-      filteredUsers = filteredUsers.filter(user => {
-        return user[filterProperty as keyof typeof user] === currentUserValue;
-      });
-    }
-    
-    return filteredUsers;
+  // Navigate to discover page
+  const handleExploreCoursesClick = () => {
+    navigate('/discover');
   };
 
   return (
@@ -291,68 +260,65 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
         </CardContent>
       </Card>
 
-      {/* Leaderboard Section */}
-      <div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-          <h3 className="text-xl font-medium">Learning Leaderboard</h3>
-          <div className="flex space-x-2 mt-2 md:mt-0">
-            <Select value={leaderboardTimeframe} onValueChange={setLeaderboardTimeframe}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Time Period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all-time">All Time</SelectItem>
-                <SelectItem value="weekly">This Week</SelectItem>
-                <SelectItem value="monthly">This Month</SelectItem>
-                <SelectItem value="quarterly">This Quarter</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={leaderboardFilter} onValueChange={setLeaderboardFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Filter By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Users</SelectItem>
-                <SelectItem value="team">My Team</SelectItem>
-                <SelectItem value="department">My Department</SelectItem>
-                <SelectItem value="location">My Location</SelectItem>
-                <SelectItem value="role">My Role</SelectItem>
-                <SelectItem value="jobFamily">Job Family</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Card className="mb-4">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                <ArrowUp className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h3 className="font-medium">Next Milestone: Team Front-runner</h3>
-                <p className="text-sm text-muted-foreground">Complete 2 more courses to surpass Jane Smith and become #2 in your team!</p>
+      {/* Personal Leaderboard Progress */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-medium mb-4">My Leaderboard Progress</h3>
+          
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-2xl font-bold">{currentUser?.position}</span>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-sm">Your Position</p>
+              <h3 className="text-xl font-medium">{currentUser?.name}</h3>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className="gap-1 flex items-center">
+                  <Star className="h-3 w-3" /> {currentUser?.points} Points
+                </Badge>
+                
+                {currentUser?.positionChange !== 0 && (
+                  <Badge variant={currentUser?.positionChange > 0 ? "success" : "destructive"} className="gap-1 flex items-center">
+                    <ArrowUp className={`h-3 w-3 ${currentUser?.positionChange < 0 ? "rotate-180" : ""}`} />
+                    {Math.abs(currentUser?.positionChange || 0)} Position{Math.abs(currentUser?.positionChange || 0) > 1 ? 's' : ''}
+                  </Badge>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-sm text-muted-foreground">Your personal best: 1380 points (achieved on October 15)</span>
-              </div>
+          </div>
+          
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium">Your Learning Stats</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-secondary/5">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="text-muted-foreground mb-1 text-sm">Assessment Score</div>
+                  <div className="text-2xl font-bold">{currentUser?.details.assessmentScore}%</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-secondary/5">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="text-muted-foreground mb-1 text-sm">Engagement Score</div>
+                  <div className="text-2xl font-bold">{currentUser?.details.engagementScore}%</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-secondary/5">
+                <CardContent className="p-4 flex flex-col items-center">
+                  <div className="text-muted-foreground mb-1 text-sm">Completion Rate</div>
+                  <div className="text-2xl font-bold">{currentUser?.details.completionRate}%</div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="flex justify-end mt-4">
               <Button variant="outline" size="sm" onClick={handleViewFullLeaderboard} className="flex items-center gap-1">
                 View Full Leaderboard
                 <ExternalLink className="h-3 w-3 ml-1" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        <LeaderboardEnhanced
-          users={getFilteredLeaderboard()}
-          currentUser={currentUser}
-          title="Learning Leaderboard"
-        />
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Redeem Rewards */}
       <div>
@@ -431,14 +397,22 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
                   </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="hidden md:flex items-center gap-1">
+              <Button variant="outline" size="sm" className="hidden md:flex items-center gap-1" onClick={handleExploreCoursesClick}>
+                <Compass className="h-4 w-4 mr-1" />
                 <span>Explore Courses</span>
-                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Mobile CTA Button */}
+      <div className="md:hidden">
+        <Button variant="default" size="lg" className="w-full" onClick={handleExploreCoursesClick}>
+          <Compass className="h-4 w-4 mr-2" />
+          Explore Courses
+        </Button>
+      </div>
 
       {/* Dialogs */}
       <MysteryBoxDialog open={showMysteryBox} onOpenChange={setShowMysteryBox} />
@@ -464,7 +438,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
                     {selectedReward.image}
                   </div>
                   <div>
-                    <h3 className="font-medium text-lg">{selectedReward.name}</h3>
+                    <h3 className="font-medium">{selectedReward.name}</h3>
                     <p className="text-sm text-muted-foreground">{selectedReward.description}</p>
                   </div>
                 </div>

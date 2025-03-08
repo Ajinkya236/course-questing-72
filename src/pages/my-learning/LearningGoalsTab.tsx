@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, Target, User, Users } from 'lucide-react';
-import CourseCarousel from '@/components/CourseCarousel';
+import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
 
 interface LearningGoalsTabProps {
@@ -93,7 +93,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         </TabsList>
       </Tabs>
 
-      {/* Learning Goals Display - Only Courses */}
+      {/* Learning Goals Display - Using CourseCard component */}
       <div className="space-y-8">
         {getActiveGoals().map(goal => (
           <Card key={goal.id} className="overflow-hidden">
@@ -118,11 +118,25 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
             <CardContent className="pt-4">
               <div className="pt-2">
                 <h4 className="text-sm font-medium mb-3">Assigned Courses</h4>
-                <CourseCarousel 
-                  title="" 
-                  courses={goal.courses}
-                  showTrainingCategory={true}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {goal.courses.map(course => (
+                    <CourseCard
+                      key={course.id}
+                      id={course.id}
+                      title={course.title}
+                      description={course.description}
+                      imageUrl={course.imageUrl}
+                      category={course.category}
+                      duration={course.duration}
+                      rating={course.rating}
+                      trainingCategory={course.trainingCategory}
+                      isBookmarked={course.isBookmarked}
+                      previewUrl={course.videoUrl}
+                      isHot={course.isHot}
+                      isNew={course.isNew}
+                    />
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>

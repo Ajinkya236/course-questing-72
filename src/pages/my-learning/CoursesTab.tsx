@@ -1,7 +1,5 @@
 
 import React, { useState } from 'react';
-import CourseCarousel from '@/components/CourseCarousel';
-import { mockCourses } from '@/data/mockCoursesData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Check, Clock, Bookmark, Share } from 'lucide-react';
 import { Course } from '@/types/course';
+import { mockCourses } from '@/data/mockCoursesData';
+import CourseCard from '@/components/CourseCard';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -212,16 +212,25 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         }</h3>
         
         {getFilteredCourses().length > 0 ? (
-          <CourseCarousel 
-            title={activeFilter === 'all' ? 'All Courses' : 
-              activeFilter === 'in-progress' ? 'In Progress Courses' :
-              activeFilter === 'assigned' ? 'Not Started Courses' :
-              activeFilter === 'completed' ? 'Completed Courses' :
-              activeFilter === 'saved' ? 'Saved Courses' : 'Courses Shared with Me'
-            }
-            courses={getFilteredCourses()} 
-            showTrainingCategory={true}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {getFilteredCourses().map(course => (
+              <CourseCard
+                key={course.id}
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating}
+                trainingCategory={course.trainingCategory}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.videoUrl}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
+            ))}
+          </div>
         ) : (
           <Card className="bg-muted/20">
             <CardContent className="flex flex-col items-center justify-center py-10">
