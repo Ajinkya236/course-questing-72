@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CourseCarouselProps {
   title: string;
@@ -16,6 +17,7 @@ interface CourseCarouselProps {
   onViewAllClick?: () => void;
   filterOptions?: string[];
   viewAllUrl?: string;
+  subFilterOptions?: Record<string, string[]>;
 }
 
 const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
@@ -25,13 +27,16 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   onCourseClick,
   onViewAllClick,
   filterOptions = [],
-  viewAllUrl = '/view-all' 
+  viewAllUrl = '/view-all',
+  subFilterOptions = {}
 }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [visibleItems, setVisibleItems] = useState(4);
+  const [visibleItems, setVisibleItems] = useState(4.25); // Show 25% of the last item
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
+  const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const updateVisibleItems = () => {
@@ -79,9 +84,24 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   const handleFilterClick = (filter: string) => {
     setSelectedFilter(filter);
+    // Reset sub-filter when main filter changes
+    if (subFilterOptions && subFilterOptions[filter]) {
+      setSelectedSubFilter(subFilterOptions[filter][0]);
+    } else {
+      setSelectedSubFilter('All Sub-Academies');
+    }
     // Reset position when filter changes
     setCurrentPosition(0);
   };
+
+  const handleSubFilterClick = (subFilter: string) => {
+    setSelectedSubFilter(subFilter);
+    // Reset position when sub-filter changes
+    setCurrentPosition(0);
+  };
+
+  // Get available sub-filters based on selected main filter
+  const availableSubFilters = subFilterOptions[selectedFilter] || [];
 
   // Create a fallback for courses that don't have all required properties
   const normalizedCourses = courses.map(course => ({
@@ -98,54 +118,82 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         
-        <div className="flex flex-wrap items-center gap-2">
-          {showSkillFilters && filterOptions.length > 0 && (
-            <div className="flex flex-wrap gap-2 mr-4">
-              {filterOptions.map((filter) => (
-                <Button
-                  key={filter}
-                  variant={selectedFilter === filter ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleFilterClick(filter)}
-                  className="rounded-full"
-                >
-                  {filter}
-                </Button>
-              ))}
-            </div>
-          )}
-          
-          <div className="flex items-center gap-2 ml-auto">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full"
-              onClick={prevSlide}
-              disabled={currentPosition === 0}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full"
-              onClick={nextSlide}
-              disabled={currentPosition >= normalizedCourses.length - Math.floor(visibleItems)}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="gap-1" 
-              onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-            >
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={prevSlide}
+            disabled={currentPosition === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={nextSlide}
+            disabled={currentPosition >= normalizedCourses.length - Math.floor(visibleItems)}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          >
+            View All
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
+      
+      {/* Main filters carousel */}
+      {showSkillFilters && filterOptions.length > 0 && (
+        <div className="mb-4 overflow-hidden">
+          <div className="relative">
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 pb-2">
+                {filterOptions.map((filter) => (
+                  <Button
+                    key={filter}
+                    variant={selectedFilter === filter ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleFilterClick(filter)}
+                    className="rounded-full whitespace-nowrap"
+                  >
+                    {filter}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Sub-filters carousel - only show if sub-filters exist for selected filter */}
+      {showSkillFilters && title === "Academy Courses" && availableSubFilters.length > 0 && (
+        <div className="mb-4 overflow-hidden">
+          <div className="relative">
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 pb-2">
+                {availableSubFilters.map((subFilter) => (
+                  <Button
+                    key={subFilter}
+                    variant={selectedSubFilter === subFilter ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleSubFilterClick(subFilter)}
+                    className="rounded-full whitespace-nowrap"
+                  >
+                    {subFilter}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="relative overflow-hidden">
         <div

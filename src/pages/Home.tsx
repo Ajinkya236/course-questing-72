@@ -12,8 +12,20 @@ import LearningStreakDialog from '@/components/LearningStreakDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
-import { Course } from '@/types/course';
 import { mockCoursesData } from '@/data/mockData';
+import { useIsMobile } from '@/hooks/use-mobile';
+import TopicsCatalog from '@/components/TopicsCatalog';
+
+// Define academies and sub-academies
+const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
+const subAcademyFilters = {
+  'All Academies': ['All Sub-Academies'],
+  'Leadership Academy': ['All Sub-Academies', 'Foundational', 'Advanced', 'Executive'],
+  'Data Academy': ['All Sub-Academies', 'Technical', 'Analytics', 'Machine Learning'],
+  'Marketing Academy': ['All Sub-Academies', 'Digital', 'Content', 'Strategy', 'Specialized'],
+  'PM Academy': ['All Sub-Academies', 'Agile', 'Traditional', 'Certification'],
+  'Innovation Academy': ['All Sub-Academies', 'Design Thinking', 'Advanced', 'Specialized'],
+};
 
 const roleSkills = [
   { id: 1, name: 'Project Management', proficiency: 65, target: 80 },
@@ -31,16 +43,6 @@ const skillsYouFollow = [
   { id: 5, name: 'Cloud Architecture', proficiency: 50 },
 ];
 
-const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
-const subAcademyFilters = {
-  'All Academies': ['All Sub-Academies'],
-  'Leadership Academy': ['All Sub-Academies', 'Foundational', 'Advanced', 'Executive'],
-  'Data Academy': ['All Sub-Academies', 'Technical', 'Analytics', 'Machine Learning'],
-  'Marketing Academy': ['All Sub-Academies', 'Digital', 'Content', 'Strategy', 'Specialized'],
-  'PM Academy': ['All Sub-Academies', 'Agile', 'Traditional', 'Certification'],
-  'Innovation Academy': ['All Sub-Academies', 'Design Thinking', 'Advanced', 'Specialized'],
-};
-
 const Home = () => {
   const navigate = useNavigate();
   const [isMysteryBoxOpen, setIsMysteryBoxOpen] = useState(false);
@@ -50,6 +52,7 @@ const Home = () => {
   const [skillsTab, setSkillsTab] = useState('follow');
   const [selectedAcademy, setSelectedAcademy] = useState('All Academies');
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useIsMobile();
   
   const handleCourseClick = (courseId: string) => {
     navigate(`/course/${courseId}`);
@@ -408,6 +411,7 @@ const Home = () => {
             onCourseClick={handleCourseClick}
             onViewAllClick={() => handleViewAllCategory('Academy Courses')}
             filterOptions={academyFilters}
+            subFilterOptions={subAcademyFilters}
           />
           
           <CourseCarousel 
@@ -430,6 +434,67 @@ const Home = () => {
             onCourseClick={handleCourseClick}
             onViewAllClick={() => handleViewAllCategory('Newly Added')}
           />
+          
+          {/* HR Banner at the bottom */}
+          <div className="border rounded-xl overflow-hidden">
+            <div className="bg-primary/10 p-4 md:p-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">HR Communications</h3>
+                  <p className="text-muted-foreground">Important updates and announcements from HR</p>
+                </div>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  View All
+                </Button>
+              </div>
+              
+              <div className="mt-4">
+                <Carousel>
+                  <CarouselContent>
+                    <CarouselItem>
+                      <Card>
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold mb-2">New Training Policy Update</h4>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Starting next month, all employees will have dedicated learning hours each week.
+                          </p>
+                          <Button size="sm" variant="link" className="p-0">Read more</Button>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                      <Card>
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold mb-2">Annual Performance Reviews</h4>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Annual performance reviews will begin on July 15th. Please complete all pending courses.
+                          </p>
+                          <Button size="sm" variant="link" className="p-0">Read more</Button>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                    <CarouselItem>
+                      <Card>
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold mb-2">Leadership Summit 2023</h4>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Registration for the Leadership Summit is now open. Limited spots available.
+                          </p>
+                          <Button size="sm" variant="link" className="p-0">Read more</Button>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
+            </div>
+          </div>
+          
+          {/* Topics Catalog */}
+          <TopicsCatalog />
         </section>
       </div>
       
@@ -444,5 +509,8 @@ const Home = () => {
     </>
   );
 };
+
+// Import the necessary components for the HR banner
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 export default Home;

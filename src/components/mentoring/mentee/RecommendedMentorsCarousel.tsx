@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Mentor {
   id: number;
@@ -29,6 +30,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const navigate = useNavigate();
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
   const carouselRef = useRef(null);
+  const isMobile = useIsMobile();
   
   // Extract all unique topics from mentors for filters
   const allTopics = selectedTopics.length > 0 
@@ -121,7 +123,10 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       >
         <CarouselContent>
           {filteredMentors.map(mentor => (
-            <CarouselItem key={mentor.id} className="basis-full sm:basis-1/2 md:basis-1/4 lg:basis-1/4">
+            <CarouselItem key={mentor.id} className={`
+              basis-full 
+              ${isMobile ? "" : "sm:basis-1/2 md:basis-1/3 lg:basis-1/4"}
+            `}>
               <Card className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center text-center">
