@@ -6,35 +6,32 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  duration: string;
-  level: string;
-  rating: number;
-  instructor: {
-    name: string;
-    avatar: string;
-  };
-  category?: string;
-  enrollmentStatus?: 'Not Started' | 'In Progress' | 'Completed';
-  progress?: number;
-}
+import { Course } from '@/types/course';
 
 interface CourseCarouselProps {
   title: string;
   courses: Course[];
+  showSkillFilters?: boolean;
+  onCourseClick?: (courseId: string) => void;
+  onViewAllClick?: () => void;
+  filterOptions?: string[];
   viewAllUrl?: string;
 }
 
-const CourseCarousel: React.FC<CourseCarouselProps> = ({ title, courses, viewAllUrl = '/view-all' }) => {
+const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
+  title, 
+  courses, 
+  showSkillFilters = false,
+  onCourseClick,
+  onViewAllClick,
+  filterOptions = [],
+  viewAllUrl = '/view-all' 
+}) => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [visibleItems, setVisibleItems] = useState(4);
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
   
   useEffect(() => {
     const updateVisibleItems = () => {
@@ -60,8 +57,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({ title, courses, viewAll
     setCurrentPosition(prev => (prev > 0 ? prev - 1 : 0));
   };
 
-  const handleCardClick = (courseId: number) => {
-    navigate(`/course/${courseId}`);
+  const handleCardClick = (courseId: string) => {
+    if (onCourseClick) {
+      onCourseClick(courseId);
+    } else {
+      navigate(`/course/${courseId}`);
+    }
   };
 
   const getStatusColor = (status?: string) => {
@@ -75,33 +76,73 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({ title, courses, viewAll
     }
   };
 
+  const handleFilterClick = (filter: string) => {
+    setSelectedFilter(filter);
+    // Reset position when filter changes
+    setCurrentPosition(0);
+  };
+
+  // Create a fallback for courses that don't have all required properties
+  const normalizedCourses = courses.map(course => ({
+    ...course,
+    level: course.level || course.skillLevel || 'All Levels',
+    instructor: course.instructor || {
+      name: 'Instructor',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+    }
+  }));
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={prevSlide}
-            disabled={currentPosition === 0}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={nextSlide}
-            disabled={currentPosition >= courses.length - Math.floor(visibleItems)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate(viewAllUrl)}>
-            View All
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {showSkillFilters && filterOptions.length > 0 && (
+            <div className="flex flex-wrap gap-2 mr-4">
+              {filterOptions.map((filter) => (
+                <Button
+                  key={filter}
+                  variant={selectedFilter === filter ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleFilterClick(filter)}
+                  className="rounded-full"
+                >
+                  {filter}
+                </Button>
+              ))}
+            </div>
+          )}
+          
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={prevSlide}
+              disabled={currentPosition === 0}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={nextSlide}
+              disabled={currentPosition >= normalizedCourses.length - Math.floor(visibleItems)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-1" 
+              onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+            >
+              View All
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -113,7 +154,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({ title, courses, viewAll
             transform: `translateX(-${currentPosition * (100 / visibleItems)}%)`,
           }}
         >
-          {courses.map((course) => (
+          {normalizedCourses.map((course) => (
             <div
               key={course.id}
               className="flex-none transition-all duration-300"

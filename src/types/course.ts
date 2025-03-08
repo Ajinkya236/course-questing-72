@@ -23,14 +23,23 @@ export interface Course {
   rating: number;
   isBookmarked?: boolean;
   trainingCategory?: string;
-  learningObjectives: string[];
-  skills: { name: string; proficiency: string }[];
-  certificates: string[];
-  videoUrl: string;
-  modules: Module[];
+  learningObjectives?: string[];
+  skills?: { name: string; proficiency: string }[];
+  certificates?: string[];
+  videoUrl?: string;
+  modules?: Module[];
   isHot?: boolean;
   isNew?: boolean;
   createdAt?: string;
+  
+  // These fields from CourseCarousel interface
+  level?: string;
+  instructor?: {
+    name: string;
+    avatar: string;
+  };
+  progress?: number;
+  enrollmentStatus?: 'Not Started' | 'In Progress' | 'Completed';
   
   // Additional fields for filtering
   courseType?: 'Online Course' | 'Online Program' | 'Blended' | 'Classroom';
