@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MentorDiscovery from './mentee/MentorDiscovery';
 import MentorshipRequests from './mentee/MentorshipRequests';
 import ActiveEngagements from './mentee/ActiveEngagements';
 import MentoringHistory from './mentee/MentoringHistory';
-import BannerCarousel from '@/components/BannerCarousel';
 import { 
   Search, 
   ClipboardList, 
@@ -17,27 +15,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import MenteePreferences from './mentee/MenteePreferences';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-
-const mentorBanners = [
-  {
-    id: 1,
-    title: "Mentoring Program Update",
-    description: "Our mentoring program has expanded to include 5 new skill areas. Check your preferences to see the updates.",
-    imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-  },
-  {
-    id: 2,
-    title: "New Mentor Matching Algorithm",
-    description: "We've improved our mentor matching system to better connect you with experts in your field of interest.",
-    imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80"
-  },
-  {
-    id: 3,
-    title: "Upcoming Mentor Q&A Sessions",
-    description: "Join our live Q&A sessions with top mentors every Friday at 2 PM to learn more about career growth opportunities.",
-    imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-  }
-];
 
 const MenteeJourney = () => {
   const { toast } = useToast();
@@ -73,9 +50,6 @@ const MenteeJourney = () => {
 
   return (
     <div className="space-y-6">
-      {/* Add HR communications banner */}
-      <BannerCarousel banners={mentorBanners} smallSize={true} />
-      
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">My Mentee Journey</h2>
         <Button 
