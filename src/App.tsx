@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider"
 import { useTheme } from "@/components/hooks/use-theme"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -28,6 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
+import { AuthProvider } from './contexts/AuthContext';
 
 import SignIn from './pages/SignIn';
 import Home from './pages/Home';
@@ -88,7 +90,16 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
             <Button variant="outline" className="w-full justify-start" onClick={() => window.location.href = "/profile"}>Profile</Button>
             <Button variant="outline" className="w-full justify-start" onClick={() => window.location.href = "/my-team"}>My Team</Button>
             <Button variant="outline" className="w-full justify-start" onClick={() => window.location.href = "/mentoring"}>Mentoring</Button>
-            <Button variant="outline" className="w-full justify-start" onClick={() => window.location.href = "/faq"}>FAQ</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-start">
+                  More
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => window.location.href = "/faq"}>FAQ</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <ModeToggle />
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -203,45 +214,50 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
 };
 
 function App() {
-  const { theme, setTheme } = useTheme()
-
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <Routes>
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route element={<ProtectedRoute />}>
-          <Route element={<PageLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/discover" element={<Discover />} />
-            <Route path="/my-learning" element={<MyLearning />} />
-            <Route path="/course/:courseId" element={<CoursePlayer />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/view-all/:category" element={<ViewAllPage />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/actionables" element={<Actionables />} />
-            <Route path="/milestones" element={<LeaderboardFullView />} />
-            <Route path="/mentoring" element={<Mentoring />} />
-            <Route path="/my-team" element={<MyTeam />} />
-            <Route path="/my-team/member/:memberId/learning" element={<MyLearning teamMemberId=":memberId" />} />
-            <Route path="/my-team/member/:memberId/goals" element={<MyLearning teamMemberId=":memberId" />} />
-            <Route path="/faq" element={<FAQ />} />
-            
-            {/* New routes for domains */}
-            <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />
-            <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
-            
-            <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
+    <Router>
+      <AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Routes>
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <PageLayout>
+                  <Outlet />
+                </PageLayout>
+              </ProtectedRoute>
+            }>
+              <Route index element={<Home />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/my-learning" element={<MyLearning />} />
+              <Route path="/course/:courseId" element={<CoursePlayer />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/view-all/:category" element={<ViewAllPage />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/actionables" element={<Actionables />} />
+              <Route path="/milestones" element={<LeaderboardFullView />} />
+              <Route path="/mentoring" element={<Mentoring />} />
+              <Route path="/my-team" element={<MyTeam />} />
+              <Route path="/my-team/member/:memberId" element={<Profile />} />
+              <Route path="/faq" element={<FAQ />} />
+              
+              {/* New routes for domains */}
+              <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />
+              <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
+              
+              <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
-          </Route>
-        </Route>
-      </Routes>
-    </ThemeProvider>
+          </Routes>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

@@ -1,168 +1,138 @@
 
-import React, { useState } from 'react';
-import { CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import CourseCard from '@/components/CourseCard';
-import { coursesList } from '@/data/mockData';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, Award, BookOpen } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-
-// Mock skills data that would be gained from courses
-const skillsData = [
-  { id: 1, name: 'Leadership', currentProficiency: 45, targetProficiency: 75, related: ['leadership', 'management'] },
-  { id: 2, name: 'Data Analysis', currentProficiency: 60, targetProficiency: 80, related: ['analysis', 'data science'] },
-  { id: 3, name: 'UX/UI Design', currentProficiency: 30, targetProficiency: 70, related: ['design', 'user experience'] },
-  { id: 4, name: 'Project Management', currentProficiency: 55, targetProficiency: 85, related: ['management', 'planning'] },
-  { id: 5, name: 'Communication', currentProficiency: 70, targetProficiency: 90, related: ['presentation', 'writing'] }
-];
+import { Plus, Clock, Check, Target } from 'lucide-react';
 
 interface LearningGoalsTabProps {
-  teamMemberId?: string | null;
+  teamMemberId?: string;
 }
 
 const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('selfAssigned');
-  const [selfAssignedCourses, setSelfAssignedCourses] = useState(
-    coursesList.slice(0, 3).map(course => ({
-      ...course,
-      trainingCategory: 'Self-Assigned'
-    }))
-  );
-  
-  const [managerAssignedCourses, setManagerAssignedCourses] = useState(
-    coursesList.slice(3, 6).map(course => ({
-      ...course,
-      trainingCategory: 'Manager-Assigned'
-    }))
-  );
-  
-  const handleCourseClick = (courseId: string) => {
-    navigate(`/course/${courseId}`);
-  };
-
-  const handleUnassignCourse = (courseId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (activeTab === 'selfAssigned' && !teamMemberId) {
-      setSelfAssignedCourses(prev => prev.filter(course => course.id !== courseId));
-      toast({
-        title: "Course Unassigned",
-        description: "The course has been removed from your learning goals",
-      });
+  // Mock data - in a real app, we'd fetch data based on teamMemberId if provided
+  const goals = [
+    {
+      id: 1,
+      title: 'Complete Data Analysis Course',
+      description: 'Finish the advanced data analysis course and apply skills to current project.',
+      progress: 75,
+      dueDate: '2023-12-31',
+      status: 'in-progress',
+      tags: ['Technical', 'Data', 'Priority']
+    },
+    {
+      id: 2,
+      title: 'Improve Leadership Skills',
+      description: 'Take leadership workshops and apply learnings in team meetings.',
+      progress: 40,
+      dueDate: '2024-02-15',
+      status: 'in-progress',
+      tags: ['Soft Skills', 'Leadership']
+    },
+    {
+      id: 3,
+      title: 'Obtain Project Management Certification',
+      description: 'Study for and pass the PMP certification exam.',
+      progress: 100,
+      dueDate: '2023-10-01',
+      status: 'completed',
+      tags: ['Certification', 'Project Management']
+    },
+    {
+      id: 4,
+      title: 'Learn JavaScript Frameworks',
+      description: 'Complete training on React, Vue, and Angular.',
+      progress: 0,
+      dueDate: '2024-04-30',
+      status: 'not-started',
+      tags: ['Technical', 'Web Development']
     }
-  };
-  
-  // Calculate overall proficiency
-  const calculateOverallProficiency = () => {
-    const totalTarget = skillsData.reduce((sum, skill) => sum + skill.targetProficiency, 0);
-    const totalCurrent = skillsData.reduce((sum, skill) => sum + skill.currentProficiency, 0);
-    return Math.round((totalCurrent / totalTarget) * 100);
-  };
-  
+  ];
+
+  const totalGoals = goals.length;
+  const completedGoals = goals.filter(goal => goal.status === 'completed').length;
+  const inProgressGoals = goals.filter(goal => goal.status === 'in-progress').length;
+  const notStartedGoals = goals.filter(goal => goal.status === 'not-started').length;
+  const completionPercentage = Math.round((completedGoals / totalGoals) * 100);
+
   return (
-    <div onClick={(e) => e.stopPropagation()}>
-      <Tabs defaultValue="selfAssigned" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 mb-8">
-          <TabsTrigger value="selfAssigned">
-            {teamMemberId ? "Courses Assigned by Team Member" : "Courses Assigned by You"}
-          </TabsTrigger>
-          <TabsTrigger value="managerAssigned">Courses Assigned by Manager</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="selfAssigned">
-          <CardContent className="p-0">
-            {selfAssignedCourses.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {selfAssignedCourses.map((course) => (
-                  <div key={course.id} className="cursor-pointer relative group">
-                    <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
-                    {!teamMemberId && (
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => handleUnassignCourse(course.id, e)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  {teamMemberId ? "This team member hasn't assigned any courses to their learning goals yet." : "You haven't assigned any courses to your learning goals yet."}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </TabsContent>
-        
-        <TabsContent value="managerAssigned">
-          <CardContent className="p-0">
-            {managerAssignedCourses.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {managerAssignedCourses.map((course) => (
-                  <div key={course.id} className="cursor-pointer">
-                    <CourseCard {...course} previewUrl="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  {teamMemberId ? "You haven't assigned any courses to this team member's learning goals yet." : "Your manager hasn't assigned any courses to your learning goals yet."}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </TabsContent>
-      </Tabs>
-      
-      {/* Skills Proficiency Overview */}
-      <div className="mt-8 p-6 bg-muted/20 rounded-lg border">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Award className="h-5 w-5 text-primary" />
-            Skills Proficiency
-          </h3>
-          <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
-            {calculateOverallProficiency()}% Overall
-          </span>
-        </div>
-        
-        <div className="space-y-4">
-          {skillsData.map(skill => (
-            <div key={skill.id} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{skill.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {skill.currentProficiency}% / {skill.targetProficiency}%
-                </span>
-              </div>
-              <Progress value={(skill.currentProficiency / skill.targetProficiency) * 100} className="h-2" />
-            </div>
-          ))}
-        </div>
-        
-        <div className="mt-4 pt-4 border-t border-border/40">
-          <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            Skills From {teamMemberId ? "Team Member's" : "Your"} Courses
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {skillsData.map(skill => (
-              <span key={skill.id} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                {skill.name}
-              </span>
-            ))}
+    <div className="space-y-8">
+      {/* Goals Progress Overview */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-medium mb-2">Goals Progress</h3>
+          <div className="flex items-center gap-4">
+            <Progress value={completionPercentage} className="h-2 flex-1" />
+            <span className="text-sm font-medium">{completionPercentage}%</span>
           </div>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold">{notStartedGoals}</p>
+              <p className="text-sm text-muted-foreground">Not Started</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold">{inProgressGoals}</p>
+              <p className="text-sm text-muted-foreground">In Progress</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold">{completedGoals}</p>
+              <p className="text-sm text-muted-foreground">Completed</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Action Button - Don't show when viewing team member's goals */}
+      {!teamMemberId && (
+        <div className="flex justify-end">
+          <Button><Plus className="mr-2 h-4 w-4" /> Set New Goal</Button>
         </div>
+      )}
+      
+      {/* Goals List */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {goals.map(goal => (
+          <Card key={goal.id}>
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-lg">{goal.title}</CardTitle>
+                {goal.status === 'completed' ? (
+                  <Badge variant="default" className="bg-green-500 hover:bg-green-600">Completed</Badge>
+                ) : goal.status === 'in-progress' ? (
+                  <Badge variant="secondary">In Progress</Badge>
+                ) : (
+                  <Badge variant="outline">Not Started</Badge>
+                )}
+              </div>
+              <CardDescription>{goal.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="pb-2">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span>Progress</span>
+                  <span>{goal.progress}%</span>
+                </div>
+                <Progress value={goal.progress} />
+                <div className="flex gap-1 mt-3 flex-wrap">
+                  {goal.tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between pt-2">
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Clock className="mr-1 h-3 w-3" />
+                <span>Due {new Date(goal.dueDate).toLocaleDateString()}</span>
+              </div>
+              {!teamMemberId && (
+                <Button size="sm" variant="ghost">Update</Button>
+              )}
+            </CardFooter>
+          </Card>
+        ))}
       </div>
     </div>
   );

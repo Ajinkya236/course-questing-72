@@ -1,110 +1,73 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Award, 
-  BookOpen, 
-  Gift, 
-  Target
-} from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
-import RewardsTab from './my-learning/RewardsTab';
-import BadgesTab from './my-learning/BadgesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
+import BadgesTab from './my-learning/BadgesTab';
+import RewardsTab from './my-learning/RewardsTab';
 
 interface MyLearningProps {
-  initialTab?: string;
+  teamMemberId?: string;
 }
 
-const MyLearning: React.FC<MyLearningProps> = ({ initialTab }) => {
-  const location = useLocation();
-  const params = useParams();
+const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const [activeTab, setActiveTab] = useState('courses');
-  const [teamMemberView, setTeamMemberView] = useState<string | null>(null);
+  const params = useParams();
   
-  // Get badge count for badge number indicator
-  const badgeCount = 3; // This would come from a real data source/API
+  // Use the teamMemberId from props or from URL params
+  const memberId = teamMemberId || params.memberId;
   
-  // Check if we have state with a specified tab or initialTab prop
-  useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    } else if (location.state) {
-      const { activeTab: tabFromState } = location.state as { activeTab?: string, courseTab?: string };
-      if (tabFromState) {
-        setActiveTab(tabFromState);
-      }
-    }
-  }, [location.state, initialTab]);
-
-  // Check if viewing a team member's learning
-  useEffect(() => {
-    if (params.memberId) {
-      setTeamMemberView(params.memberId);
-    }
-  }, [params.memberId]);
-
-  // Get title based on context
-  const getTitle = () => {
-    if (teamMemberView) {
-      return "Team Member Learning";
-    }
-    return "My Learning";
-  };
+  // Title suffix based on if viewing team member's learning
+  const titleSuffix = memberId ? ` - Team Member` : '';
 
   return (
     <>
       <Helmet>
-        <title>{getTitle()} | Learning Management System</title>
+        <title>My Learning{titleSuffix} | Learning Management System</title>
       </Helmet>
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight mb-6">{getTitle()}</h1>
-        
-        <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
-            <TabsTrigger value="courses" className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Courses</span>
-            </TabsTrigger>
-            <TabsTrigger value="goals" className="flex items-center gap-1">
-              <Target className="h-4 w-4" />
-              <span className="hidden sm:inline">Learning Goals FY 24-25</span>
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="flex items-center gap-1">
-              <Gift className="h-4 w-4" />
-              <span className="hidden sm:inline">Rewards</span>
-            </TabsTrigger>
-            <TabsTrigger value="badges" className="flex items-center gap-1 relative">
-              <Award className="h-4 w-4" />
-              <span className="hidden sm:inline">Badges</span>
-              {badgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                  {badgeCount}
-                </span>
-              )}
-            </TabsTrigger>
+      
+      <div className="space-y-6">
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {memberId ? "Team Member's Learning" : "My Learning"}
+          </h1>
+          <p className="text-muted-foreground">
+            {memberId 
+              ? "View and manage this team member's learning journey" 
+              : "Track your progress and manage your learning journey"}
+          </p>
+        </div>
+
+        <Tabs 
+          defaultValue="courses" 
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
+          <TabsList>
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="goals">Learning Goals</TabsTrigger>
+            <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
+            <TabsTrigger value="rewards">Rewards</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="courses">
-            <CoursesTab 
-              initialActiveTab={location.state?.courseTab} 
-              teamMemberId={teamMemberView} 
-            />
+          <TabsContent value="courses" className="space-y-4">
+            <CoursesTab teamMemberId={memberId} />
           </TabsContent>
           
-          <TabsContent value="goals">
-            <LearningGoalsTab teamMemberId={teamMemberView} />
+          <TabsContent value="goals" className="space-y-4">
+            <LearningGoalsTab teamMemberId={memberId} />
           </TabsContent>
           
-          <TabsContent value="rewards">
-            <RewardsTab />
+          <TabsContent value="badges" className="space-y-4">
+            <BadgesTab teamMemberId={memberId} />
           </TabsContent>
           
-          <TabsContent value="badges">
-            <BadgesTab />
+          <TabsContent value="rewards" className="space-y-4">
+            <RewardsTab teamMemberId={memberId} />
           </TabsContent>
         </Tabs>
       </div>
