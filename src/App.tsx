@@ -10,7 +10,7 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import NavBar from "./components/layout/NavBar"; // Keeping same casing as the file
+import NavBar from "./components/layout/Navbar"; // Fixed the casing here from NavBar to Navbar
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
