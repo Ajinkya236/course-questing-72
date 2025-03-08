@@ -42,7 +42,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   // Removing duplicates from filter options
   const uniqueFilterOptions = filterOptions.length > 0 ? [...new Set(filterOptions)] : [];
   
-  const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
+  const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions.length > 0 ? uniqueFilterOptions[0] : 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -149,6 +149,18 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               View All
             </Button>
           )}
+          {!isHovered && (
+            <div className="flex items-center ml-2">
+              <CarouselPrevious className="static transform-none h-8 w-8 rounded-full" />
+              <CarouselNext className="static transform-none h-8 w-8 rounded-full ml-1" />
+            </div>
+          )}
+          {isHovered && (
+            <div className="flex items-center ml-2">
+              <CarouselPrevious className="static transform-none h-8 w-8 rounded-full" />
+              <CarouselNext className="static transform-none h-8 w-8 rounded-full ml-1" />
+            </div>
+          )}
         </div>
       </div>
       
@@ -176,7 +188,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           align: "start",
           loop: true,
         }}
-        className="w-full"
+        className="w-full relative"
       >
         <CarouselContent>
           {normalizedCourses.map((course) => (
@@ -237,10 +249,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex items-center justify-end gap-2 mt-4">
-          <CarouselPrevious className="static transform-none" />
-          <CarouselNext className="static transform-none" />
-        </div>
       </Carousel>
     </div>
   );
