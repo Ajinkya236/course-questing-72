@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -22,27 +22,6 @@ const MentorPreferences: React.FC<MentorPreferencesProps> = ({ inDialog = false,
   const [openTopicDialog, setOpenTopicDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [newTopic, setNewTopic] = useState('');
-
-  // Load saved preferences from localStorage on mount
-  useEffect(() => {
-    const savedBio = localStorage.getItem('mentorBio');
-    const savedTopics = localStorage.getItem('mentorTopics');
-    const savedIdealMentee = localStorage.getItem('mentorIdealMentee');
-    const savedPhilosophy = localStorage.getItem('mentorPhilosophy');
-    
-    if (savedBio) {
-      setBio(savedBio);
-    }
-    if (savedTopics) {
-      setTopics(JSON.parse(savedTopics));
-    }
-    if (savedIdealMentee) {
-      setIdealMentee(savedIdealMentee);
-    }
-    if (savedPhilosophy) {
-      setPhilosophy(savedPhilosophy);
-    }
-  }, []);
 
   // List of available topics
   const availableTopics = [
@@ -104,13 +83,6 @@ const MentorPreferences: React.FC<MentorPreferencesProps> = ({ inDialog = false,
       });
       return;
     }
-
-    // Save to localStorage
-    localStorage.setItem('mentorBio', bio);
-    localStorage.setItem('mentorTopics', JSON.stringify(topics));
-    localStorage.setItem('mentorIdealMentee', idealMentee);
-    localStorage.setItem('mentorPhilosophy', philosophy);
-    localStorage.setItem('mentorPreferencesSet', 'true');
 
     toast({
       title: "Preferences Saved",

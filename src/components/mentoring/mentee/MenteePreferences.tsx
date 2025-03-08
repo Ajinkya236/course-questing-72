@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,23 +38,6 @@ const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false,
   const [openTopicDialog, setOpenTopicDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Load saved preferences from localStorage on mount
-  useEffect(() => {
-    const savedTopics = localStorage.getItem('menteeSelectedTopics');
-    const savedLearningObjective = localStorage.getItem('menteeLearningObjective');
-    const savedIdealMentor = localStorage.getItem('menteeIdealMentor');
-    
-    if (savedTopics) {
-      setSelectedTopics(JSON.parse(savedTopics));
-    }
-    if (savedLearningObjective) {
-      setLearningObjective(savedLearningObjective);
-    }
-    if (savedIdealMentor) {
-      setIdealMentor(savedIdealMentor);
-    }
-  }, []);
-
   const handleTopicSelect = (topic: string) => {
     if (selectedTopics.includes(topic)) {
       setSelectedTopics(selectedTopics.filter(t => t !== topic));
@@ -74,12 +57,6 @@ const MenteePreferences: React.FC<MenteePreferencesProps> = ({ inDialog = false,
   };
 
   const handleSavePreferences = () => {
-    // Save to localStorage
-    localStorage.setItem('menteeSelectedTopics', JSON.stringify(selectedTopics));
-    localStorage.setItem('menteeLearningObjective', learningObjective);
-    localStorage.setItem('menteeIdealMentor', idealMentor);
-    localStorage.setItem('menteePreferencesSet', 'true');
-    
     toast({
       title: "Preferences Saved",
       description: "Your mentoring preferences have been updated successfully.",

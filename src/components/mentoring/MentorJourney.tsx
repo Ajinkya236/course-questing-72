@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MenteeRequests from './mentor/MenteeRequests';
 import ActiveMentorships from './mentor/ActiveMentorships';
 import MentorshipHistory from './mentor/MentorshipHistory';
+import BannerCarousel from '@/components/BannerCarousel';
 import { 
   ClipboardList, 
   Users, 
@@ -14,6 +16,28 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MentorPreferences from './mentor/MentorPreferences';
 import { useToast } from '@/hooks/use-toast';
+
+// Mock data for the banners
+const mentorBanners = [
+  {
+    id: 1,
+    title: "Mentoring Best Practices",
+    description: "Learn effective strategies to provide valuable guidance to your mentees",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+  },
+  {
+    id: 2,
+    title: "Monthly Mentorship Workshops",
+    description: "Join our upcoming workshops to enhance your mentoring skills",
+    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80"
+  },
+  {
+    id: 3,
+    title: "Guide: Providing Effective Feedback",
+    description: "Tips for delivering constructive and motivating feedback to mentees",
+    imageUrl: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+  }
+];
 
 // Mock data for active mentees
 const activeMentees = [
@@ -78,24 +102,16 @@ const MentorJourney = () => {
   const handlePreferencesSaved = () => {
     setPreferencesSet(true);
     setShowPreferencesDialog(false);
-    // Save the preferences in localStorage to persist
-    localStorage.setItem('mentorPreferencesSet', 'true');
     toast({
       title: "Preferences Saved",
       description: "Your mentor preferences have been saved successfully."
     });
   };
   
-  // Check if preferences have been set previously
-  useEffect(() => {
-    const savedPreferences = localStorage.getItem('mentorPreferencesSet');
-    if (savedPreferences === 'true') {
-      setPreferencesSet(true);
-    }
-  }, []);
-  
   return (
     <div className="space-y-6">
+      <BannerCarousel banners={mentorBanners} smallSize={true} className="mb-4" />
+      
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">My Mentor Journey</h2>
         <Button 
