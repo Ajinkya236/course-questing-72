@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -6,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
-import { Home, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle } from 'lucide-react';
+import { Home as HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 
 import SignIn from './pages/SignIn';
@@ -56,7 +57,7 @@ const TopNavigation: React.FC = () => {
           <nav className="flex items-center space-x-2">
             <Button variant="ghost" asChild size="sm">
               <Link to="/" className="flex items-center gap-1">
-                <Home className="h-4 w-4" />
+                <HomeIcon className="h-4 w-4" />
                 <span>Home</span>
               </Link>
             </Button>
