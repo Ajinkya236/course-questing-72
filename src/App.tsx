@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -6,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
-import { Home as HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle, LogOut } from 'lucide-react';
+import { HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle, LogOut } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 import { 
   DropdownMenu,
@@ -16,6 +17,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+// Import all page components
+import SignIn from './pages/SignIn';
+import Home from './pages/Home';
+import Discover from './pages/Discover';
+import MyLearning from './pages/MyLearning';
+import CoursePlayer from './pages/CoursePlayer';
+import Notifications from './pages/Notifications';
+import Profile from './pages/Profile';
+import ViewAllPage from './pages/ViewAllPage';
+import SearchResults from './pages/SearchResults';
+import Actionables from './pages/Actionables';
+import LeaderboardFullView from './pages/LeaderboardFullView';
+import Mentoring from './pages/Mentoring';
+import MyTeam from './pages/MyTeam';
+import FAQ from './pages/FAQ';
+import NotFound from './pages/NotFound';
+import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
+import DomainCoursesPage from './pages/DomainCoursesPage';
+import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
