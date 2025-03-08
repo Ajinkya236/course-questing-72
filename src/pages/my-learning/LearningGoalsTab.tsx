@@ -8,7 +8,6 @@ import { Progress } from '@/components/ui/progress';
 import { Calendar, Target, User, Users } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
-import { Course } from '@/types/course';
 
 interface LearningGoalsTabProps {
   teamMemberId?: string;
@@ -18,7 +17,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
   
-  // Self assigned goals
+  // Mock learning goals data
   const selfAssignedGoals = [
     {
       id: 1,
@@ -38,7 +37,6 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
     }
   ];
   
-  // Manager assigned goals
   const managerAssignedGoals = [
     {
       id: 3,
@@ -133,7 +131,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                       rating={course.rating}
                       trainingCategory={course.trainingCategory}
                       isBookmarked={course.isBookmarked}
-                      previewUrl={course.previewUrl || ''}
+                      previewUrl={course.previewUrl}
                       isHot={course.isHot}
                       isNew={course.isNew}
                     />
