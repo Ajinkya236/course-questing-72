@@ -17,7 +17,8 @@ import {
   Users,
   User,
   LogOut,
-  HelpCircle
+  HelpCircle,
+  GraduationCap
 } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -179,6 +180,32 @@ const Navbar: React.FC = () => {
               }`}
             >
               My Learning
+            </Link>
+
+            {/* Added Mentoring tab */}
+            <Link 
+              to="/mentoring" 
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/mentoring') ? 'text-primary' : 'text-foreground/60'
+              }`}
+            >
+              <span className="flex items-center gap-1">
+                <GraduationCap className="h-4 w-4" />
+                Mentoring
+              </span>
+            </Link>
+
+            {/* Added My Team tab */}
+            <Link 
+              to="/my-team" 
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/my-team') ? 'text-primary' : 'text-foreground/60'
+              }`}
+            >
+              <span className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                My Team
+              </span>
             </Link>
           </nav>
         </div>
