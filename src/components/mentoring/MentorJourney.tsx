@@ -10,77 +10,42 @@ import {
   Users, 
   History,
   Filter,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Bell
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MentorPreferences from './mentor/MentorPreferences';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useMediaQuery } from '@/hooks/use-mobile';
 
-// Mock data for HR communications banner
-const hrBanners = [
+// Mock data for the banners
+const mentorBanners = [
   {
     id: 1,
-    title: "New Mentoring Guidelines",
-    description: "Updated mentoring best practices are now available in the resource center",
-    imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf"
+    title: "Mentoring Best Practices",
+    description: "Learn effective strategies to provide valuable guidance to your mentees",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
   },
   {
     id: 2,
-    title: "Mentor Recognition Program",
-    description: "Nominate outstanding mentors for our quarterly recognition awards",
-    imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0"
+    title: "Monthly Mentorship Workshops",
+    description: "Join our upcoming workshops to enhance your mentoring skills",
+    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978"
   },
   {
     id: 3,
-    title: "Upcoming Mentor Training",
-    description: "Register for our advanced mentoring techniques workshop on June 15",
-    imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952"
+    title: "Guide: Providing Effective Feedback",
+    description: "Tips for delivering constructive and motivating feedback to mentees",
+    imageUrl: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca"
   }
 ];
 
 // Mock data for active mentees
 const activeMentees = [
-  { 
-    id: 1, 
-    name: "Emma Johnson", 
-    role: "Junior Developer", 
-    lastActivity: "2 days ago",
-    image: "https://randomuser.me/api/portraits/women/33.jpg" 
-  },
-  { 
-    id: 2, 
-    name: "Michael Chen", 
-    role: "Marketing Specialist", 
-    lastActivity: "Yesterday",
-    image: "https://randomuser.me/api/portraits/men/42.jpg" 
-  },
-  { 
-    id: 3, 
-    name: "Sarah Williams", 
-    role: "Product Manager", 
-    lastActivity: "Today",
-    image: "https://randomuser.me/api/portraits/women/65.jpg" 
-  },
-  { 
-    id: 4, 
-    name: "David Kim", 
-    role: "Data Scientist", 
-    lastActivity: "3 days ago",
-    image: "https://randomuser.me/api/portraits/men/22.jpg" 
-  },
-  { 
-    id: 5, 
-    name: "Olivia Martinez", 
-    role: "UX Designer", 
-    lastActivity: "5 days ago",
-    image: "https://randomuser.me/api/portraits/women/47.jpg" 
-  }
+  { id: 1, name: "Emma Johnson", role: "Junior Developer", lastActivity: "2 days ago" },
+  { id: 2, name: "Michael Chen", role: "Marketing Specialist", lastActivity: "Yesterday" },
+  { id: 3, name: "Sarah Williams", role: "Product Manager", lastActivity: "Today" },
+  { id: 4, name: "David Kim", role: "Data Scientist", lastActivity: "3 days ago" },
+  { id: 5, name: "Olivia Martinez", role: "UX Designer", lastActivity: "5 days ago" }
 ];
 
 const MentorJourney = () => {
@@ -91,10 +56,6 @@ const MentorJourney = () => {
   const [preferencesSet, setPreferencesSet] = useState(false);
   // Track if we need to show the preferences dialog
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
-  
-  // Track banner index for HR communications
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-  const isMobile = useMediaQuery();
   
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -116,61 +77,10 @@ const MentorJourney = () => {
       description: "Your mentor preferences have been saved successfully."
     });
   };
-
-  // Navigate HR banner
-  const navigateBanner = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setCurrentBannerIndex(prev => 
-        prev === 0 ? hrBanners.length - 1 : prev - 1
-      );
-    } else {
-      setCurrentBannerIndex(prev => 
-        prev === hrBanners.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-  
-  // HR Banner component
-  const HRBanner = () => {
-    const banner = hrBanners[currentBannerIndex];
-    
-    return (
-      <div className="relative bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 mb-6">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-            onClick={() => navigateBanner('prev')}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="mx-10 flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Bell className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">{banner.title}</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">{banner.description}</p>
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-            onClick={() => navigateBanner('next')}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
-  };
   
   return (
     <div className="space-y-6">
-      {/* HR Communications Banner */}
-      <HRBanner />
+      <BannerCarousel banners={mentorBanners} smallSize={true} className="mb-4" />
       
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">My Mentor Journey</h2>
@@ -248,17 +158,9 @@ const MentorJourney = () => {
                       onClick={() => setSelectedMentee(mentee.id)}
                       className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMentee === mentee.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary'}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={mentee.image} alt={mentee.name} />
-                          <AvatarFallback>{mentee.name.substring(0, 2)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{mentee.name}</div>
-                          <div className="text-sm text-muted-foreground">{mentee.role}</div>
-                          <div className="text-xs text-muted-foreground mt-1">Last active: {mentee.lastActivity}</div>
-                        </div>
-                      </div>
+                      <div className="font-medium">{mentee.name}</div>
+                      <div className="text-sm text-muted-foreground">{mentee.role}</div>
+                      <div className="text-xs text-muted-foreground mt-1">Last active: {mentee.lastActivity}</div>
                     </div>
                   ))}
                 </div>

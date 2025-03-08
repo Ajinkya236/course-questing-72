@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,7 @@ import {
   Video, 
   CheckCircle, 
   Plus,
-  BookOpen,
-  ClipboardList,
-  GraduationCap
+  BookOpen
 } from 'lucide-react';
 
 interface ActiveMentorshipsProps {
@@ -21,22 +19,6 @@ interface ActiveMentorshipsProps {
 }
 
 const ActiveMentorships: React.FC<ActiveMentorshipsProps> = ({ selectedMentee }) => {
-  const [activeTab, setActiveTab] = useState('tasks');
-
-  // Mock courses data
-  const courses = [
-    { id: 1, title: "Introduction to Web Development", progress: 75, daysLeft: 14 },
-    { id: 2, title: "Advanced JavaScript Concepts", progress: 30, daysLeft: 21 },
-    { id: 3, title: "UI/UX Design Fundamentals", progress: 50, daysLeft: 10 }
-  ];
-
-  // Mock sessions data
-  const sessions = [
-    { id: 1, title: "Goal Setting Discussion", date: "Jun 15, 2023", status: "completed" },
-    { id: 2, title: "Monthly Progress Review", date: "Jul 5, 2023", status: "upcoming" },
-    { id: 3, title: "Technical Skills Assessment", date: "Jul 20, 2023", status: "upcoming" }
-  ];
-
   return (
     <div className="space-y-4">
       <Card>
@@ -73,24 +55,11 @@ const ActiveMentorships: React.FC<ActiveMentorshipsProps> = ({ selectedMentee })
             </Button>
           </div>
           
-          <Tabs defaultValue="tasks" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full grid grid-cols-4 mb-4">
-              <TabsTrigger value="tasks">
-                <ClipboardList className="h-4 w-4 mr-2" />
-                Tasks
-              </TabsTrigger>
-              <TabsTrigger value="sessions">
-                <Calendar className="h-4 w-4 mr-2" />
-                Sessions
-              </TabsTrigger>
-              <TabsTrigger value="courses">
-                <GraduationCap className="h-4 w-4 mr-2" />
-                Courses
-              </TabsTrigger>
-              <TabsTrigger value="progress">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Progress
-              </TabsTrigger>
+          <Tabs defaultValue="tasks" className="w-full">
+            <TabsList className="w-full grid grid-cols-3 mb-4">
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="progress">Progress</TabsTrigger>
+              <TabsTrigger value="resources">Resources</TabsTrigger>
             </TabsList>
             
             <TabsContent value="tasks">
@@ -122,54 +91,6 @@ const ActiveMentorships: React.FC<ActiveMentorshipsProps> = ({ selectedMentee })
               </div>
             </TabsContent>
             
-            <TabsContent value="sessions">
-              <div className="space-y-3">
-                {sessions.map(session => (
-                  <div key={session.id} className="p-3 border rounded-md">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h4 className="font-medium text-sm">{session.title}</h4>
-                        <p className="text-xs text-muted-foreground">Scheduled: {session.date}</p>
-                      </div>
-                      <Badge variant={session.status === 'completed' ? 'secondary' : 'outline'}>
-                        {session.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-                
-                <Button variant="outline" size="sm" className="w-full mt-2 gap-1">
-                  <Plus className="h-4 w-4" />
-                  Schedule Session
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="courses">
-              <div className="space-y-3">
-                {courses.map(course => (
-                  <div key={course.id} className="p-3 border rounded-md">
-                    <h4 className="font-medium text-sm mb-1">{course.title}</h4>
-                    <div className="h-2 bg-secondary rounded-full w-full overflow-hidden">
-                      <div 
-                        className="h-full bg-primary rounded-full" 
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span className="text-xs text-muted-foreground">{course.progress}% Complete</span>
-                      <span className="text-xs text-muted-foreground">{course.daysLeft} days left</span>
-                    </div>
-                  </div>
-                ))}
-                
-                <Button variant="outline" size="sm" className="w-full mt-2 gap-1">
-                  <Plus className="h-4 w-4" />
-                  Recommend Course
-                </Button>
-              </div>
-            </TabsContent>
-            
             <TabsContent value="progress">
               <div className="space-y-4">
                 <div>
@@ -193,6 +114,36 @@ const ActiveMentorships: React.FC<ActiveMentorshipsProps> = ({ selectedMentee })
                     <span className="text-xs text-muted-foreground">4/10 Sessions</span>
                   </div>
                 </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="resources">
+              <div className="space-y-3">
+                <Button variant="outline" size="sm" className="w-full flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <FileText className="h-4 w-4" />
+                    Career Development Plan
+                  </span>
+                </Button>
+                
+                <Button variant="outline" size="sm" className="w-full flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4" />
+                    Recommended Reading
+                  </span>
+                </Button>
+                
+                <Button variant="outline" size="sm" className="w-full flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <Video className="h-4 w-4" />
+                    Interview Preparation
+                  </span>
+                </Button>
+                
+                <Button variant="outline" size="sm" className="w-full mt-2 gap-1">
+                  <Plus className="h-4 w-4" />
+                  Add Resource
+                </Button>
               </div>
             </TabsContent>
           </Tabs>

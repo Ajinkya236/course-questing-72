@@ -10,38 +10,12 @@ import {
   ClipboardList, 
   Users, 
   History,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Bell
+  Settings
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MenteePreferences from './mentee/MenteePreferences';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { useMediaQuery } from '@/hooks/use-mobile';
-
-// Mock data for HR communications banner
-const hrBanners = [
-  {
-    id: 1,
-    title: "Find Your Perfect Mentor",
-    description: "Use our enhanced search feature to find mentors who match your interests and career goals",
-    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-  },
-  {
-    id: 2,
-    title: "Mentee Success Stories",
-    description: "Read how other mentees have advanced their careers through effective mentorship",
-    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978"
-  },
-  {
-    id: 3,
-    title: "Maximize Your Mentorship",
-    description: "Five tips for getting the most out of your mentoring relationship",
-    imageUrl: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca"
-  }
-];
 
 const MenteeJourney = () => {
   const { toast } = useToast();
@@ -52,9 +26,6 @@ const MenteeJourney = () => {
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   // Store selected topics
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  // Track banner index for HR communications
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-  const isMobile = useMediaQuery();
   
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -78,61 +49,8 @@ const MenteeJourney = () => {
     });
   };
 
-  // Navigate HR banner
-  const navigateBanner = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setCurrentBannerIndex(prev => 
-        prev === 0 ? hrBanners.length - 1 : prev - 1
-      );
-    } else {
-      setCurrentBannerIndex(prev => 
-        prev === hrBanners.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-  
-  // HR Banner component
-  const HRBanner = () => {
-    const banner = hrBanners[currentBannerIndex];
-    
-    return (
-      <div className="relative bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 mb-6">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-            onClick={() => navigateBanner('prev')}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="mx-10 flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Bell className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">{banner.title}</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">{banner.description}</p>
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-            onClick={() => navigateBanner('next')}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
-      {/* HR Communications Banner */}
-      <HRBanner />
-      
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">My Mentee Journey</h2>
         <Button 

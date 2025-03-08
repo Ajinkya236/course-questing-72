@@ -20,7 +20,6 @@ import SearchResults from "./pages/SearchResults"; // New Search Results page
 import { Helmet } from "react-helmet";
 import RecommendedMentorsPage from "./pages/RecommendedMentorsPage"; // New Recommended Mentors page
 import { SpinTheWheelProvider } from "./contexts/SpinTheWheelContext";
-import MyTeam from "./pages/MyTeam"; // New My Team page
 
 const queryClient = new QueryClient();
 
@@ -51,7 +50,6 @@ const App = () => (
                 <Route path="/mentoring" element={<Mentoring />} />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/recommended-mentors" element={<RecommendedMentorsPage />} />
-                <Route path="/my-team" element={<MyTeam />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
