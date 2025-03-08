@@ -1,5 +1,5 @@
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 
 interface User {
   name?: string;
@@ -18,8 +18,12 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({ email: "demo@example.com" }); // Set a default user for demo purposes
 
   const login = (email: string, password: string) => {
     // In a real app, this would authenticate against an API
