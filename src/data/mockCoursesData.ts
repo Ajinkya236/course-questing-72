@@ -50,7 +50,8 @@ export const mockCourses = [
     rating: 4.6,
     isBookmarked: false,
     trainingCategory: "Management",
-    status: "assigned" as 'assigned'
+    status: "assigned" as 'assigned',
+    previewUrl: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
   },
   {
     id: "course-005",

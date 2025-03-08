@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,8 +18,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
   
-  // Use type assertion to make TypeScript understand we're adding the missing properties
-  // This is safe because we're just adding a default empty string for previewUrl if it's missing
+  // Process courses to ensure they have previewUrl
   const processedCourses = mockCourses.map(course => ({
     ...course,
     previewUrl: course.previewUrl || ''
