@@ -32,7 +32,7 @@ const FilterCarousel = ({
   selectedFilter: string, 
   onFilterSelect: (filter: string) => void 
 }) => {
-  const [emblaRef, emblaApi] = React.useState<HTMLDivElement | null>(null);
+  const [emblaRef, setEmblaRef] = React.useState<HTMLDivElement | null>(null);
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(true);
   
