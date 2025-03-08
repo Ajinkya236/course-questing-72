@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,7 +20,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Ensure courses have the previewUrl property by adding it if missing
   const processedCourses = mockCourses.map(course => ({
     ...course,
-    previewUrl: course.previewUrl || course.videoUrl || ''
+    previewUrl: course.previewUrl || ''  // We don't use videoUrl as fallback since it might not exist
   }));
   
   // Mock learning goals data

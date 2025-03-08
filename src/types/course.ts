@@ -27,13 +27,13 @@ export interface Course {
   skills?: { name: string; proficiency: string }[];
   certificates?: string[];
   videoUrl?: string;
-  previewUrl?: string; // Add previewUrl property
+  previewUrl?: string;
   modules?: Module[];
   isHot?: boolean;
   isNew?: boolean;
   createdAt?: string;
   status?: 'assigned' | 'in-progress' | 'completed';
-  sharedBy?: string; // Added sharedBy property
+  sharedBy?: string;
   
   // These fields from CourseCarousel interface
   level?: string;
