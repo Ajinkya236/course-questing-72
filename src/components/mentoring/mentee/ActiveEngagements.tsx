@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,7 +32,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import MarkSessionCompleteButton from './MarkSessionCompleteButton';
 
-// Define the types as mentioned in the error message
 type SessionStatus = "completed" | "upcoming" | "cancelled";
 type TaskStatus = "pending" | "completed";
 
@@ -72,15 +70,14 @@ interface Engagement {
   startDate: string;
   imageUrl: string;
   progress: number;
+  goalsSet: boolean;
+  sessionsCompleted: number;
   sessions: Session[];
   tasks: Task[];
   courses: Course[];
-  goalsSet: boolean;
-  sessionsCompleted: number;
   journalEntries?: { id: number; date: string; content: string }[];
 }
 
-// Mock data for active engagements with proper typing
 const activeEngagementsData: Engagement[] = [
   {
     id: 1,
@@ -160,7 +157,6 @@ const ActiveEngagements = () => {
   const [journalEntry, setJournalEntry] = useState('');
   const [showCertificateDialog, setShowCertificateDialog] = useState(false);
   
-  // New states for session management
   const [showScheduleSessionDialog, setShowScheduleSessionDialog] = useState(false);
   const [showEditSessionDialog, setShowEditSessionDialog] = useState(false);
   const [showDeleteSessionDialog, setShowDeleteSessionDialog] = useState(false);
@@ -175,7 +171,6 @@ const ActiveEngagements = () => {
   const handleAddNote = () => {
     if (!activeEngagement || !selectedSession || !sessionNote.trim()) return;
     
-    // Update the session notes in the state
     setEngagements(engagements.map(e => 
       e.id === activeEngagementId 
         ? {
@@ -199,7 +194,6 @@ const ActiveEngagements = () => {
   const handleTaskSubmission = () => {
     if (!activeEngagement || !selectedTask || !taskFile) return;
     
-    // Update the task status in the state
     setEngagements(engagements.map(e => 
       e.id === activeEngagementId 
         ? {
@@ -237,7 +231,6 @@ const ActiveEngagements = () => {
   const handleCompleteEngagement = () => {
     if (!activeEngagementId) return;
     
-    // Check if completion requirements are met
     const engagement = engagements.find(e => e.id === activeEngagementId);
     if (!engagement?.goalsSet || engagement.sessionsCompleted === 0) {
       toast({
@@ -304,7 +297,6 @@ const ActiveEngagements = () => {
     });
   };
   
-  // Session management handlers
   const handleScheduleSession = () => {
     if (!activeEngagement || !newSessionTitle || !newSessionDate || !newSessionTime) return;
     
@@ -371,7 +363,6 @@ const ActiveEngagements = () => {
   const handleDeleteSession = () => {
     if (!activeEngagement || !selectedSession) return;
     
-    // Remove the session
     setEngagements(engagements.map(e => 
       e.id === activeEngagementId 
         ? {
@@ -392,7 +383,6 @@ const ActiveEngagements = () => {
   const handleJoinSession = () => {
     if (!selectedSession?.meetingLink) return;
     
-    // In a real app, this would open the meeting link
     window.open(selectedSession.meetingLink, '_blank');
     
     toast({
@@ -406,7 +396,6 @@ const ActiveEngagements = () => {
   const handleCancelSession = () => {
     if (!activeEngagement || !selectedSession) return;
     
-    // Mark the session as cancelled
     setEngagements(engagements.map(e => 
       e.id === activeEngagementId 
         ? {
@@ -1051,7 +1040,27 @@ const ActiveEngagements = () => {
                                     )}
                                     
                                     {session.status === 'upcoming' && (
-                                      <MarkSessionCompleteButton session={session} />
+                                      <MarkSessionCompleteButton 
+                                        sessionId={session.id.toString()} 
+                                        onComplete={() => {
+                                          setEngagements(engagements.map(e => 
+                                            e.id === activeEngagementId 
+                                              ? {
+                                                  ...e,
+                                                  sessions: e.sessions.map(s => 
+                                                    s.id === session.id ? { ...s, status: "completed" as SessionStatus } : s
+                                                  ),
+                                                  sessionsCompleted: e.sessionsCompleted + 1
+                                                }
+                                              : e
+                                          ));
+
+                                          toast({
+                                            title: "Session Completed",
+                                            description: "Your session has been marked as complete."
+                                          });
+                                        }}
+                                      />
                                     )}
                                   </div>
                                 </div>
