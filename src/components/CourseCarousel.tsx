@@ -39,8 +39,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subFilterOptions = {},
   showTrainingCategory = false
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
+  // Removing duplicates from filter options
+  const uniqueFilterOptions = filterOptions.length > 0 ? [...new Set(filterOptions)] : [];
+  
+  const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
@@ -95,7 +99,9 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setSelectedFilter(filter);
     // Reset sub-filter when main filter changes
     if (subFilterOptions && subFilterOptions[filter]) {
-      setSelectedSubFilter(subFilterOptions[filter][0]);
+      // Get the first unique sub-filter
+      const uniqueSubFilters = [...new Set(subFilterOptions[filter])];
+      setSelectedSubFilter(uniqueSubFilters[0]);
     } else {
       setSelectedSubFilter('All Sub-Academies');
     }
@@ -105,8 +111,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setSelectedSubFilter(subFilter);
   };
 
-  // Get available sub-filters based on selected main filter
-  const availableSubFilters = subFilterOptions[selectedFilter] || [];
+  // Get available sub-filters based on selected main filter, removing duplicates
+  const availableSubFilters = subFilterOptions[selectedFilter] ? 
+    [...new Set(subFilterOptions[selectedFilter])] : 
+    [];
 
   // Create a fallback for courses that don't have all required properties
   const normalizedCourses = normalizeCoursesCount(courses.map(course => ({
@@ -120,29 +128,34 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        
+      <div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
-            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-          >
-            View All
-          </Button>
+          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
           <ChevronRight 
-            className="h-4 w-4 cursor-pointer" 
+            className="h-4 w-4 cursor-pointer ml-1" 
             onClick={onViewAllClick || (() => navigate(viewAllUrl))}
           />
+          {isHovered && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="ml-1 p-0" 
+              onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+            >
+              View All
+            </Button>
+          )}
         </div>
       </div>
       
       {/* Main filters carousel with navigation buttons */}
-      {showSkillFilters && filterOptions.length > 0 && (
+      {showSkillFilters && uniqueFilterOptions.length > 0 && (
         <CarouselFilters
-          filters={filterOptions}
+          filters={uniqueFilterOptions}
           selectedFilter={selectedFilter}
           onFilterSelect={handleFilterSelect}
         />

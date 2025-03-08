@@ -7,8 +7,25 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
-import { Home as HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle } from 'lucide-react';
+import { 
+  Home as HomeIcon, 
+  Compass, 
+  BookOpen, 
+  Bell, 
+  User, 
+  Users, 
+  Headphones, 
+  HelpCircle,
+  ChevronDown
+} from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 
 import SignIn from './pages/SignIn';
 import Home from './pages/Home';
@@ -48,12 +65,24 @@ interface PageLayoutProps {
   children: React.ReactNode;
 }
 
+const courseCategories = [
+  "Leadership & Management",
+  "Technical Skills",
+  "Data & Analytics",
+  "Marketing & Digital",
+  "Product Management",
+  "Design & Innovation",
+  "Soft Skills",
+  "Project Management",
+  "Compliance & Safety"
+];
+
 const TopNavigation: React.FC = () => {
   return (
     <div className="w-full border-b bg-background sticky top-0 z-10">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg">LMS</h1>
+          <h1 className="font-bold text-lg">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
             <Button variant="ghost" asChild size="sm">
               <Link to="/" className="flex items-center gap-1">
@@ -61,12 +90,30 @@ const TopNavigation: React.FC = () => {
                 <span>Home</span>
               </Link>
             </Button>
-            <Button variant="ghost" asChild size="sm">
-              <Link to="/discover" className="flex items-center gap-1">
-                <Compass className="h-4 w-4" />
-                <span>Discover</span>
-              </Link>
-            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                  <Compass className="h-4 w-4" />
+                  <span>Discover</span>
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {courseCategories.map((category) => (
+                  <DropdownMenuItem key={category} asChild>
+                    <Link to={`/discover?category=${encodeURIComponent(category)}`}>
+                      {category}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/discover">View All Categories</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button variant="ghost" asChild size="sm">
               <Link to="/my-learning" className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4" />
@@ -98,11 +145,29 @@ const TopNavigation: React.FC = () => {
               <HelpCircle className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/profile">
-              <User className="h-5 w-5" />
-            </Link>
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80" 
+                  alt="Profile" 
+                  className="h-8 w-8 rounded-full"
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/profile">View Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/faq">FAQs</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Sign Out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <ModeToggle />
         </div>
       </div>

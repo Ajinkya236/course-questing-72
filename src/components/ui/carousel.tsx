@@ -264,7 +264,9 @@ const CarouselFilters = React.forwardRef<
 >(({ className, filters, selectedFilter, onFilterSelect, loop = true, ...props }, ref) => {
   const filtersRef = React.useRef<HTMLDivElement>(null);
   const [position, setPosition] = React.useState(0);
-  const maxPosition = Math.max(0, filters.length - 6); // Show 6 filters at a time
+  // Remove duplicates from filters array
+  const uniqueFilters = [...new Set(filters)];
+  const maxPosition = Math.max(0, uniqueFilters.length - 6); // Show 6 filters at a time
 
   const scrollLeft = () => {
     if (filtersRef.current) {
@@ -288,12 +290,12 @@ const CarouselFilters = React.forwardRef<
 
   // Calculate visible filters based on position
   const getVisibleFilters = () => {
-    if (!loop) return filters;
+    if (!loop) return uniqueFilters;
     
     // Create a circular array effect by duplicating the array
-    const extendedFilters = [...filters, ...filters, ...filters];
+    const extendedFilters = [...uniqueFilters, ...uniqueFilters, ...uniqueFilters];
     // Start from the middle copy to allow backward scrolling
-    const startIndex = filters.length + position;
+    const startIndex = uniqueFilters.length + position;
     // Take enough items for display
     return extendedFilters.slice(startIndex, startIndex + 6);
   };
@@ -306,7 +308,7 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-8 w-8 shadow-md ml-0"
           onClick={scrollLeft}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -336,7 +338,7 @@ const CarouselFilters = React.forwardRef<
         <Button 
           variant="outline" 
           size="icon" 
-          className="rounded-full h-8 w-8 shadow-md"
+          className="rounded-full h-8 w-8 shadow-md mr-0"
           onClick={scrollRight}
         >
           <ChevronRight className="h-4 w-4" />
