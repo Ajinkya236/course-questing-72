@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -6,13 +5,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "@/components/ui/carousel";
 
 interface Domain {
   id: string;
@@ -22,7 +14,7 @@ interface Domain {
   description: string;
 }
 
-// Standalone filter component with self-contained carousel implementation
+// Completely standalone filter component without any carousel dependencies
 const FilterCarousel = ({ 
   filters, 
   selectedFilter, 
@@ -32,59 +24,60 @@ const FilterCarousel = ({
   selectedFilter: string, 
   onFilterSelect: (filter: string) => void 
 }) => {
-  const [emblaRef, setEmblaRef] = React.useState<HTMLDivElement | null>(null);
+  // Use a simple ref instead of embla
+  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(true);
   
   // Set up scroll controls
   const scrollPrev = () => {
-    if (emblaRef) {
-      emblaRef.scrollBy({ left: -200, behavior: 'smooth' });
-      setTimeout(() => {
-        setCanScrollPrev(emblaRef.scrollLeft > 0);
-        setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
-      }, 300);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+      setTimeout(updateScrollButtons, 300);
     }
   };
   
   const scrollNext = () => {
-    if (emblaRef) {
-      emblaRef.scrollBy({ left: 200, behavior: 'smooth' });
-      setTimeout(() => {
-        setCanScrollPrev(emblaRef.scrollLeft > 0);
-        setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
-      }, 300);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+      setTimeout(updateScrollButtons, 300);
+    }
+  };
+
+  // Update scroll button states
+  const updateScrollButtons = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollPrev(scrollLeft > 0);
+      setCanScrollNext(scrollLeft < scrollWidth - clientWidth - 5); // 5px buffer
     }
   };
   
-  // Track scroll position to update button states
+  // Track scroll position
   const handleScroll = () => {
-    if (emblaRef) {
-      setCanScrollPrev(emblaRef.scrollLeft > 0);
-      setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
-    }
+    updateScrollButtons();
   };
   
-  // Set up event listeners when ref changes
+  // Set up event listeners
   React.useEffect(() => {
-    if (emblaRef) {
-      emblaRef.addEventListener('scroll', handleScroll);
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
       // Initial check
-      setCanScrollPrev(emblaRef.scrollLeft > 0);
-      setCanScrollNext(emblaRef.scrollLeft < emblaRef.scrollWidth - emblaRef.clientWidth);
+      updateScrollButtons();
       
       return () => {
-        emblaRef.removeEventListener('scroll', handleScroll);
+        scrollContainer.removeEventListener('scroll', handleScroll);
       };
     }
-  }, [emblaRef]);
+  }, []);
 
   return (
     <div className="w-full relative">
       <div className="overflow-hidden">
         <div 
           className="flex gap-2 py-1 pl-1 overflow-x-auto no-scrollbar"
-          ref={ref => setEmblaRef(ref)}
+          ref={scrollContainerRef}
         >
           {filters.map((filter) => (
             <Button
