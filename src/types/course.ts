@@ -32,6 +32,7 @@ export interface Course {
   isNew?: boolean;
   createdAt?: string;
   status?: 'assigned' | 'in-progress' | 'completed';
+  sharedBy?: string; // Added sharedBy property
   
   // These fields from CourseCarousel interface
   level?: string;

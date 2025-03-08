@@ -35,7 +35,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
     course.isBookmarked === true
   );
   
-  // Fixed shared courses to use the correct status type - changed from string to a union type
+  // Using the correct union type for status
   const sharedWithMeCourses: Course[] = [
     {
       id: "shared-001",
