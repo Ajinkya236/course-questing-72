@@ -81,7 +81,7 @@ const Mentoring = () => {
       <Helmet>
         <title>Mentoring | Learning Management System</title>
       </Helmet>
-      <div className="container py-4 mb-20">
+      <div className="container py-4 px-4">
         <h1 className="text-3xl font-bold tracking-tight mb-4">Mentoring</h1>
         
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
