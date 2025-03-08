@@ -213,6 +213,7 @@ const CarouselPrevious = React.forwardRef<
         className
       )}
       onClick={scrollPrev}
+      disabled={!canScrollPrev}
       {...props}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -241,6 +242,7 @@ const CarouselNext = React.forwardRef<
         className
       )}
       onClick={scrollNext}
+      disabled={!canScrollNext}
       {...props}
     >
       <ArrowRight className="h-4 w-4" />
@@ -250,7 +252,7 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
-// New component for filter carousels with navigation buttons
+// Re-implemented FilterCarousel component to not use useCarousel internally
 const CarouselFilters = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
@@ -260,46 +262,51 @@ const CarouselFilters = React.forwardRef<
     loop?: boolean;
   }
 >(({ className, filters, selectedFilter, onFilterSelect, loop = true, ...props }, ref) => {
-  const filtersRef = React.useRef<HTMLDivElement>(null);
+  const filterContainerRef = React.useRef<HTMLDivElement>(null);
+  const [visibleFilters, setVisibleFilters] = React.useState<string[]>([]);
   const [position, setPosition] = React.useState(0);
-  const maxPosition = Math.max(0, filters.length - 6); // Show 6 filters at a time
+  
+  // Calculate how many filters to show based on container width
+  React.useEffect(() => {
+    if (filters.length) {
+      setVisibleFilters(filters.slice(0, Math.min(filters.length, 6)));
+    }
+  }, [filters]);
 
   const scrollLeft = () => {
-    if (filtersRef.current) {
-      if (loop && position === 0) {
-        setPosition(maxPosition);
-      } else {
-        setPosition(prev => Math.max(0, prev - 1));
+    if (position > 0) {
+      setPosition(prev => prev - 1);
+      if (filterContainerRef.current) {
+        const newFilters = [...filters];
+        if (position - 1 >= 0) {
+          setVisibleFilters(newFilters.slice(position - 1, position - 1 + 6));
+        }
       }
+    } else if (loop) {
+      const newPosition = Math.max(0, filters.length - 6);
+      setPosition(newPosition);
+      setVisibleFilters(filters.slice(newPosition, newPosition + 6));
     }
   };
 
   const scrollRight = () => {
-    if (filtersRef.current) {
-      if (loop && position >= maxPosition) {
-        setPosition(0);
-      } else {
-        setPosition(prev => Math.min(maxPosition, prev + 1));
+    const maxPosition = Math.max(0, filters.length - 6);
+    if (position < maxPosition) {
+      setPosition(prev => prev + 1);
+      if (filterContainerRef.current) {
+        const newFilters = [...filters];
+        if (position + 1 <= maxPosition) {
+          setVisibleFilters(newFilters.slice(position + 1, position + 1 + 6));
+        }
       }
+    } else if (loop) {
+      setPosition(0);
+      setVisibleFilters(filters.slice(0, 6));
     }
   };
 
-  // Calculate visible filters based on position
-  const getVisibleFilters = () => {
-    if (!loop) return filters;
-    
-    // Create a circular array effect by duplicating the array
-    const extendedFilters = [...filters, ...filters, ...filters];
-    // Start from the middle copy to allow backward scrolling
-    const startIndex = filters.length + position;
-    // Take enough items for display
-    return extendedFilters.slice(startIndex, startIndex + 6);
-  };
-
-  const visibleFilters = getVisibleFilters();
-
   return (
-    <div className={cn("relative mb-4", className)} {...props}>
+    <div className={cn("relative mb-4", className)} {...props} ref={ref}>
       <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
         <Button 
           variant="outline" 
@@ -313,7 +320,7 @@ const CarouselFilters = React.forwardRef<
       
       <div className="overflow-hidden px-9">
         <div 
-          ref={filtersRef} 
+          ref={filterContainerRef} 
           className="flex transition-transform duration-300 justify-center"
         >
           {visibleFilters.map((filter, index) => (
