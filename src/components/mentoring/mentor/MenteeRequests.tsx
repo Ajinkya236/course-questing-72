@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Check, X, Briefcase, GraduationCap, Clock, Building, Calendar, MessageSquare } from 'lucide-react';
+import { Check, X, Briefcase, GraduationCap, Clock, Building, Calendar, MessageSquare, FileText } from 'lucide-react';
 
 // Mock data for mentee requests
 const mockPendingRequests = [
