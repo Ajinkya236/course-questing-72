@@ -6,7 +6,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
-import { CarouselFilters } from '@/components/ui/carousel';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 
 interface Domain {
   id: string;
@@ -15,6 +21,41 @@ interface Domain {
   icon: string;
   description: string;
 }
+
+// Filter component specifically for this page
+const FilterCarousel = ({ 
+  filters, 
+  selectedFilter, 
+  onFilterSelect 
+}: { 
+  filters: string[], 
+  selectedFilter: string, 
+  onFilterSelect: (filter: string) => void 
+}) => {
+  return (
+    <Carousel className="w-full">
+      <div className="flex items-center">
+        <CarouselContent className="ml-1">
+          {filters.map((filter) => (
+            <CarouselItem key={filter} className="pl-1 basis-auto">
+              <Button
+                variant={selectedFilter === filter ? "default" : "outline"}
+                className="rounded-full whitespace-nowrap"
+                onClick={() => onFilterSelect(filter)}
+              >
+                {filter}
+              </Button>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="flex items-center ml-2">
+          <CarouselPrevious className="static translate-y-0 h-8 w-8" />
+          <CarouselNext className="static translate-y-0 h-8 w-8" />
+        </div>
+      </div>
+    </Carousel>
+  );
+};
 
 const domains: Domain[] = [
   { 
@@ -164,10 +205,10 @@ const DomainCoursesPage: React.FC = () => {
           variant="outline" 
           size="sm" 
           className="mb-6" 
-          onClick={() => navigate('/view-all/domains')}
+          onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Domains
+          Back
         </Button>
 
         <div className="flex items-center gap-4 mb-8">
@@ -181,7 +222,7 @@ const DomainCoursesPage: React.FC = () => {
         {/* Domain filters carousel with navigation buttons */}
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Browse Domains</h3>
-          <CarouselFilters
+          <FilterCarousel
             filters={domains.map(d => d.name)}
             selectedFilter={domain.name}
             onFilterSelect={(name) => {
@@ -194,7 +235,7 @@ const DomainCoursesPage: React.FC = () => {
         {/* Skills filter carousel */}
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Filter by Skills</h3>
-          <CarouselFilters
+          <FilterCarousel
             filters={availableSkills}
             selectedFilter={selectedSkill}
             onFilterSelect={setSelectedSkill}
