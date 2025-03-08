@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import SpinTheWheel from "@/components/gamification/SpinTheWheel";
-import { Trophy, Sparkles, Gift, CheckCircle, ArrowRight, Share2 } from "lucide-react";
+import { Trophy, Sparkles, Gift, Check, ArrowRight, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import confetti from 'canvas-confetti';
 
@@ -150,7 +150,7 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
         <div className="flex flex-col items-center justify-center py-4">
           {showClaimSuccess ? (
             <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
-              <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+              <Check className="h-16 w-16 text-green-500 mb-4" />
               <h3 className="text-xl font-bold mb-2">Successfully Claimed!</h3>
               <p className="text-center mb-4">
                 {result.name} has been added to your account.
@@ -181,7 +181,7 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
             </>
           ) : showShareSuccess ? (
             <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
-              <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+              <Check className="h-16 w-16 text-green-500 mb-4" />
               <h3 className="text-xl font-bold mb-2">Successfully Shared!</h3>
               <p className="text-center mb-4">
                 Thanks for sharing! You've earned a bonus spin.

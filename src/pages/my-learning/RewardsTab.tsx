@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp, ExternalLink } from 'lucide-react';
+import { Award, Gift, ChevronRight, Star, Sparkles, Clock, Zap, HelpCircle, Medal, ArrowUp, ExternalLink, Check } from 'lucide-react';
 import LeaderboardEnhanced from '@/components/LeaderboardEnhanced';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,10 +42,10 @@ const mockLeaderboardUsers = generateMockLeaderboardUsers();
 const currentUserPosition = 15;
 const currentUser = mockLeaderboardUsers.find(user => user.position === currentUserPosition);
 
-// Get a relative view - 5 users above and 5 users below
+// Get a relative view - 2 users above and 5 users below
 const getRelativeLeaderboard = () => {
-  const startIndex = Math.max(0, currentUserPosition - 6); // -6 to include 5 users above
-  const endIndex = Math.min(mockLeaderboardUsers.length - 1, currentUserPosition + 4); // +4 to include 5 users below
+  const startIndex = Math.max(0, currentUserPosition - 3); // -3 to include 2 users above
+  const endIndex = Math.min(mockLeaderboardUsers.length - 1, currentUserPosition + 5); // +5 to include 5 users below
   
   // Get top 3 users to always show them
   const topUsers = mockLeaderboardUsers.slice(0, 3);
@@ -513,7 +512,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
             {redeemStep === 3 && (
               <div className="flex flex-col items-center justify-center py-6">
                 <div className="bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 h-16 w-16 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle className="h-8 w-8" />
+                  <Check className="h-8 w-8" />
                 </div>
                 <h3 className="text-lg font-medium mb-2">Redemption Successful!</h3>
                 <p className="text-center text-muted-foreground mb-4">

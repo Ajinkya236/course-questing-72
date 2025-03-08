@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -78,7 +77,6 @@ const courseCategories = [
 ];
 
 const TopNavigation: React.FC = () => {
-  // New state to manage hover of the Discover dropdown
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
 
   return (
@@ -245,6 +243,7 @@ function App() {
               <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
               
               <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
+              <Route path="/leaderboard" element={<LeaderboardFullView />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
