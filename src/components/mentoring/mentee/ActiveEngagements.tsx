@@ -21,22 +21,30 @@ import {
   Download,
   Target,
   BookMarked,
-  Award
+  Award,
+  Video,
+  Plus,
+  Edit,
+  Trash
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import MarkSessionCompleteButton from './MarkSessionCompleteButton';
 
 // Define the types as mentioned in the error message
-type SessionStatus = "completed" | "upcoming";
+type SessionStatus = "completed" | "upcoming" | "cancelled";
 type TaskStatus = "pending" | "completed";
 
 interface Session {
   id: number;
   title: string;
   date: string;
+  time?: string;
   status: SessionStatus;
   notes?: string;
+  meetingLink?: string;
 }
 
 interface Task {
@@ -85,8 +93,8 @@ const activeEngagementsData: Engagement[] = [
     goalsSet: false,
     sessionsCompleted: 1,
     sessions: [
-      { id: 1, title: "Introduction to Data Analysis", date: "2023-10-25", status: "completed", notes: "Discussed key concepts and tools" },
-      { id: 2, title: "Advanced Data Visualization", date: "2023-11-05", status: "upcoming" }
+      { id: 1, title: "Introduction to Data Analysis", date: "2023-10-25", time: "10:00 AM", status: "completed", notes: "Discussed key concepts and tools", meetingLink: "https://meet.zoom.us/j/123456789" },
+      { id: 2, title: "Advanced Data Visualization", date: "2023-11-05", time: "2:30 PM", status: "upcoming", meetingLink: "https://meet.zoom.us/j/987654321" }
     ],
     tasks: [
       { id: 1, title: "Data Cleaning Exercise", dueDate: "2023-10-30", status: "completed", description: "Clean the provided dataset and normalize values." },
@@ -110,10 +118,10 @@ const activeEngagementsData: Engagement[] = [
     goalsSet: true,
     sessionsCompleted: 3,
     sessions: [
-      { id: 1, title: "Product Requirements", date: "2023-09-20", status: "completed", notes: "Learned how to gather and document requirements" },
-      { id: 2, title: "Stakeholder Management", date: "2023-10-05", status: "completed", notes: "Discussed effective communication strategies" },
-      { id: 3, title: "Product Roadmapping", date: "2023-10-20", status: "completed", notes: "Created a sample roadmap" },
-      { id: 4, title: "Launch Strategies", date: "2023-11-10", status: "upcoming" }
+      { id: 1, title: "Product Requirements", date: "2023-09-20", time: "11:00 AM", status: "completed", notes: "Learned how to gather and document requirements", meetingLink: "https://meet.zoom.us/j/111222333" },
+      { id: 2, title: "Stakeholder Management", date: "2023-10-05", time: "1:00 PM", status: "completed", notes: "Discussed effective communication strategies", meetingLink: "https://meet.zoom.us/j/444555666" },
+      { id: 3, title: "Product Roadmapping", date: "2023-10-20", time: "3:00 PM", status: "completed", notes: "Created a sample roadmap", meetingLink: "https://meet.zoom.us/j/777888999" },
+      { id: 4, title: "Launch Strategies", date: "2023-11-10", time: "2:00 PM", status: "upcoming", meetingLink: "https://meet.zoom.us/j/000111222" }
     ],
     tasks: [
       { id: 1, title: "Competitive Analysis", dueDate: "2023-09-30", status: "completed", description: "Research 3-5 competing products and analyze their strengths and weaknesses." },
@@ -151,11 +159,33 @@ const ActiveEngagements = () => {
   const [showJournalSheet, setShowJournalSheet] = useState(false);
   const [journalEntry, setJournalEntry] = useState('');
   const [showCertificateDialog, setShowCertificateDialog] = useState(false);
+  
+  // New states for session management
+  const [showScheduleSessionDialog, setShowScheduleSessionDialog] = useState(false);
+  const [showEditSessionDialog, setShowEditSessionDialog] = useState(false);
+  const [showDeleteSessionDialog, setShowDeleteSessionDialog] = useState(false);
+  const [showJoinSessionDialog, setShowJoinSessionDialog] = useState(false);
+  const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [newSessionDate, setNewSessionDate] = useState('');
+  const [newSessionTime, setNewSessionTime] = useState('');
+  const [newSessionLink, setNewSessionLink] = useState('');
 
   const activeEngagement = engagements.find(e => e.id === activeEngagementId) || null;
 
   const handleAddNote = () => {
     if (!activeEngagement || !selectedSession || !sessionNote.trim()) return;
+    
+    // Update the session notes in the state
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            sessions: e.sessions.map(s => 
+              s.id === selectedSession.id ? { ...s, notes: sessionNote } : s
+            )
+          }
+        : e
+    ));
     
     toast({
       title: "Note Added",
@@ -168,6 +198,18 @@ const ActiveEngagements = () => {
 
   const handleTaskSubmission = () => {
     if (!activeEngagement || !selectedTask || !taskFile) return;
+    
+    // Update the task status in the state
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            tasks: e.tasks.map(t => 
+              t.id === selectedTask.id ? { ...t, status: "completed" as TaskStatus } : t
+            )
+          }
+        : e
+    ));
     
     toast({
       title: "Task Submitted",
@@ -260,6 +302,128 @@ const ActiveEngagements = () => {
       title: "Download Started",
       description: "All tasks, notes and materials are being prepared for download."
     });
+  };
+  
+  // Session management handlers
+  const handleScheduleSession = () => {
+    if (!activeEngagement || !newSessionTitle || !newSessionDate || !newSessionTime) return;
+    
+    const newSession: Session = {
+      id: Date.now(),
+      title: newSessionTitle,
+      date: newSessionDate,
+      time: newSessionTime,
+      status: "upcoming",
+      meetingLink: newSessionLink
+    };
+    
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            sessions: [...e.sessions, newSession]
+          }
+        : e
+    ));
+    
+    toast({
+      title: "Session Scheduled",
+      description: "Your new mentoring session has been scheduled."
+    });
+    
+    setNewSessionTitle('');
+    setNewSessionDate('');
+    setNewSessionTime('');
+    setNewSessionLink('');
+    setShowScheduleSessionDialog(false);
+  };
+  
+  const handleEditSession = () => {
+    if (!activeEngagement || !selectedSession || !newSessionTitle || !newSessionDate || !newSessionTime) return;
+    
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            sessions: e.sessions.map(s => 
+              s.id === selectedSession.id 
+                ? { 
+                    ...s, 
+                    title: newSessionTitle, 
+                    date: newSessionDate, 
+                    time: newSessionTime,
+                    meetingLink: newSessionLink || s.meetingLink
+                  } 
+                : s
+            )
+          }
+        : e
+    ));
+    
+    toast({
+      title: "Session Updated",
+      description: "Your mentoring session has been updated."
+    });
+    
+    setShowEditSessionDialog(false);
+  };
+  
+  const handleDeleteSession = () => {
+    if (!activeEngagement || !selectedSession) return;
+    
+    // Remove the session
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            sessions: e.sessions.filter(s => s.id !== selectedSession.id)
+          }
+        : e
+    ));
+    
+    toast({
+      title: "Session Deleted",
+      description: "The mentoring session has been deleted."
+    });
+    
+    setShowDeleteSessionDialog(false);
+  };
+  
+  const handleJoinSession = () => {
+    if (!selectedSession?.meetingLink) return;
+    
+    // In a real app, this would open the meeting link
+    window.open(selectedSession.meetingLink, '_blank');
+    
+    toast({
+      title: "Joining Session",
+      description: "Opening your mentoring session..."
+    });
+    
+    setShowJoinSessionDialog(false);
+  };
+  
+  const handleCancelSession = () => {
+    if (!activeEngagement || !selectedSession) return;
+    
+    // Mark the session as cancelled
+    setEngagements(engagements.map(e => 
+      e.id === activeEngagementId 
+        ? {
+            ...e,
+            sessions: e.sessions.map(s => 
+              s.id === selectedSession.id ? { ...s, status: "cancelled" as SessionStatus } : s
+            )
+          }
+        : e
+    ));
+    
+    toast({
+      title: "Session Cancelled",
+      description: "Your mentoring session has been cancelled."
+    });
+    
+    setShowDeleteSessionDialog(false);
   };
   
   const canCompleteEngagement = activeEngagement?.goalsSet && activeEngagement?.sessionsCompleted > 0;
@@ -579,6 +743,73 @@ const ActiveEngagements = () => {
                         </TabsList>
                         
                         <TabsContent value="sessions">
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-md font-medium">Mentoring Sessions</h3>
+                            <Dialog open={showScheduleSessionDialog} onOpenChange={setShowScheduleSessionDialog}>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="gap-1">
+                                  <Plus className="h-4 w-4" />
+                                  Schedule Session
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Schedule New Session</DialogTitle>
+                                  <DialogDescription>
+                                    Plan a new mentoring session with {activeEngagement.mentorName}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4 space-y-4">
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium" htmlFor="session-title">Session Title</label>
+                                    <Input
+                                      id="session-title"
+                                      placeholder="e.g., Career Growth Discussion"
+                                      value={newSessionTitle}
+                                      onChange={(e) => setNewSessionTitle(e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium" htmlFor="session-date">Date</label>
+                                    <Input
+                                      id="session-date"
+                                      type="date"
+                                      value={newSessionDate}
+                                      onChange={(e) => setNewSessionDate(e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium" htmlFor="session-time">Time</label>
+                                    <Input
+                                      id="session-time"
+                                      type="time"
+                                      value={newSessionTime}
+                                      onChange={(e) => setNewSessionTime(e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium" htmlFor="session-link">Meeting Link (Optional)</label>
+                                    <Input
+                                      id="session-link"
+                                      placeholder="e.g., https://zoom.us/j/123456789"
+                                      value={newSessionLink}
+                                      onChange={(e) => setNewSessionLink(e.target.value)}
+                                    />
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button variant="outline" onClick={() => setShowScheduleSessionDialog(false)}>Cancel</Button>
+                                  <Button 
+                                    onClick={handleScheduleSession}
+                                    disabled={!newSessionTitle || !newSessionDate || !newSessionTime}
+                                  >
+                                    Schedule
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                          
                           <div className="space-y-4">
                             {activeEngagement.sessions.map(session => (
                               <Card key={session.id}>
@@ -586,19 +817,35 @@ const ActiveEngagements = () => {
                                   <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-medium">{session.title}</h4>
                                     <Badge 
-                                      variant={session.status === 'completed' ? 'default' : 'outline'}
+                                      variant={
+                                        session.status === 'completed' 
+                                          ? 'default' 
+                                          : session.status === 'cancelled' 
+                                            ? 'destructive' 
+                                            : 'outline'
+                                      }
                                     >
                                       {session.status}
                                     </Badge>
                                   </div>
-                                  <p className="text-sm text-muted-foreground mb-3">
+                                  <p className="text-sm text-muted-foreground mb-1">
                                     {new Date(session.date).toLocaleDateString('en-US', {
                                       weekday: 'long',
                                       year: 'numeric',
                                       month: 'long',
                                       day: 'numeric'
                                     })}
+                                    {session.time && ` at ${session.time}`}
                                   </p>
+                                  
+                                  {session.meetingLink && session.status === 'upcoming' && (
+                                    <p className="text-sm text-primary mb-3">
+                                      <a href={session.meetingLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                                        <Video className="h-3.5 w-3.5" />
+                                        Meeting Link
+                                      </a>
+                                    </p>
+                                  )}
                                   
                                   {session.notes && (
                                     <div className="bg-muted/30 p-3 rounded-md mb-3">
@@ -607,11 +854,14 @@ const ActiveEngagements = () => {
                                     </div>
                                   )}
                                   
-                                  {session.status === 'completed' && (
-                                    <div className="flex justify-end">
+                                  <div className="flex flex-wrap justify-end gap-2 mt-3">
+                                    {session.status === 'completed' && (
                                       <Dialog open={showNoteDialog && selectedSession?.id === session.id} onOpenChange={(open) => {
                                         setShowNoteDialog(open);
-                                        if (open) setSelectedSession(session);
+                                        if (open) {
+                                          setSelectedSession(session);
+                                          setSessionNote(session.notes || '');
+                                        }
                                       }}>
                                         <DialogTrigger asChild>
                                           <Button variant="outline" size="sm" className="gap-1">
@@ -641,8 +891,169 @@ const ActiveEngagements = () => {
                                           </DialogFooter>
                                         </DialogContent>
                                       </Dialog>
-                                    </div>
-                                  )}
+                                    )}
+                                    
+                                    {session.status === 'upcoming' && (
+                                      <>
+                                        <Dialog open={showJoinSessionDialog && selectedSession?.id === session.id} onOpenChange={(open) => {
+                                          setShowJoinSessionDialog(open);
+                                          if (open) setSelectedSession(session);
+                                        }}>
+                                          <DialogTrigger asChild>
+                                            <Button variant="default" size="sm" className="gap-1">
+                                              <Video className="h-3.5 w-3.5" />
+                                              Join Session
+                                            </Button>
+                                          </DialogTrigger>
+                                          <DialogContent>
+                                            <DialogHeader>
+                                              <DialogTitle>Join Mentoring Session</DialogTitle>
+                                              <DialogDescription>
+                                                You're about to join your session with {activeEngagement.mentorName}
+                                              </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="py-4">
+                                              <div className="mb-4">
+                                                <h4 className="text-sm font-medium mb-1">Session Details</h4>
+                                                <p className="text-sm">{session.title}</p>
+                                                <p className="text-sm">
+                                                  {new Date(session.date).toLocaleDateString()} at {session.time}
+                                                </p>
+                                              </div>
+                                              <div className="p-3 bg-muted/30 rounded-md">
+                                                <p className="text-sm text-muted-foreground mb-2">Tips before joining:</p>
+                                                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                                                  <li>Ensure you have a stable internet connection</li>
+                                                  <li>Test your audio and video</li>
+                                                  <li>Have any questions or topics ready</li>
+                                                </ul>
+                                              </div>
+                                            </div>
+                                            <DialogFooter>
+                                              <Button variant="outline" onClick={() => setShowJoinSessionDialog(false)}>Cancel</Button>
+                                              <Button onClick={handleJoinSession}>
+                                                Join Now
+                                              </Button>
+                                            </DialogFooter>
+                                          </DialogContent>
+                                        </Dialog>
+                                        
+                                        <Dialog open={showEditSessionDialog && selectedSession?.id === session.id} onOpenChange={(open) => {
+                                          setShowEditSessionDialog(open);
+                                          if (open) {
+                                            setSelectedSession(session);
+                                            setNewSessionTitle(session.title);
+                                            setNewSessionDate(session.date);
+                                            setNewSessionTime(session.time || '');
+                                            setNewSessionLink(session.meetingLink || '');
+                                          }
+                                        }}>
+                                          <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm" className="gap-1">
+                                              <Edit className="h-3.5 w-3.5" />
+                                              Edit
+                                            </Button>
+                                          </DialogTrigger>
+                                          <DialogContent>
+                                            <DialogHeader>
+                                              <DialogTitle>Edit Session</DialogTitle>
+                                              <DialogDescription>
+                                                Update the details of your mentoring session
+                                              </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="py-4 space-y-4">
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-medium" htmlFor="edit-session-title">Session Title</label>
+                                                <Input
+                                                  id="edit-session-title"
+                                                  value={newSessionTitle}
+                                                  onChange={(e) => setNewSessionTitle(e.target.value)}
+                                                />
+                                              </div>
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-medium" htmlFor="edit-session-date">Date</label>
+                                                <Input
+                                                  id="edit-session-date"
+                                                  type="date"
+                                                  value={newSessionDate}
+                                                  onChange={(e) => setNewSessionDate(e.target.value)}
+                                                />
+                                              </div>
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-medium" htmlFor="edit-session-time">Time</label>
+                                                <Input
+                                                  id="edit-session-time"
+                                                  type="time"
+                                                  value={newSessionTime}
+                                                  onChange={(e) => setNewSessionTime(e.target.value)}
+                                                />
+                                              </div>
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-medium" htmlFor="edit-session-link">Meeting Link</label>
+                                                <Input
+                                                  id="edit-session-link"
+                                                  value={newSessionLink}
+                                                  onChange={(e) => setNewSessionLink(e.target.value)}
+                                                />
+                                              </div>
+                                            </div>
+                                            <DialogFooter>
+                                              <Button variant="outline" onClick={() => setShowEditSessionDialog(false)}>Cancel</Button>
+                                              <Button 
+                                                onClick={handleEditSession}
+                                                disabled={!newSessionTitle || !newSessionDate || !newSessionTime}
+                                              >
+                                                Save Changes
+                                              </Button>
+                                            </DialogFooter>
+                                          </DialogContent>
+                                        </Dialog>
+                                        
+                                        <Dialog open={showDeleteSessionDialog && selectedSession?.id === session.id} onOpenChange={(open) => {
+                                          setShowDeleteSessionDialog(open);
+                                          if (open) setSelectedSession(session);
+                                        }}>
+                                          <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm" className="gap-1 text-destructive hover:text-destructive">
+                                              <Trash className="h-3.5 w-3.5" />
+                                              Cancel
+                                            </Button>
+                                          </DialogTrigger>
+                                          <DialogContent>
+                                            <DialogHeader>
+                                              <DialogTitle>Cancel Session</DialogTitle>
+                                              <DialogDescription>
+                                                Are you sure you want to cancel this session?
+                                              </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="py-4">
+                                              <p className="text-sm text-muted-foreground mb-2">
+                                                Your mentor will be notified that this session has been cancelled.
+                                              </p>
+                                              <div className="mt-4 p-3 border rounded-md">
+                                                <h5 className="text-sm font-medium">{session.title}</h5>
+                                                <p className="text-sm text-muted-foreground">
+                                                  {new Date(session.date).toLocaleDateString()} at {session.time}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <DialogFooter>
+                                              <Button variant="outline" onClick={() => setShowDeleteSessionDialog(false)}>
+                                                Keep Session
+                                              </Button>
+                                              <Button variant="destructive" onClick={handleCancelSession}>
+                                                Cancel Session
+                                              </Button>
+                                            </DialogFooter>
+                                          </DialogContent>
+                                        </Dialog>
+                                      </>
+                                    )}
+                                    
+                                    {session.status === 'upcoming' && (
+                                      <MarkSessionCompleteButton session={session} />
+                                    )}
+                                  </div>
                                 </div>
                               </Card>
                             ))}

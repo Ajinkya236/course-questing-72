@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 
 interface Mentor {
   id: number;
@@ -28,8 +29,10 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   selectedTopics = [] 
 }) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
-  const carouselRef = useRef(null);
+  const carouselRef = useRef<{ scrollPrev: () => void; scrollNext: () => void } | null>(null);
+  const topicsCarouselRef = useRef<{ scrollPrev: () => void; scrollNext: () => void } | null>(null);
   const isMobile = useIsMobile();
   
   // Extract all unique topics from mentors for filters
@@ -56,16 +59,35 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
 
   const handlePrevious = () => {
     if (carouselRef.current) {
-      const carousel = carouselRef.current as any;
-      carousel.scrollPrev();
+      carouselRef.current.scrollPrev();
     }
   };
 
   const handleNext = () => {
     if (carouselRef.current) {
-      const carousel = carouselRef.current as any;
-      carousel.scrollNext();
+      carouselRef.current.scrollNext();
     }
+  };
+
+  const handleTopicsPrevious = () => {
+    if (topicsCarouselRef.current) {
+      topicsCarouselRef.current.scrollPrev();
+    }
+  };
+
+  const handleTopicsNext = () => {
+    if (topicsCarouselRef.current) {
+      topicsCarouselRef.current.scrollNext();
+    }
+  };
+
+  const handleMentorSelect = (mentorId: number) => {
+    toast({
+      title: "Mentor Selected",
+      description: "You've selected a mentor. You can now view their full profile."
+    });
+    // Would navigate to mentor profile in a real app
+    // navigate(`/mentoring/mentor/${mentorId}`);
   };
   
   return (
@@ -87,8 +109,9 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       </div>
       
       {/* Topics filter carousel */}
-      <div className="mb-4">
+      <div className="mb-4 relative">
         <Carousel 
+          ref={topicsCarouselRef as React.RefObject<any>}
           className="w-full"
           opts={{
             align: "start",
@@ -108,14 +131,28 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-0 bg-background" />
-          <CarouselNext className="right-0 bg-background" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10"
+            onClick={handleTopicsPrevious}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10"
+            onClick={handleTopicsNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </Carousel>
       </div>
       
       {/* Mentors carousel */}
       <Carousel 
-        ref={carouselRef}
+        ref={carouselRef as React.RefObject<any>}
         className="w-full"
         opts={{
           align: "start"
@@ -144,7 +181,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                       <span className="text-sm font-medium">{mentor.rating}</span>
                       <span className="text-xs text-muted-foreground">({mentor.reviews} reviews)</span>
                     </div>
-                    <div className="flex flex-wrap gap-1 justify-center">
+                    <div className="flex flex-wrap gap-1 justify-center mb-3">
                       {mentor.topics.slice(0, 2).map(topic => (
                         <span key={topic} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                           {topic}
@@ -156,14 +193,20 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                         </span>
                       )}
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => handleMentorSelect(mentor.id)}
+                    >
+                      View Profile
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-0" />
-        <CarouselNext className="right-0" />
       </Carousel>
     </div>
   );
