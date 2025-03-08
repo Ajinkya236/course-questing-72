@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import BannerCarousel from '@/components/BannerCarousel';
 import RecommendedMentorsCarousel from '@/components/mentoring/mentee/RecommendedMentorsCarousel';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 const Mentoring = () => {
   const { toast } = useToast();
@@ -84,12 +82,7 @@ const Mentoring = () => {
         <title>Mentoring | Learning Management System</title>
       </Helmet>
       <div className="container mx-auto">
-        <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Mentoring</h1>
-        </div>
+        <h1 className="text-3xl font-bold tracking-tight mb-4">Mentoring</h1>
         
         <Tabs defaultValue="mentee" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-6">

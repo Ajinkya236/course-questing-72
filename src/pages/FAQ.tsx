@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -10,12 +9,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { FileText, Search, FileCode, Video, ChevronLeft } from 'lucide-react';
+import { FileText, Search, FileCode, Video } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { useNavigate } from 'react-router-dom';
 
-// Mock FAQ Data 
+// Mock FAQ Data
 const generalFaqData = [
   {
     id: 'gen-1',
@@ -102,7 +100,6 @@ const videoTutorialsData = [
 const FAQ: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('general');
-  const navigate = useNavigate();
   
   // Filter FAQs based on search query
   const filterFaqs = (faqs: any[]) => {
@@ -167,13 +164,8 @@ const FAQ: React.FC = () => {
       </Helmet>
       
       <div className="container mx-auto py-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
-        </div>
-        <p className="text-muted-foreground mb-8 ml-10">Find answers to common questions about using the Jio Learning platform.</p>
+        <h1 className="text-3xl font-bold mb-2">Frequently Asked Questions</h1>
+        <p className="text-muted-foreground mb-8">Find answers to common questions about using the Jio Learning platform.</p>
         
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">

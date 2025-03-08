@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -6,18 +7,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
-import { HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle, LogOut } from 'lucide-react';
+import { Home as HomeIcon, Compass, BookOpen, Bell, User, Users, Headphones, HelpCircle } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-// Import all page components
 import SignIn from './pages/SignIn';
 import Home from './pages/Home';
 import Discover from './pages/Discover';
@@ -33,9 +25,10 @@ import Mentoring from './pages/Mentoring';
 import MyTeam from './pages/MyTeam';
 import FAQ from './pages/FAQ';
 import NotFound from './pages/NotFound';
+import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
+
 import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
 import DomainCoursesPage from './pages/DomainCoursesPage';
-import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -60,7 +53,7 @@ const TopNavigation: React.FC = () => {
     <div className="w-full border-b bg-background sticky top-0 z-10">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg">Jio Learning</h1>
+          <h1 className="font-bold text-lg">LMS</h1>
           <nav className="flex items-center space-x-2">
             <Button variant="ghost" asChild size="sm">
               <Link to="/" className="flex items-center gap-1">
@@ -68,32 +61,12 @@ const TopNavigation: React.FC = () => {
                 <span>Home</span>
               </Link>
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                  <Compass className="h-4 w-4" />
-                  <span>Discover</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link to="/view-all/domains">All Domains</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/view-all/trending">Trending Courses</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/view-all/popular">Popular Courses</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/view-all/new">New Releases</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/discover">View All Categories</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="ghost" asChild size="sm">
+              <Link to="/discover" className="flex items-center gap-1">
+                <Compass className="h-4 w-4" />
+                <span>Discover</span>
+              </Link>
+            </Button>
             <Button variant="ghost" asChild size="sm">
               <Link to="/my-learning" className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4" />
@@ -120,39 +93,16 @@ const TopNavigation: React.FC = () => {
               <Bell className="h-5 w-5" />
             </Link>
           </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>View Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/faq" className="flex items-center gap-2">
-                  <HelpCircle className="h-4 w-4" />
-                  <span>FAQs</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/sign-in" className="flex items-center gap-2 text-destructive">
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/faq">
+              <HelpCircle className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/profile">
+              <User className="h-5 w-5" />
+            </Link>
+          </Button>
           <ModeToggle />
         </div>
       </div>

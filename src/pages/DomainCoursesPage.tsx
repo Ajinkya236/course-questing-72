@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
+import { CarouselFilters } from '@/components/ui/carousel';
 
 interface Domain {
   id: string;
@@ -13,109 +15,6 @@ interface Domain {
   icon: string;
   description: string;
 }
-
-// Completely standalone filter component without any carousel dependencies
-const FilterCarousel = ({ 
-  filters, 
-  selectedFilter, 
-  onFilterSelect 
-}: { 
-  filters: string[], 
-  selectedFilter: string, 
-  onFilterSelect: (filter: string) => void 
-}) => {
-  // Use a simple ref instead of embla
-  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(true);
-  
-  // Set up scroll controls
-  const scrollPrev = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
-      setTimeout(updateScrollButtons, 300);
-    }
-  };
-  
-  const scrollNext = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
-      setTimeout(updateScrollButtons, 300);
-    }
-  };
-
-  // Update scroll button states
-  const updateScrollButtons = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollPrev(scrollLeft > 0);
-      setCanScrollNext(scrollLeft < scrollWidth - clientWidth - 5); // 5px buffer
-    }
-  };
-  
-  // Track scroll position
-  const handleScroll = () => {
-    updateScrollButtons();
-  };
-  
-  // Set up event listeners
-  React.useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      // Initial check
-      updateScrollButtons();
-      
-      return () => {
-        scrollContainer.removeEventListener('scroll', handleScroll);
-      };
-    }
-  }, []);
-
-  return (
-    <div className="w-full relative">
-      <div className="overflow-hidden">
-        <div 
-          className="flex gap-2 py-1 pl-1 overflow-x-auto no-scrollbar"
-          ref={scrollContainerRef}
-        >
-          {filters.map((filter) => (
-            <Button
-              key={filter}
-              variant={selectedFilter === filter ? "default" : "outline"}
-              className="rounded-full whitespace-nowrap flex-shrink-0"
-              onClick={() => onFilterSelect(filter)}
-            >
-              {filter}
-            </Button>
-          ))}
-        </div>
-      </div>
-      <div className="flex items-center ml-2 absolute right-0 top-1">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 w-8 rounded-full p-0 mr-1"
-          onClick={scrollPrev}
-          disabled={!canScrollPrev}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span className="sr-only">Previous</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 w-8 rounded-full p-0"
-          onClick={scrollNext}
-          disabled={!canScrollNext}
-        >
-          <ArrowLeft className="h-4 w-4 transform rotate-180" />
-          <span className="sr-only">Next</span>
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 const domains: Domain[] = [
   { 
@@ -257,7 +156,7 @@ const DomainCoursesPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{domain?.name} Courses | Learning Management System</title>
+        <title>{domain.name} Courses | Learning Management System</title>
       </Helmet>
 
       <div className="container py-8">
@@ -265,26 +164,26 @@ const DomainCoursesPage: React.FC = () => {
           variant="outline" 
           size="sm" 
           className="mb-6" 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/view-all/domains')}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          Back to Domains
         </Button>
 
         <div className="flex items-center gap-4 mb-8">
-          <div className="text-5xl">{domain?.icon}</div>
+          <div className="text-5xl">{domain.icon}</div>
           <div>
-            <h1 className="text-3xl font-bold">{domain?.name}</h1>
-            <p className="text-muted-foreground">{domain?.description}</p>
+            <h1 className="text-3xl font-bold">{domain.name}</h1>
+            <p className="text-muted-foreground">{domain.description}</p>
           </div>
         </div>
 
         {/* Domain filters carousel with navigation buttons */}
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Browse Domains</h3>
-          <FilterCarousel
+          <CarouselFilters
             filters={domains.map(d => d.name)}
-            selectedFilter={domain?.name || ''}
+            selectedFilter={domain.name}
             onFilterSelect={(name) => {
               const selected = domains.find(d => d.name === name);
               if (selected) navigate(`/domain/${selected.id}`);
@@ -295,7 +194,7 @@ const DomainCoursesPage: React.FC = () => {
         {/* Skills filter carousel */}
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Filter by Skills</h3>
-          <FilterCarousel
+          <CarouselFilters
             filters={availableSkills}
             selectedFilter={selectedSkill}
             onFilterSelect={setSelectedSkill}
