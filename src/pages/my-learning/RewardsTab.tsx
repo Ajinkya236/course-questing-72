@@ -136,6 +136,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
   const [leaderboardTimeframe, setLeaderboardTimeframe] = useState("all-time");
   const [showMysteryBox, setShowMysteryBox] = useState(false);
   const [showSpinWheel, setShowSpinWheel] = useState(false);
+  const [activePointsTab, setActivePointsTab] = useState("overview");
   const { toast } = useToast();
 
   // Mock data - in a real app, we'd fetch based on teamMemberId if provided
@@ -163,6 +164,12 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
       { id: 4, name: 'Returning Learner Bonus', points: 75, date: '2023-10-25', badge: 'Welcome Back' },
       { id: 5, name: 'Mystery Bonus', points: 120, date: '2023-10-12', badge: 'Lucky Find' },
     ],
+    courseWisePoints: [
+      { id: 1, courseName: 'Introduction to Leadership', totalPoints: 350, breakdown: { completion: 150, quizzes: 80, assignments: 70, participation: 50 } },
+      { id: 2, courseName: 'Advanced Data Analysis', totalPoints: 280, breakdown: { completion: 120, quizzes: 90, assignments: 50, participation: 20 } },
+      { id: 3, courseName: 'Effective Communication Strategies', totalPoints: 210, breakdown: { completion: 100, quizzes: 60, assignments: 30, participation: 20 } },
+      { id: 4, courseName: 'Project Management Essentials', totalPoints: 180, breakdown: { completion: 80, quizzes: 50, assignments: 40, participation: 10 } },
+    ],
     redemptionOptions: [
       { id: 1, name: 'Amazon Gift Card', points: 2000, image: '📱' },
       { id: 2, name: 'Extra Day Off', points: 5000, image: '🏖️' },
@@ -170,13 +177,6 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
       { id: 4, name: 'Virtual Lunch with CEO', points: 3000, image: '🍽️' },
       { id: 5, name: 'Premium Learning Path Access', points: 1500, image: '🎓' },
       { id: 6, name: 'Professional Development Book', points: 800, image: '📚' },
-    ],
-    onboardingTasks: [
-      { id: 1, name: 'Complete your profile', points: 50, completed: true },
-      { id: 2, name: 'Join your first course', points: 50, completed: true },
-      { id: 3, name: 'Complete first lesson', points: 100, completed: true },
-      { id: 4, name: 'Take first quiz', points: 100, completed: false },
-      { id: 5, name: 'Set learning goals', points: 150, completed: false },
     ]
   };
 
@@ -221,87 +221,89 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
             </p>
           </div>
 
-          <div className="mt-4 pt-4 border-t">
-            <h4 className="text-sm font-medium mb-2">Points Breakdown</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-              <div className="flex justify-between">
-                <span>Courses Completed:</span>
-                <span className="font-medium">{rewardsData.pointsBreakdown.coursesCompleted} pts</span>
+          <Tabs value={activePointsTab} onValueChange={setActivePointsTab} className="mt-4 pt-4 border-t">
+            <TabsList className="grid grid-cols-2 w-full max-w-md">
+              <TabsTrigger value="overview">Points Overview</TabsTrigger>
+              <TabsTrigger value="courses">Course Breakdown</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="mt-4">
+              <h4 className="text-sm font-medium mb-2">Points Breakdown</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Courses Completed:</span>
+                  <span className="font-medium">{rewardsData.pointsBreakdown.coursesCompleted} pts</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Quizzes Passed:</span>
+                  <span className="font-medium">{rewardsData.pointsBreakdown.quizzesPassed} pts</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Daily Logins:</span>
+                  <span className="font-medium">{rewardsData.pointsBreakdown.dailyLogins} pts</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Voluntary Activities:</span>
+                  <span className="font-medium">{rewardsData.pointsBreakdown.voluntaryActivities} pts</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Streak Bonus:</span>
+                  <span className="font-medium">{rewardsData.pointsBreakdown.streakBonus} pts</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-primary">Current Streak:</span>
+                  <span className="font-medium">{rewardsData.streak} days</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Quizzes Passed:</span>
-                <span className="font-medium">{rewardsData.pointsBreakdown.quizzesPassed} pts</span>
+            </TabsContent>
+            
+            <TabsContent value="courses" className="mt-4">
+              <h4 className="text-sm font-medium mb-2">Course-wise Points Breakdown</h4>
+              <div className="space-y-4">
+                {rewardsData.courseWisePoints.map(course => (
+                  <Card key={course.id} className="bg-secondary/5 border-secondary/20">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <h5 className="font-medium">{course.courseName}</h5>
+                        <Badge variant="secondary">{course.totalPoints} pts</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Course Completion:</span>
+                          <span className="font-medium">{course.breakdown.completion} pts</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Quizzes:</span>
+                          <span className="font-medium">{course.breakdown.quizzes} pts</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Assignments:</span>
+                          <span className="font-medium">{course.breakdown.assignments} pts</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Participation:</span>
+                          <span className="font-medium">{course.breakdown.participation} pts</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <div className="flex justify-between">
-                <span>Daily Logins:</span>
-                <span className="font-medium">{rewardsData.pointsBreakdown.dailyLogins} pts</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Voluntary Activities:</span>
-                <span className="font-medium">{rewardsData.pointsBreakdown.voluntaryActivities} pts</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Streak Bonus:</span>
-                <span className="font-medium">{rewardsData.pointsBreakdown.streakBonus} pts</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium text-primary">Current Streak:</span>
-                <span className="font-medium">{rewardsData.streak} days</span>
-              </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
 
           <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row justify-between gap-2">
             <Button variant="outline" onClick={handleClaimMysteryPoints} className="flex gap-2 items-center">
               <HelpCircle className="h-4 w-4" />
-              Claim Mystery Points
+              Open Mystery Box
             </Button>
             <Button variant="outline" onClick={handleSpinWheel} className="flex gap-2 items-center">
               <Medal className="h-4 w-4" />
-              Spin for Bonus Points
+              Spin the Wheel
             </Button>
           </div>
         </CardContent>
       </Card>
-
-      {/* Onboarding Tasks for Points */}
-      {!teamMemberId && (
-        <Card className="bg-primary/5">
-          <CardContent className="pt-6">
-            <h3 className="text-lg font-medium mb-4">Onboarding Tasks</h3>
-            <p className="text-sm text-muted-foreground mb-4">Complete these tasks to earn points and unlock rewards</p>
-            
-            <div className="space-y-3">
-              {rewardsData.onboardingTasks.map(task => (
-                <div key={task.id} className="flex items-center justify-between py-2 border-b last:border-0">
-                  <div className="flex items-center">
-                    <div className={`h-8 w-8 rounded-full ${task.completed ? 'bg-primary/20' : 'bg-muted'} flex items-center justify-center mr-3`}>
-                      {task.completed ? (
-                        <Star className="h-4 w-4 text-primary" />
-                      ) : (
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div>
-                      <h4 className={`font-medium ${task.completed ? '' : 'text-muted-foreground'}`}>{task.name}</h4>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <Badge variant={task.completed ? 'default' : 'outline'} className="mr-2">
-                      +{task.points} Points
-                    </Badge>
-                    {task.completed ? (
-                      <Badge variant="secondary">Completed</Badge>
-                    ) : (
-                      <Button variant="outline" size="sm">Start</Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Leaderboard Section */}
       <div>
