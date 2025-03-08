@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +49,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
   const [showCertificatePreview, setShowCertificatePreview] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   
-  // Mock data - in a real app, we'd fetch based on teamMemberId if provided
   const badges: BadgeItem[] = [
     { id: 'b1', name: 'First Course Completed', icon: 'award', description: 'Awarded for completing your first course', category: 'Achievement', earned: true, date: '2023-08-15', shareable: true },
     { id: 'b2', name: 'Perfect Assessment Score', icon: 'star', description: 'Achieved 100% in a course assessment', category: 'Excellence', earned: true, date: '2023-09-02', shareable: true },
@@ -104,6 +102,8 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
       id: 'c4',
       name: 'Machine Learning Fundamentals',
       issuer: 'Jio Tech Academy',
+      date: 'N/A',
+      credentialId: 'PENDING-ML-001',
       category: 'Artificial Intelligence',
       image: '🤖',
       isEarned: false,
@@ -118,6 +118,8 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
       id: 'c5',
       name: 'Digital Marketing Specialist',
       issuer: 'Marketing Institute',
+      date: 'N/A',
+      credentialId: 'PENDING-DM-001',
       category: 'Marketing',
       image: '📱',
       isEarned: false,
@@ -135,7 +137,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
   const earnedCertificates = certificates.filter(cert => cert.isEarned);
   const futureCertificates = certificates.filter(cert => !cert.isEarned);
   
-  // Function to render the appropriate icon
   const renderIcon = (iconType: string) => {
     switch(iconType) {
       case 'award':
@@ -261,12 +262,10 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
                 <Card key={cert.id}>
                   <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row gap-4">
-                      {/* Certificate Icon/Image */}
                       <div className="mx-auto md:mx-0 h-24 w-24 rounded-lg bg-primary/10 flex items-center justify-center text-4xl">
                         {cert.image}
                       </div>
                       
-                      {/* Certificate Details */}
                       <div className="flex-1 space-y-2">
                         <div>
                           <h3 className="text-lg font-medium">{cert.name}</h3>
@@ -295,7 +294,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
                         </div>
                       </div>
                       
-                      {/* Action Buttons */}
                       <div className="flex md:flex-col justify-center gap-2">
                         <Button size="sm" variant="outline" className="flex gap-1">
                           <Download className="h-4 w-4" />
@@ -330,13 +328,11 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
                 >
                   <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row gap-4">
-                      {/* Certificate Icon/Image */}
                       <div className="mx-auto md:mx-0 h-24 w-24 rounded-lg bg-muted/50 flex items-center justify-center text-4xl relative">
                         <span className="opacity-40">{cert.image}</span>
                         <Lock className="h-6 w-6 absolute bottom-1 right-1 text-muted-foreground bg-background rounded-full p-1" />
                       </div>
                       
-                      {/* Certificate Details */}
                       <div className="flex-1 space-y-2">
                         <div>
                           <div className="flex items-center">
@@ -363,7 +359,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
                         </div>
                       </div>
                       
-                      {/* Action Button */}
                       <div className="flex md:flex-col justify-center">
                         <Button size="sm">Continue Learning</Button>
                       </div>
@@ -376,7 +371,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
         </TabsContent>
       </Tabs>
 
-      {/* Badge Preview Dialog */}
       <Dialog open={showBadgePreview} onOpenChange={setShowBadgePreview}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -452,7 +446,6 @@ const BadgesTab: React.FC<BadgesTabProps> = ({ teamMemberId }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Certificate Preview Dialog */}
       <Dialog open={showCertificatePreview} onOpenChange={setShowCertificatePreview}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
