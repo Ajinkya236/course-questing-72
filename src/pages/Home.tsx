@@ -17,12 +17,12 @@ import DomainCatalog from '@/components/DomainCatalog';
 
 const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
 const subAcademyFilters = {
-  'All Academies': [],
-  'Leadership Academy': ['Foundational', 'Advanced', 'Executive'],
-  'Data Academy': ['Technical', 'Analytics', 'Machine Learning'],
-  'Marketing Academy': ['Digital', 'Content', 'Strategy', 'Specialized'],
-  'PM Academy': ['Agile', 'Traditional', 'Certification'],
-  'Innovation Academy': ['Design Thinking', 'Advanced', 'Specialized'],
+  'All Academies': ['All Sub-Academies'],
+  'Leadership Academy': ['All Sub-Academies', 'Foundational', 'Advanced', 'Executive'],
+  'Data Academy': ['All Sub-Academies', 'Technical', 'Analytics', 'Machine Learning'],
+  'Marketing Academy': ['All Sub-Academies', 'Digital', 'Content', 'Strategy', 'Specialized'],
+  'PM Academy': ['All Sub-Academies', 'Agile', 'Traditional', 'Certification'],
+  'Innovation Academy': ['All Sub-Academies', 'Design Thinking', 'Advanced', 'Specialized'],
 };
 
 const roleSkills = [
@@ -94,7 +94,7 @@ const Home = () => {
   return (
     <>
       <Helmet>
-        <title>Home | Jio Learning</title>
+        <title>Home | Learning Management System</title>
       </Helmet>
       <div className="container py-8 space-y-12 mb-20">
         <section className="relative rounded-xl overflow-hidden max-w-full mx-auto">

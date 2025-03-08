@@ -39,25 +39,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subFilterOptions = {},
   showTrainingCategory = false
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState<string>('');
-  const [selectedSubFilter, setSelectedSubFilter] = useState<string>('');
-  const [isHovering, setIsHovering] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
+  const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  
-  // Set initial filters based on available options
-  useEffect(() => {
-    if (filterOptions.length > 0 && !selectedFilter) {
-      setSelectedFilter(filterOptions[0]);
-    }
-  }, [filterOptions, selectedFilter]);
-
-  useEffect(() => {
-    // Set sub-filter when main filter changes or on initial render
-    if (subFilterOptions && selectedFilter && subFilterOptions[selectedFilter]) {
-      setSelectedSubFilter(subFilterOptions[selectedFilter][0]);
-    }
-  }, [selectedFilter, subFilterOptions]);
   
   // Function to ensure we have exactly 12 courses for the carousel
   const normalizeCoursesCount = (coursesArray: Course[]) => {
@@ -111,6 +96,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     // Reset sub-filter when main filter changes
     if (subFilterOptions && subFilterOptions[filter]) {
       setSelectedSubFilter(subFilterOptions[filter][0]);
+    } else {
+      setSelectedSubFilter('All Sub-Academies');
     }
   };
 
@@ -119,7 +106,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   };
 
   // Get available sub-filters based on selected main filter
-  const availableSubFilters = selectedFilter && subFilterOptions[selectedFilter] ? subFilterOptions[selectedFilter] : [];
+  const availableSubFilters = subFilterOptions[selectedFilter] || [];
 
   // Create a fallback for courses that don't have all required properties
   const normalizedCourses = normalizeCoursesCount(courses.map(course => ({
@@ -133,34 +120,22 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   return (
     <div className="space-y-4">
-      <div 
-        className="flex items-center justify-between gap-1 group relative"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        <div className="flex items-center gap-1">
-          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-          <div className="flex items-center h-8">
-            {isHovering ? (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 pl-2 pr-2 py-0 ml-1" 
-                onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-              >
-                View All
-              </Button>
-            ) : (
-              <ChevronRight 
-                className="h-5 w-5 ml-1 cursor-pointer text-muted-foreground" 
-                onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-              />
-            )}
-            <div className="flex items-center ml-1">
-              <CarouselPrevious className="static transform-none h-7 w-7" />
-              <CarouselNext className="static transform-none h-7 w-7" />
-            </div>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        
+        <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          >
+            View All
+          </Button>
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          />
         </div>
       </div>
       
@@ -174,7 +149,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       )}
       
       {/* Sub-filters carousel with navigation buttons - only show if sub-filters exist for selected filter */}
-      {showSkillFilters && availableSubFilters.length > 0 && availableSubFilters[0] !== 'All Sub-Academies' && (
+      {showSkillFilters && availableSubFilters.length > 0 && (
         <CarouselFilters
           filters={availableSubFilters}
           selectedFilter={selectedSubFilter}
@@ -244,10 +219,15 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     </div>
                   )}
                 </CardContent>
+                {/* Removed instructor footer section */}
               </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
+        <div className="flex items-center justify-end gap-2 mt-4">
+          <CarouselPrevious className="static transform-none" />
+          <CarouselNext className="static transform-none" />
+        </div>
       </Carousel>
     </div>
   );
