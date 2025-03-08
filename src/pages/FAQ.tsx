@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { FileText, Search, FilePdf, Video } from 'lucide-react';
+import { FileText, Search, FileCode, Video } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
@@ -134,7 +133,7 @@ const FAQ: React.FC = () => {
               rel="noopener noreferrer" 
               className="inline-flex items-center text-primary hover:underline"
             >
-              <FilePdf className="h-5 w-5 mr-2" />
+              <FileCode className="h-5 w-5 mr-2" />
               View PDF Document
             </a>
           </div>
