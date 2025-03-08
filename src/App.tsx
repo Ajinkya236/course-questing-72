@@ -10,7 +10,7 @@ import Discover from "./pages/Discover";
 import MyLearning from "./pages/MyLearning";
 import CoursePlayer from "./pages/CoursePlayer";
 import NotFound from "./pages/NotFound";
-import NavBar from "./components/layout/Navbar"; // Fixed the casing here from NavBar to Navbar
+import Navbar from "./components/layout/Navbar"; // Using consistent name with lowercase 'b'
 import ViewAllPage from "./pages/ViewAllPage";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
@@ -98,7 +98,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <NavBar />
+              <Navbar />
               <Routes>
                 <Route path="/signin" element={<SignIn />} />
                 
