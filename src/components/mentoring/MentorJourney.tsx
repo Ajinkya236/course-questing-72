@@ -193,22 +193,6 @@ const MentorJourney = () => {
                     </div>
                   ))}
                 </div>
-                
-                {/* Mentor journey buttons for editing goals, view certificates, etc. */}
-                <div className="mt-6 space-y-2">
-                  <Button variant="outline" size="sm" className="w-full gap-2">
-                    Edit Mentee Goals
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full gap-2">
-                    View Certificate
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full gap-2 text-destructive">
-                    Withdraw from Engagement
-                  </Button>
-                  <Button variant="default" size="sm" className="w-full">
-                    Complete Engagement
-                  </Button>
-                </div>
               </div>
               <div className="flex-1">
                 <ActiveMentorships selectedMentee={selectedMentee} />

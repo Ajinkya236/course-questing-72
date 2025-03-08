@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
 }) => {
   const navigate = useNavigate();
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
+  const carouselRef = useRef(null);
   
   // Extract all unique topics from mentors for filters
   const allTopics = selectedTopics.length > 0 
@@ -50,16 +51,30 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const handleViewAll = () => {
     navigate('/recommended-mentors');
   };
+
+  const handlePrevious = () => {
+    if (carouselRef.current) {
+      const carousel = carouselRef.current as any;
+      carousel.scrollPrev();
+    }
+  };
+
+  const handleNext = () => {
+    if (carouselRef.current) {
+      const carousel = carouselRef.current as any;
+      carousel.scrollNext();
+    }
+  };
   
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl font-semibold">Recommended Mentors</h2>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8">
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevious}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8">
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleNext}>
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button variant="link" size="sm" className="gap-1" onClick={handleViewAll}>
@@ -98,6 +113,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       
       {/* Mentors carousel */}
       <Carousel 
+        ref={carouselRef}
         className="w-full"
         opts={{
           align: "start"

@@ -66,6 +66,7 @@ const MenteeJourney = () => {
     setShowPreferencesDialog(false);
     // Save that preferences are set in localStorage
     localStorage.setItem('menteePreferencesSet', 'true');
+    localStorage.setItem('menteeSelectedTopics', JSON.stringify(topics));
     toast({
       title: "Preferences Saved",
       description: "Your mentee preferences have been saved successfully."

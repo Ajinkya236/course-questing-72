@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import RecommendedMentorsCarousel from './RecommendedMentorsCarousel';
 
 interface MentorDiscoveryProps {
   selectedTopics?: string[];
@@ -112,6 +111,56 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
     setFilteredMentors(sorted);
   }, [searchTerm, expertiseFilter, sortBy, selectedTopics]);
 
+  // Render mentor cards
+  const renderMentorCards = () => {
+    if (filteredMentors.length === 0) {
+      return (
+        <div className="py-8 text-center border rounded-lg bg-muted/30">
+          <p className="text-muted-foreground">
+            No mentors found matching your criteria. Try adjusting your filters.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredMentors.map(mentor => (
+          <Card key={mentor.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
+                  <img 
+                    src={mentor.image} 
+                    alt={mentor.name} 
+                    className="w-full h-full object-cover" 
+                  />
+                </div>
+                <h3 className="font-medium">{mentor.name}</h3>
+                <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
+                <div className="flex items-center gap-1 mb-3">
+                  <Search className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-medium">{mentor.rating}</span>
+                  <span className="text-xs text-muted-foreground">({mentor.reviews} reviews)</span>
+                </div>
+                <div className="flex flex-wrap gap-1 justify-center">
+                  {mentor.topics.map(topic => (
+                    <span key={topic} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" className="mt-3">
+                  View Profile
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8">
       {/* Search and filter section */}
@@ -161,11 +210,8 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
         </CardContent>
       </Card>
 
-      {/* Recommended mentors carousel */}
-      <RecommendedMentorsCarousel 
-        mentors={filteredMentors} 
-        selectedTopics={selectedTopics}
-      />
+      {/* Mentors grid display */}
+      {renderMentorCards()}
 
       {/* More content would go here */}
       <div className="py-8 text-center border rounded-lg bg-muted/30">
