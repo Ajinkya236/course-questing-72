@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,10 @@ interface MentorDiscoveryProps {
 }
 
 const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expertise, setExpertise] = useState('all');
+  const [sortBy, setSortBy] = useState('relevance');
+
   const recommendedMentors = [
     {
       id: 1,
@@ -51,6 +55,34 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
     }
   ];
 
+  // Filter mentors based on search term and selected expertise
+  const filteredMentors = recommendedMentors.filter(mentor => {
+    const matchesSearch = searchTerm === '' || 
+      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesExpertise = expertise === 'all' || 
+      (expertise === 'technical' && mentor.topics.some(t => ['Data Analysis', 'Machine Learning', 'Software Development', 'System Architecture', 'Cloud Computing'].includes(t))) ||
+      (expertise === 'leadership' && mentor.topics.some(t => ['Leadership', 'Communication'].includes(t))) ||
+      (expertise === 'career' && mentor.topics.some(t => ['Career Development'].includes(t)));
+    
+    return matchesSearch && matchesExpertise;
+  });
+
+  // Sort mentors based on selected sort criteria
+  const sortedMentors = [...filteredMentors].sort((a, b) => {
+    if (sortBy === 'rating') return b.rating - a.rating;
+    if (sortBy === 'reviews') return b.reviews - a.reviews;
+    // Default to relevance (which prioritizes topics matching the user's interests)
+    return b.topics.filter(t => selectedTopics.includes(t)).length - 
+           a.topics.filter(t => selectedTopics.includes(t)).length;
+  });
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="space-y-8">
       {/* Search and filter section */}
@@ -62,9 +94,11 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
               <Input 
                 placeholder="Search mentors..." 
                 className="pl-9"
+                value={searchTerm}
+                onChange={handleSearchChange}
               />
             </div>
-            <Select defaultValue="all">
+            <Select value={expertise} onValueChange={setExpertise}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by expertise" />
               </SelectTrigger>
@@ -75,7 +109,7 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
                 <SelectItem value="career">Career Development</SelectItem>
               </SelectContent>
             </Select>
-            <Select defaultValue="relevance">
+            <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger>
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -92,7 +126,7 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
 
       {/* Recommended mentors carousel */}
       <RecommendedMentorsCarousel 
-        mentors={recommendedMentors} 
+        mentors={sortedMentors} 
         selectedTopics={selectedTopics}
       />
 
