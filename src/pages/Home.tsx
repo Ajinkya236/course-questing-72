@@ -11,9 +11,11 @@ import LearningStreakDialog from '@/components/LearningStreakDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SkillsForRoleDialog from '@/components/SkillsForRoleDialog';
+import SkillsSelectDialog from '@/components/SkillsSelectDialog';
 import { mockCoursesData } from '@/data/mockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import DomainCatalog from '@/components/DomainCatalog';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 const academyFilters = ['All Academies', 'Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'];
 const subAcademyFilters = {
@@ -50,6 +52,9 @@ const Home = () => {
   const [skillsTab, setSkillsTab] = useState('follow');
   const [selectedAcademy, setSelectedAcademy] = useState('All Academies');
   const [searchQuery, setSearchQuery] = useState('');
+  const [followedSkills, setFollowedSkills] = useState<string[]>(
+    skillsYouFollow.map(skill => skill.name)
+  );
   const isMobile = useIsMobile();
   
   const handleCourseClick = (courseId: string) => {
@@ -181,7 +186,7 @@ const Home = () => {
                   
                   <TabsContent value="follow">
                     <div className="space-y-4">
-                      {skillsYouFollow.map(skill => (
+                      {skillsYouFollow.slice(0, 5).map(skill => (
                         <div key={skill.id} className="space-y-2">
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-medium">{skill.name}</span>
@@ -197,9 +202,17 @@ const Home = () => {
                           </div>
                         </div>
                       ))}
-                      <Button variant="outline" className="w-full mt-2">
-                        View All Skills You Follow
-                      </Button>
+                      
+                      <SkillsSelectDialog 
+                        selectedSkills={followedSkills}
+                        onSkillsChange={setFollowedSkills}
+                        trigger={
+                          <Button variant="outline" className="w-full mt-2 gap-2">
+                            <Star className="h-4 w-4" />
+                            View All Skills You Follow
+                          </Button>
+                        }
+                      />
                     </div>
                   </TabsContent>
                   
@@ -506,7 +519,5 @@ const Home = () => {
     </>
   );
 };
-
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 export default Home;

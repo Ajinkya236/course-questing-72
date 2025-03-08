@@ -26,44 +26,6 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
-import SignIn from './pages/SignIn';
-import Home from './pages/Home';
-import Discover from './pages/Discover';
-import MyLearning from './pages/MyLearning';
-import CoursePlayer from './pages/CoursePlayer';
-import Notifications from './pages/Notifications';
-import Profile from './pages/Profile';
-import ViewAllPage from './pages/ViewAllPage';
-import SearchResults from './pages/SearchResults';
-import Actionables from './pages/Actionables';
-import LeaderboardFullView from './pages/LeaderboardFullView';
-import Mentoring from './pages/Mentoring';
-import MyTeam from './pages/MyTeam';
-import FAQ from './pages/FAQ';
-import NotFound from './pages/NotFound';
-import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
-
-import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
-import DomainCoursesPage from './pages/DomainCoursesPage';
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(true);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/sign-in" />;
-  }
-
-  return <>{children}</>;
-};
-
-interface PageLayoutProps {
-  children: React.ReactNode;
-}
-
 const courseCategories = [
   "Leadership & Management",
   "Technical Skills",
@@ -190,7 +152,7 @@ const TopNavigation: React.FC = () => {
   );
 };
 
-const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
+const PageLayout: React.FC = ({ children }) => {
   return (
     <div className="flex flex-col h-screen bg-background">
       <TopNavigation />
@@ -204,6 +166,41 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
     </div>
   );
 };
+
+function SkillsFollowDialog() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([
+    "JavaScript", "Product Management", "UI/UX Design", "DevOps", "Cloud Architecture"
+  ]);
+  
+  const allSkills = [
+    "JavaScript", "TypeScript", "React", "Vue", "Angular", 
+    "Node.js", "Python", "Java", "C#", ".NET",
+    "Product Management", "UI/UX Design", "DevOps", "Cloud Architecture",
+    "Data Science", "Machine Learning", "Artificial Intelligence",
+    "Project Management", "Agile", "Scrum", "Leadership",
+    "Communication", "Presentation", "Public Speaking"
+  ];
+  
+  const filteredSkills = allSkills.filter(skill => 
+    skill.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const toggleSkill = (skill: string) => {
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(s => s !== skill));
+    } else {
+      setSelectedSkills([...selectedSkills, skill]);
+    }
+  };
+  
+  return (
+    <div>
+      {/* Modal implementation goes here */}
+    </div>
+  );
+}
 
 function App() {
   return (

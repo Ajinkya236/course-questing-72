@@ -15,6 +15,7 @@ import {
   CarouselNext,
   CarouselFilters
 } from '@/components/ui/carousel';
+import CourseCard from './CourseCard';
 
 interface CourseCarouselProps {
   title: string;
@@ -129,9 +130,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   return (
     <div className="space-y-4">
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className="flex items-center justify-between gap-4 group"
       >
         <div className="flex items-center">
           <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
@@ -149,6 +148,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               View All
             </Button>
           )}
+        </div>
+        
+        {/* Navigation buttons moved here */}
+        <div className="flex items-center gap-2">
+          <CarouselPrevious className="static transform-none" />
+          <CarouselNext className="static transform-none" />
         </div>
       </div>
       
@@ -179,70 +184,29 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           loop: true,
         }}
         className="w-full"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <CarouselContent>
           {normalizedCourses.map((course) => (
             <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/4"}>
-              <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
-                onClick={() => handleCardClick(course.id)}
-              >
-                <div className="aspect-video relative overflow-hidden bg-muted">
-                  <img
-                    src={course.imageUrl}
-                    alt={course.title}
-                    className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
-                  />
-                  {course.enrollmentStatus && (
-                    <div className="absolute top-2 right-2">
-                      <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
-                        {course.enrollmentStatus}
-                      </Badge>
-                    </div>
-                  )}
-                  {/* Only show training category if showTrainingCategory is true and trainingCategory exists */}
-                  {showTrainingCategory && course.trainingCategory && (
-                    <div className="absolute bottom-2 left-2">
-                      <Badge variant="outline" className="bg-black/60 text-white border-none">
-                        {course.trainingCategory}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg line-clamp-1">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-2">{course.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{course.duration}</span>
-                    <span>•</span>
-                    <span>{course.level}</span>
-                  </div>
-                  {course.progress !== undefined && (
-                    <div className="mt-3">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-muted-foreground">Progress</span>
-                        <span className="text-xs font-medium">{course.progress}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-                {/* Removed instructor footer section */}
-              </Card>
+              <CourseCard
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating}
+                trainingCategory={showTrainingCategory ? course.trainingCategory : undefined}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.previewUrl}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex items-center justify-end gap-2 mt-4">
-          <CarouselPrevious className="static transform-none" />
-          <CarouselNext className="static transform-none" />
-        </div>
       </Carousel>
     </div>
   );

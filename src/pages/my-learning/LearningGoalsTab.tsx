@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, Target, User, Users } from 'lucide-react';
-import CourseCarousel from '@/components/CourseCarousel';
+import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
 
 interface LearningGoalsTabProps {
@@ -118,11 +118,25 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
             <CardContent className="pt-4">
               <div className="pt-2">
                 <h4 className="text-sm font-medium mb-3">Assigned Courses</h4>
-                <CourseCarousel 
-                  title="" 
-                  courses={goal.courses}
-                  showTrainingCategory={true}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {goal.courses.map(course => (
+                    <CourseCard
+                      key={course.id}
+                      id={course.id}
+                      title={course.title}
+                      description={course.description}
+                      imageUrl={course.imageUrl}
+                      category={course.category}
+                      duration={course.duration}
+                      rating={course.rating}
+                      trainingCategory={course.trainingCategory}
+                      isBookmarked={course.isBookmarked}
+                      previewUrl={course.previewUrl}
+                      isHot={course.isHot}
+                      isNew={course.isNew}
+                    />
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>

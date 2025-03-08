@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '@/components/CourseCarousel';
 import { mockCourses } from '@/data/mockCoursesData';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ interface CoursesTabProps {
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const navigate = useNavigate();
   
   // In a real app, we'd filter based on teamMemberId if provided
   const assignedCourses = mockCourses.filter(course => 
@@ -105,28 +107,33 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         return totalCourses;
     }
   };
+  
+  // Navigate to discover page
+  const handleNavigateToDiscover = () => {
+    navigate('/discover');
+  };
 
   return (
     <div className="space-y-8">
-      {/* Learning Progress Section */}
+      {/* Learning Progress Section - Made smaller */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="py-4">
           <h3 className="text-lg font-medium mb-2">Learning Progress</h3>
           <div className="flex items-center gap-4">
             <Progress value={completedPercentage} className="h-2 flex-1" />
             <span className="text-sm font-medium">{completedPercentage}%</span>
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-3 gap-4 mt-3">
             <div className="text-center">
-              <p className="text-2xl font-bold">{assignedCourses.length}</p>
+              <p className="text-xl font-bold">{assignedCourses.length}</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold">{inProgressCourses.length}</p>
+              <p className="text-xl font-bold">{inProgressCourses.length}</p>
               <p className="text-sm text-muted-foreground">In Progress</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold">{completedCourses.length}</p>
+              <p className="text-xl font-bold">{completedCourses.length}</p>
               <p className="text-sm text-muted-foreground">Completed</p>
             </div>
           </div>
@@ -213,12 +220,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         
         {getFilteredCourses().length > 0 ? (
           <CourseCarousel 
-            title={activeFilter === 'all' ? 'All Courses' : 
-              activeFilter === 'in-progress' ? 'In Progress Courses' :
-              activeFilter === 'assigned' ? 'Not Started Courses' :
-              activeFilter === 'completed' ? 'Completed Courses' :
-              activeFilter === 'saved' ? 'Saved Courses' : 'Courses Shared with Me'
-            }
+            title="" 
             courses={getFilteredCourses()} 
             showTrainingCategory={true}
           />
@@ -240,6 +242,14 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
                   View All Courses
                 </Button>
               )}
+              
+              <Button 
+                variant="default" 
+                className="mt-4" 
+                onClick={handleNavigateToDiscover}
+              >
+                Explore Courses
+              </Button>
             </CardContent>
           </Card>
         )}
