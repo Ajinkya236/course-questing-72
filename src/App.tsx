@@ -1,11 +1,10 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
-import { ThemeProvider } from "@/components/theme-provider"
-import { useTheme } from "@/components/hooks/use-theme"
+import { ThemeProvider } from "./components/theme-provider"
+import { useTheme } from "./components/hooks/use-theme"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
-import { ModeToggle } from '@/components/ui/mode-toggle';
+import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
@@ -48,7 +47,6 @@ import FAQ from './pages/FAQ';
 import NotFound from './pages/NotFound';
 import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
 
-// Add the new domain-related page imports
 import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
 import DomainCoursesPage from './pages/DomainCoursesPage';
 
@@ -78,7 +76,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Sidebar */}
       <div className="w-64 border-r flex-none hidden md:block">
         <ScrollArea className="h-screen">
           <div className="p-4 space-y-4">
@@ -202,7 +199,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
         </ScrollArea>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 p-4">
         <ScrollArea className="h-screen">
           {children}
@@ -247,7 +243,6 @@ function App() {
               <Route path="/my-team/member/:memberId" element={<Profile />} />
               <Route path="/faq" element={<FAQ />} />
               
-              {/* New routes for domains */}
               <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />
               <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
               

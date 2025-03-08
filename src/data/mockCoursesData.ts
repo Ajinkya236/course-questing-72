@@ -174,3 +174,6 @@ export const mockCourses = [
     isNew: true
   }
 ];
+
+// Add this line to alias mockCourses to mockCoursesData for backward compatibility
+export const mockCoursesData = mockCourses;

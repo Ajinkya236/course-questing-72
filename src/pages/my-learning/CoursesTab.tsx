@@ -1,7 +1,7 @@
 
 import React from 'react';
 import CourseCarousel from '@/components/CourseCarousel';
-import { mockCoursesData } from '@/data/mockCoursesData';
+import { mockCourses } from '@/data/mockCoursesData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
@@ -11,19 +11,19 @@ interface CoursesTabProps {
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   // In a real app, we'd filter based on teamMemberId if provided
-  const assignedCourses = mockCoursesData.filter(course => 
+  const assignedCourses = mockCourses.filter(course => 
     course.status === 'assigned' || course.status === 'in-progress'
   );
   
-  const completedCourses = mockCoursesData.filter(course => 
+  const completedCourses = mockCourses.filter(course => 
     course.status === 'completed'
   );
   
-  const inProgressCourses = mockCoursesData.filter(course => 
+  const inProgressCourses = mockCourses.filter(course => 
     course.status === 'in-progress'
   );
   
-  const notStartedCourses = mockCoursesData.filter(course => 
+  const notStartedCourses = mockCourses.filter(course => 
     course.status === 'assigned'
   );
 
@@ -62,8 +62,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       <div>
         <h3 className="text-xl font-medium mb-4">In Progress</h3>
         <CourseCarousel 
+          title="In Progress Courses"
           courses={inProgressCourses} 
-          emptyMessage="No courses in progress" 
           showTrainingCategory={false}
         />
       </div>
@@ -72,8 +72,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       <div>
         <h3 className="text-xl font-medium mb-4">Not Started</h3>
         <CourseCarousel 
+          title="Not Started Courses"
           courses={notStartedCourses} 
-          emptyMessage="No courses assigned" 
           showTrainingCategory={true}
         />
       </div>
@@ -82,8 +82,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       <div>
         <h3 className="text-xl font-medium mb-4">Completed</h3>
         <CourseCarousel 
+          title="Completed Courses"
           courses={completedCourses} 
-          emptyMessage="No completed courses" 
           showTrainingCategory={false}
         />
       </div>
