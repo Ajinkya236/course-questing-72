@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { coursesList } from '@/data/mockData';
-import { Course } from '@/types/course';
+import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
 import { CarouselFilters } from '@/components/ui/carousel';
 
@@ -123,7 +123,7 @@ const DomainCoursesPage: React.FC = () => {
   const { domainId } = useParams<{ domainId: string }>();
   const navigate = useNavigate();
   const [domain, setDomain] = useState<Domain | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<string>('All Skills');
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const DomainCoursesPage: React.FC = () => {
       if (foundDomain) {
         setDomain(foundDomain);
         // Filter mock courses for this domain (in real app, would fetch from API)
-        setCourses(coursesList.slice(0, foundDomain.courseCount % 20 + 10));
+        setCourses(mockCourses.slice(0, foundDomain.courseCount % 20 + 10));
       } else {
         navigate('/view-all/domains');
       }
@@ -150,7 +150,7 @@ const DomainCoursesPage: React.FC = () => {
   const filteredCourses = selectedSkill === 'All Skills' 
     ? courses 
     : courses.filter(course => 
-        course.skills?.some(skill => skill.name.toLowerCase().includes(selectedSkill.toLowerCase()))
+        course.skills?.some((skill: any) => skill.name.toLowerCase().includes(selectedSkill.toLowerCase()))
       );
 
   return (
@@ -178,8 +178,22 @@ const DomainCoursesPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Domain filters carousel with navigation buttons */}
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-3">Browse Domains</h3>
+          <CarouselFilters
+            filters={domains.map(d => d.name)}
+            selectedFilter={domain.name}
+            onFilterSelect={(name) => {
+              const selected = domains.find(d => d.name === name);
+              if (selected) navigate(`/domain/${selected.id}`);
+            }}
+          />
+        </div>
+
         {/* Skills filter carousel */}
         <div className="mb-6">
+          <h3 className="text-lg font-medium mb-3">Filter by Skills</h3>
           <CarouselFilters
             filters={availableSkills}
             selectedFilter={selectedSkill}

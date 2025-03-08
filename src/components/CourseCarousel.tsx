@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
@@ -38,7 +37,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   filterOptions = [],
   viewAllUrl = '/view-all',
   subFilterOptions = {},
-  showTrainingCategory = false // Only show for assigned courses
+  showTrainingCategory = false
 }) => {
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
@@ -121,18 +120,23 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="ml-auto gap-1" 
-          onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-        >
-          View All
-          <ArrowRight className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          >
+            View All
+          </Button>
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer" 
+            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
+          />
+        </div>
       </div>
       
       {/* Main filters carousel with navigation buttons */}
@@ -215,13 +219,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="p-4 pt-0 flex items-center">
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={course.instructor.avatar} alt={course.instructor.name} />
-                    <AvatarFallback>{course.instructor.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">{course.instructor.name}</span>
-                </CardFooter>
+                {/* Removed instructor footer section */}
               </Card>
             </CarouselItem>
           ))}

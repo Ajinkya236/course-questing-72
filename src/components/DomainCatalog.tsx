@@ -38,12 +38,22 @@ const DomainCatalog: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center group">
         <h2 className="text-xl font-semibold">Domain Catalog</h2>
-        <Button variant="link" size="sm" className="gap-1" onClick={() => navigate('/view-all/domains')}>
-          View All
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center">
+          <Button 
+            variant="link" 
+            size="sm" 
+            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+            onClick={() => navigate('/view-all/domains')}
+          >
+            View All
+          </Button>
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer" 
+            onClick={() => navigate('/view-all/domains')}
+          />
+        </div>
       </div>
       
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
