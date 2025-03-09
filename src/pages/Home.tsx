@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
-import CourseCarousel from '@/components/CourseCarousel';
+import CourseCarousel from '@/components/course-carousel';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
