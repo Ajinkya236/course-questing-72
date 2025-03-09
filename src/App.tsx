@@ -1,8 +1,8 @@
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
 import { useTheme } from "./components/hooks/use-theme"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
@@ -195,11 +195,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
     <div className="flex flex-col h-screen bg-background">
       <TopNavigation />
       
-      <div className="flex-1 p-4 overflow-hidden">
-        <ScrollArea className="h-full">
-          {children}
-          <Toaster />
-        </ScrollArea>
+      <div className="flex-1 p-4 overflow-auto">
+        {children}
+        <Toaster />
       </div>
     </div>
   );

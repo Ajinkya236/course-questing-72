@@ -34,7 +34,7 @@ const assignedCourses = mockCourses
   }));
 
 const chosenForYou = mockCourses
-  .filter((_, index) => index < 12)
+  .filter((_, idx) => idx < 12)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
@@ -42,7 +42,7 @@ const chosenForYou = mockCourses
   }));
 
 const basedOnInterest = mockCourses
-  .filter((_, index) => index >= 12 && index < 24)
+  .filter((_, idx) => idx >= 12 && idx < 24)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
@@ -50,7 +50,7 @@ const basedOnInterest = mockCourses
   }));
 
 const forYourRoleCourses = mockCourses
-  .filter((_, index) => index >= 24 && index < 36)
+  .filter((_, idx) => idx >= 24 && idx < 36)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
@@ -60,15 +60,15 @@ const forYourRoleCourses = mockCourses
 const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
   .slice(0, 12)
-  .map((course, index) => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${index + 1}. ${course.title}` // Add ranking to title
+    title: `${idx + 1}. ${course.title}` // Add ranking to title
   }));
 
 const popularWithSimilarUsers = mockCourses
-  .filter((_, index) => index >= 36 && index < 48)
+  .filter((_, idx) => idx >= 36 && idx < 48)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,

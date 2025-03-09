@@ -178,9 +178,10 @@
     @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
   }
 
-  .subtle-scrollbar {
+  /* Remove ScrollArea scrollbar styling that causes overlap */
+  /* .subtle-scrollbar {
     @apply scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent;
-  }
+  } */
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   .scrollbar-hide::-webkit-scrollbar {
