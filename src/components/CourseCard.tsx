@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, memo, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
@@ -54,6 +55,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
+  // Parameter-less callbacks for the event listener
   const handleShareEvent = useCallback(() => {
     setShowShareDialog(true);
   }, []);
@@ -66,6 +68,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     setCurrentBookmarked(prev => !prev);
   }, []);
 
+  // Use the event listener with the parameter-less callbacks
   useCourseEventListener(
     id,
     handleShareEvent,
@@ -73,6 +76,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     handleBookmarkEvent
   );
 
+  // Event handlers with React.MouseEvent parameters for direct DOM interaction
   const handleCourseClick = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       e.stopPropagation();
