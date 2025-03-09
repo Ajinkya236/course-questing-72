@@ -8,20 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Filter, Clock, Star, Tag } from 'lucide-react';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
-import { Course } from '@/types/course';
 
 interface CoursesTabProps {
   teamMemberId?: string;
 }
-
-// Add missing properties to the mock courses for filtering and sorting
-const enhancedCourses = mockCourses.map(course => ({
-  ...course,
-  // Add default values for missing properties
-  lastAccessed: new Date().toISOString(),
-  progress: course.status === 'completed' ? 100 : course.status === 'in-progress' ? Math.floor(Math.random() * 90) + 10 : 0,
-  videoUrl: 'https://example.com/sample-video.mp4' // Default value without checking for existing videoUrl
-}));
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +19,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   
   // Filter and sort the courses
-  const filteredCourses = enhancedCourses
+  const filteredCourses = mockCourses
     // Filter by search query
     .filter(course => 
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -41,13 +31,13 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       if (filterStatus === 'in-progress') return course.status === 'in-progress';
       if (filterStatus === 'completed') return course.status === 'completed';
       if (filterStatus === 'assigned') return course.status === 'assigned';
-      // Remove the 'saved' status since it's not in the Course type
+      if (filterStatus === 'saved') return course.status === 'saved';
       return true;
     })
     // Sort courses
     .sort((a, b) => {
       if (sortBy === 'recent') {
-        return (new Date(b.lastAccessed).getTime()) - (new Date(a.lastAccessed).getTime());
+        return (new Date(b.lastAccessed || 0).getTime()) - (new Date(a.lastAccessed || 0).getTime());
       }
       if (sortBy === 'title-asc') {
         return a.title.localeCompare(b.title);
@@ -56,7 +46,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         return b.title.localeCompare(a.title);
       }
       if (sortBy === 'progress') {
-        return (b.progress) - (a.progress);
+        return (b.progress || 0) - (a.progress || 0);
       }
       return 0;
     });
@@ -98,7 +88,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
                   <SelectItem value="in-progress">In Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="assigned">Assigned</SelectItem>
-                  {/* Removed the 'saved' status since it's not in the Course type */}
+                  <SelectItem value="saved">Saved</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" size="icon">
