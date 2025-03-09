@@ -65,7 +65,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleBookmarkToggle}
             aria-label="Bookmark"
-            className="h-8 w-8"
+            className={`h-8 w-8 ${isBookmarked ? "border-primary text-primary" : ""}`}
           >
             <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
           </Button>

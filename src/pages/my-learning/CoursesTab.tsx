@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
+import { Course } from '@/types/course';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -15,6 +16,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
   const statusFromUrl = searchParams.get('status');
   const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'in-progress');
+  const [savedCourses, setSavedCourses] = useState<Course[]>([]);
   
   // Update active filter when URL params change
   useEffect(() => {
@@ -25,6 +27,12 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
     }
   }, [statusFromUrl, navigate]);
+  
+  // Load saved courses from localStorage
+  useEffect(() => {
+    const storedSavedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
+    setSavedCourses(storedSavedCourses);
+  }, [activeFilter]); // Re-fetch when tab changes
   
   // In a real app, we'd filter based on teamMemberId if provided
   const assignedCourses = mockCourses
@@ -49,15 +57,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       ...course,
       imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
       previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
-    }));
-  
-  // Mock data for saved and shared courses
-  const savedCourses = mockCourses
-    .filter(course => course.isBookmarked === true)
-    .map(course => ({
-      ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
     }));
   
   const handleFilterChange = (filter: string) => {

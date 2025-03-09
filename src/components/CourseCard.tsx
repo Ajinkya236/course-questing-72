@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -51,6 +51,37 @@ const CourseCard: React.FC<CourseCardProps> = ({
     handleMouseLeave,
     toggleMute
   } = useVideoPreview({ previewUrl });
+
+  // Update local storage when bookmark status changes
+  useEffect(() => {
+    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
+    
+    if (currentBookmarked && !savedCourses.some((course: any) => course.id === id)) {
+      // Add course to saved courses
+      const courseToSave = {
+        id,
+        title,
+        description,
+        imageUrl,
+        category, 
+        duration,
+        rating,
+        trainingCategory,
+        isBookmarked: true,
+        previewUrl,
+        isHot,
+        isNew,
+        savedAt: new Date().toISOString(),
+        status: 'saved'
+      };
+      
+      localStorage.setItem('savedCourses', JSON.stringify([...savedCourses, courseToSave]));
+    } else if (!currentBookmarked) {
+      // Remove course from saved courses
+      const updatedSavedCourses = savedCourses.filter((course: any) => course.id !== id);
+      localStorage.setItem('savedCourses', JSON.stringify(updatedSavedCourses));
+    }
+  }, [currentBookmarked, id, title, description, imageUrl, category, duration, rating, trainingCategory, previewUrl, isHot, isNew]);
 
   // Handle course click to navigate to course player
   const handleCourseClick = (e: React.MouseEvent) => {
