@@ -176,7 +176,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-1" : "basis-1/4 pl-1 last:pr-6"} /* Show 4 cards per row with the 5th card partially visible */
+              className={isMobile ? "basis-full pl-1" : "basis-1/4 pl-1 md:last:pr-[60%]"} /* Show 4 cards per row with the 5th card ~40% visible */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >

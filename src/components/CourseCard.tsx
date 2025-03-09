@@ -96,6 +96,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const handleCourseClick = (e: React.MouseEvent) => {
     // Don't navigate if the click was on a button or if a dialog is open
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
+      e.stopPropagation();
       return;
     }
     navigate(`/course/${id}`);
