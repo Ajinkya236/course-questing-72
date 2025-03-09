@@ -35,10 +35,7 @@ const SkillsSection = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-6" align="end">
-                <FollowSkills 
-                  title="Manage Skills" 
-                  subtitle="Add or remove skills to personalize your learning"
-                />
+                <FollowSkills />
               </PopoverContent>
             </Popover>
           </div>

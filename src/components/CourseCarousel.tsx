@@ -239,12 +239,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full" : "basis-1/4 pr-4"}
+              className={isMobile ? "basis-full" : "basis-1/4"}
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >
               <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
+                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group mr-4"
                 onClick={() => handleCardClick(course.id)}
               >
                 <div className="aspect-video relative overflow-hidden bg-muted">
