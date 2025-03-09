@@ -396,10 +396,8 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     <div key={recipient.id} className="bg-muted px-2 py-1 rounded-md flex items-center text-sm">
                       <span className="mr-1">{recipient.email}</span>
                       <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveEmailRecipient(recipient.id);
-                        }}
+                        type="button"
+                        onClick={() => handleRemoveEmailRecipient(recipient.id)}
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <X className="h-3 w-3" />
@@ -413,272 +411,225 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
             {/* Personal message */}
             <div className="space-y-2">
               <p className="text-sm font-medium">Add a personal message (optional)</p>
-              <Textarea 
-                placeholder="I thought you might be interested in this course..."
+              <Textarea
+                placeholder="I thought you might find this course interesting..."
                 value={personalMessage}
                 onChange={(e) => setPersonalMessage(e.target.value)}
-                className="resize-none"
                 rows={3}
               />
             </div>
           </div>
           
-          <DialogFooter className="flex justify-between items-center">
-            <Button 
-              type="button" 
+          <DialogFooter className="sm:justify-between">
+            <Button
+              type="button"
               variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowShareDialog(false);
-              }}
+              onClick={() => setShowShareDialog(false)}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               type="button"
               onClick={handleShareCourse}
               disabled={emailRecipients.length === 0 || isSending}
-              className="gap-2"
+              className="ml-2"
             >
               {isSending ? (
                 <>
-                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  <span>Sending...</span>
+                  <span className="animate-spin mr-2">⏳</span>
+                  Sending...
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" />
-                  <span>Share Course</span>
+                  <Send className="h-4 w-4 mr-2" />
+                  Share
                 </>
               )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+      
       {/* Assign Dialog */}
       <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
         <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
             <DialogTitle>Assign Course</DialogTitle>
             <DialogDescription>
-              Assign "{title}" to yourself or others
+              Assign "{title}" to yourself or team members
             </DialogDescription>
           </DialogHeader>
           
-          <Tabs value={assignTab} onValueChange={setAssignTab} className="mt-4">
-            <TabsList className="grid grid-cols-5">
-              <TabsTrigger value="self" className="text-xs">Self</TabsTrigger>
-              <TabsTrigger value="team" className="text-xs">Team</TabsTrigger>
-              <TabsTrigger value="mentee" className="text-xs">Mentee</TabsTrigger>
-              <TabsTrigger value="goals" className="text-xs">My Goals</TabsTrigger>
-              <TabsTrigger value="teamGoals" className="text-xs">Team Goals</TabsTrigger>
+          <Tabs defaultValue="self" value={assignTab} onValueChange={setAssignTab} className="w-full">
+            <TabsList className="grid grid-cols-3 mb-4">
+              <TabsTrigger value="self">Self</TabsTrigger>
+              <TabsTrigger value="team">Team</TabsTrigger>
+              <TabsTrigger value="mentee">Mentees</TabsTrigger>
+            </TabsList>
+            <TabsList className="grid grid-cols-2 mb-4">
+              <TabsTrigger value="goals">Goals</TabsTrigger>
+              <TabsTrigger value="teamGoals">Team Goals</TabsTrigger>
             </TabsList>
             
-            {/* Self tab */}
-            <TabsContent value="self" className="space-y-4 mt-4">
-              <div className="flex items-center p-3 border rounded-md">
-                <User className="h-5 w-5 text-primary mr-3" />
-                <div>
-                  <p className="font-medium">Assign to yourself</p>
-                  <p className="text-sm text-muted-foreground">This course will appear in your assigned courses</p>
-                </div>
-              </div>
+            {/* Self Assignment */}
+            <TabsContent value="self" className="space-y-4 py-2">
+              <p className="text-sm text-muted-foreground">
+                Assign this course to yourself for personal development.
+              </p>
             </TabsContent>
-
-            {/* Team tab */}
-            <TabsContent value="team" className="space-y-4 mt-4">
+            
+            {/* Team Assignment */}
+            <TabsContent value="team" className="space-y-4 py-2">
               <div className="space-y-2">
-                <p className="text-sm font-medium">Search team members</p>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search by name or role..." 
-                    className="pl-8"
+                <div className="flex items-center">
+                  <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search team members..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
+                    className="flex-1"
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-medium">Team members</p>
-                  <span className="text-xs text-muted-foreground">
-                    {selectedTeamMembers.length} selected
-                  </span>
-                </div>
                 
-                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
-                  {filteredTeamMembers.length > 0 ? (
-                    filteredTeamMembers.map(member => (
-                      <div key={member.id} className="flex items-center p-3 hover:bg-muted">
-                        <Checkbox 
-                          id={`team-${member.id}`}
-                          checked={selectedTeamMembers.includes(member.id)}
-                          onCheckedChange={() => handleSelectTeamMember(member.id)}
-                          className="mr-3"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <div className="flex items-center flex-1">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                            <User className="h-4 w-4 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{member.name}</p>
-                            <p className="text-xs text-muted-foreground">{member.role}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex items-center justify-center p-4 text-muted-foreground">
-                      No team members found
+                <div className="max-h-60 overflow-y-auto space-y-2 mt-4">
+                  {filteredTeamMembers.map(member => (
+                    <div 
+                      key={member.id}
+                      className="flex items-center space-x-2 p-2 rounded hover:bg-muted"
+                    >
+                      <Checkbox 
+                        id={`team-${member.id}`}
+                        checked={selectedTeamMembers.includes(member.id)}
+                        onCheckedChange={() => handleSelectTeamMember(member.id)}
+                      />
+                      <label 
+                        htmlFor={`team-${member.id}`}
+                        className="flex-1 cursor-pointer flex flex-col"
+                      >
+                        <span className="font-medium text-sm">{member.name}</span>
+                        <span className="text-xs text-muted-foreground">{member.role}</span>
+                      </label>
                     </div>
+                  ))}
+                  
+                  {filteredTeamMembers.length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-2">
+                      No team members found
+                    </p>
                   )}
                 </div>
               </div>
             </TabsContent>
-
-            {/* Mentee tab */}
-            <TabsContent value="mentee" className="space-y-4 mt-4">
+            
+            {/* Mentee Assignment */}
+            <TabsContent value="mentee" className="space-y-4 py-2">
               <div className="space-y-2">
-                <p className="text-sm font-medium">Search mentees</p>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search by name or role..." 
-                    className="pl-8"
+                <div className="flex items-center">
+                  <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search mentees..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
+                    className="flex-1"
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-medium">Mentees</p>
-                  <span className="text-xs text-muted-foreground">
-                    {selectedMentees.length} selected
-                  </span>
-                </div>
                 
-                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
-                  {filteredMentees.length > 0 ? (
-                    filteredMentees.map(mentee => (
-                      <div key={mentee.id} className="flex items-center p-3 hover:bg-muted">
-                        <Checkbox 
-                          id={`mentee-${mentee.id}`}
-                          checked={selectedMentees.includes(mentee.id)}
-                          onCheckedChange={() => handleSelectMentee(mentee.id)}
-                          className="mr-3"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <div className="flex items-center flex-1">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                            <User className="h-4 w-4 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{mentee.name}</p>
-                            <p className="text-xs text-muted-foreground">{mentee.role}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex items-center justify-center p-4 text-muted-foreground">
+                <div className="max-h-60 overflow-y-auto space-y-2 mt-4">
+                  {filteredMentees.map(mentee => (
+                    <div 
+                      key={mentee.id}
+                      className="flex items-center space-x-2 p-2 rounded hover:bg-muted"
+                    >
+                      <Checkbox 
+                        id={`mentee-${mentee.id}`}
+                        checked={selectedMentees.includes(mentee.id)}
+                        onCheckedChange={() => handleSelectMentee(mentee.id)}
+                      />
+                      <label 
+                        htmlFor={`mentee-${mentee.id}`}
+                        className="flex-1 cursor-pointer flex flex-col"
+                      >
+                        <span className="font-medium text-sm">{mentee.name}</span>
+                        <span className="text-xs text-muted-foreground">{mentee.role}</span>
+                      </label>
+                    </div>
+                  ))}
+                  
+                  {filteredMentees.length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-2">
                       No mentees found
-                    </div>
+                    </p>
                   )}
                 </div>
               </div>
             </TabsContent>
-
-            {/* My Goals tab */}
-            <TabsContent value="goals" className="space-y-4 mt-4">
-              <div className="flex items-center p-3 border rounded-md">
-                <Goal className="h-5 w-5 text-primary mr-3" />
-                <div>
-                  <p className="font-medium">Add to your learning goals</p>
-                  <p className="text-sm text-muted-foreground">This course will appear in your learning goals</p>
-                </div>
-              </div>
+            
+            {/* Personal Goals Assignment */}
+            <TabsContent value="goals" className="space-y-4 py-2">
+              <p className="text-sm text-muted-foreground">
+                Add this course to your personal learning goals and development plan.
+              </p>
             </TabsContent>
-
-            {/* Team Goals tab */}
-            <TabsContent value="teamGoals" className="space-y-4 mt-4">
+            
+            {/* Team Goals Assignment */}
+            <TabsContent value="teamGoals" className="space-y-4 py-2">
               <div className="space-y-2">
-                <p className="text-sm font-medium">Search team members</p>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search by name or role..." 
-                    className="pl-8"
+                <div className="flex items-center">
+                  <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search team members..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
+                    className="flex-1"
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-medium">Team members for goals</p>
-                  <span className="text-xs text-muted-foreground">
-                    {selectedTeamForGoals.length} selected
-                  </span>
-                </div>
                 
-                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
-                  {filteredTeamMembers.length > 0 ? (
-                    filteredTeamMembers.map(member => (
-                      <div key={member.id} className="flex items-center p-3 hover:bg-muted">
-                        <Checkbox 
-                          id={`team-goals-${member.id}`}
-                          checked={selectedTeamForGoals.includes(member.id)}
-                          onCheckedChange={() => handleSelectTeamForGoals(member.id)}
-                          className="mr-3"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <div className="flex items-center flex-1">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                            <User className="h-4 w-4 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{member.name}</p>
-                            <p className="text-xs text-muted-foreground">{member.role}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex items-center justify-center p-4 text-muted-foreground">
-                      No team members found
+                <div className="max-h-60 overflow-y-auto space-y-2 mt-4">
+                  {filteredTeamMembers.map(member => (
+                    <div 
+                      key={member.id}
+                      className="flex items-center space-x-2 p-2 rounded hover:bg-muted"
+                    >
+                      <Checkbox 
+                        id={`team-goals-${member.id}`}
+                        checked={selectedTeamForGoals.includes(member.id)}
+                        onCheckedChange={() => handleSelectTeamForGoals(member.id)}
+                      />
+                      <label 
+                        htmlFor={`team-goals-${member.id}`}
+                        className="flex-1 cursor-pointer flex flex-col"
+                      >
+                        <span className="font-medium text-sm">{member.name}</span>
+                        <span className="text-xs text-muted-foreground">{member.role}</span>
+                      </label>
                     </div>
+                  ))}
+                  
+                  {filteredTeamMembers.length === 0 && (
+                    <p className="text-center text-sm text-muted-foreground py-2">
+                      No team members found
+                    </p>
                   )}
                 </div>
               </div>
             </TabsContent>
           </Tabs>
           
-          <DialogFooter className="mt-6">
+          <DialogFooter className="sm:justify-between">
             <Button
+              type="button"
               variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAssignDialog(false);
-              }}
+              onClick={() => setShowAssignDialog(false)}
             >
               Cancel
             </Button>
             <Button
+              type="button"
               onClick={handleAssignCourse}
-              className="gap-2"
+              className="ml-2"
             >
-              <UserPlus className="h-4 w-4" />
-              Assign Course
+              <UserPlus className="h-4 w-4 mr-2" />
+              Assign
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { Course } from '@/types/course';
 import { useLocalStorage } from './useLocalStorage';
-import { useToast } from './use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * Custom hook for managing course bookmarks
