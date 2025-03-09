@@ -46,12 +46,11 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         <div className="grid grid-cols-4 gap-1">
           <Button 
             variant="default" 
-            className="col-span-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
+            className="col-span-2 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
             onClick={handleWatchClick}
             aria-label="Watch"
-            size="icon"
           >
-            <Play className="h-3 w-3" />
+            <Play className="h-3 w-3 mr-1" /> Watch
           </Button>
           <Button 
             variant="outline" 
@@ -76,7 +75,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleAssignClick}
             aria-label="Assign"
-            className="h-8 w-8"
+            className="h-8 w-8 col-span-1"
           >
             <UserPlus className="h-3 w-3" />
           </Button>

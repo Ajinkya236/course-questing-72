@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
@@ -52,22 +51,18 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Handle course click to navigate to course player
   const handleCourseClick = (e: React.MouseEvent) => {
-    // Don't navigate if the click was on a button or if a dialog is open
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       return;
     }
     navigate(`/course/${id}`);
   };
 
-  // Handle watch button click
   const handleWatchClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/course/${id}`);
   };
 
-  // Handle bookmark toggle
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newBookmarked = !currentBookmarked;
@@ -81,13 +76,11 @@ const CourseCard: React.FC<CourseCardProps> = ({
     });
   };
 
-  // Handle share button click
   const handleShareClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowShareDialog(true);
   };
 
-  // Handle assign button click
   const handleAssignClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowAssignDialog(true);

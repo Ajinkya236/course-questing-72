@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
@@ -54,7 +53,9 @@ const forYourRoleCourses = mockCourses
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', // Sample video
+    isNew: index % 5 === 0,
+    isHot: index % 7 === 0
   }));
 
 const trendingCourses = [...mockCourses]
@@ -64,7 +65,9 @@ const trendingCourses = [...mockCourses]
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${index + 1}. ${course.title}` // Add ranking to title
+    title: `${index + 1}. ${course.title}`, // Add ranking to title
+    isNew: index % 5 === 0,
+    isHot: index % 7 === 0
   }));
 
 const popularWithSimilarUsers = mockCourses
@@ -72,7 +75,9 @@ const popularWithSimilarUsers = mockCourses
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4', // Sample video
+    isNew: index % 5 === 0,
+    isHot: index % 7 === 0
   }));
 
 // Mock banner data for BannerCarousel
