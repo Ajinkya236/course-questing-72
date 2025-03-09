@@ -33,8 +33,8 @@ export interface Course {
   createdAt?: string;
   status?: 'assigned' | 'in-progress' | 'completed' | 'saved';
   sharedBy?: string;
-  previewUrl?: string; // Added missing property
-  savedAt?: string; // Added missing property
+  previewUrl?: string; // Added for video previews
+  savedAt?: string; // Added for bookmarking timestamp
   
   // These fields from CourseCarousel interface
   level?: string;

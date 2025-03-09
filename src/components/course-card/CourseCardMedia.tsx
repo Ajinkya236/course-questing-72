@@ -57,8 +57,13 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           src={imageUrl || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
-          loading="lazy"
-          decoding="async"
+          loading="lazy" 
+          onError={(e) => {
+            // Fallback to placeholder if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.src = "/placeholder.svg";
+            console.log(`Image load error for ${title}, using placeholder instead`);
+          }}
         />
       )}
 

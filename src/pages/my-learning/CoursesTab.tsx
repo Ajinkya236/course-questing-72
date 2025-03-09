@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,17 +18,14 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'in-progress');
   const { savedCourses } = useCourseBookmarks();
   
-  // Update active filter when URL params change
   useEffect(() => {
     if (statusFromUrl) {
       setActiveFilter(statusFromUrl);
     } else {
-      // Default to in-progress if no status in URL
       navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
     }
   }, [statusFromUrl, navigate]);
   
-  // In a real app, we'd filter based on teamMemberId if provided
   const assignedCourses = mockCourses
     .filter(course => course.status === 'assigned')
     .map(course => ({
@@ -59,7 +55,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
     navigate(`/my-learning?tab=courses&status=${filter}`);
   };
   
-  // Get the correct courses based on active filter
   const getFilteredCourses = () => {
     switch (activeFilter) {
       case 'assigned':
@@ -128,8 +123,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       <div>
         <h2 className="text-xl font-semibold mb-4">{getFilterTitle()}</h2>
         {filteredCourses.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-x-auto">
-            <div className="flex gap-6 pl-0 pr-0 snap-x snap-mandatory scrollbar-hide min-w-full">
+          <div className="overflow-hidden">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               {filteredCourses.map((course, index) => (
                 <div 
                   key={course.id}

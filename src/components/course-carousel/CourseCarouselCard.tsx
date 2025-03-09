@@ -53,10 +53,15 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
     >
       <div className="aspect-video relative overflow-hidden bg-muted">
         <img
-          src={course.imageUrl}
+          src={course.imageUrl || "/placeholder.svg"}
           alt={course.title}
           className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
-          loading="lazy" // Add lazy loading for images
+          loading="lazy" 
+          onError={(e) => {
+            // Fallback to placeholder if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.src = "/placeholder.svg";
+          }}
         />
         {course.enrollmentStatus && (
           <div className="absolute top-2 right-2">
@@ -81,7 +86,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>{course.duration}</span>
           <span>•</span>
-          <span>{course.level}</span>
+          <span>{course.level || 'All Levels'}</span>
         </div>
         {course.progress !== undefined && (
           <div className="mt-2">
