@@ -7,7 +7,7 @@ import { useCourseData } from '@/hooks/useCourseData';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import { triggerCourseEvent } from '@/hooks/useCourseEvents';
 import CourseCarouselHeader from './CourseCarouselHeader';
-import CourseCarouselCard from './CourseCarouselCard';
+import CourseCard from '@/components/CourseCard';
 import { 
   Carousel, 
   CarouselContent, 
@@ -114,7 +114,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [];
 
   // Calculate how many cards to show at once based on viewport
-  const itemsToShow = isMobile ? 1 : 5;
+  // Show 4 full cards and 1 partial (20% of the next card)
+  const itemsToShow = isMobile ? 1 : 4.2; // 4 full cards + 20% of the 5th card
 
   return (
     <div className="space-y-4 overflow-hidden">
@@ -157,22 +158,25 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           id={carouselId}
         >
           <CarouselContent className="-ml-4">
-            {normalizedCourses.map((course, index) => (
+            {normalizedCourses.map((course) => (
               <CarouselItem 
                 key={course.id} 
                 className={isMobile ? "basis-full pl-4" : `basis-1/${itemsToShow} pl-4`}
-                onMouseEnter={() => handleMouseEnter(course.id)}
-                onMouseLeave={handleMouseLeave}
               >
-                <CourseCarouselCard
-                  course={course}
-                  hoveredCourseId={hoveredCourseId}
-                  handleCardClick={handleCardClick}
-                  handleShareClick={handleShareClick}
-                  handleBookmarkToggle={handleBookmarkToggle}
-                  handleAssignClick={handleAssignClick}
-                  showTrainingCategory={showTrainingCategory}
-                />
+                <div 
+                  className="cursor-pointer"
+                  onMouseEnter={() => handleMouseEnter(course.id)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <CourseCard 
+                    {...course}
+                    trainingCategory={course.trainingCategory}
+                    isBookmarked={course.isBookmarked}
+                    previewUrl={course.videoUrl}
+                    isHot={course.isHot}
+                    isNew={course.isNew}
+                  />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>

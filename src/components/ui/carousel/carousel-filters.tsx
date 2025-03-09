@@ -1,125 +1,113 @@
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils"
 
-interface CarouselFiltersProps {
+interface CarouselFiltersProps extends React.HTMLAttributes<HTMLDivElement> {
   filters: string[];
   selectedFilter: string;
   onFilterSelect: (filter: string) => void;
-  className?: string;
 }
 
-export const CarouselFilters = React.forwardRef<
-  HTMLDivElement,
-  CarouselFiltersProps
->(({ filters, selectedFilter, onFilterSelect, className }, ref) => {
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const [showLeftNav, setShowLeftNav] = React.useState(false);
-  const [showRightNav, setShowRightNav] = React.useState(true);
+const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
+  ({ className, filters, selectedFilter, onFilterSelect, ...props }, ref) => {
+    const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+    const [showLeftNav, setShowLeftNav] = React.useState(false);
+    const [showRightNav, setShowRightNav] = React.useState(true);
 
-  if (!filters || filters.length === 0) {
-    return null;
-  }
+    const updateNavVisibility = React.useCallback(() => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        setShowLeftNav(container.scrollLeft > 10);
+        setShowRightNav(
+          container.scrollLeft < container.scrollWidth - container.clientWidth - 10
+        );
+      }
+    }, []);
 
-  // Check for scroll position to show/hide navigation buttons
-  const checkScrollPosition = () => {
-    if (!scrollContainerRef.current) return;
-    
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    setShowLeftNav(scrollLeft > 0);
-    setShowRightNav(scrollLeft + clientWidth < scrollWidth - 5); // 5px buffer
-  };
+    const scrollLeft = React.useCallback(() => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        container.scrollBy({ left: -200, behavior: 'smooth' });
+      }
+    }, []);
 
-  // Scroll left/right when nav buttons are clicked
-  const scrollLeft = () => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
-  };
+    const scrollRight = React.useCallback(() => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        container.scrollBy({ left: 200, behavior: 'smooth' });
+      }
+    }, []);
 
-  const scrollRight = () => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
-  };
-
-  // Check scroll position on mount and when container is scrolled
-  React.useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      checkScrollPosition();
-      scrollContainer.addEventListener('scroll', checkScrollPosition);
-      
-      // Also check on resize since that can change if buttons need to be shown
-      window.addEventListener('resize', checkScrollPosition);
+    React.useEffect(() => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        updateNavVisibility();
+        container.addEventListener('scroll', updateNavVisibility);
+        window.addEventListener('resize', updateNavVisibility);
+      }
       
       return () => {
-        scrollContainer.removeEventListener('scroll', checkScrollPosition);
-        window.removeEventListener('resize', checkScrollPosition);
+        if (container) {
+          container.removeEventListener('scroll', updateNavVisibility);
+          window.removeEventListener('resize', updateNavVisibility);
+        }
       };
-    }
-  }, []);
+    }, [updateNavVisibility]);
 
-  return (
-    <div className="relative group/filters">
-      {/* Left navigation button - only shows when scrolled right */}
-      {showLeftNav && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/80 border shadow-sm 
-                     opacity-0 group-hover/filters:opacity-100 transition-opacity duration-300"
-          onClick={scrollLeft}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Scroll left</span>
-        </Button>
-      )}
-      
-      {/* Filters container with overflow handling */}
-      <div
-        ref={(el) => {
-          // Assign to forwarded ref and local ref
-          if (typeof ref === 'function') {
-            ref(el);
-          } else if (ref) {
-            ref.current = el;
-          }
-          scrollContainerRef.current = el;
-        }}
-        className={cn(
-          "flex overflow-x-auto scrollbar-hide gap-2 pb-1 px-2",
-          className
-        )}
-      >
-        {filters.map((filter) => (
-          <Button
-            key={filter}
-            variant={selectedFilter === filter ? "default" : "outline"}
-            size="sm"
-            onClick={() => onFilterSelect(filter)}
-            className="flex-shrink-0 text-xs px-3 h-7 rounded-full shadow-sm"
+    return (
+      <div className="relative group">
+        {showLeftNav && (
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/80 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={scrollLeft}
           >
-            {filter}
+            <ChevronLeft className="h-4 w-4" />
           </Button>
-        ))}
-      </div>
-      
-      {/* Right navigation button - only shows when more content to scroll */}
-      {showRightNav && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 rounded-full bg-background/80 border shadow-sm
-                     opacity-0 group-hover/filters:opacity-100 transition-opacity duration-300"
-          onClick={scrollRight}
+        )}
+        
+        <div 
+          ref={scrollContainerRef}
+          className={cn(
+            "flex space-x-2 overflow-x-auto scrollbar-hide py-1 px-1",
+            className
+          )}
+          {...props}
         >
-          <ChevronRight className="h-4 w-4" />
-          <span className="sr-only">Scroll right</span>
-        </Button>
-      )}
-    </div>
-  );
-});
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => onFilterSelect(filter)}
+              className={cn(
+                "whitespace-nowrap rounded-full px-3 py-1 text-sm transition-colors focus:outline-none",
+                selectedFilter === filter
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              )}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+        
+        {showRightNav && (
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/80 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={scrollRight}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    )
+  }
+)
 
-CarouselFilters.displayName = "CarouselFilters";
+CarouselFilters.displayName = "CarouselFilters"
+
+export { CarouselFilters }

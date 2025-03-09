@@ -71,6 +71,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   // Use the event listener with the parameter-less callbacks
   useCourseEventListener(
     id,
+    () => navigate(`/course/${id}`), // Watch event handler
     handleShareEvent,
     handleAssignEvent,
     handleBookmarkEvent
@@ -143,7 +144,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
       >
         <CourseCardMedia
           title={title}
-          imageUrl={imageUrl}
+          imageUrl={imageUrl || "/placeholder.svg"} // Provide fallback
           category={category}
           trainingCategory={trainingCategory}
           isHot={isHot}

@@ -10,7 +10,8 @@ const eventHandlers: {
 } = {
   'share': [],
   'assign': [],
-  'bookmark': []
+  'bookmark': [],
+  'watch': []
 };
 
 // Add event listener
@@ -39,35 +40,44 @@ export const triggerCourseEvent = (event: string, courseId: string, title: strin
 export function useCourseEvents(courseId: string, title: string) {
   const { toast } = useToast();
 
+  const handleWatchClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerCourseEvent('watch', courseId, title);
+    // Redirect to course player happens in the CourseCard component
+  }, [courseId, title]);
+
   const handleShareClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     triggerCourseEvent('share', courseId, title);
-  }, [courseId, title]);
+    
+    toast({
+      title: "Sharing Course",
+      description: `Opening sharing options for "${title}"`,
+    });
+  }, [courseId, title, toast]);
 
   const handleAssignClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     triggerCourseEvent('assign', courseId, title);
-  }, [courseId, title]);
+    
+    toast({
+      title: "Assigning Course",
+      description: `Opening assignment options for "${title}"`,
+    });
+  }, [courseId, title, toast]);
 
   const handleBookmarkToggle = useCallback((e: React.MouseEvent, isBookmarked: boolean) => {
     e.stopPropagation();
     const newBookmarked = !isBookmarked;
     
-    // Show toast
-    toast({
-      title: newBookmarked ? "Course Saved" : "Course Removed",
-      description: newBookmarked 
-        ? `"${title}" has been added to your saved courses` 
-        : `"${title}" has been removed from your saved courses`,
-    });
-    
     // Trigger event for other components to react
     triggerCourseEvent('bookmark', courseId, title);
     
     return newBookmarked;
-  }, [courseId, title, toast]);
+  }, [courseId, title]);
 
   return {
+    handleWatchClick,
     handleShareClick,
     handleAssignClick,
     handleBookmarkToggle
@@ -79,11 +89,18 @@ export function useCourseEvents(courseId: string, title: string) {
  */
 export function useCourseEventListener(
   courseId: string, 
+  onWatch?: () => void,
   onShare?: () => void,
   onAssign?: () => void,
   onBookmark?: (newState: boolean) => void
 ) {
   useEffect(() => {
+    const removeWatchListener = addCourseEventListener('watch', (id) => {
+      if (id === courseId && onWatch) {
+        onWatch();
+      }
+    });
+  
     const removeShareListener = addCourseEventListener('share', (id) => {
       if (id === courseId && onShare) {
         onShare();
@@ -104,9 +121,10 @@ export function useCourseEventListener(
     });
     
     return () => {
+      removeWatchListener();
       removeShareListener();
       removeAssignListener();
       removeBookmarkListener();
     };
-  }, [courseId, onShare, onAssign, onBookmark]);
+  }, [courseId, onWatch, onShare, onAssign, onBookmark]);
 }

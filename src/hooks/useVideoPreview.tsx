@@ -20,10 +20,24 @@ export const useVideoPreview = ({ previewUrl }: UseVideoPreviewProps) => {
       previewTimeout.current = setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.src = previewUrl;
+          videoRef.current.muted = true; // Always start muted
           videoRef.current.load();
+          
           videoRef.current.onloadeddata = () => {
             setIsVideoLoaded(true);
-            videoRef.current?.play().catch(err => console.log("Preview autoplay prevented:", err));
+            if (videoRef.current) {
+              videoRef.current.play().catch(err => {
+                console.log("Preview autoplay prevented:", err);
+                // Try again with muted (browsers often allow muted autoplay)
+                if (videoRef.current) {
+                  videoRef.current.muted = true;
+                  setIsMuted(true);
+                  videoRef.current.play().catch(e => 
+                    console.log("Video preview failed to play:", e)
+                  );
+                }
+              });
+            }
           };
         }
       }, 300); // Reduced delay for better responsiveness
@@ -49,8 +63,9 @@ export const useVideoPreview = ({ previewUrl }: UseVideoPreviewProps) => {
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      const newMutedState = !isMuted;
+      videoRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
     }
   };
 

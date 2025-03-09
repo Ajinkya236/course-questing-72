@@ -35,21 +35,25 @@ export function useCourseBookmarks() {
         status: 'saved'
       };
       updatedCourses = [...savedCourses, courseToSave];
+      
+      // Show success toast
+      toast({
+        title: "Course Saved",
+        description: `"${course.title}" has been added to your saved courses`,
+      });
     } else {
       // Remove from bookmarks
       updatedCourses = savedCourses.filter(c => c.id !== courseId);
+      
+      // Show removal toast
+      toast({
+        title: "Course Removed",
+        description: `"${course.title}" has been removed from your saved courses`,
+      });
     }
 
     setSavedCourses(updatedCourses);
     
-    // Show toast notification
-    toast({
-      title: currentlyBookmarked ? "Course Removed" : "Course Saved",
-      description: currentlyBookmarked 
-        ? `"${course.title}" has been removed from your saved courses` 
-        : `"${course.title}" has been added to your saved courses`,
-    });
-
     return !currentlyBookmarked;
   }, [isBookmarked, savedCourses, setSavedCourses, toast]);
 
