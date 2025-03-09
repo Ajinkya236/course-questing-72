@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
@@ -34,13 +35,13 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-    const onSelect = React.useCallback((api: typeof api) => {
-      if (!api) {
+    const onSelect = React.useCallback((emblaApi: ReturnType<typeof useEmblaCarousel>[1]) => {
+      if (!emblaApi) {
         return
       }
 
-      setCanScrollPrev(api.canScrollPrev())
-      setCanScrollNext(api.canScrollNext())
+      setCanScrollPrev(emblaApi.canScrollPrev())
+      setCanScrollNext(emblaApi.canScrollNext())
     }, [])
 
     const scrollPrev = React.useCallback(() => {
