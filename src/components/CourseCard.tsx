@@ -55,7 +55,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Use the event listener system - with callbacks that match the expected signatures (no parameters)
+  // Use the event listener system with callbacks that don't expect parameters
   useCourseEventListener(
     id,
     () => setShowShareDialog(true),
