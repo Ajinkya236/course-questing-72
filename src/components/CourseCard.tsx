@@ -60,10 +60,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     id,
     () => setShowShareDialog(true),
     () => setShowAssignDialog(true),
-    () => {
-      // Toggle bookmark without requiring the event parameter
-      setCurrentBookmarked(prev => !prev);
-    }
+    () => setCurrentBookmarked(prev => !prev)
   );
 
   // Memoized handlers
