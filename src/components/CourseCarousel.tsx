@@ -1,20 +1,12 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
+import { Carousel } from '@/components/ui/carousel';
 import { Course } from '@/types/course';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselItem, 
-  CarouselPrevious, 
-  CarouselNext,
-  CarouselFilters
-} from '@/components/ui/carousel';
+
+// Import our refactored components
+import CarouselHeader from './course-carousel/CarouselHeader';
+import CarouselFilters from './course-carousel/CarouselFilters';
+import CarouselItems from './course-carousel/CarouselItems';
 
 interface CourseCarouselProps {
   title: string;
@@ -39,14 +31,9 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subFilterOptions = {},
   showTrainingCategory = false
 }) => {
-  // Removing duplicates from filter options
-  const uniqueFilterOptions = filterOptions.length > 0 ? [...new Set(filterOptions)] : [];
-  
-  const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions.length > 0 ? filterOptions[0] : 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const carouselRef = useRef<HTMLDivElement>(null);
   
   // Function to ensure we have exactly 12 courses for the carousel
   const normalizeCoursesCount = (coursesArray: Course[]) => {
@@ -74,27 +61,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     return coursesArray;
   };
 
-  const handleCardClick = (courseId: string) => {
-    // Remove any clone suffix for handling clicks on duplicated courses
-    const originalId = courseId.split('-clone-')[0];
-    if (onCourseClick) {
-      onCourseClick(originalId);
-    } else {
-      navigate(`/course/${originalId}`);
-    }
-  };
-
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-500';
-      case 'In Progress':
-        return 'bg-blue-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
   const handleFilterSelect = (filter: string) => {
     setSelectedFilter(filter);
     // Reset sub-filter when main filter changes
@@ -111,7 +77,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setSelectedSubFilter(subFilter);
   };
 
-  // Get available sub-filters based on selected main filter, removing duplicates
+  // Get available sub-filters based on selected main filter
   const availableSubFilters = subFilterOptions[selectedFilter] ? 
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
@@ -128,73 +94,45 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
   })));
 
+  // Navigation handlers
+  const handleNavigateLeft = () => {
+    document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__prev`)?.dispatchEvent(new Event('click'));
+  };
+
+  const handleNavigateRight = () => {
+    document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__next`)?.dispatchEvent(new Event('click'));
+  };
+
   return (
     <div className="space-y-4 pb-8">
-      <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="flex items-center">
-          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-          <ChevronRight 
-            className="h-4 w-4 cursor-pointer ml-1" 
-            onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-          />
-          {isHovered && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="ml-1 p-0" 
-              onClick={onViewAllClick || (() => navigate(viewAllUrl))}
-            >
-              View All
-            </Button>
-          )}
-        </div>
-        
-        {/* Navigation controls for carousel - displayed next to title */}
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-8 w-8 rounded-full"
-            onClick={() => document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__prev`)?.dispatchEvent(new Event('click'))}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-8 w-8 rounded-full"
-            onClick={() => document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__next`)?.dispatchEvent(new Event('click'))}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      {/* Header with title and navigation controls */}
+      <CarouselHeader 
+        title={title}
+        viewAllUrl={viewAllUrl}
+        onViewAllClick={onViewAllClick}
+        onNavigateLeft={handleNavigateLeft}
+        onNavigateRight={handleNavigateRight}
+      />
       
-      {/* Main filters carousel with navigation buttons - left aligned */}
-      {showSkillFilters && uniqueFilterOptions.length > 0 && (
+      {/* Main filters */}
+      {showSkillFilters && filterOptions.length > 0 && (
         <CarouselFilters
-          filters={uniqueFilterOptions}
+          filterOptions={filterOptions}
           selectedFilter={selectedFilter}
           onFilterSelect={handleFilterSelect}
-          className="justify-start"
         />
       )}
       
-      {/* Sub-filters carousel with navigation buttons - left aligned */}
+      {/* Sub-filters */}
       {showSkillFilters && availableSubFilters.length > 0 && (
         <CarouselFilters
-          filters={availableSubFilters}
+          filterOptions={availableSubFilters}
           selectedFilter={selectedSubFilter}
           onFilterSelect={handleSubFilterClick}
-          className="justify-start"
         />
       )}
 
-      {/* Use the Carousel component with circular navigation and partial visibility for the rightmost card */}
+      {/* Carousel with course items */}
       <Carousel
         opts={{
           align: "start",
@@ -203,72 +141,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full"
         id={`${title.replace(/\s+/g, '-')}-carousel`}
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
-          {normalizedCourses.map((course) => (
-            <CarouselItem 
-              key={course.id} 
-              className={
-                isMobile 
-                  ? "pl-2 basis-full" 
-                  : "pl-4 basis-full md:basis-1/2 lg:basis-[28%] xl:basis-[22%]"
-              }
-            >
-              <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
-                onClick={() => handleCardClick(course.id)}
-              >
-                <div className="aspect-video relative overflow-hidden bg-muted">
-                  <img
-                    src={course.imageUrl}
-                    alt={course.title}
-                    className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
-                  />
-                  {course.enrollmentStatus && (
-                    <div className="absolute top-2 right-2">
-                      <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
-                        {course.enrollmentStatus}
-                      </Badge>
-                    </div>
-                  )}
-                  {/* Only show training category if showTrainingCategory is true and trainingCategory exists */}
-                  {showTrainingCategory && course.trainingCategory && (
-                    <div className="absolute bottom-2 left-2">
-                      <Badge variant="outline" className="bg-black/60 text-white border-none">
-                        {course.trainingCategory}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-                <CardHeader className="p-3">
-                  <CardTitle className="text-base line-clamp-1">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-2 text-xs">{course.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-3 pt-0">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{course.duration}</span>
-                    <span>•</span>
-                    <span>{course.level}</span>
-                  </div>
-                  {course.progress !== undefined && (
-                    <div className="mt-2">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-muted-foreground">Progress</span>
-                        <span className="text-xs font-medium">{course.progress}%</span>
-                      </div>
-                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        {/* Removed navigation buttons from here as they're now at the top */}
+        <CarouselItems 
+          courses={normalizedCourses}
+          onCourseClick={onCourseClick}
+        />
       </Carousel>
     </div>
   );
