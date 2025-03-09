@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, memo, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
@@ -55,7 +54,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Create parameter-less callbacks for the event listener
   const handleShareEvent = useCallback(() => {
     setShowShareDialog(true);
   }, []);
@@ -68,7 +66,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
     setCurrentBookmarked(prev => !prev);
   }, []);
 
-  // Use the event listener system with callbacks that don't expect parameters
   useCourseEventListener(
     id,
     handleShareEvent,
@@ -76,9 +73,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     handleBookmarkEvent
   );
 
-  // Memoized handlers
   const handleCourseClick = useCallback((e: React.MouseEvent) => {
-    // Don't navigate if the click was on a button or if a dialog is open
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       e.stopPropagation();
       return;
@@ -125,11 +120,9 @@ const CourseCard: React.FC<CourseCardProps> = ({
     setShowAssignDialog(true);
   }, [id, title]);
 
-  // Add a proper fallback for image loading errors
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
-    // Prevent infinite loop if placeholder also fails
     target.onerror = null;
   };
 
@@ -181,5 +174,4 @@ const CourseCard: React.FC<CourseCardProps> = ({
   );
 };
 
-// Memoize the component to prevent unnecessary renders
 export default memo(CourseCard);
