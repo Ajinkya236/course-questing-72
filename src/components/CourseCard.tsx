@@ -55,13 +55,15 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Use the event listener system
-  // Modified this to fix the TypeScript error - using lambda functions that properly match expected signatures
+  // Use the event listener system - with callbacks that match the expected signatures (no parameters)
   useCourseEventListener(
     id,
     () => setShowShareDialog(true),
     () => setShowAssignDialog(true),
-    () => setCurrentBookmarked(prev => !prev)
+    () => {
+      // Toggle bookmark without requiring the event parameter
+      setCurrentBookmarked(prev => !prev);
+    }
   );
 
   // Memoized handlers
