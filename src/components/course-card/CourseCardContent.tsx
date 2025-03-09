@@ -71,12 +71,10 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           </Button>
           <Button 
             variant="outline" 
-            size="icon"
-            className="col-span-1 h-8 w-8"
+            className="col-span-4 h-8 text-xs mt-1"
             onClick={handleAssignClick}
-            aria-label="Assign"
           >
-            <UserPlus className="h-3 w-3" />
+            <UserPlus className="h-3 w-3 mr-1" /> Assign
           </Button>
         </div>
       </div>
