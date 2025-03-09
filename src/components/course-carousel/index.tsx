@@ -113,10 +113,20 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
-  // Calculate card width to show 4 full cards and 20% of the next card
+  // Calculate number of visible cards based on screen size
+  const getCardsToShow = () => {
+    if (isMobile) return 1;
+    // For desktop, we'll show 4 cards plus 20% of the fifth
+    return 4.2;
+  };
+  
+  // Calculate card width as a percentage to show partial cards
   const getCardPercentage = () => {
     if (isMobile) return 100; // Full width on mobile
-    return 23; // Approximately 23% for desktop (4 cards + 20% of 5th)
+    
+    // On desktop, we want to show 4 full cards and 20% of the next
+    // If we're showing 4.2 cards, each card should take up 100/4.2 = ~23.8% of the width
+    return (100 / getCardsToShow());
   };
 
   return (
@@ -155,6 +165,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           opts={{
             align: "start",
             loop: true,
+            dragFree: true, // Allow free dragging for smoother experience
           }}
           className="w-full relative"
           id={carouselId}
@@ -163,8 +174,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             {normalizedCourses.map((course) => (
               <CarouselItem 
                 key={course.id} 
-                className={`pl-4 ${isMobile ? 'basis-full' : `basis-[${getCardPercentage()}%]`}`}
-                style={{ flex: `0 0 ${getCardPercentage()}%` }}
+                className="pl-4"
+                style={{ 
+                  flex: `0 0 ${getCardPercentage()}%`, 
+                  maxWidth: `${getCardPercentage()}%`
+                }}
               >
                 <div 
                   className="cursor-pointer"

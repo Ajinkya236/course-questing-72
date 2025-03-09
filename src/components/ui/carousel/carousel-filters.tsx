@@ -57,12 +57,12 @@ const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
     }, [updateNavVisibility]);
 
     return (
-      <div className="relative group">
+      <div className="relative group/filters">
         {showLeftNav && (
           <Button 
             variant="outline" 
             size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/80 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/90 shadow-sm opacity-0 group-hover/filters:opacity-100 transition-opacity -left-3"
             onClick={scrollLeft}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -82,7 +82,7 @@ const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
               key={filter}
               onClick={() => onFilterSelect(filter)}
               className={cn(
-                "whitespace-nowrap rounded-full px-3 py-1 text-sm transition-colors focus:outline-none",
+                "whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors focus:outline-none",
                 selectedFilter === filter
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -97,7 +97,7 @@ const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
           <Button 
             variant="outline" 
             size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/80 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/90 shadow-sm opacity-0 group-hover/filters:opacity-100 transition-opacity -right-3"
             onClick={scrollRight}
           >
             <ChevronRight className="h-4 w-4" />

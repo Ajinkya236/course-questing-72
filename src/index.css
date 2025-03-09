@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -88,7 +89,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased px-6 md:px-10 lg:px-12;
+    @apply bg-background text-foreground antialiased px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   
@@ -119,7 +120,7 @@
   }
 
   .app-main {
-    @apply flex-1 overflow-auto;
+    @apply flex-1 overflow-auto mx-auto max-w-7xl;
   }
 
   .app-header {
@@ -193,12 +194,12 @@
   
   .course-card {
     @apply w-full transition-all duration-300 hover:shadow-md;
-    max-height: 320px;
+    max-height: 350px;
   }
   
   .course-card-content {
     @apply p-2 space-y-1;
-    max-height: 140px;
+    max-height: 180px;
   }
   
   .scrollbar-hide::-webkit-scrollbar {
@@ -224,6 +225,23 @@
   
   .achievement-unlock {
     @apply fixed z-50 bottom-4 right-4 bg-secondary p-4 rounded-lg shadow-lg border-l-4 border-primary;
+  }
+  
+  /* Filter bubble styles */
+  .filter-bubble {
+    @apply whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors focus:outline-none cursor-pointer;
+  }
+  
+  .filter-bubble.active {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .filter-bubble.inactive {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .filter-carousel {
+    @apply relative flex space-x-2 overflow-x-auto scrollbar-hide py-1 px-1;
   }
 }
 
@@ -253,5 +271,14 @@
     @apply absolute bottom-0 bg-primary transition-all duration-500;
     left: 0;
     right: 0;
+  }
+  
+  /* Information scent utility */
+  .card-partial-visible {
+    @apply transform transition-transform duration-300;
+  }
+  
+  .card-partial-visible:hover {
+    @apply -translate-x-2;
   }
 }

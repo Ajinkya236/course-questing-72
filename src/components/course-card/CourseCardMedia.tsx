@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
@@ -34,8 +34,16 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   toggleMute,
   onImageError
 }) => {
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  
+  // Handle image loading state
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+  };
+
   // Default image error handler if none provided
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    setIsImageLoading(false);
     if (onImageError) {
       onImageError(e);
     } else {
@@ -52,6 +60,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
     if (!url) return "/placeholder.svg";
     
     if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
+      // Add optimizations for Unsplash images
       return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
     return url;
@@ -69,6 +78,13 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
 
   return (
     <div className="relative overflow-hidden bg-muted rounded-t-md h-[170px]">
+      {/* Loading indicator */}
+      {isImageLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+        </div>
+      )}
+      
       <AspectRatio ratio={16/9} className="h-full">
         {/* Show video preview when hovered if available */}
         {previewUrl && isHovered ? (
@@ -96,6 +112,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
             loading="lazy"
             onError={handleImageError}
+            onLoad={handleImageLoad}
+            style={{opacity: isImageLoading ? 0 : 1}}
           />
         )}
       </AspectRatio>

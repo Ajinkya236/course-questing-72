@@ -31,8 +31,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
-  const carouselRef = useRef<{ scrollPrev: () => void; scrollNext: () => void } | null>(null);
-  const topicsCarouselRef = useRef<{ scrollPrev: () => void; scrollNext: () => void } | null>(null);
+  const [carouselApi, setCarouselApi] = useState<any>(null);
+  const [topicsCarouselApi, setTopicsCarouselApi] = useState<any>(null);
   const isMobile = useIsMobile();
   
   // Extract all unique topics from mentors for filters
@@ -54,30 +54,30 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
     : mentors.filter(mentor => mentor.topics.includes(filterTopics[activeFilterIndex]));
   
   const handleViewAll = () => {
-    navigate('/recommended-mentors');
+    navigate('/mentoring/recommended-mentors');
   };
 
   const handlePrevious = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollPrev();
+    if (carouselApi) {
+      carouselApi.scrollPrev();
     }
   };
 
   const handleNext = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollNext();
+    if (carouselApi) {
+      carouselApi.scrollNext();
     }
   };
 
   const handleTopicsPrevious = () => {
-    if (topicsCarouselRef.current) {
-      topicsCarouselRef.current.scrollPrev();
+    if (topicsCarouselApi) {
+      topicsCarouselApi.scrollPrev();
     }
   };
 
   const handleTopicsNext = () => {
-    if (topicsCarouselRef.current) {
-      topicsCarouselRef.current.scrollNext();
+    if (topicsCarouselApi) {
+      topicsCarouselApi.scrollNext();
     }
   };
 
@@ -88,6 +88,12 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
     });
     // Would navigate to mentor profile in a real app
     // navigate(`/mentoring/mentor/${mentorId}`);
+  };
+  
+  // Calculate card width to show proper number of items and partial next item
+  const getCardPercentage = () => {
+    if (isMobile) return 100; // Full width on mobile
+    return 23; // Shows 4 mentors + 20% of the 5th one
   };
   
   return (
@@ -109,14 +115,14 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       </div>
       
       {/* Topics filter carousel */}
-      <div className="mb-4 relative">
+      <div className="mb-4 relative group/filters">
         <Carousel 
-          ref={topicsCarouselRef as React.RefObject<any>}
-          className="w-full"
           opts={{
             align: "start",
-            loop: true
+            loop: true,
           }}
+          setApi={setTopicsCarouselApi}
+          className="w-full"
         >
           <CarouselContent className="-ml-2">
             {filterTopics.map((topic, index) => (
@@ -131,10 +137,11 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
+          
           <Button 
             variant="ghost" 
             size="icon" 
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full z-10 opacity-0 group-hover/filters:opacity-100 transition-opacity"
             onClick={handleTopicsPrevious}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -142,7 +149,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full z-10 opacity-0 group-hover/filters:opacity-100 transition-opacity"
             onClick={handleTopicsNext}
           >
             <ChevronRight className="h-4 w-4" />
@@ -151,63 +158,68 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       </div>
       
       {/* Mentors carousel */}
-      <Carousel 
-        ref={carouselRef as React.RefObject<any>}
-        className="w-full"
-        opts={{
-          align: "start"
-        }}
-      >
-        <CarouselContent>
-          {filteredMentors.map(mentor => (
-            <CarouselItem key={mentor.id} className={`
-              basis-full 
-              ${isMobile ? "" : "sm:basis-1/2 md:basis-1/3 lg:basis-1/4"}
-            `}>
-              <Card className="overflow-hidden">
-                <CardContent className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
-                      <img 
-                        src={mentor.image} 
-                        alt={mentor.name} 
-                        className="w-full h-full object-cover" 
-                      />
+      <div className="relative group/mentors">
+        <Carousel 
+          setApi={setCarouselApi}
+          className="w-full"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {filteredMentors.map(mentor => (
+              <CarouselItem 
+                key={mentor.id} 
+                style={{ 
+                  flex: `0 0 ${getCardPercentage()}%`, 
+                  maxWidth: `${getCardPercentage()}%`
+                }}
+              >
+                <Card 
+                  className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer"
+                  onClick={() => handleMentorSelect(mentor.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
+                        <img 
+                          src={mentor.image} 
+                          alt={mentor.name} 
+                          className="w-full h-full object-cover" 
+                          loading="lazy"
+                        />
+                      </div>
+                      <h3 className="font-medium">{mentor.name}</h3>
+                      <p className="text-muted-foreground text-sm mb-2">{mentor.title}</p>
+                      
+                      <div className="flex items-center gap-1 mb-3">
+                        <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                        <span className="text-sm">{mentor.rating}</span>
+                        <span className="text-xs text-muted-foreground">({mentor.reviews})</span>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {mentor.topics.slice(0, 2).map(topic => (
+                          <Badge key={topic} variant="secondary" className="text-xs">{topic}</Badge>
+                        ))}
+                        {mentor.topics.length > 2 && (
+                          <Badge variant="outline" className="text-xs">+{mentor.topics.length - 2}</Badge>
+                        )}
+                      </div>
+                      
+                      <Button size="sm" className="w-full mt-3">Request Mentoring</Button>
                     </div>
-                    <h3 className="font-medium">{mentor.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
-                    <div className="flex items-center gap-1 mb-3">
-                      <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                      <span className="text-sm font-medium">{mentor.rating}</span>
-                      <span className="text-xs text-muted-foreground">({mentor.reviews} reviews)</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1 justify-center mb-3">
-                      {mentor.topics.slice(0, 2).map(topic => (
-                        <span key={topic} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                          {topic}
-                        </span>
-                      ))}
-                      {mentor.topics.length > 2 && (
-                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                          +{mentor.topics.length - 2}
-                        </span>
-                      )}
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => handleMentorSelect(mentor.id)}
-                    >
-                      View Profile
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          
+          <CarouselPrevious className="opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300 -left-3" />
+          <CarouselNext className="opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300 -right-3" />
+        </Carousel>
+      </div>
     </div>
   );
 };

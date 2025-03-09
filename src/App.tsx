@@ -1,3 +1,4 @@
+
 import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -86,8 +87,8 @@ const TopNavigation: React.FC = () => {
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
 
   return (
-    <div className="w-full border-b bg-background sticky top-0 z-10">
-      <div className="container flex h-14 items-center justify-between">
+    <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
           <h1 className="font-bold text-lg">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
@@ -198,11 +199,13 @@ const TopNavigation: React.FC = () => {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <TopNavigation />
       
-      <div className="flex-1 p-4 overflow-auto">
-        {children}
+      <div className="flex-1 py-4 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 overflow-auto">
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
         <Toaster />
       </div>
     </div>
