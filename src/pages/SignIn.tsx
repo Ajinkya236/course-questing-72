@@ -1,5 +1,5 @@
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { BrainCircuit, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { AuthContext } from '@/contexts/AuthContext';
@@ -40,8 +39,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { user, login } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, login, isAuthenticating } = useContext(AuthContext);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -62,11 +60,8 @@ const SignIn = () => {
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
     try {
-      // In a real app, this would make an API call
       // For demo purposes, we'll use the context login function
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       login(data.email, data.password, data.rememberMe);
       
       toast({
@@ -81,8 +76,6 @@ const SignIn = () => {
         description: "There was a problem signing you in.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -170,8 +163,8 @@ const SignIn = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
+                  <Button type="submit" className="w-full" disabled={isAuthenticating}>
+                    {isAuthenticating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Signing in...

@@ -1,14 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrainCircuit, ArrowLeft, Loader2 } from 'lucide-react';
+import { BrainCircuit, ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { AuthContext } from '@/contexts/AuthContext';
 import {
   Card,
   CardContent,
@@ -35,7 +36,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { resetPassword, isAuthenticating } = useContext(AuthContext);
   const [emailSent, setEmailSent] = useState(false);
 
   // React Hook Form with Zod validation
@@ -48,10 +49,8 @@ const ForgotPassword: React.FC = () => {
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
     try {
-      // In a real app, this would make an API call
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      await resetPassword(data.email);
       
       setEmailSent(true);
       
@@ -65,8 +64,6 @@ const ForgotPassword: React.FC = () => {
         description: "Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,20 +90,7 @@ const ForgotPassword: React.FC = () => {
               {emailSent ? (
                 <div className="text-center py-4">
                   <div className="bg-primary/10 text-primary rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-8 h-8"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
+                    <MailCheck className="w-8 h-8" />
                   </div>
                   <h3 className="text-lg font-medium mb-2">Check your email</h3>
                   <p className="text-muted-foreground mb-4">
@@ -141,8 +125,8 @@ const ForgotPassword: React.FC = () => {
                       )}
                     />
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? (
+                    <Button type="submit" className="w-full" disabled={isAuthenticating}>
+                      {isAuthenticating ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Sending...
