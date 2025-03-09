@@ -50,34 +50,34 @@ const basedOnInterest = mockCourses
 
 const forYourRoleCourses = mockCourses
   .filter((_, index) => index >= 24 && index < 36)
-  .map(course => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', // Sample video
-    isNew: index % 5 === 0,
-    isHot: index % 7 === 0
+    isNew: idx % 5 === 0,
+    isHot: idx % 7 === 0
   }));
 
 const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
   .slice(0, 12)
-  .map((course, index) => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${index + 1}. ${course.title}`, // Add ranking to title
-    isNew: index % 5 === 0,
-    isHot: index % 7 === 0
+    title: `${idx + 1}. ${course.title}`, // Add ranking to title
+    isNew: idx % 5 === 0,
+    isHot: idx % 7 === 0
   }));
 
 const popularWithSimilarUsers = mockCourses
   .filter((_, index) => index >= 36 && index < 48)
-  .map(course => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4', // Sample video
-    isNew: index % 5 === 0,
-    isHot: index % 7 === 0
+    isNew: idx % 5 === 0,
+    isHot: idx % 7 === 0
   }));
 
 // Mock banner data for BannerCarousel
