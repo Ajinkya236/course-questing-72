@@ -31,8 +31,10 @@ export interface Course {
   isHot?: boolean;
   isNew?: boolean;
   createdAt?: string;
-  status?: 'assigned' | 'in-progress' | 'completed';
+  status?: 'assigned' | 'in-progress' | 'completed' | 'saved';
   sharedBy?: string;
+  previewUrl?: string; // Added missing property
+  savedAt?: string; // Added missing property
   
   // These fields from CourseCarousel interface
   level?: string;

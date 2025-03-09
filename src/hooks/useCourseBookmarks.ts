@@ -28,11 +28,11 @@ export function useCourseBookmarks() {
 
     if (!currentlyBookmarked) {
       // Add to bookmarks
-      const courseToSave = {
+      const courseToSave: Course = {
         ...course,
         isBookmarked: true,
         savedAt: new Date().toISOString(),
-        status: 'saved' as const
+        status: 'saved'
       };
       updatedCourses = [...savedCourses, courseToSave];
     } else {

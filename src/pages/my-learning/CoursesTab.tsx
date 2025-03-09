@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -127,10 +128,19 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       <div>
         <h2 className="text-xl font-semibold mb-4">{getFilterTitle()}</h2>
         {filteredCourses.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredCourses.map(course => (
-              <CourseCard key={course.id} {...course} />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-x-auto">
+            <div className="flex gap-6 pl-0 pr-0 snap-x snap-mandatory scrollbar-hide min-w-full">
+              {filteredCourses.map((course, index) => (
+                <div 
+                  key={course.id}
+                  className={`snap-start flex-shrink-0 ${
+                    index === 4 ? 'w-[35%]' : 'w-1/4'
+                  }`}
+                >
+                  <CourseCard {...course} />
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <Card className="p-8 text-center">
