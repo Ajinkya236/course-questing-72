@@ -43,6 +43,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center h-screen">
@@ -248,6 +249,8 @@ function App() {
                 
                 <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
                 <Route path="/leaderboard" element={<LeaderboardFullView />} />
+                
+                <Route path="/forgot-password" element={<ForgotPassword />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
