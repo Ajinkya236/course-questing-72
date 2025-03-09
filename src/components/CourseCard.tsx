@@ -52,6 +52,31 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
+  // Setup event listeners for dialog events
+  useEffect(() => {
+    const handleOpenShareDialog = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.courseId === id) {
+        setShowShareDialog(true);
+      }
+    };
+
+    const handleOpenAssignDialog = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.courseId === id) {
+        setShowAssignDialog(true);
+      }
+    };
+
+    document.addEventListener('openShareDialog', handleOpenShareDialog);
+    document.addEventListener('openAssignDialog', handleOpenAssignDialog);
+
+    return () => {
+      document.removeEventListener('openShareDialog', handleOpenShareDialog);
+      document.removeEventListener('openAssignDialog', handleOpenAssignDialog);
+    };
+  }, [id]);
+
   // Effect to check saved courses in localStorage during component initialization
   useEffect(() => {
     const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');

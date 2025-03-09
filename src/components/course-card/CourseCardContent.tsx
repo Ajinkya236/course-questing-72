@@ -43,7 +43,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
       </div>
 
       <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex gap-1 mb-1">
+        <div className="flex gap-2 mb-2">
           <Button 
             variant="default" 
             className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"

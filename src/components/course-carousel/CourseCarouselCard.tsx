@@ -89,7 +89,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
         
         {/* Course actions that appear on hover */}
         <div className={`pt-2 ${hoveredCourseId === course.id ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
-          <div className="flex gap-1 mb-1">
+          <div className="flex gap-2 mb-2">
             <Button 
               variant="default" 
               className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"

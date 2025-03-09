@@ -113,20 +113,36 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const handleShareClick = (e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
     // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
-    toast({
-      title: "Share Course",
-      description: "Sharing options are now available for this course",
-    });
+    const courseToShare = normalizedCourses.find(course => course.id === courseId);
+    if (courseToShare) {
+      // We'll use the course title in the dialog header
+      localStorage.setItem('currentCourseToShare', JSON.stringify({
+        id: courseId,
+        title: courseToShare.title
+      }));
+    }
+    
+    // Open share dialog through CourseCard
+    const shareDialogEvent = new CustomEvent('openShareDialog', { detail: { courseId } });
+    document.dispatchEvent(shareDialogEvent);
   };
 
   // Handle assign button click
   const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
     // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
-    toast({
-      title: "Assign Course",
-      description: "You can now assign this course to team members",
-    });
+    const courseToAssign = normalizedCourses.find(course => course.id === courseId);
+    if (courseToAssign) {
+      // We'll use the course title in the dialog header
+      localStorage.setItem('currentCourseToAssign', JSON.stringify({
+        id: courseId,
+        title: courseToAssign.title
+      }));
+    }
+    
+    // Open assign dialog through CourseCard
+    const assignDialogEvent = new CustomEvent('openAssignDialog', { detail: { courseId } });
+    document.dispatchEvent(assignDialogEvent);
   };
 
   // Get available sub-filters based on selected main filter, removing duplicates
@@ -172,11 +188,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full overflow-visible"
         id={carouselId}
       >
-        <CarouselContent className="-ml-1 pr-4">
+        <CarouselContent className="-ml-2 pr-4">
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-1" : "basis-1/4 pl-1 md:last:pr-[60%]"} /* Show 4 cards per row with the 5th card ~40% visible */
+              className={isMobile ? "basis-full pl-2" : "basis-1/4 pl-2 md:last:pr-[70%]"} /* Show 4 cards per row with the 5th card ~30% visible */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >
