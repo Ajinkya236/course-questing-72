@@ -19,7 +19,26 @@ const DomainCatalog = () => {
   const handleDomainClick = (domain: string) => {
     // Convert domain name to a simple ID format
     const domainId = domain.toLowerCase().replace(/\s/g, '-');
-    navigate(`/domain/${domainId}`);
+    
+    // Map domain name to specific IDs for the ViewAllDomainsPage
+    const domainMap: Record<string, string> = {
+      'technology': '3', // Programming
+      'leadership': '1',
+      'business': '11', // Business Strategy
+      'data science': '2', // Data Analysis
+      'marketing': '4',
+      'design': '5',
+      'product': '6', // Product Management
+      'finance': '7',
+      'hr': '8', // Communication as closest match
+      'operations': '10', // Project Management as closest match
+    };
+    
+    // Get the mapped ID or use a default
+    const mappedId = domainMap[domainId] || '1';
+    
+    // Navigate to the domain page
+    navigate(`/domain/${mappedId}`);
   };
 
   const handleViewAllClick = () => {

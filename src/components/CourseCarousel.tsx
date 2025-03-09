@@ -239,7 +239,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full" : "basis-1/4 pr-1"}
+              className={isMobile ? "basis-full" : "basis-1/4 pr-4"}
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >

@@ -49,6 +49,13 @@ const basedOnInterest = mockCourses
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
   }));
 
+// New skills for your role courses - with job role specific skills
+const forYourRoleSkills = [
+  'Leadership', 'Communication', 'Project Management', 'Decision Making', 
+  'Strategic Planning', 'Conflict Resolution', 'Team Building', 'Problem Solving',
+  'Time Management', 'Delegation'
+];
+
 const forYourRoleCourses = mockCourses
   .filter((_, idx) => idx >= 24 && idx < 36)
   .map(course => ({
@@ -67,6 +74,7 @@ const trendingCourses = [...mockCourses]
     title: `${idx + 1}. ${course.title}` // Add ranking to title
   }));
 
+// New popular with similar users courses
 const popularWithSimilarUsers = mockCourses
   .filter((_, idx) => idx >= 36 && idx < 48)
   .map(course => ({
@@ -169,12 +177,12 @@ const Home = () => {
           showSkillFilters={true}
         />
         
-        {/* For Your Role Carousel */}
+        {/* For Your Role Carousel - new implementation with role skills */}
         <CourseCarousel 
           title="For Your Role" 
           courses={forYourRoleCourses}
           viewAllUrl="/view-all/role"
-          filterOptions={skillFilters}
+          filterOptions={forYourRoleSkills}
           showSkillFilters={true}
         />
         
