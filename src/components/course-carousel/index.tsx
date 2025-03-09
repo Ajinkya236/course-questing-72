@@ -113,8 +113,17 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
-  // Calculate how many cards to show at once based on viewport
-  const itemsToShow = isMobile ? 1 : 5;
+  // Calculate how many cards to show based on viewport
+  // Calculate the basis percentage for items to allow partial visibility of next item
+  const getItemClasses = () => {
+    if (isMobile) {
+      return "basis-full pl-4";
+    } else {
+      // When showing partial card, adjust the basis to show 4.15 cards
+      // This will show 4 full cards and about 15-20% of the 5th card
+      return "basis-1/4.15 pl-4";
+    }
+  };
 
   return (
     <div className="space-y-4 overflow-hidden">
@@ -152,6 +161,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           opts={{
             align: "start",
             loop: true,
+            containScroll: "trimSnaps"
           }}
           className="w-full relative"
           id={carouselId}
@@ -160,7 +170,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             {normalizedCourses.map((course, index) => (
               <CarouselItem 
                 key={course.id} 
-                className={isMobile ? "basis-full pl-4" : `basis-1/${itemsToShow} pl-4`}
+                className={getItemClasses()}
                 onMouseEnter={() => handleMouseEnter(course.id)}
                 onMouseLeave={handleMouseLeave}
               >

@@ -18,7 +18,11 @@ export const addCourseEventListener = (event: string, handler: CourseEventHandle
   if (!eventHandlers[event]) {
     eventHandlers[event] = [];
   }
-  eventHandlers[event].push(handler);
+  
+  // Check if handler already exists to prevent duplicates
+  if (!eventHandlers[event].includes(handler)) {
+    eventHandlers[event].push(handler);
+  }
   
   // Return function to remove listener
   return () => {
@@ -26,10 +30,17 @@ export const addCourseEventListener = (event: string, handler: CourseEventHandle
   };
 };
 
-// Trigger event
+// Trigger event with improved error handling
 export const triggerCourseEvent = (event: string, courseId: string, title: string) => {
-  if (eventHandlers[event]) {
-    eventHandlers[event].forEach(handler => handler(courseId, title));
+  try {
+    if (eventHandlers[event]) {
+      console.log(`Triggering ${event} event for course: ${courseId} - ${title}`);
+      eventHandlers[event].forEach(handler => handler(courseId, title));
+    } else {
+      console.warn(`No handlers registered for event: ${event}`);
+    }
+  } catch (error) {
+    console.error(`Error triggering ${event} event:`, error);
   }
 };
 
@@ -41,16 +52,34 @@ export function useCourseEvents(courseId: string, title: string) {
 
   const handleShareClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    // Show toast for feedback
+    toast({
+      title: "Sharing Course",
+      description: `Preparing to share "${title}"`,
+    });
+    
     triggerCourseEvent('share', courseId, title);
-  }, [courseId, title]);
+  }, [courseId, title, toast]);
 
   const handleAssignClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    // Show toast for feedback
+    toast({
+      title: "Assigning Course",
+      description: `Preparing to assign "${title}"`,
+    });
+    
     triggerCourseEvent('assign', courseId, title);
-  }, [courseId, title]);
+  }, [courseId, title, toast]);
 
   const handleBookmarkToggle = useCallback((e: React.MouseEvent, isBookmarked: boolean) => {
     e.stopPropagation();
+    e.preventDefault();
+    
     const newBookmarked = !isBookmarked;
     
     // Show toast
@@ -75,34 +104,45 @@ export function useCourseEvents(courseId: string, title: string) {
 }
 
 /**
- * Custom hook for listening to course events
+ * Custom hook for listening to course events with improved handling
  */
 export function useCourseEventListener(
   courseId: string, 
   onShare?: () => void,
   onAssign?: () => void,
-  onBookmark?: (newState: boolean) => void
+  onBookmark?: () => void
 ) {
   useEffect(() => {
-    const removeShareListener = addCourseEventListener('share', (id) => {
+    // Share event listener
+    const shareHandler = (id: string) => {
       if (id === courseId && onShare) {
+        console.log(`Share event received for course: ${id}`);
         onShare();
       }
-    });
+    };
     
-    const removeAssignListener = addCourseEventListener('assign', (id) => {
+    // Assign event listener
+    const assignHandler = (id: string) => {
       if (id === courseId && onAssign) {
+        console.log(`Assign event received for course: ${id}`);
         onAssign();
       }
-    });
+    };
     
-    const removeBookmarkListener = addCourseEventListener('bookmark', (id) => {
+    // Bookmark event listener
+    const bookmarkHandler = (id: string) => {
       if (id === courseId && onBookmark) {
-        // The actual state will be managed in the component
-        onBookmark(true);
+        console.log(`Bookmark event received for course: ${id}`);
+        onBookmark();
       }
-    });
+    };
     
+    // Register all event handlers
+    const removeShareListener = addCourseEventListener('share', shareHandler);
+    const removeAssignListener = addCourseEventListener('assign', assignHandler);
+    const removeBookmarkListener = addCourseEventListener('bookmark', bookmarkHandler);
+    
+    // Clean up all listeners on unmount
     return () => {
       removeShareListener();
       removeAssignListener();
