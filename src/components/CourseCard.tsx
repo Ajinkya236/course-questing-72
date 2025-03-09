@@ -55,12 +55,25 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
+  // Create parameter-less callbacks for the event listener
+  const handleShareEvent = useCallback(() => {
+    setShowShareDialog(true);
+  }, []);
+  
+  const handleAssignEvent = useCallback(() => {
+    setShowAssignDialog(true);
+  }, []);
+  
+  const handleBookmarkEvent = useCallback(() => {
+    setCurrentBookmarked(prev => !prev);
+  }, []);
+
   // Use the event listener system with callbacks that don't expect parameters
   useCourseEventListener(
     id,
-    () => setShowShareDialog(true),
-    () => setShowAssignDialog(true),
-    () => setCurrentBookmarked(prev => !prev)
+    handleShareEvent,
+    handleAssignEvent,
+    handleBookmarkEvent
   );
 
   // Memoized handlers
