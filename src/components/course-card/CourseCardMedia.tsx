@@ -42,7 +42,6 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             muted={isMuted}
             loop
             playsInline
-            loading="lazy"
           />
           <Button 
             onClick={toggleMute} 
