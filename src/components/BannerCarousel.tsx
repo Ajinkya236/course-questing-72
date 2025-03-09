@@ -62,7 +62,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
       <CardContent className="p-0 relative">
         <div 
           className="relative group"
-          style={{ height: smallSize ? '180px' : '240px' }}
+          style={{ height: smallSize ? '180px' : '320px' }}
         >
           {/* Banner background image */}
           <div 
@@ -80,14 +80,14 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
           <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-8 text-white">
             <div className="max-w-2xl">
               <Badge className="mb-2 bg-primary text-white">HR Update</Badge>
-              <h3 className={`font-bold mb-2 ${smallSize ? 'text-xl' : 'text-2xl'}`}>{banner.title}</h3>
-              <p className={`${smallSize ? 'text-sm' : 'text-base'} max-w-xl opacity-90`}>{banner.description}</p>
+              <h3 className={`font-bold mb-2 ${smallSize ? 'text-xl' : 'text-3xl md:text-4xl'}`}>{banner.title}</h3>
+              <p className={`${smallSize ? 'text-sm' : 'text-base md:text-lg'} max-w-xl opacity-90 mb-6`}>{banner.description}</p>
               
               {banner.link && (
                 <Button 
                   variant="secondary" 
-                  size="sm" 
-                  className="mt-4 hover:bg-white"
+                  size={smallSize ? "sm" : "default"}
+                  className="hover:bg-white"
                   asChild
                 >
                   <a href={banner.link}>
@@ -99,7 +99,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
             </div>
           </div>
           
-          {/* Navigation controls */}
+          {/* Navigation controls - now more prominent */}
           {banners.length > 1 && (
             <div className="absolute bottom-4 right-4 flex items-center gap-2">
               {/* Dots indicator */}
@@ -110,7 +110,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
                     onClick={() => setCurrentBanner(index)}
                     className={`h-2 rounded-full transition-all ${
                       index === currentBanner 
-                        ? 'w-4 bg-white' 
+                        ? 'w-6 bg-white' 
                         : 'w-2 bg-white/50 hover:bg-white/80'
                     }`}
                     aria-label={`Go to banner ${index + 1}`}
@@ -118,22 +118,22 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
                 ))}
               </div>
               
-              {/* Arrow controls */}
+              {/* Arrow controls - now more prominent */}
               <Button 
                 variant="secondary" 
                 size="icon" 
-                className="h-8 w-8 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm"
+                className="h-10 w-10 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm"
                 onClick={prevBanner}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
               <Button 
                 variant="secondary" 
                 size="icon" 
-                className="h-8 w-8 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm"
+                className="h-10 w-10 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm"
                 onClick={nextBanner}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
           )}

@@ -150,6 +150,26 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             </Button>
           )}
         </div>
+        
+        {/* Navigation controls for carousel - displayed next to title */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 rounded-full"
+            onClick={() => document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__prev`)?.dispatchEvent(new Event('click'))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 rounded-full"
+            onClick={() => document.querySelector(`#${title.replace(/\s+/g, '-')}-carousel .embla__next`)?.dispatchEvent(new Event('click'))}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       {/* Main filters carousel with navigation buttons - left aligned */}
@@ -179,10 +199,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           loop: true,
         }}
         className="w-full"
+        id={`${title.replace(/\s+/g, '-')}-carousel`}
       >
         <CarouselContent>
           {normalizedCourses.map((course) => (
-            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/4"}>
+            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/5"}>
               <Card
                 className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => handleCardClick(course.id)}
@@ -209,23 +230,23 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     </div>
                   )}
                 </div>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg line-clamp-1">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base line-clamp-1">{course.title}</CardTitle>
+                  <CardDescription className="line-clamp-2 text-xs">{course.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CardContent className="p-3 pt-0">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{course.duration}</span>
                     <span>•</span>
                     <span>{course.level}</span>
                   </div>
                   {course.progress !== undefined && (
-                    <div className="mt-3">
+                    <div className="mt-2">
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-xs text-muted-foreground">Progress</span>
                         <span className="text-xs font-medium">{course.progress}%</span>
                       </div>
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full bg-primary rounded-full"
                           style={{ width: `${course.progress}%` }}
@@ -234,15 +255,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                     </div>
                   )}
                 </CardContent>
-                {/* Removed instructor footer section */}
               </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex items-center justify-end gap-2 mt-4">
-          <CarouselPrevious className="static transform-none" />
-          <CarouselNext className="static transform-none" />
-        </div>
+        {/* Removed navigation buttons from here as they're now at the top */}
       </Carousel>
     </div>
   );
