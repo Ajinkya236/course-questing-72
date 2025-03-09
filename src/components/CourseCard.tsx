@@ -102,13 +102,21 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   const handleShareClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerCourseEvent('share', id, title);
     setShowShareDialog(true);
-  }, []);
+  }, [id, title]);
 
   const handleAssignClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerCourseEvent('assign', id, title);
     setShowAssignDialog(true);
-  }, []);
+  }, [id, title]);
+
+  // Add a proper fallback for image loading errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = "/placeholder.svg";
+  };
 
   return (
     <>
@@ -130,6 +138,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
           isMuted={isMuted}
           videoRef={videoRef}
           toggleMute={toggleMute}
+          onImageError={handleImageError}
         />
 
         <CourseCardContent

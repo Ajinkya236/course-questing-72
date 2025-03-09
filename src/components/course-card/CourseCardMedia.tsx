@@ -1,13 +1,13 @@
 
 import React, { memo } from 'react';
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
 
 interface CourseCardMediaProps {
   title: string;
   imageUrl: string;
-  category?: string;
+  category: string;
   trainingCategory?: string;
   isHot?: boolean;
   isNew?: boolean;
@@ -15,7 +15,8 @@ interface CourseCardMediaProps {
   isHovered: boolean;
   isMuted: boolean;
   videoRef: React.RefObject<HTMLVideoElement>;
-  toggleMute: (e: React.MouseEvent) => void;
+  toggleMute: () => void;
+  onImageError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
 }
 
 const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
@@ -29,96 +30,68 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   isHovered,
   isMuted,
   videoRef,
-  toggleMute
+  toggleMute,
+  onImageError
 }) => {
-  // Placeholder image for fallback
-  const placeholderImage = "/placeholder.svg";
-  
-  // Pick a random Unsplash image if imageUrl doesn't start with http
-  // This ensures we always have a valid image URL
-  const fallbackImages = [
-    "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"
-  ];
-  
-  const effectiveImageUrl = imageUrl && imageUrl.startsWith('http') 
-    ? imageUrl 
-    : fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-
   return (
-    <div className="relative aspect-video overflow-hidden">
+    <div className="relative aspect-video overflow-hidden bg-muted">
+      {/* Show video preview when hovered if available */}
       {previewUrl && isHovered ? (
         <>
-          <video 
+          <video
             ref={videoRef}
-            src={previewUrl} 
             className="w-full h-full object-cover"
             muted={isMuted}
-            loop
             playsInline
+            loop
           />
-          <Button 
-            onClick={toggleMute} 
-            variant="secondary" 
-            size="icon" 
-            className="absolute bottom-2 right-2 h-8 w-8 bg-black/50 hover:bg-black/70"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMute();
+            }}
           >
-            {isMuted ? <VolumeX className="h-4 w-4 text-white" /> : <Volume2 className="h-4 w-4 text-white" />}
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
         </>
       ) : (
         <img
-          src={effectiveImageUrl}
+          src={imageUrl || "/placeholder.svg"}
           alt={title}
-          className="w-full h-full object-cover"
-          loading="lazy" 
-          onError={(e) => {
-            // Fallback to placeholder if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.src = placeholderImage;
-            console.log(`Image load error for ${title}, using placeholder instead`);
-          }}
+          className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+          loading="lazy"
+          onError={onImageError}
         />
       )}
 
-      {/* Category badges */}
-      <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-        {category && (
-          <Badge 
-            variant="secondary" 
-            className="bg-primary text-white rounded-full font-medium"
-          >
-            {category}
-          </Badge>
-        )}
-        {trainingCategory && (
-          <Badge 
-            variant="secondary" 
-            className="bg-[#4263EB] text-white rounded-full font-medium"
-          >
+      {/* Category badge */}
+      <div className="absolute bottom-2 left-2">
+        <Badge variant="outline" className="bg-black/60 text-white border-none">
+          {category}
+        </Badge>
+      </div>
+
+      {/* Display Training Category if provided */}
+      {trainingCategory && (
+        <div className="absolute top-2 left-2">
+          <Badge variant="outline" className="bg-primary/80 text-white border-none">
             {trainingCategory}
           </Badge>
-        )}
-      </div>
-      
-      {/* Hot/New badges */}
-      {(isHot || isNew) && (
-        <div className="absolute top-3 right-3">
-          {isHot && (
-            <Badge className="bg-orange-500 text-white rounded-full font-medium">
-              Hot
-            </Badge>
-          )}
-          {isNew && (
-            <Badge className="bg-green-500 text-white rounded-full font-medium">
-              New
-            </Badge>
-          )}
         </div>
       )}
+
+      {/* Display Hot/New badges */}
+      <div className="absolute top-2 right-2 flex gap-1">
+        {isHot && (
+          <Badge className="bg-red-500 text-white">Hot</Badge>
+        )}
+        {isNew && (
+          <Badge className="bg-green-500 text-white">New</Badge>
+        )}
+      </div>
     </div>
   );
 };

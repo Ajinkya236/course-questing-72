@@ -46,9 +46,15 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
     handleCardClick(course.id);
   };
 
+  // Fix image loading by adding fallback error handler
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = "/placeholder.svg";
+  };
+
   return (
     <Card
-      className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
+      className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group mb-2"
       onClick={onCardClick}
     >
       <div className="aspect-video relative overflow-hidden bg-muted">
@@ -57,11 +63,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           alt={course.title}
           className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
           loading="lazy" 
-          onError={(e) => {
-            // Fallback to placeholder if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
+          onError={handleImageError}
         />
         {course.enrollmentStatus && (
           <div className="absolute top-2 right-2">
@@ -78,11 +80,11 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           </div>
         )}
       </div>
-      <CardHeader className="p-3">
-        <CardTitle className="text-base line-clamp-1">{course.title}</CardTitle>
+      <CardHeader className="p-2">
+        <CardTitle className="text-sm line-clamp-1">{course.title}</CardTitle>
         <CardDescription className="line-clamp-2 text-xs">{course.description}</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 pt-0">
+      <CardContent className="p-2 pt-0">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>{course.duration}</span>
           <span>•</span>
@@ -108,7 +110,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           <div className="flex gap-2 mb-2">
             <Button 
               variant="default" 
-              className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
+              className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-7 text-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 handleCardClick(course.id);
@@ -121,7 +123,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
               size="icon"
               onClick={(e) => handleShareClick(e, course.id)}
               aria-label="Share"
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
               <Share2 className="h-3 w-3" />
             </Button>
@@ -130,14 +132,14 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
               size="icon"
               onClick={(e) => handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked)}
               aria-label="Bookmark"
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
               <Bookmark className={`h-3 w-3 ${course.isBookmarked ? "fill-current" : ""}`} />
             </Button>
           </div>
           <Button 
             variant="outline" 
-            className="w-full h-8 text-xs"
+            className="w-full h-7 text-xs"
             onClick={(e) => handleAssignClick(e, course.id)}
           >
             <UserPlus className="h-3 w-3 mr-1" /> Assign

@@ -148,7 +148,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {normalizedCourses.map((course, index) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-2" : `basis-1/4 pl-2 ${index === normalizedCourses.length - 1 ? "pr-[30%]" : ""}`}
+              className={isMobile ? "basis-full pl-2" : `basis-1/5 pl-2 ${index === normalizedCourses.length - 1 ? "pr-0" : ""}`}
               onMouseEnter={() => handleMouseEnter(course.id)}
               onMouseLeave={handleMouseLeave}
             >
