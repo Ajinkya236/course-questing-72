@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
@@ -89,7 +90,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group hover:scale-110"
+        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group hover:scale-110 border-transparent hover:border-transparent"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}

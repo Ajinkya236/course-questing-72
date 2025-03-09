@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,7 @@ import {
 
 const SkillsSection = () => {
   const navigate = useNavigate();
+  const [openSkillsPopover, setOpenSkillsPopover] = useState(false);
 
   // Mock data for skills progress
   const roleSkills = [
@@ -27,7 +29,7 @@ const SkillsSection = () => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium">Skills you follow</h3>
-            <Popover>
+            <Popover open={openSkillsPopover} onOpenChange={setOpenSkillsPopover}>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
                   Edit Skills <MoveRight className="h-4 w-4" />

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
 import { useIsMobile } from '@/hooks/use-mobile';
+import CourseCard from '@/components/CourseCard';
 import { 
   Carousel, 
   CarouselContent, 
@@ -191,57 +193,20 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         <CarouselContent className="-ml-4">
           {normalizedCourses.map((course) => (
             <CarouselItem key={course.id} className={isMobile ? "pl-4 basis-full" : "pl-4 basis-1/5"}>
-              <Card
-                className="overflow-hidden h-full cursor-pointer hover:shadow-md transition-all duration-300 group hover:scale-110"
-                onClick={() => handleCardClick(course.id)}
-              >
-                <div className="aspect-video relative overflow-hidden bg-muted">
-                  <img
-                    src={course.imageUrl}
-                    alt={course.title}
-                    className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
-                  />
-                  {course.enrollmentStatus && (
-                    <div className="absolute top-2 right-2">
-                      <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
-                        {course.enrollmentStatus}
-                      </Badge>
-                    </div>
-                  )}
-                  {showTrainingCategory && course.trainingCategory && (
-                    <div className="absolute bottom-2 left-2">
-                      <Badge variant="outline" className="bg-black/60 text-white border-none">
-                        {course.trainingCategory}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-                <CardHeader className="p-3">
-                  <CardTitle className="text-base line-clamp-1">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-2 text-xs">{course.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-3 pt-0">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{course.duration}</span>
-                    <span>•</span>
-                    <span>{course.level}</span>
-                  </div>
-                  {course.progress !== undefined && (
-                    <div className="mt-2">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-muted-foreground">Progress</span>
-                        <span className="text-xs font-medium">{course.progress}%</span>
-                      </div>
-                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <CourseCard
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating || 4.5}
+                trainingCategory={course.trainingCategory}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.videoUrl}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
