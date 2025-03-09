@@ -96,7 +96,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group"
+        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105 group"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}

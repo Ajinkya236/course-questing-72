@@ -8,7 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { X, ChevronDown, Plus, Search } from 'lucide-react';
+import { X, ChevronDown, Plus, Search, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface FollowSkillsProps {
   title?: string;
@@ -27,6 +28,9 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  
+  const MAX_SKILLS = 10;
 
   // Sample skills list
   const allSkills = [
@@ -46,6 +50,15 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
     .slice(0, 10); // Limit to 10 results for better UX
   
   const handleAddSkill = (skill: string) => {
+    if (selectedSkills.length >= MAX_SKILLS) {
+      toast({
+        title: "Maximum skills reached",
+        description: `You can follow a maximum of ${MAX_SKILLS} skills.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!selectedSkills.includes(skill)) {
       setSelectedSkills([...selectedSkills, skill]);
     }
@@ -100,7 +113,20 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
           </PopoverTrigger>
           <PopoverContent className="w-80 p-3" align="start">
             <div className="space-y-3">
-              <h4 className="font-medium text-sm">Add Skills</h4>
+              <div className="flex justify-between items-center">
+                <h4 className="font-medium text-sm">Add Skills</h4>
+                <span className="text-xs text-muted-foreground">
+                  {selectedSkills.length}/{MAX_SKILLS} skills selected
+                </span>
+              </div>
+              
+              {selectedSkills.length >= MAX_SKILLS && (
+                <div className="flex items-center gap-2 p-2 bg-yellow-50 text-yellow-800 rounded text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Maximum {MAX_SKILLS} skills limit reached</span>
+                </div>
+              )}
+              
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -121,6 +147,7 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
                       size="sm"
                       className="w-full justify-start gap-2 text-left"
                       onClick={() => handleAddSkill(skill)}
+                      disabled={selectedSkills.length >= MAX_SKILLS}
                     >
                       <Plus className="h-3 w-3" />
                       {skill}
@@ -147,6 +174,7 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
                         size="sm"
                         className="justify-start gap-1 text-left"
                         onClick={() => handleAddSkill(skill)}
+                        disabled={selectedSkills.length >= MAX_SKILLS}
                       >
                         <Plus className="h-3 w-3" />
                         {skill}

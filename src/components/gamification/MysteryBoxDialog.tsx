@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import MysteryBox from "@/components/gamification/MysteryBox";
-import { Gift, Award, Zap, BookOpen, DollarSign } from "lucide-react";
+import { Gift, Award, Zap, BookOpen, DollarSign, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import confetti from 'canvas-confetti';
 
@@ -26,24 +26,38 @@ const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onOpenChange 
   const [isOpening, setIsOpening] = useState(false);
   const [reward, setReward] = useState<any>(null);
   const [boxOpened, setBoxOpened] = useState(false);
+  const [showClaimSuccess, setShowClaimSuccess] = useState(false);
+  const boxRef = useRef(null);
   const { toast } = useToast();
+
+  // Reset state when dialog is opened
+  useEffect(() => {
+    if (open) {
+      setIsOpening(false);
+      setReward(null);
+      setBoxOpened(false);
+      setShowClaimSuccess(false);
+    }
+  }, [open]);
 
   const handleOpenBox = () => {
     setIsOpening(true);
     
-    // Simulate opening box
+    // Simulate opening box animation
     setTimeout(() => {
       const randomReward = possibleRewards[Math.floor(Math.random() * possibleRewards.length)];
       setReward(randomReward);
       setBoxOpened(true);
       setIsOpening(false);
       
-      // Trigger confetti
-      confetti({
-        particleCount: 150,
-        spread: 100,
-        origin: { y: 0.5 }
-      });
+      // Trigger confetti after box opens
+      setTimeout(() => {
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.5 }
+        });
+      }, 300);
       
       toast({
         title: "Mystery Box Opened!",
@@ -53,14 +67,25 @@ const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onOpenChange 
   };
 
   const handleClaimReward = () => {
-    toast({
-      title: "Reward Claimed!",
-      description: `${reward.label} has been added to your account.`,
+    setShowClaimSuccess(true);
+    
+    // Trigger smaller confetti to celebrate claiming
+    confetti({
+      particleCount: 50,
+      spread: 50,
+      origin: { y: 0.7 }
     });
-    onOpenChange(false);
-    // Reset state for next open
-    setReward(null);
-    setBoxOpened(false);
+    
+    // Hide claim success and close dialog after a delay
+    setTimeout(() => {
+      toast({
+        title: "Reward Claimed!",
+        description: `${reward.label} has been added to your account.`,
+      });
+      
+      // Close dialog
+      onOpenChange(false);
+    }, 2000);
   };
 
   return (
@@ -74,9 +99,17 @@ const MysteryBoxDialog: React.FC<MysteryBoxDialogProps> = ({ open, onOpenChange 
         </DialogHeader>
         
         <div className="flex flex-col items-center justify-center py-6">
-          {!boxOpened ? (
+          {showClaimSuccess ? (
+            <div className="flex flex-col items-center justify-center p-6 animate-fade-in">
+              <Check className="h-16 w-16 text-green-500 mb-4" />
+              <h3 className="text-xl font-bold mb-2">Successfully Claimed!</h3>
+              <p className="text-center mb-4">
+                {reward.label} has been added to your account.
+              </p>
+            </div>
+          ) : !boxOpened ? (
             <>
-              <div className="w-full max-w-[200px] aspect-square">
+              <div className="w-full max-w-[200px] aspect-square" ref={boxRef}>
                 <MysteryBox isOpening={isOpening} />
               </div>
               <Button 

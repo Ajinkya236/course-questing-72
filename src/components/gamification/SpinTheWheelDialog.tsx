@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import React, { useState, useEffect, useRef } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import SpinTheWheel from "@/components/gamification/SpinTheWheel";
 import { Trophy, Sparkles, Gift, Check, ArrowRight, Share2 } from "lucide-react";
@@ -30,24 +30,9 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [spinCount, setSpinCount] = useState(1); // Track available spins
   const [showClaimSuccess, setShowClaimSuccess] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const wheelRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (result) {
-      const timer = setTimeout(() => {
-        setShowReward(true);
-        
-        // Trigger confetti effect
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [result]);
 
   // Reset dialog state when opened
   useEffect(() => {
@@ -56,8 +41,27 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
       setShowReward(false);
       setShowShareSuccess(false);
       setShowClaimSuccess(false);
+      setRotation(0);
     }
   }, [open]);
+
+  // Show reward after spinning completes
+  useEffect(() => {
+    if (result && !showReward) {
+      const timer = setTimeout(() => {
+        setShowReward(true);
+        
+        // Trigger confetti effect
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.5 }
+        });
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [result, showReward]);
 
   const handleSpin = () => {
     if (spinCount <= 0) {
@@ -72,10 +76,22 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
     setSpinning(true);
     setShowReward(false);
     
+    // Determine a random reward
+    const randomIndex = Math.floor(Math.random() * rewards.length);
+    const selectedReward = rewards[randomIndex];
+    
+    // Calculate the degrees to rotate to land on the selected reward
+    // Each segment is 360 / number of rewards degrees
+    const degreesPerSegment = 360 / rewards.length;
+    // Add extra rotations for more spinning effect (5 full rotations + the target segment)
+    const targetRotation = 1800 + (randomIndex * degreesPerSegment);
+    
+    // Set the rotation
+    setRotation(targetRotation);
+    
     // Simulate spin result after 3 seconds
     setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * rewards.length);
-      setResult(rewards[randomIndex]);
+      setResult(selectedReward);
       setSpinning(false);
       
       // Reduce available spins
@@ -83,7 +99,7 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
       
       toast({
         title: "You won a reward!",
-        description: `Congratulations! You won ${rewards[randomIndex].name}!`,
+        description: `Congratulations! You won ${selectedReward.name}!`,
       });
     }, 3000);
   };
@@ -132,6 +148,17 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
     }, 1500);
   };
 
+  const renderIcon = (type: string) => {
+    switch (type) {
+      case "points":
+        return <Trophy className="h-10 w-10 text-primary" />;
+      case "badge":
+        return <Sparkles className="h-10 w-10 text-amber-500" />;
+      default:
+        return <Gift className="h-10 w-10 text-purple-500" />;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -158,12 +185,26 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
             </div>
           ) : !showReward ? (
             <>
-              <div className="w-full max-w-[300px] aspect-square">
-                <SpinTheWheel
-                  spinning={spinning}
-                  segments={rewards}
-                  onSpinComplete={(segment) => setResult(segment)}
-                />
+              <div 
+                ref={wheelRef}
+                className="w-full max-w-[300px] aspect-square relative" 
+              >
+                <div 
+                  className="w-full h-full transition-transform duration-3000 ease-out"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                >
+                  <SpinTheWheel
+                    spinning={spinning}
+                    segments={rewards}
+                    onSpinComplete={(segment) => setResult(segment)}
+                  />
+                </div>
+                {/* Triangle indicator */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-0 z-10 w-0 h-0" style={{
+                  borderLeft: '15px solid transparent',
+                  borderRight: '15px solid transparent',
+                  borderTop: '20px solid #ef4444'
+                }}></div>
               </div>
               <Button 
                 onClick={handleSpin} 
@@ -190,15 +231,11 @@ const SpinTheWheelDialog: React.FC<SpinTheWheelDialogProps> = ({ open, onOpenCha
           ) : (
             <div className="flex flex-col items-center justify-center p-6 bg-secondary/20 rounded-lg animate-fade-in">
               <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                {result.type === "points" && <Trophy className="h-10 w-10 text-primary" />}
-                {result.type === "badge" && <Sparkles className="h-10 w-10 text-amber-500" />}
-                {(result.type === "multiplier" || result.type === "course" || result.type === "mystery") && (
-                  <Gift className="h-10 w-10 text-purple-500" />
-                )}
+                {renderIcon(result?.type)}
               </div>
               <h3 className="text-xl font-bold mb-2">Congratulations!</h3>
               <p className="text-center mb-4">
-                You won <span className="font-bold text-primary">{result.name}</span>!
+                You won <span className="font-bold text-primary">{result?.name}</span>!
               </p>
               <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Button onClick={handleClaimReward} className="flex-1">

@@ -7,7 +7,6 @@ import { Course } from '@/types/course';
 import { normalizeCourseData } from './CourseCarouselUtils';
 import CourseCarouselHeader from './CourseCarouselHeader';
 import CourseCarouselCard from './CourseCarouselCard';
-// Import from new location (not needed as the re-export handles this, but just to be explicit)
 import { 
   Carousel, 
   CarouselContent, 
@@ -155,7 +154,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-4" : "basis-1/4 pl-4 mr-4"} /* Added mr-4 for spacing between cards */
+              className={isMobile ? "basis-full pl-4" : "basis-1/4 pl-4 md:mr-4"} /* Added mr-4 for spacing between cards */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >
