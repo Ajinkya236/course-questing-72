@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
 import { useCourseEventListener } from '@/hooks/useCourseEvents';
+import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import CourseCardMedia from './course-card/CourseCardMedia';
 import CourseCardContent from './course-card/CourseCardContent';
 import CourseCardDialogs from './course-card/CourseCardDialogs';
@@ -39,10 +39,11 @@ const CourseCard: React.FC<CourseCardProps> = ({
   isNew
 }) => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [currentBookmarked, setCurrentBookmarked] = useState(isBookmarked);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
+  
+  const { isBookmarked: checkIsBookmarked, toggleBookmark } = useCourseBookmarks();
+  const [currentBookmarked, setCurrentBookmarked] = useState(isBookmarked || checkIsBookmarked(id));
   
   const {
     isHovered,
@@ -61,46 +62,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
     () => setCurrentBookmarked(prev => !prev)
   );
 
-  // Effect to check saved courses in localStorage during component initialization
-  useEffect(() => {
-    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
-    const isSaved = savedCourses.some((course: any) => course.id === id);
-    if (isSaved !== currentBookmarked) {
-      setCurrentBookmarked(isSaved);
-    }
-  }, [id, currentBookmarked]);
-
-  // Update local storage when bookmark status changes
-  useEffect(() => {
-    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
-    
-    if (currentBookmarked && !savedCourses.some((course: any) => course.id === id)) {
-      // Add course to saved courses
-      const courseToSave = {
-        id,
-        title,
-        description,
-        imageUrl,
-        category, 
-        duration,
-        rating,
-        trainingCategory,
-        isBookmarked: true,
-        previewUrl,
-        isHot,
-        isNew,
-        savedAt: new Date().toISOString(),
-        status: 'saved'
-      };
-      
-      localStorage.setItem('savedCourses', JSON.stringify([...savedCourses, courseToSave]));
-    } else if (!currentBookmarked) {
-      // Remove course from saved courses
-      const updatedSavedCourses = savedCourses.filter((course: any) => course.id !== id);
-      localStorage.setItem('savedCourses', JSON.stringify(updatedSavedCourses));
-    }
-  }, [currentBookmarked, id, title, description, imageUrl, category, duration, rating, trainingCategory, previewUrl, isHot, isNew]);
-
   // Memoized handlers
   const handleCourseClick = useCallback((e: React.MouseEvent) => {
     // Don't navigate if the click was on a button or if a dialog is open
@@ -118,16 +79,25 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   const handleBookmarkToggle = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    const newBookmarked = !currentBookmarked;
-    setCurrentBookmarked(newBookmarked);
-    
-    toast({
-      title: newBookmarked ? "Course Saved" : "Course Removed",
-      description: newBookmarked 
-        ? `"${title}" has been added to your saved courses` 
-        : `"${title}" has been removed from your saved courses`,
+    const newBookmarked = toggleBookmark({
+      id,
+      title,
+      description,
+      imageUrl,
+      category, 
+      duration,
+      rating,
+      trainingCategory,
+      isBookmarked: currentBookmarked,
+      previewUrl,
+      isHot,
+      isNew
     });
-  }, [currentBookmarked, title, toast]);
+    setCurrentBookmarked(newBookmarked);
+  }, [
+    id, title, description, imageUrl, category, duration, rating, 
+    trainingCategory, currentBookmarked, previewUrl, isHot, isNew, toggleBookmark
+  ]);
 
   const handleShareClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
 import { Course } from '@/types/course';
+import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -16,7 +16,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
   const statusFromUrl = searchParams.get('status');
   const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'in-progress');
-  const [savedCourses, setSavedCourses] = useState<Course[]>([]);
+  const { savedCourses } = useCourseBookmarks();
   
   // Update active filter when URL params change
   useEffect(() => {
@@ -27,12 +27,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
     }
   }, [statusFromUrl, navigate]);
-  
-  // Load saved courses from localStorage
-  useEffect(() => {
-    const storedSavedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
-    setSavedCourses(storedSavedCourses);
-  }, [activeFilter]); // Re-fetch when tab changes
   
   // In a real app, we'd filter based on teamMemberId if provided
   const assignedCourses = mockCourses

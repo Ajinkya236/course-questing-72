@@ -1,10 +1,9 @@
-
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Course } from '@/types/course';
 import { useCourseData } from '@/hooks/useCourseData';
+import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import { triggerCourseEvent } from '@/hooks/useCourseEvents';
 import CourseCarouselHeader from './CourseCarouselHeader';
 import CourseCarouselCard from './CourseCarouselCard';
@@ -46,7 +45,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { toast } = useToast();
+  const { toggleBookmark } = useCourseBookmarks();
   
   // Use optimized hook for course data handling
   const { normalizedCourses } = useCourseData(courses);
@@ -83,35 +82,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   // Memoized button click handlers
   const handleBookmarkToggle = useCallback((e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
     e.stopPropagation();
-    const newBookmarked = !isBookmarked;
     
-    // Handle saving to localStorage
-    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
-    
-    if (newBookmarked && !savedCourses.some((course: any) => course.id === courseId)) {
-      // Find the course in the normalized courses array
-      const courseToSave = normalizedCourses.find(course => course.id === courseId);
-      if (courseToSave) {
-        const courseData = {
-          ...courseToSave,
-          isBookmarked: true,
-          savedAt: new Date().toISOString(),
-          status: 'saved'
-        };
-        localStorage.setItem('savedCourses', JSON.stringify([...savedCourses, courseData]));
-      }
-    } else if (!newBookmarked) {
-      const updatedSavedCourses = savedCourses.filter((course: any) => course.id !== courseId);
-      localStorage.setItem('savedCourses', JSON.stringify(updatedSavedCourses));
+    // Find the course in the normalized courses array
+    const courseToToggle = normalizedCourses.find(course => course.id === courseId);
+    if (courseToToggle) {
+      toggleBookmark(courseToToggle);
     }
-    
-    toast({
-      title: newBookmarked ? "Course Saved" : "Course Removed",
-      description: newBookmarked 
-        ? `"${title}" has been added to your saved courses` 
-        : `"${title}" has been removed from your saved courses`,
-    });
-  }, [normalizedCourses, toast]);
+  }, [normalizedCourses, toggleBookmark]);
 
   // Handle share button click - now using the event system
   const handleShareClick = useCallback((e: React.MouseEvent, courseId: string) => {
