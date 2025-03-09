@@ -27,11 +27,11 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
   handleAssignClick
 }) => {
   return (
-    <div className="p-3 space-y-2 max-h-[150px]">
+    <div className="p-2 space-y-1 max-h-[150px]">
       <h3 className="font-medium text-sm leading-tight line-clamp-1">{title}</h3>
       <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-xs text-muted-foreground pt-0.5">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{duration}</span>
@@ -42,11 +42,11 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex gap-1 mb-1.5">
+      <div className="pt-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex gap-1 mb-1">
           <Button 
             variant="default" 
-            className="flex-1 bg-primary hover:bg-primary/90 h-7 text-xs px-2 rounded-md"
+            className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-6 text-xs"
             onClick={handleWatchClick}
           >
             <Play className="h-3 w-3 mr-1" /> Watch
@@ -56,7 +56,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleShareClick}
             aria-label="Share"
-            className="h-7 w-7 rounded-md"
+            className="h-6 w-6"
           >
             <Share2 className="h-3 w-3" />
           </Button>
@@ -65,14 +65,14 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleBookmarkToggle}
             aria-label="Bookmark"
-            className={`h-7 w-7 rounded-md ${isBookmarked ? "border-primary text-primary bg-primary/10" : ""}`}
+            className={`h-6 w-6 ${isBookmarked ? "border-primary text-primary" : ""}`}
           >
             <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
           </Button>
         </div>
         <Button 
           variant="outline" 
-          className="w-full h-7 text-xs rounded-md"
+          className="w-full h-6 text-xs"
           onClick={handleAssignClick}
         >
           <UserPlus className="h-3 w-3 mr-1" /> Assign

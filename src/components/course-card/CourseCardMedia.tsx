@@ -34,66 +34,38 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   toggleMute,
   onImageError
 }) => {
-  // Enhanced image error handler with better fallback mechanism
+  // Default image error handler if none provided
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     if (onImageError) {
       onImageError(e);
     } else {
-      // Improved fallback behavior with better error handling
+      // Default fallback behavior
       const target = e.target as HTMLImageElement;
-      console.log("Image failed to load:", target.src);
-      
-      // Try loading from placeholder if not already
-      if (!target.src.includes("placeholder.svg")) {
-        target.src = "/placeholder.svg";
-        // Prevent infinite loading attempts if placeholder also fails
-        target.onerror = null;
-      }
+      target.src = "/placeholder.svg";
+      // Prevent infinite loading attempts if placeholder also fails
+      target.onerror = null;
     }
   };
 
-  // Enhanced image URL processing with better handling
+  // Process image URL to ensure proper loading
   const processImageUrl = (url: string) => {
-    if (!url || url === "") {
-      console.log("Empty image URL, using placeholder");
-      return "/placeholder.svg";
-    }
+    if (!url) return "/placeholder.svg";
     
-    try {
-      // Handle Unsplash URLs to ensure proper sizing and format
-      if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
-        return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
-      }
-      
-      // Handle relative URLs
-      if (url.startsWith("/") && !url.startsWith("//")) {
-        return url; // Already a proper relative URL
-      }
-      
-      return url;
-    } catch (err) {
-      console.error("Error processing image URL:", err);
-      return "/placeholder.svg";
+    if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
+      return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
+    return url;
   };
 
-  // Load video on hover if available - improved with better error handling
+  // Load video on hover if available
   React.useEffect(() => {
     if (isHovered && previewUrl && videoRef.current) {
-      try {
-        videoRef.current.src = previewUrl;
-        videoRef.current.load();
-        videoRef.current.play().catch(err => {
-          console.log("Video preview failed to play:", err);
-        });
-      } catch (error) {
-        console.error("Error setting up video:", error);
-      }
+      videoRef.current.src = previewUrl;
+      videoRef.current.play().catch(err => {
+        console.log("Video preview failed to play:", err);
+      });
     }
   }, [isHovered, previewUrl, videoRef]);
-
-  // Ensure imageUrl is properly processed before rendering
-  const finalImageUrl = processImageUrl(imageUrl);
 
   return (
     <div className="relative overflow-hidden bg-muted rounded-t-md">
@@ -107,7 +79,6 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
               muted={isMuted}
               playsInline
               loop
-              preload="metadata"
             />
             <Button
               variant="ghost"
@@ -120,7 +91,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           </>
         ) : (
           <img
-            src={finalImageUrl}
+            src={processImageUrl(imageUrl)}
             alt={title}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
             loading="lazy"
