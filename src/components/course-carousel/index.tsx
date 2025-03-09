@@ -151,6 +151,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               className={isMobile ? "basis-full pl-4" : `basis-1/5 pl-4 ${index === normalizedCourses.length - 1 ? "pr-0" : ""}`}
               onMouseEnter={() => handleMouseEnter(course.id)}
               onMouseLeave={handleMouseLeave}
+              style={index === 4 ? { marginRight: '-70%' } : {}} // Show only ~30% of the 5th card
             >
               <CourseCarouselCard
                 course={course}

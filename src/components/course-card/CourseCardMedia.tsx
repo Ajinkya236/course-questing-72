@@ -49,6 +49,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
 
   // Convert unsplash photo links to actual unsplash URLs if needed
   const processImageUrl = (url: string) => {
+    if (!url) return "/placeholder.svg";
+    
     if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
       return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
@@ -82,7 +84,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           </>
         ) : (
           <img
-            src={processImageUrl(imageUrl) || "/placeholder.svg"}
+            src={processImageUrl(imageUrl)}
             alt={title}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
             loading="lazy"
