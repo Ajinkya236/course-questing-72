@@ -1,22 +1,44 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/CourseCarousel';
-import LeaderboardCard from '@/components/LeaderboardCard';
 import BadgeCard from '@/components/BadgeCard';
-import PointsOverview from '@/components/PointsOverview';
-import { mockCourses } from '@/data/mockCoursesData';
-import { MoveRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import FollowSkills from '@/components/FollowSkills';
+import { mockCourses } from '@/data/mockCoursesData';
+
+// Import new components
+import SkillsSection from '@/components/homepage/SkillsSection';
+import ActionablesCard from '@/components/homepage/ActionablesCard';
+import RewardsSummary from '@/components/homepage/RewardsSummary';
+import DomainCatalog from '@/components/homepage/DomainCatalog';
 
 // Filter courses for different categories
-const recommendedCourses = mockCourses.filter((_, index) => index < 12);
-const trendingCourses = mockCourses.filter((_, index) => index >= 12 && index < 24);
-const newCourses = mockCourses.filter((_, index) => index >= 24 && index < 36);
-const savedCourses = mockCourses.filter((course) => course.isBookmarked);
+const continueLearningCourses = mockCourses
+  .filter(course => course.status === 'in-progress')
+  .slice(0, 12);
+
+const assignedCourses = mockCourses
+  .filter(course => course.status === 'assigned')
+  .slice(0, 12);
+
+const chosenForYou = mockCourses
+  .filter((_, index) => index < 12);
+
+const basedOnInterest = mockCourses
+  .filter((_, index) => index >= 12 && index < 24);
+
+const forYourRoleCourses = mockCourses
+  .filter((_, index) => index >= 24 && index < 36);
+
+const trendingCourses = [...mockCourses]
+  .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+  .slice(0, 12);
+
+const popularWithSimilarUsers = mockCourses
+  .filter((_, index) => index >= 36 && index < 48);
 
 // Mock banner data for BannerCarousel
 const mockBanners = [
@@ -36,137 +58,23 @@ const mockBanners = [
   }
 ];
 
-// Mock data for PointsOverview
-const mockPointsData = {
-  totalPoints: 1250,
-  coursesCompleted: 12,
-  hoursSpent: 48,
-  pointsThisWeek: 150,
-  pointsLastWeek: 120,
-  pointsBreakdown: [
-    { category: 'Course Completion', points: 650, color: '#4338ca' },
-    { category: 'Quizzes', points: 350, color: '#0ea5e9' },
-    { category: 'Assignments', points: 150, color: '#10b981' },
-    { category: 'Participation', points: 100, color: '#f59e0b' },
-  ],
-  streakDays: 15,
-  nextMilestone: {
-    name: 'Coffee Voucher',
-    points: 1500,
-  },
-  redeemablePoints: 800
-};
-
-// Mock data for LeaderboardCard
-const mockLeaderboardUsers = [
-  {
-    id: 'user-1',
-    name: 'Jane Smith',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-    points: 2450,
-    position: 1,
-    positionChange: 0,
-    details: {
-      assessmentScore: 92,
-      engagementScore: 88,
-      completionRate: 95
-    },
-    team: 'Marketing',
-    department: 'Sales',
-    location: 'New York',
-    role: 'Manager'
-  },
-  {
-    id: 'user-2',
-    name: 'John Doe',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    points: 2280,
-    position: 2,
-    positionChange: 1,
-    details: {
-      assessmentScore: 88,
-      engagementScore: 92,
-      completionRate: 90
-    },
-    team: 'Engineering',
-    department: 'Technology',
-    location: 'San Francisco',
-    role: 'Developer'
-  },
-  {
-    id: 'user-3',
-    name: 'Alice Johnson',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-    points: 2150,
-    position: 3,
-    positionChange: -1,
-    details: {
-      assessmentScore: 90,
-      engagementScore: 85,
-      completionRate: 88
-    },
-    team: 'Design',
-    department: 'Creative',
-    location: 'London',
-    role: 'Designer'
-  },
-  {
-    id: 'user-4',
-    name: 'Michael Brown',
-    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-    points: 1950,
-    position: 4,
-    positionChange: 0,
-    details: {
-      assessmentScore: 85,
-      engagementScore: 80,
-      completionRate: 92
-    },
-    team: 'Operations',
-    department: 'Administration',
-    location: 'Chicago',
-    role: 'Analyst'
-  },
-  {
-    id: 'user-5',
-    name: 'Sarah Wilson',
-    avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-    points: 1820,
-    position: 5,
-    positionChange: 2,
-    details: {
-      assessmentScore: 82,
-      engagementScore: 78,
-      completionRate: 85
-    },
-    team: 'Finance',
-    department: 'Accounting',
-    location: 'Toronto',
-    role: 'Manager'
-  }
+// Mock training categories for filter
+const trainingCategories = [
+  'All Categories', 'Technical', 'Soft Skills', 'Leadership', 'Compliance', 
+  'Product', 'Onboarding', 'Business', 'Management'
 ];
 
-// Current user for LeaderboardCard
-const currentUser = {
-  id: 'current-user',
-  name: 'You',
-  avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-  points: 1650,
-  position: 8,
-  positionChange: 1,
-  details: {
-    assessmentScore: 78,
-    engagementScore: 75,
-    completionRate: 82
-  },
-  team: 'Product',
-  department: 'Technology',
-  location: 'Austin',
-  role: 'Product Manager'
-};
+// Mock skills for filter
+const skillFilters = [
+  'All Skills', 'JavaScript', 'React', 'Node.js', 'Python', 'Data Science', 
+  'Leadership', 'Communication', 'Design', 'Product Management'
+];
 
 const Home = () => {
   const navigate = useNavigate();
+  const [trainingFilter, setTrainingFilter] = useState('All Categories');
+  const [skillFilter, setSkillFilter] = useState('All Skills');
+  const [roleSkillFilter, setRoleSkillFilter] = useState('All Skills');
   
   return (
     <>
@@ -178,59 +86,82 @@ const Home = () => {
         {/* Banner Carousel */}
         <BannerCarousel banners={mockBanners} />
         
-        {/* Skills Selection Section */}
-        <FollowSkills 
-          title="Follow Skills" 
-          subtitle="Follow skills to personalize your learning experience" 
-        />
-
-        {/* Recommended Courses */}
-        <CourseCarousel 
-          title="Recommended For You" 
-          courses={recommendedCourses}
-          viewAllUrl="/view-all/recommended"
-        />
-        
-        {/* Trending Courses */}
-        <CourseCarousel 
-          title="Trending Courses" 
-          courses={trendingCourses}
-          viewAllUrl="/view-all/trending"
-        />
-        
-        {/* Points Overview and Leaderboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <PointsOverview data={mockPointsData} />
-          </div>
-          <div>
-            <LeaderboardCard users={mockLeaderboardUsers} currentUser={currentUser} />
-          </div>
-        </div>
-        
-        {/* Saved Courses */}
-        {savedCourses.length > 0 && (
+        {/* Continue Learning Carousel */}
+        {continueLearningCourses.length > 0 && (
           <CourseCarousel 
-            title="Saved Courses" 
-            courses={savedCourses}
-            viewAllUrl="/view-all/saved"
+            title="Continue Learning" 
+            courses={continueLearningCourses}
+            viewAllUrl="/my-learning?tab=courses&status=in-progress"
+            onViewAllClick={() => navigate('/my-learning?tab=courses&status=in-progress')}
           />
         )}
         
-        {/* New Courses */}
+        {/* Assigned Courses Carousel */}
+        {assignedCourses.length > 0 && (
+          <CourseCarousel 
+            title="Assigned Courses" 
+            courses={assignedCourses}
+            viewAllUrl="/my-learning?tab=courses&status=assigned"
+            onViewAllClick={() => navigate('/my-learning?tab=courses&status=assigned')}
+            filterOptions={trainingCategories}
+            showSkillFilters={true}
+            showTrainingCategory={true}
+          />
+        )}
+        
+        {/* Skills, Actionables and Rewards Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <SkillsSection />
+            <ActionablesCard />
+          </div>
+          <RewardsSummary />
+        </div>
+        
+        {/* Chosen For You Carousel */}
         <CourseCarousel 
-          title="New Courses" 
-          courses={newCourses}
-          viewAllUrl="/view-all/new"
+          title="Chosen For You" 
+          courses={chosenForYou}
+          viewAllUrl="/view-all/recommended"
         />
         
-        {/* View Actionables Button */}
-        <div className="flex justify-center mt-8">
-          <Button onClick={() => navigate('/actionables')} variant="outline" size="lg" className="gap-2">
-            View Your Actionables
-            <MoveRight className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Based on Your Interest Carousel */}
+        <CourseCarousel 
+          title="Based on Your Interest" 
+          courses={basedOnInterest}
+          viewAllUrl="/view-all/interest"
+          filterOptions={skillFilters}
+          showSkillFilters={true}
+        />
+        
+        {/* For Your Role Carousel */}
+        <CourseCarousel 
+          title="For Your Role" 
+          courses={forYourRoleCourses}
+          viewAllUrl="/view-all/role"
+          filterOptions={skillFilters}
+          showSkillFilters={true}
+        />
+        
+        {/* Trending Now Carousel */}
+        <CourseCarousel 
+          title="Trending Now" 
+          courses={trendingCourses.map((course, index) => ({
+            ...course,
+            title: `${index + 1}. ${course.title}` // Add ranking to title
+          }))}
+          viewAllUrl="/view-all/trending"
+        />
+        
+        {/* Popular with Similar Users Carousel */}
+        <CourseCarousel 
+          title="Popular with Similar Users" 
+          courses={popularWithSimilarUsers}
+          viewAllUrl="/view-all/popular"
+        />
+        
+        {/* Domains Catalog Section */}
+        <DomainCatalog />
         
         {/* Latest Achievements */}
         <div className="mb-10">

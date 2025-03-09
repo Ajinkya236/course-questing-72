@@ -32,7 +32,7 @@ export interface Course {
   isNew?: boolean;
   createdAt?: string;
   status?: 'assigned' | 'in-progress' | 'completed';
-  sharedBy?: string; // Added sharedBy property
+  sharedBy?: string;
   
   // These fields from CourseCarousel interface
   level?: string;
@@ -52,4 +52,10 @@ export interface Course {
   topic?: string;
   skillLevel?: string;
   proficiency?: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+  
+  // Rankings for trending courses
+  rank?: number;
+  
+  // User similarity score
+  similarityScore?: number;
 }
