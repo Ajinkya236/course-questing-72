@@ -51,34 +51,28 @@ const basedOnInterest = mockCourses
 
 const forYourRoleCourses = mockCourses
   .filter((_, index) => index >= 24 && index < 36)
-  .map((course, idx) => ({
+  .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4', // Sample video
-    isNew: idx % 5 === 0,
-    isHot: idx % 7 === 0
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
   }));
 
 const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
   .slice(0, 12)
-  .map((course, idx) => ({
+  .map((course, index) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${idx + 1}. ${course.title}`, // Add ranking to title
-    isNew: idx % 5 === 0,
-    isHot: idx % 7 === 0
+    title: `${index + 1}. ${course.title}` // Add ranking to title
   }));
 
 const popularWithSimilarUsers = mockCourses
   .filter((_, index) => index >= 36 && index < 48)
-  .map((course, idx) => ({
+  .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4', // Sample video
-    isNew: idx % 5 === 0,
-    isHot: idx % 7 === 0
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
   }));
 
 // Mock banner data for BannerCarousel
@@ -151,14 +145,12 @@ const Home = () => {
         )}
         
         {/* Skills, Actionables and Rewards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-6 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
             <SkillsSection />
             <ActionablesCard />
           </div>
-          <div className="md:col-span-1">
-            <RewardsSummary />
-          </div>
+          <RewardsSummary />
         </div>
         
         {/* Chosen For You Carousel */}
@@ -200,7 +192,7 @@ const Home = () => {
           viewAllUrl="/view-all/popular"
         />
         
-        {/* Domains Catalog Section - Without filters */}
+        {/* Domains Catalog Section */}
         <DomainCatalog />
         
         {/* About the Platform Section */}

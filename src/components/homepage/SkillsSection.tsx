@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,6 @@ import {
 
 const SkillsSection = () => {
   const navigate = useNavigate();
-  const [openSkillsPopover, setOpenSkillsPopover] = useState(false);
 
   // Mock data for skills progress
   const roleSkills = [
@@ -29,17 +28,23 @@ const SkillsSection = () => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium">Skills you follow</h3>
-            <Popover open={openSkillsPopover} onOpenChange={setOpenSkillsPopover}>
+            <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  Edit Skills <MoveRight className="h-4 w-4" />
+                  View All <MoveRight className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-6" align="end">
-                <FollowSkills 
-                  title="Manage Your Skills" 
-                  subtitle="Add or remove skills to personalize your learning experience"
-                />
+              <PopoverContent className="w-96 p-0" align="end">
+                <div className="p-6 border-b">
+                  <h4 className="text-lg font-medium">Skills you follow</h4>
+                  <p className="text-sm text-muted-foreground">Manage your skills to personalize learning</p>
+                </div>
+                <div className="p-6">
+                  <FollowSkills 
+                    title="" 
+                    subtitle=""
+                  />
+                </div>
               </PopoverContent>
             </Popover>
           </div>

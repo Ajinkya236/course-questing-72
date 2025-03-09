@@ -52,18 +52,22 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
+  // Handle course click to navigate to course player
   const handleCourseClick = (e: React.MouseEvent) => {
+    // Don't navigate if the click was on a button or if a dialog is open
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       return;
     }
     navigate(`/course/${id}`);
   };
 
+  // Handle watch button click
   const handleWatchClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/course/${id}`);
   };
 
+  // Handle bookmark toggle
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newBookmarked = !currentBookmarked;
@@ -77,11 +81,13 @@ const CourseCard: React.FC<CourseCardProps> = ({
     });
   };
 
+  // Handle share button click
   const handleShareClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowShareDialog(true);
   };
 
+  // Handle assign button click
   const handleAssignClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowAssignDialog(true);
@@ -90,7 +96,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group hover:scale-110 border-transparent hover:border-transparent"
+        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group hover:scale-105"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}

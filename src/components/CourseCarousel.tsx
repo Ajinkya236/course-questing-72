@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
 import { useIsMobile } from '@/hooks/use-mobile';
-import CourseCard from '@/components/CourseCard';
 import { 
   Carousel, 
   CarouselContent, 
@@ -40,6 +39,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subFilterOptions = {},
   showTrainingCategory = false
 }) => {
+  // Removing duplicates from filter options
   const uniqueFilterOptions = filterOptions.length > 0 ? [...new Set(filterOptions)] : [];
   
   const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
@@ -48,9 +48,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
+  // Function to ensure we have exactly 12 courses for the carousel
   const normalizeCoursesCount = (coursesArray: Course[]) => {
     if (coursesArray.length === 0) return [];
     
+    // If less than 12 courses, duplicate to reach 12
     if (coursesArray.length < 12) {
       const repeatedCourses = [];
       let i = 0;
@@ -64,6 +66,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       return repeatedCourses.slice(0, 12);
     }
     
+    // If more than 12 courses, take the first 12
     if (coursesArray.length > 12) {
       return coursesArray.slice(0, 12);
     }
@@ -72,6 +75,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   };
 
   const handleCardClick = (courseId: string) => {
+    // Remove any clone suffix for handling clicks on duplicated courses
     const originalId = courseId.split('-clone-')[0];
     if (onCourseClick) {
       onCourseClick(originalId);
@@ -93,7 +97,9 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   const handleFilterSelect = (filter: string) => {
     setSelectedFilter(filter);
+    // Reset sub-filter when main filter changes
     if (subFilterOptions && subFilterOptions[filter]) {
+      // Get the first unique sub-filter
       const uniqueSubFilters = [...new Set(subFilterOptions[filter])];
       setSelectedSubFilter(uniqueSubFilters[0]);
     } else {
@@ -105,10 +111,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setSelectedSubFilter(subFilter);
   };
 
+  // Get available sub-filters based on selected main filter, removing duplicates
   const availableSubFilters = subFilterOptions[selectedFilter] ? 
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
+  // Create a fallback for courses that don't have all required properties
   const normalizedCourses = normalizeCoursesCount(courses.map(course => ({
     ...course,
     level: course.level || course.skillLevel || 'All Levels',
@@ -143,6 +151,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           )}
         </div>
         
+        {/* Navigation controls for carousel - displayed next to title */}
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
@@ -163,6 +172,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       </div>
       
+      {/* Main filters carousel with navigation buttons - left aligned */}
       {showSkillFilters && uniqueFilterOptions.length > 0 && (
         <CarouselFilters
           filters={uniqueFilterOptions}
@@ -172,6 +182,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         />
       )}
       
+      {/* Sub-filters carousel with navigation buttons - left aligned */}
       {showSkillFilters && availableSubFilters.length > 0 && (
         <CarouselFilters
           filters={availableSubFilters}
@@ -181,35 +192,74 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         />
       )}
 
+      {/* Use the Carousel component with circular navigation */}
       <Carousel
         opts={{
           align: "start",
           loop: true,
-          containScroll: false,
         }}
         className="w-full"
         id={`${title.replace(/\s+/g, '-')}-carousel`}
       >
-        <CarouselContent className="-ml-4">
+        <CarouselContent>
           {normalizedCourses.map((course) => (
-            <CarouselItem key={course.id} className={isMobile ? "pl-4 basis-full" : "pl-4 basis-1/5"}>
-              <CourseCard
-                id={course.id}
-                title={course.title}
-                description={course.description}
-                imageUrl={course.imageUrl}
-                category={course.category}
-                duration={course.duration}
-                rating={course.rating || 4.5}
-                trainingCategory={course.trainingCategory}
-                isBookmarked={course.isBookmarked}
-                previewUrl={course.videoUrl}
-                isHot={course.isHot}
-                isNew={course.isNew}
-              />
+            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/5"}>
+              <Card
+                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => handleCardClick(course.id)}
+              >
+                <div className="aspect-video relative overflow-hidden bg-muted">
+                  <img
+                    src={course.imageUrl}
+                    alt={course.title}
+                    className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
+                  />
+                  {course.enrollmentStatus && (
+                    <div className="absolute top-2 right-2">
+                      <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
+                        {course.enrollmentStatus}
+                      </Badge>
+                    </div>
+                  )}
+                  {/* Only show training category if showTrainingCategory is true and trainingCategory exists */}
+                  {showTrainingCategory && course.trainingCategory && (
+                    <div className="absolute bottom-2 left-2">
+                      <Badge variant="outline" className="bg-black/60 text-white border-none">
+                        {course.trainingCategory}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                <CardHeader className="p-3">
+                  <CardTitle className="text-base line-clamp-1">{course.title}</CardTitle>
+                  <CardDescription className="line-clamp-2 text-xs">{course.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="p-3 pt-0">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{course.duration}</span>
+                    <span>•</span>
+                    <span>{course.level}</span>
+                  </div>
+                  {course.progress !== undefined && (
+                    <div className="mt-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-muted-foreground">Progress</span>
+                        <span className="text-xs font-medium">{course.progress}%</span>
+                      </div>
+                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full"
+                          style={{ width: `${course.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
+        {/* Removed navigation buttons from here as they're now at the top */}
       </Carousel>
     </div>
   );
