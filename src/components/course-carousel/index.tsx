@@ -81,6 +81,26 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     e.stopPropagation();
     const newBookmarked = !isBookmarked;
     
+    // Handle saving to localStorage
+    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
+    
+    if (newBookmarked && !savedCourses.some((course: any) => course.id === courseId)) {
+      // Find the course in the normalized courses array
+      const courseToSave = normalizedCourses.find(course => course.id === courseId);
+      if (courseToSave) {
+        const courseData = {
+          ...courseToSave,
+          isBookmarked: true,
+          savedAt: new Date().toISOString(),
+          status: 'saved'
+        };
+        localStorage.setItem('savedCourses', JSON.stringify([...savedCourses, courseData]));
+      }
+    } else if (!newBookmarked) {
+      const updatedSavedCourses = savedCourses.filter((course: any) => course.id !== courseId);
+      localStorage.setItem('savedCourses', JSON.stringify(updatedSavedCourses));
+    }
+    
     toast({
       title: newBookmarked ? "Course Saved" : "Course Removed",
       description: newBookmarked 
@@ -92,6 +112,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   // Handle share button click
   const handleShareClick = (e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
+    // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
     toast({
       title: "Share Course",
       description: "Sharing options are now available for this course",
@@ -101,6 +122,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   // Handle assign button click
   const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
+    // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
     toast({
       title: "Assign Course",
       description: "You can now assign this course to team members",
@@ -150,11 +172,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full overflow-visible"
         id={carouselId}
       >
-        <CarouselContent className="-ml-4 pr-4">
+        <CarouselContent className="-ml-2 pr-2">
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-4" : "basis-1/4 pl-4 md:mr-4"} /* Added mr-4 for spacing between cards */
+              className={isMobile ? "basis-full pl-2" : "basis-1/5 pl-2"} /* Show 5 cards per row with reduced spacing */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >

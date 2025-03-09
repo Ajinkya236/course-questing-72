@@ -10,23 +10,24 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { 
-  Facebook, 
-  Twitter, 
-  Linkedin, 
-  Link2, 
   Mail, 
-  Users, 
   User, 
   Search,
   Check,
-  PlusCircle,
   X,
-  Send
+  Send,
+  PlusCircle,
+  UserPlus,
+  Users,
+  Target,
+  ListTodo,
+  Goal
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CourseCardDialogsProps {
   id: string;
@@ -51,6 +52,24 @@ const employeeEmails = [
   { email: 'casey.brown@company.com', name: 'Casey Brown' },
 ];
 
+// Sample team members data
+const teamMembers = [
+  { id: '1', name: 'Alex Johnson', role: 'Software Engineer' },
+  { id: '2', name: 'Sam Reynolds', role: 'Product Manager' },
+  { id: '3', name: 'Jesse Taylor', role: 'UX Designer' },
+  { id: '4', name: 'Morgan Smith', role: 'Data Analyst' },
+  { id: '5', name: 'Casey Brown', role: 'Marketing Specialist' },
+];
+
+// Sample mentees data
+const mentees = [
+  { id: '6', name: 'Riley Cooper', role: 'Junior Developer' },
+  { id: '7', name: 'Jordan Miller', role: 'UX Intern' },
+  { id: '8', name: 'Cameron White', role: 'Data Science Trainee' },
+  { id: '9', name: 'Drew Thomas', role: 'Marketing Assistant' },
+  { id: '10', name: 'Taylor Evans', role: 'Product Specialist' },
+];
+
 const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
   id,
   title,
@@ -61,8 +80,10 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
 }) => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [linkCopied, setLinkCopied] = useState(false);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<string[]>([]);
+  const [selectedMentees, setSelectedMentees] = useState<string[]>([]);
+  const [selectedTeamForGoals, setSelectedTeamForGoals] = useState<string[]>([]);
+  const [assignTab, setAssignTab] = useState("self");
   
   // State for email sharing
   const [emailRecipients, setEmailRecipients] = useState<EmailRecipient[]>([]);
@@ -71,18 +92,14 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
   const [isSending, setIsSending] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Sample team members data
-  const teamMembers = [
-    { id: '1', name: 'Alex Johnson', role: 'Software Engineer' },
-    { id: '2', name: 'Sam Reynolds', role: 'Product Manager' },
-    { id: '3', name: 'Jesse Taylor', role: 'UX Designer' },
-    { id: '4', name: 'Morgan Smith', role: 'Data Analyst' },
-    { id: '5', name: 'Casey Brown', role: 'Marketing Specialist' },
-  ];
-
-  const filteredMembers = teamMembers.filter(member => 
+  const filteredTeamMembers = teamMembers.filter(member => 
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredMentees = mentees.filter(mentee => 
+    mentee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    mentee.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter email suggestions based on current input
@@ -90,39 +107,6 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     employee.email.toLowerCase().includes(currentEmail.toLowerCase()) ||
     employee.name.toLowerCase().includes(currentEmail.toLowerCase())
   );
-
-  const handleSelectUser = (userId: string) => {
-    setSelectedUsers(prev => {
-      if (prev.includes(userId)) {
-        return prev.filter(id => id !== userId);
-      } else {
-        return [...prev, userId];
-      }
-    });
-  };
-
-  const handleCopyLink = () => {
-    // Mock copy to clipboard
-    navigator.clipboard.writeText(`https://example.com/course/${id}`).then(() => {
-      setLinkCopied(true);
-      toast({
-        title: "Link Copied",
-        description: "Course link has been copied to clipboard"
-      });
-
-      // Reset copy status after 3 seconds
-      setTimeout(() => setLinkCopied(false), 3000);
-    });
-  };
-
-  const handleShareVia = (platform: string) => {
-    // Mock sharing to platforms
-    toast({
-      title: `Shared on ${platform}`,
-      description: `Course "${title}" has been shared on ${platform}`
-    });
-    setShowShareDialog(false);
-  };
 
   const handleAddEmailRecipient = (email: string = currentEmail) => {
     // Validate email format
@@ -184,28 +168,156 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     }, 1500);
   };
 
-  const handleAssignCourse = () => {
-    if (selectedUsers.length === 0) {
-      toast({
-        title: "No users selected",
-        description: "Please select at least one team member",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const selectedNames = selectedUsers.map(id => 
-      teamMembers.find(member => member.id === id)?.name
-    ).join(', ');
-
-    toast({
-      title: "Course Assigned",
-      description: `"${title}" has been assigned to ${selectedNames}`
+  const handleSelectTeamMember = (userId: string) => {
+    setSelectedTeamMembers(prev => {
+      if (prev.includes(userId)) {
+        return prev.filter(id => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
     });
+  };
+
+  const handleSelectMentee = (userId: string) => {
+    setSelectedMentees(prev => {
+      if (prev.includes(userId)) {
+        return prev.filter(id => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
+
+  const handleSelectTeamForGoals = (userId: string) => {
+    setSelectedTeamForGoals(prev => {
+      if (prev.includes(userId)) {
+        return prev.filter(id => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
+
+  const handleAssignCourse = () => {
+    // Check which tab is active and handle accordingly
+    if (assignTab === "self") {
+      toast({
+        title: "Course Assigned",
+        description: `"${title}" has been assigned to yourself`
+      });
+      
+      // Save to local storage
+      const assignedToSelf = JSON.parse(localStorage.getItem('assignedToSelf') || '[]');
+      if (!assignedToSelf.includes(id)) {
+        localStorage.setItem('assignedToSelf', JSON.stringify([...assignedToSelf, id]));
+      }
+    } 
+    else if (assignTab === "team") {
+      if (selectedTeamMembers.length === 0) {
+        toast({
+          title: "No team members selected",
+          description: "Please select at least one team member",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const selectedNames = selectedTeamMembers.map(id => 
+        teamMembers.find(member => member.id === id)?.name
+      ).join(', ');
+
+      toast({
+        title: "Course Assigned",
+        description: `"${title}" has been assigned to ${selectedNames}`
+      });
+      
+      // Save to local storage
+      const assignedToTeam = JSON.parse(localStorage.getItem('assignedToTeam') || '{}');
+      selectedTeamMembers.forEach(memberId => {
+        const memberAssignments = assignedToTeam[memberId] || [];
+        if (!memberAssignments.includes(id)) {
+          assignedToTeam[memberId] = [...memberAssignments, id];
+        }
+      });
+      localStorage.setItem('assignedToTeam', JSON.stringify(assignedToTeam));
+    }
+    else if (assignTab === "mentee") {
+      if (selectedMentees.length === 0) {
+        toast({
+          title: "No mentees selected",
+          description: "Please select at least one mentee",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const selectedNames = selectedMentees.map(id => 
+        mentees.find(mentee => mentee.id === id)?.name
+      ).join(', ');
+
+      toast({
+        title: "Course Assigned",
+        description: `"${title}" has been assigned to ${selectedNames}`
+      });
+      
+      // Save to local storage
+      const assignedToMentees = JSON.parse(localStorage.getItem('assignedToMentees') || '{}');
+      selectedMentees.forEach(menteeId => {
+        const menteeAssignments = assignedToMentees[menteeId] || [];
+        if (!menteeAssignments.includes(id)) {
+          assignedToMentees[menteeId] = [...menteeAssignments, id];
+        }
+      });
+      localStorage.setItem('assignedToMentees', JSON.stringify(assignedToMentees));
+    }
+    else if (assignTab === "goals") {
+      toast({
+        title: "Course Assigned",
+        description: `"${title}" has been added to your learning goals`
+      });
+      
+      // Save to local storage
+      const assignedToGoals = JSON.parse(localStorage.getItem('assignedToGoals') || '[]');
+      if (!assignedToGoals.includes(id)) {
+        localStorage.setItem('assignedToGoals', JSON.stringify([...assignedToGoals, id]));
+      }
+    }
+    else if (assignTab === "teamGoals") {
+      if (selectedTeamForGoals.length === 0) {
+        toast({
+          title: "No team members selected",
+          description: "Please select at least one team member for goals",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const selectedNames = selectedTeamForGoals.map(id => 
+        teamMembers.find(member => member.id === id)?.name
+      ).join(', ');
+
+      toast({
+        title: "Course Assigned",
+        description: `"${title}" has been added to learning goals for ${selectedNames}`
+      });
+      
+      // Save to local storage
+      const assignedToTeamGoals = JSON.parse(localStorage.getItem('assignedToTeamGoals') || '{}');
+      selectedTeamForGoals.forEach(memberId => {
+        const memberGoals = assignedToTeamGoals[memberId] || [];
+        if (!memberGoals.includes(id)) {
+          assignedToTeamGoals[memberId] = [...memberGoals, id];
+        }
+      });
+      localStorage.setItem('assignedToTeamGoals', JSON.stringify(assignedToTeamGoals));
+    }
     
     // Reset and close dialog
-    setSelectedUsers([]);
+    setSelectedTeamMembers([]);
+    setSelectedMentees([]);
+    setSelectedTeamForGoals([]);
     setSearchQuery('');
+    setAssignTab("self");
     setShowAssignDialog(false);
   };
 
@@ -304,80 +416,6 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                 rows={3}
               />
             </div>
-            
-            {/* Or separator */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t"></span>
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-background px-2 text-xs text-muted-foreground">Or share via</span>
-              </div>
-            </div>
-            
-            {/* Social media options */}
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600"
-                onClick={() => handleShareVia('Facebook')}
-              >
-                <Facebook className="h-4 w-4" />
-                <span className="sr-only">Share on Facebook</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-sky-100 hover:bg-sky-200 text-sky-600"
-                onClick={() => handleShareVia('Twitter')}
-              >
-                <Twitter className="h-4 w-4" />
-                <span className="sr-only">Share on Twitter</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700"
-                onClick={() => handleShareVia('LinkedIn')}
-              >
-                <Linkedin className="h-4 w-4" />
-                <span className="sr-only">Share on LinkedIn</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-red-100 hover:bg-red-200 text-red-600"
-                onClick={() => handleShareVia('Email')}
-              >
-                <Mail className="h-4 w-4" />
-                <span className="sr-only">Share via Email</span>
-              </Button>
-            </div>
-            
-            {/* Copy link section */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Or copy the link</p>
-              <div className="flex space-x-2">
-                <Input 
-                  value={`https://example.com/course/${id}`} 
-                  readOnly
-                  className="flex-1"
-                />
-                <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="px-3"
-                  onClick={handleCopyLink}
-                >
-                  {linkCopied ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Link2 className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
           </div>
           
           <DialogFooter className="flex justify-between items-center">
@@ -416,63 +454,202 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
           <DialogHeader>
             <DialogTitle>Assign Course</DialogTitle>
             <DialogDescription>
-              Assign "{title}" to team members
+              Assign "{title}" to yourself or others
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Search team members</p>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search by name or role..." 
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
+          <Tabs value={assignTab} onValueChange={setAssignTab} className="mt-4">
+            <TabsList className="grid grid-cols-5">
+              <TabsTrigger value="self" className="text-xs">Self</TabsTrigger>
+              <TabsTrigger value="team" className="text-xs">Team</TabsTrigger>
+              <TabsTrigger value="mentee" className="text-xs">Mentee</TabsTrigger>
+              <TabsTrigger value="goals" className="text-xs">My Goals</TabsTrigger>
+              <TabsTrigger value="teamGoals" className="text-xs">Team Goals</TabsTrigger>
+            </TabsList>
             
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium">Team members</p>
-                <span className="text-xs text-muted-foreground">
-                  {selectedUsers.length} selected
-                </span>
+            {/* Self tab */}
+            <TabsContent value="self" className="space-y-4 mt-4">
+              <div className="flex items-center p-3 border rounded-md">
+                <User className="h-5 w-5 text-primary mr-3" />
+                <div>
+                  <p className="font-medium">Assign to yourself</p>
+                  <p className="text-sm text-muted-foreground">This course will appear in your assigned courses</p>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Team tab */}
+            <TabsContent value="team" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Search team members</p>
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search by name or role..." 
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
               </div>
               
-              <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
-                {filteredMembers.length > 0 ? (
-                  filteredMembers.map(member => (
-                    <div key={member.id} className="flex items-center p-3 hover:bg-muted">
-                      <Checkbox 
-                        id={`member-${member.id}`}
-                        checked={selectedUsers.includes(member.id)}
-                        onCheckedChange={() => handleSelectUser(member.id)}
-                        className="mr-3"
-                      />
-                      <div className="flex items-center flex-1">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                          <User className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.role}</p>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium">Team members</p>
+                  <span className="text-xs text-muted-foreground">
+                    {selectedTeamMembers.length} selected
+                  </span>
+                </div>
+                
+                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
+                  {filteredTeamMembers.length > 0 ? (
+                    filteredTeamMembers.map(member => (
+                      <div key={member.id} className="flex items-center p-3 hover:bg-muted">
+                        <Checkbox 
+                          id={`team-${member.id}`}
+                          checked={selectedTeamMembers.includes(member.id)}
+                          onCheckedChange={() => handleSelectTeamMember(member.id)}
+                          className="mr-3"
+                        />
+                        <div className="flex items-center flex-1">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.role}</p>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center p-4 text-muted-foreground">
+                      No team members found
                     </div>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center p-4 text-muted-foreground">
-                    No team members found
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+
+            {/* Mentee tab */}
+            <TabsContent value="mentee" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Search mentees</p>
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search by name or role..." 
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium">Mentees</p>
+                  <span className="text-xs text-muted-foreground">
+                    {selectedMentees.length} selected
+                  </span>
+                </div>
+                
+                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
+                  {filteredMentees.length > 0 ? (
+                    filteredMentees.map(mentee => (
+                      <div key={mentee.id} className="flex items-center p-3 hover:bg-muted">
+                        <Checkbox 
+                          id={`mentee-${mentee.id}`}
+                          checked={selectedMentees.includes(mentee.id)}
+                          onCheckedChange={() => handleSelectMentee(mentee.id)}
+                          className="mr-3"
+                        />
+                        <div className="flex items-center flex-1">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{mentee.name}</p>
+                            <p className="text-xs text-muted-foreground">{mentee.role}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center p-4 text-muted-foreground">
+                      No mentees found
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* My Goals tab */}
+            <TabsContent value="goals" className="space-y-4 mt-4">
+              <div className="flex items-center p-3 border rounded-md">
+                <Goal className="h-5 w-5 text-primary mr-3" />
+                <div>
+                  <p className="font-medium">Add to your learning goals</p>
+                  <p className="text-sm text-muted-foreground">This course will appear in your learning goals</p>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Team Goals tab */}
+            <TabsContent value="teamGoals" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Search team members</p>
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search by name or role..." 
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium">Team members for goals</p>
+                  <span className="text-xs text-muted-foreground">
+                    {selectedTeamForGoals.length} selected
+                  </span>
+                </div>
+                
+                <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
+                  {filteredTeamMembers.length > 0 ? (
+                    filteredTeamMembers.map(member => (
+                      <div key={member.id} className="flex items-center p-3 hover:bg-muted">
+                        <Checkbox 
+                          id={`team-goals-${member.id}`}
+                          checked={selectedTeamForGoals.includes(member.id)}
+                          onCheckedChange={() => handleSelectTeamForGoals(member.id)}
+                          className="mr-3"
+                        />
+                        <div className="flex items-center flex-1">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.role}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center p-4 text-muted-foreground">
+                      No team members found
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
           
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button
               variant="outline"
               onClick={() => setShowAssignDialog(false)}
@@ -483,7 +660,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
               onClick={handleAssignCourse}
               className="gap-2"
             >
-              <Users className="h-4 w-4" />
+              <UserPlus className="h-4 w-4" />
               Assign Course
             </Button>
           </DialogFooter>

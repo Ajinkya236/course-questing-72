@@ -4,11 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { X, ChevronDown, Plus, Search, AlertCircle } from 'lucide-react';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { X, Plus, Search, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface FollowSkillsProps {
@@ -26,7 +28,7 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
     "JavaScript", "React", "TypeScript", "Node.js", "Design"
   ]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [open, setOpen] = useState(false);
+  const [showSkillsDialog, setShowSkillsDialog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -74,12 +76,12 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
     setSelectedSkills(selectedSkills.filter(s => s !== skill));
   };
   
-  // Focus input when popover opens
+  // Focus input when dialog opens
   useEffect(() => {
-    if (open && inputRef.current) {
+    if (showSkillsDialog && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [open]);
+  }, [showSkillsDialog]);
 
   return (
     <div className={`space-y-3 ${className}`}>
@@ -104,65 +106,73 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
           </Badge>
         ))}
         
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1">
-              View All Skills
-              <ChevronDown className="h-3 w-3 opacity-70" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-3" align="start">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <h4 className="font-medium text-sm">Add Skills</h4>
-                <span className="text-xs text-muted-foreground">
-                  {selectedSkills.length}/{MAX_SKILLS} skills selected
-                </span>
+        <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowSkillsDialog(true)}>
+          View All Skills
+        </Button>
+      </div>
+      
+      {/* Skills Management Dialog */}
+      <Dialog open={showSkillsDialog} onOpenChange={setShowSkillsDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Manage Your Skills</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 mt-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Follow skills to personalize your learning</span>
+              <span className="text-xs text-muted-foreground">
+                {selectedSkills.length}/{MAX_SKILLS} skills selected
+              </span>
+            </div>
+            
+            {selectedSkills.length >= MAX_SKILLS && (
+              <div className="flex items-center gap-2 p-2 bg-yellow-50 text-yellow-800 rounded text-sm">
+                <AlertCircle className="h-4 w-4" />
+                <span>Maximum {MAX_SKILLS} skills limit reached</span>
               </div>
-              
-              {selectedSkills.length >= MAX_SKILLS && (
-                <div className="flex items-center gap-2 p-2 bg-yellow-50 text-yellow-800 rounded text-sm">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>Maximum {MAX_SKILLS} skills limit reached</span>
-                </div>
-              )}
-              
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  ref={inputRef}
-                  placeholder="Search skills..."
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+            )}
+            
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                ref={inputRef}
+                placeholder="Search skills..."
+                className="pl-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
+            {/* Search results */}
+            {searchQuery && filteredSkills.length > 0 && (
+              <div className="mt-2 space-y-1">
+                <p className="text-sm font-medium">Search Results</p>
+                {filteredSkills.map(skill => (
+                  <Button
+                    key={skill}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-2 text-left"
+                    onClick={() => handleAddSkill(skill)}
+                    disabled={selectedSkills.length >= MAX_SKILLS}
+                  >
+                    <Plus className="h-3 w-3" />
+                    {skill}
+                  </Button>
+                ))}
               </div>
-              
-              {searchQuery && filteredSkills.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  {filteredSkills.map(skill => (
-                    <Button
-                      key={skill}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start gap-2 text-left"
-                      onClick={() => handleAddSkill(skill)}
-                      disabled={selectedSkills.length >= MAX_SKILLS}
-                    >
-                      <Plus className="h-3 w-3" />
-                      {skill}
-                    </Button>
-                  ))}
-                </div>
-              )}
-              
-              {searchQuery && filteredSkills.length === 0 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  No skills found matching "{searchQuery}"
-                </p>
-              )}
-              
-              {!searchQuery && (
+            )}
+            
+            {searchQuery && filteredSkills.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                No skills found matching "{searchQuery}"
+              </p>
+            )}
+            
+            {!searchQuery && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Popular Skills</p>
                 <div className="grid grid-cols-2 gap-1 mt-2">
                   {allSkills
                     .filter(skill => !selectedSkills.includes(skill))
@@ -181,33 +191,38 @@ const FollowSkills: React.FC<FollowSkillsProps> = ({
                       </Button>
                     ))}
                 </div>
-              )}
-              
-              {selectedSkills.length > 0 && (
-                <div className="mt-3 pt-3 border-t">
-                  <h4 className="font-medium text-sm mb-2">Your Selected Skills</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedSkills.map(skill => (
-                      <Badge key={skill} variant="secondary" className="flex items-center gap-1 pl-2 pr-1 py-1">
-                        <span>{skill}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-4 w-4 p-0 ml-1 hover:bg-muted rounded-full"
-                          onClick={() => handleRemoveSkill(skill)}
-                        >
-                          <X className="h-3 w-3" />
-                          <span className="sr-only">Remove {skill}</span>
-                        </Button>
-                      </Badge>
-                    ))}
-                  </div>
+              </div>
+            )}
+            
+            {/* Selected skills */}
+            {selectedSkills.length > 0 && (
+              <div className="mt-3 pt-3 border-t">
+                <h4 className="font-medium text-sm mb-2">Your Selected Skills</h4>
+                <div className="flex flex-wrap gap-1">
+                  {selectedSkills.map(skill => (
+                    <Badge key={skill} variant="secondary" className="flex items-center gap-1 pl-2 pr-1 py-1">
+                      <span>{skill}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-4 w-4 p-0 ml-1 hover:bg-muted rounded-full"
+                        onClick={() => handleRemoveSkill(skill)}
+                      >
+                        <X className="h-3 w-3" />
+                        <span className="sr-only">Remove {skill}</span>
+                      </Button>
+                    </Badge>
+                  ))}
                 </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button onClick={() => setShowSkillsDialog(false)}>Done</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

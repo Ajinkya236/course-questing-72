@@ -52,6 +52,15 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
+  // Effect to check saved courses in localStorage during component initialization
+  useEffect(() => {
+    const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
+    const isSaved = savedCourses.some((course: any) => course.id === id);
+    if (isSaved !== currentBookmarked) {
+      setCurrentBookmarked(isSaved);
+    }
+  }, [id, currentBookmarked]);
+
   // Update local storage when bookmark status changes
   useEffect(() => {
     const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
