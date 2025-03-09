@@ -20,7 +20,7 @@ const enhancedCourses = mockCourses.map(course => ({
   // Add default values for missing properties
   lastAccessed: new Date().toISOString(),
   progress: course.status === 'completed' ? 100 : course.status === 'in-progress' ? Math.floor(Math.random() * 90) + 10 : 0,
-  videoUrl: course.videoUrl || 'https://example.com/sample-video.mp4'
+  videoUrl: 'https://example.com/sample-video.mp4' // Default value without checking for existing videoUrl
 }));
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {

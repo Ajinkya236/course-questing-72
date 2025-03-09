@@ -123,7 +123,9 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     instructor: course.instructor || {
       name: 'Instructor',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-    }
+    },
+    // Ensure we always have a videoUrl for preview
+    videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
   })));
 
   return (
@@ -192,7 +194,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         />
       )}
 
-      {/* Use the Carousel component with circular navigation */}
+      {/* Use the Carousel component with circular navigation and partial visibility for the rightmost card */}
       <Carousel
         opts={{
           align: "start",
@@ -203,7 +205,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       >
         <CarouselContent className="-ml-2 md:-ml-4">
           {normalizedCourses.map((course) => (
-            <CarouselItem key={course.id} className={isMobile ? "pl-2 basis-full" : "pl-4 basis-full md:basis-1/2 lg:basis-1/4 xl:basis-1/5"}>
+            <CarouselItem 
+              key={course.id} 
+              className={
+                isMobile 
+                  ? "pl-2 basis-full" 
+                  : "pl-4 basis-full md:basis-1/2 lg:basis-[28%] xl:basis-[22%]"
+              }
+            >
               <Card
                 className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
                 onClick={() => handleCardClick(course.id)}

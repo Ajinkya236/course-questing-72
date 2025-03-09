@@ -14,66 +14,43 @@ import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
+// Ensure each course has a unique ID and required properties for display
+const prepareCourses = (courses, startIdx = 0, count = 12) => {
+  return courses
+    .slice(startIdx, startIdx + count)
+    .map((course, idx) => ({
+      ...course,
+      id: course.id || `course-${startIdx + idx}`,
+      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      progress: course.progress || (course.status === 'in-progress' ? Math.floor(Math.random() * 90) + 10 : 0)
+    }));
+};
+
 // Filter courses for different categories
-const continueLearningCourses = mockCourses
-  .filter(course => course.status === 'in-progress')
-  .slice(0, 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' // Sample video
-  }));
+const continueLearningCourses = prepareCourses(
+  mockCourses.filter(course => course.status === 'in-progress')
+);
 
-const assignedCourses = mockCourses
-  .filter(course => course.status === 'assigned')
-  .slice(0, 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
-  }));
+const assignedCourses = prepareCourses(
+  mockCourses.filter(course => course.status === 'assigned')
+);
 
-const chosenForYou = mockCourses
-  .filter((_, idx) => idx < 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' // Sample video
-  }));
+const chosenForYou = prepareCourses(mockCourses, 0, 12);
 
-const basedOnInterest = mockCourses
-  .filter((_, idx) => idx >= 12 && idx < 24)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
-  }));
+const basedOnInterest = prepareCourses(mockCourses, 12, 12);
 
-const forYourRoleCourses = mockCourses
-  .filter((_, idx) => idx >= 24 && idx < 36)
-  .map((course, idx) => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
-  }));
+const forYourRoleCourses = prepareCourses(mockCourses, 24, 12);
 
-const trendingCourses = [...mockCourses]
-  .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-  .slice(0, 12)
-  .map((course, idx) => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${idx + 1}. ${course.title}` // Add ranking to title
-  }));
+const trendingCourses = prepareCourses(
+  [...mockCourses].sort((a, b) => (b.rating || 0) - (a.rating || 0)),
+  0, 12
+).map((course, idx) => ({
+  ...course,
+  title: `${idx + 1}. ${course.title}` // Add ranking to title
+}));
 
-const popularWithSimilarUsers = mockCourses
-  .filter((_, idx) => idx >= 36 && idx < 48)
-  .map((course, idx) => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
-  }));
+const popularWithSimilarUsers = prepareCourses(mockCourses, 36, 12);
 
 // Mock banner data for BannerCarousel
 const mockBanners = [
