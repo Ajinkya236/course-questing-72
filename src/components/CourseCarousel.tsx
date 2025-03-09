@@ -127,7 +127,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   })));
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="space-y-4">
       <div 
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
         onMouseEnter={() => setIsHovered(true)}
@@ -201,11 +201,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full"
         id={`${title.replace(/\s+/g, '-')}-carousel`}
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent>
           {normalizedCourses.map((course) => (
-            <CarouselItem key={course.id} className={isMobile ? "pl-2 basis-full" : "pl-4 basis-full md:basis-1/2 lg:basis-1/4 xl:basis-1/5"}>
+            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/5"}>
               <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
+                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => handleCardClick(course.id)}
               >
                 <div className="aspect-video relative overflow-hidden bg-muted">

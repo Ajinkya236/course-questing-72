@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,18 +9,9 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 const SkillsSection = () => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
 
   // Mock data for skills progress
   const roleSkills = [
@@ -37,27 +28,19 @@ const SkillsSection = () => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium">Skills you follow</h3>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  View All Skills <MoveRight className="h-4 w-4" />
+                  Edit Skills <MoveRight className="h-4 w-4" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Manage Your Skills</DialogTitle>
-                  <DialogDescription>
-                    Add or remove skills to personalize your learning experience
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="p-4">
-                  <FollowSkills 
-                    title="Manage Skills" 
-                    subtitle="Add or remove skills to personalize your learning"
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
+              </PopoverTrigger>
+              <PopoverContent className="w-96 p-6" align="end">
+                <FollowSkills 
+                  title="Manage Skills" 
+                  subtitle="Add or remove skills to personalize your learning"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div className="flex flex-wrap gap-2">
