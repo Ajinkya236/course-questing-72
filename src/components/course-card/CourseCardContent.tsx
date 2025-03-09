@@ -43,7 +43,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
       </div>
 
       <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex gap-1 mb-1">
+        <div className="flex gap-1">
           <Button 
             variant="default" 
             className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
@@ -69,14 +69,16 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           >
             <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
           </Button>
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={handleAssignClick}
+            aria-label="Assign"
+            className="h-8 w-8"
+          >
+            <UserPlus className="h-3 w-3" />
+          </Button>
         </div>
-        <Button 
-          variant="outline" 
-          className="w-full h-8 text-xs"
-          onClick={handleAssignClick}
-        >
-          <UserPlus className="h-3 w-3 mr-1" /> Assign
-        </Button>
       </div>
     </div>
   );

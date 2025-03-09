@@ -12,14 +12,21 @@ const DomainCatalog = () => {
   
   // Mock data for domains
   const domains = [
-    'Technology', 'Leadership', 'Business', 'Data Science', 
-    'Marketing', 'Design', 'Product', 'Finance', 'HR', 'Operations'
+    { id: '1', name: 'Technology', courseCount: 42 },
+    { id: '2', name: 'Leadership', courseCount: 37 },
+    { id: '3', name: 'Business', courseCount: 56 }, 
+    { id: '4', name: 'Data Science', courseCount: 29 },
+    { id: '5', name: 'Marketing', courseCount: 24 }, 
+    { id: '6', name: 'Design', courseCount: 31 },
+    { id: '7', name: 'Product', courseCount: 18 }, 
+    { id: '8', name: 'Finance', courseCount: 22 },
+    { id: '9', name: 'HR', courseCount: 33 }, 
+    { id: '10', name: 'Operations', courseCount: 27 }
   ];
   
-  const handleDomainClick = (domain: string) => {
-    // Convert domain name to a simple ID format
-    const domainId = domain.toLowerCase().replace(/\s/g, '-');
-    navigate(`/domain/${domainId}`);
+  const handleDomainClick = (domainId: string, domainName: string) => {
+    // Navigate to the domain page with both ID and name
+    navigate(`/domain/${domainId}`, { state: { domainName } });
   };
 
   return (
@@ -41,14 +48,14 @@ const DomainCatalog = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {domains.map((domain) => (
               <Button
-                key={domain}
+                key={domain.id}
                 variant="ghost"
                 className="justify-between hover:bg-blue-100/50"
-                onClick={() => handleDomainClick(domain)}
+                onClick={() => handleDomainClick(domain.id, domain.name)}
               >
                 <span className="flex items-center">
                   <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
-                  {domain}
+                  {domain.name}
                 </span>
                 <ChevronRight className="h-4 w-4 text-blue-600" />
               </Button>

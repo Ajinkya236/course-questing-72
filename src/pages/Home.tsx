@@ -51,7 +51,7 @@ const basedOnInterest = mockCourses
 
 const forYourRoleCourses = mockCourses
   .filter((_, idx) => idx >= 24 && idx < 36)
-  .map(course => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
@@ -69,7 +69,7 @@ const trendingCourses = [...mockCourses]
 
 const popularWithSimilarUsers = mockCourses
   .filter((_, idx) => idx >= 36 && idx < 48)
-  .map(course => ({
+  .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
