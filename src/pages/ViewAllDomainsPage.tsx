@@ -1,10 +1,60 @@
 
 import React from 'react';
-import { Container } from '@/components/ui/container';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { domains } from '@/data/mockData';
+
+// Create mock domains data since it doesn't exist in mockData.ts
+const domains = [
+  {
+    id: '1',
+    name: 'Leadership & Management',
+    description: 'Develop essential leadership skills and management techniques',
+    imageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0',
+    courseCount: 24,
+    totalHours: 120
+  },
+  {
+    id: '2',
+    name: 'Technical Skills',
+    description: 'Learn programming, data science, and other technical disciplines',
+    imageUrl: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4',
+    courseCount: 35,
+    totalHours: 180
+  },
+  {
+    id: '3',
+    name: 'Data & Analytics',
+    description: 'Master data analysis, visualization, and business intelligence',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
+    courseCount: 28,
+    totalHours: 145
+  },
+  {
+    id: '4',
+    name: 'Marketing & Digital',
+    description: 'Discover modern marketing strategies and digital tools',
+    imageUrl: 'https://images.unsplash.com/photo-1557838923-2985c318be48',
+    courseCount: 19,
+    totalHours: 95
+  },
+  {
+    id: '5',
+    name: 'Product Management',
+    description: 'Learn to build and manage successful products',
+    imageUrl: 'https://images.unsplash.com/photo-1460794418188-1bb7dba2720d',
+    courseCount: 15,
+    totalHours: 78
+  },
+  {
+    id: '6',
+    name: 'Design & Innovation',
+    description: 'Explore design thinking, UX, and creative problem-solving',
+    imageUrl: 'https://images.unsplash.com/photo-1576267423445-b2e0074d68a4',
+    courseCount: 22,
+    totalHours: 110
+  }
+];
 
 const ViewAllDomainsPage = () => {
   const navigate = useNavigate();
@@ -14,7 +64,7 @@ const ViewAllDomainsPage = () => {
   };
 
   return (
-    <Container>
+    <div className="container mx-auto px-4 py-6">
       <div className="mb-6 flex items-center">
         <Button 
           variant="ghost" 
@@ -51,7 +101,7 @@ const ViewAllDomainsPage = () => {
           </div>
         ))}
       </div>
-    </Container>
+    </div>
   );
 };
 
