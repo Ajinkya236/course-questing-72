@@ -108,8 +108,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     });
     setCurrentBookmarked(newBookmarked);
     
-    // Don't call the event handler directly here as it expects no parameters
-    // Instead trigger the course event
+    // Trigger the course event
     triggerCourseEvent('bookmark', id, title);
   }, [
     id, title, description, imageUrl, category, duration, rating, 

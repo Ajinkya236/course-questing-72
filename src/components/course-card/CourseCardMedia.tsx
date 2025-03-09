@@ -16,7 +16,7 @@ interface CourseCardMediaProps {
   isHovered: boolean;
   isMuted: boolean;
   videoRef: React.RefObject<HTMLVideoElement>;
-  toggleMute: () => void;
+  toggleMute: (e: React.MouseEvent) => void;
   onImageError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
 }
 
@@ -47,7 +47,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
     }
   };
 
-  // Convert unsplash photo links to actual unsplash URLs if needed
+  // Process image URL to ensure proper loading
   const processImageUrl = (url: string) => {
     if (!url) return "/placeholder.svg";
     
@@ -56,6 +56,16 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
     }
     return url;
   };
+
+  // Load video on hover if available
+  React.useEffect(() => {
+    if (isHovered && previewUrl && videoRef.current) {
+      videoRef.current.src = previewUrl;
+      videoRef.current.play().catch(err => {
+        console.log("Video preview failed to play:", err);
+      });
+    }
+  }, [isHovered, previewUrl, videoRef]);
 
   return (
     <div className="relative overflow-hidden bg-muted rounded-t-md">
@@ -73,13 +83,10 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-8 w-8"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleMute();
-              }}
+              className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-7 w-7"
+              onClick={toggleMute}
             >
-              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
             </Button>
           </>
         ) : (

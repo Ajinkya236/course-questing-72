@@ -12,6 +12,8 @@ import {
   Carousel, 
   CarouselContent, 
   CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
   CarouselFilters
 } from '@/components/ui/carousel';
 
@@ -78,6 +80,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     const courseToToggle = normalizedCourses.find(course => course.id === courseId);
     if (courseToToggle) {
       toggleBookmark(courseToToggle);
+      // Trigger the bookmark event
+      triggerCourseEvent('bookmark', courseId, title);
     }
   }, [normalizedCourses, toggleBookmark]);
 
@@ -109,8 +113,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
+  // Calculate how many cards to show at once based on viewport
+  const itemsToShow = isMobile ? 1 : 5;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       <CourseCarouselHeader 
         title={title}
         onViewAllClick={onViewAllClick}
@@ -119,53 +126,65 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       />
       
       {showSkillFilters && uniqueFilterOptions.length > 0 && (
-        <CarouselFilters
-          filters={uniqueFilterOptions}
-          selectedFilter={selectedFilter}
-          onFilterSelect={handleFilterSelect}
-          className="justify-start"
-        />
+        <div className="relative">
+          <CarouselFilters
+            filters={uniqueFilterOptions}
+            selectedFilter={selectedFilter}
+            onFilterSelect={handleFilterSelect}
+            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
+          />
+        </div>
       )}
       
       {showSkillFilters && availableSubFilters.length > 0 && (
-        <CarouselFilters
-          filters={availableSubFilters}
-          selectedFilter={selectedSubFilter}
-          onFilterSelect={handleSubFilterClick}
-          className="justify-start"
-        />
+        <div className="relative">
+          <CarouselFilters
+            filters={availableSubFilters}
+            selectedFilter={selectedSubFilter}
+            onFilterSelect={handleSubFilterClick}
+            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
+          />
+        </div>
       )}
 
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="w-full overflow-visible"
-        id={carouselId}
-      >
-        <CarouselContent className="-ml-4">
-          {normalizedCourses.map((course, index) => (
-            <CarouselItem 
-              key={course.id} 
-              className={isMobile ? "basis-full pl-4" : `basis-1/5 pl-4 ${index === normalizedCourses.length - 1 ? "pr-0" : ""}`}
-              onMouseEnter={() => handleMouseEnter(course.id)}
-              onMouseLeave={handleMouseLeave}
-              style={index === 4 ? { marginRight: '-70%' } : {}} // Show only ~30% of the 5th card
-            >
-              <CourseCarouselCard
-                course={course}
-                hoveredCourseId={hoveredCourseId}
-                handleCardClick={handleCardClick}
-                handleShareClick={handleShareClick}
-                handleBookmarkToggle={handleBookmarkToggle}
-                handleAssignClick={handleAssignClick}
-                showTrainingCategory={showTrainingCategory}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+      <div className="relative group/carousel">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full relative"
+          id={carouselId}
+        >
+          <CarouselContent className="-ml-4">
+            {normalizedCourses.map((course, index) => (
+              <CarouselItem 
+                key={course.id} 
+                className={isMobile ? "basis-full pl-4" : `basis-1/${itemsToShow} pl-4`}
+                onMouseEnter={() => handleMouseEnter(course.id)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <CourseCarouselCard
+                  course={course}
+                  hoveredCourseId={hoveredCourseId}
+                  handleCardClick={handleCardClick}
+                  handleShareClick={handleShareClick}
+                  handleBookmarkToggle={handleBookmarkToggle}
+                  handleAssignClick={handleAssignClick}
+                  showTrainingCategory={showTrainingCategory}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          
+          {!isMobile && (
+            <>
+              <CarouselPrevious className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-3" />
+              <CarouselNext className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-3" />
+            </>
+          )}
+        </Carousel>
+      </div>
     </div>
   );
 };
