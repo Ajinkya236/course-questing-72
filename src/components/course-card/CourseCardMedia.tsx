@@ -80,7 +80,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
     <div className="relative overflow-hidden bg-muted rounded-t-md h-[170px]">
       {/* Loading indicator */}
       {isImageLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+        <div className="absolute inset-0 flex items-center justify-center bg-muted z-10">
           <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
         </div>
       )}
@@ -99,7 +99,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-7 w-7"
+              className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-7 w-7 z-20"
               onClick={toggleMute}
             >
               {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
@@ -119,7 +119,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
       </AspectRatio>
 
       {/* Category badge */}
-      <div className="absolute bottom-2 left-2">
+      <div className="absolute bottom-2 left-2 z-20">
         <Badge variant="outline" className="bg-black/60 text-white border-none">
           {category}
         </Badge>
@@ -127,7 +127,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
 
       {/* Display Training Category if provided */}
       {trainingCategory && (
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-2 left-2 z-20">
           <Badge variant="outline" className="bg-primary/80 text-white border-none">
             {trainingCategory}
           </Badge>
@@ -135,7 +135,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
       )}
 
       {/* Display Hot/New badges */}
-      <div className="absolute top-2 right-2 flex gap-1">
+      <div className="absolute top-2 right-2 flex gap-1 z-20">
         {isHot && (
           <Badge className="bg-red-500 text-white">Hot</Badge>
         )}

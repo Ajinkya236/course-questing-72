@@ -64,6 +64,7 @@ const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
             size="icon"
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/90 shadow-sm opacity-0 group-hover/filters:opacity-100 transition-opacity -left-3"
             onClick={scrollLeft}
+            aria-label="Scroll left"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -99,6 +100,7 @@ const CarouselFilters = React.forwardRef<HTMLDivElement, CarouselFiltersProps>(
             size="icon"
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 rounded-full bg-background/90 shadow-sm opacity-0 group-hover/filters:opacity-100 transition-opacity -right-3"
             onClick={scrollRight}
+            aria-label="Scroll right"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

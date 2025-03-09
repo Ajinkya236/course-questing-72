@@ -153,7 +153,7 @@ const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "min-w-0 shrink-0 grow-0",
+        "min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 card-partial-visible",
         orientation === "horizontal" ? "pl-4" : "pt-4",
         className
       )}
@@ -168,7 +168,7 @@ const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { orientation, scrollPrev } = useCarousel()
+  const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
     <Button
@@ -183,6 +183,7 @@ const CarouselPrevious = React.forwardRef<
         className
       )}
       onClick={scrollPrev}
+      disabled={!canScrollPrev}
       data-embla-prev
       {...props}
     >
@@ -198,7 +199,7 @@ const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { orientation, scrollNext } = useCarousel()
+  const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (
     <Button
@@ -213,6 +214,7 @@ const CarouselNext = React.forwardRef<
         className
       )}
       onClick={scrollNext}
+      disabled={!canScrollNext}
       data-embla-next
       {...props}
     >
