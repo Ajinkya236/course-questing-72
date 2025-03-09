@@ -151,11 +151,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full overflow-visible"
         id={carouselId}
       >
-        <CarouselContent className="-ml-3">
+        <CarouselContent className="-ml-4 pr-4">
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-3" : "basis-1/4 pl-3 -mr-16"} /* Set negative margin to show part of next card */
+              className={isMobile ? "basis-full pl-4" : "basis-1/4 pl-4 mr-4"} /* Added mr-4 for spacing between cards */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >

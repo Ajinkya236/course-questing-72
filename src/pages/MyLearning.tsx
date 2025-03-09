@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
@@ -14,6 +14,7 @@ interface MyLearningProps {
 }
 
 const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab') || 'courses';
   const [activeTab, setActiveTab] = useState(tabFromUrl);
@@ -25,6 +26,13 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       setActiveTab(tabFromUrl);
     }
   }, [tabFromUrl]);
+
+  // Default to 'in-progress' status for courses if no status is specified
+  useEffect(() => {
+    if (activeTab === 'courses' && !searchParams.get('status')) {
+      navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
+    }
+  }, [activeTab, searchParams, navigate]);
   
   // Use the teamMemberId from props or from URL params
   const memberId = teamMemberId || params.memberId;
@@ -53,7 +61,14 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         <Tabs 
           defaultValue="courses" 
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={(value) => {
+            setActiveTab(value);
+            if (value === 'courses') {
+              navigate('/my-learning?tab=courses&status=in-progress');
+            } else {
+              navigate(`/my-learning?tab=${value}`);
+            }
+          }}
           className="space-y-4"
         >
           <TabsList>

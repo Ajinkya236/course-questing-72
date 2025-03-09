@@ -22,7 +22,7 @@ interface BannerCarouselProps {
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ 
   banners, 
   className = '',
-  smallSize = false
+  smallSize = true // Changed default to true to make banners smaller
 }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isHovered, setIsHovered] = useState(false);

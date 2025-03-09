@@ -134,7 +134,7 @@ const DomainCoursesPage: React.FC = () => {
         // Filter mock courses for this domain (in real app, would fetch from API)
         setCourses(mockCourses.slice(0, foundDomain.courseCount % 20 + 10));
       } else {
-        navigate('/view-all/domains');
+        navigate('/');
       }
     }
   }, [domainId, navigate]);
@@ -164,10 +164,10 @@ const DomainCoursesPage: React.FC = () => {
           variant="outline" 
           size="sm" 
           className="mb-6" 
-          onClick={() => navigate('/view-all/domains')}
+          onClick={() => navigate('/')}  {/* Changed to navigate to home page */}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Domains
+          Back to Home
         </Button>
 
         <div className="flex items-center gap-4 mb-8">

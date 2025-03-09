@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,9 +9,16 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const SkillsSection = () => {
   const navigate = useNavigate();
+  const [showSkillsDialog, setShowSkillsDialog] = useState(false);
 
   // Mock data for skills progress
   const roleSkills = [
@@ -28,16 +35,14 @@ const SkillsSection = () => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium">Skills you follow</h3>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  View All Skills <MoveRight className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-96 p-6" align="end">
-                <FollowSkills />
-              </PopoverContent>
-            </Popover>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={() => setShowSkillsDialog(true)}
+            >
+              View All Skills <MoveRight className="h-4 w-4" />
+            </Button>
           </div>
           
           <div className="flex flex-wrap gap-2">
@@ -105,6 +110,19 @@ const SkillsSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Skills Management Dialog */}
+      <Dialog open={showSkillsDialog} onOpenChange={setShowSkillsDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Manage Your Skills</DialogTitle>
+          </DialogHeader>
+          <FollowSkills 
+            title="Follow Skills"
+            subtitle="Select skills to personalize your learning experience"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
