@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Share2, Bookmark, UserPlus } from 'lucide-react';
 import { Course } from '@/types/course';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface CourseCarouselCardProps {
   course: Course;
@@ -50,21 +51,33 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
+    target.onerror = null;
+  };
+
+  // Process image URL to ensure proper loading
+  const processImageUrl = (url: string) => {
+    if (url && url.includes("unsplash.com/photo-") && !url.includes("?")) {
+      return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
+    }
+    return url || "/placeholder.svg";
   };
 
   return (
     <Card
-      className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group mb-2"
+      className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-colors group mb-3"
       onClick={onCardClick}
     >
-      <div className="aspect-video relative overflow-hidden bg-muted">
-        <img
-          src={course.imageUrl || "/placeholder.svg"}
-          alt={course.title}
-          className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
-          loading="lazy" 
-          onError={handleImageError}
-        />
+      <div className="relative overflow-hidden bg-muted">
+        <AspectRatio ratio={16/9}>
+          <img
+            src={processImageUrl(course.imageUrl)}
+            alt={course.title}
+            className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
+            loading="lazy" 
+            onError={handleImageError}
+          />
+        </AspectRatio>
+        
         {course.enrollmentStatus && (
           <div className="absolute top-2 right-2">
             <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">

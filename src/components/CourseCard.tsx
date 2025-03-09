@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, memo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
@@ -133,7 +133,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105 group"
+        className="w-full h-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-105 group max-h-[320px]"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}
