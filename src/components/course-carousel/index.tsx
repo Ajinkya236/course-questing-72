@@ -7,11 +7,12 @@ import { Course } from '@/types/course';
 import { normalizeCourseData } from './CourseCarouselUtils';
 import CourseCarouselHeader from './CourseCarouselHeader';
 import CourseCarouselCard from './CourseCarouselCard';
-import { CarouselFilters } from '@/components/ui/carousel';
+// Import from new location (not needed as the re-export handles this, but just to be explicit)
 import { 
   Carousel, 
   CarouselContent, 
-  CarouselItem
+  CarouselItem,
+  CarouselFilters
 } from '@/components/ui/carousel';
 
 interface CourseCarouselProps {
