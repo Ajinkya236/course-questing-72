@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,31 +9,57 @@ import { BookOpen, Check, Clock, Bookmark, Share } from 'lucide-react';
 import { Course } from '@/types/course';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
+import { useSearchParams } from 'react-router-dom';
 
 interface CoursesTabProps {
   teamMemberId?: string;
 }
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchParams] = useSearchParams();
+  const statusFromUrl = searchParams.get('status');
+  const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'all');
+  
+  // Update active filter when URL params change
+  useEffect(() => {
+    if (statusFromUrl) {
+      setActiveFilter(statusFromUrl);
+    }
+  }, [statusFromUrl]);
   
   // In a real app, we'd filter based on teamMemberId if provided
-  const assignedCourses = mockCourses.filter(course => 
-    course.status === 'assigned'
-  );
+  const assignedCourses = mockCourses
+    .filter(course => course.status === 'assigned')
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
+    }));
   
-  const completedCourses = mockCourses.filter(course => 
-    course.status === 'completed'
-  );
+  const completedCourses = mockCourses
+    .filter(course => course.status === 'completed')
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' // Sample video
+    }));
   
-  const inProgressCourses = mockCourses.filter(course => 
-    course.status === 'in-progress'
-  );
+  const inProgressCourses = mockCourses
+    .filter(course => course.status === 'in-progress')
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
+    }));
   
   // Mock data for saved and shared courses
-  const savedCourses = mockCourses.filter(course => 
-    course.isBookmarked === true
-  );
+  const savedCourses = mockCourses
+    .filter(course => course.isBookmarked === true)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
+    }));
   
   // Using the correct union type for status
   const sharedWithMeCourses: Course[] = [
@@ -48,7 +74,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       isBookmarked: false,
       trainingCategory: "Strategy",
       status: 'assigned', // Now using the correct union type
-      sharedBy: "Alex Thompson (Manager)"
+      sharedBy: "Alex Thompson (Manager)",
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4' // Sample video
     },
     {
       id: "shared-002",
@@ -61,7 +88,8 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       isBookmarked: false,
       trainingCategory: "Technical",
       status: 'assigned', // Now using the correct union type
-      sharedBy: "Ryan Miller (Team Lead)"
+      sharedBy: "Ryan Miller (Team Lead)",
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
     }
   ];
 

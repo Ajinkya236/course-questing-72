@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/CourseCarousel';
-import BadgeCard from '@/components/BadgeCard';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -18,27 +17,63 @@ import DomainCatalog from '@/components/homepage/DomainCatalog';
 // Filter courses for different categories
 const continueLearningCourses = mockCourses
   .filter(course => course.status === 'in-progress')
-  .slice(0, 12);
+  .slice(0, 12)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' // Sample video
+  }));
 
 const assignedCourses = mockCourses
   .filter(course => course.status === 'assigned')
-  .slice(0, 12);
+  .slice(0, 12)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
+  }));
 
 const chosenForYou = mockCourses
-  .filter((_, index) => index < 12);
+  .filter((_, index) => index < 12)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' // Sample video
+  }));
 
 const basedOnInterest = mockCourses
-  .filter((_, index) => index >= 12 && index < 24);
+  .filter((_, index) => index >= 12 && index < 24)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
+  }));
 
 const forYourRoleCourses = mockCourses
-  .filter((_, index) => index >= 24 && index < 36);
+  .filter((_, index) => index >= 24 && index < 36)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
+  }));
 
 const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-  .slice(0, 12);
+  .slice(0, 12)
+  .map((course, index) => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
+    title: `${index + 1}. ${course.title}` // Add ranking to title
+  }));
 
 const popularWithSimilarUsers = mockCourses
-  .filter((_, index) => index >= 36 && index < 48);
+  .filter((_, index) => index >= 36 && index < 48)
+  .map(course => ({
+    ...course,
+    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4' // Sample video
+  }));
 
 // Mock banner data for BannerCarousel
 const mockBanners = [
@@ -146,10 +181,7 @@ const Home = () => {
         {/* Trending Now Carousel */}
         <CourseCarousel 
           title="Trending Now" 
-          courses={trendingCourses.map((course, index) => ({
-            ...course,
-            title: `${index + 1}. ${course.title}` // Add ranking to title
-          }))}
+          courses={trendingCourses}
           viewAllUrl="/view-all/trending"
         />
         
@@ -163,52 +195,34 @@ const Home = () => {
         {/* Domains Catalog Section */}
         <DomainCatalog />
         
-        {/* Latest Achievements */}
-        <div className="mb-10">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold tracking-tight">Latest Achievements</h2>
-            <Button variant="link" onClick={() => navigate('/my-learning?tab=badges')} className="flex items-center gap-1 p-0">
-              View All <MoveRight className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <BadgeCard 
-              id="badge-1"
-              title="Learning Explorer" 
-              description="Completed 5 courses from different categories" 
-              imageUrl="/placeholder.svg"
-              category="Achievement"
-              isUnlocked={true}
-              earnedDate="2023-06-15"
-            />
-            <BadgeCard 
-              id="badge-2"
-              title="Perfect Score!" 
-              description="Got 100% on 'Advanced React Patterns' quiz" 
-              imageUrl="/placeholder.svg"
-              category="Excellence"
-              isUnlocked={true}
-              earnedDate="2023-06-08"
-            />
-            <BadgeCard 
-              id="badge-3"
-              title="Helping Hand" 
-              description="Answered 20 questions in the forum" 
-              imageUrl="/placeholder.svg"
-              category="Mastery"
-              isUnlocked={true}
-              earnedDate="2023-05-30"
-            />
-            <BadgeCard 
-              id="badge-4"
-              title="Learning Streak" 
-              description="Maintained a 30-day learning streak" 
-              imageUrl="/placeholder.svg"
-              category="Consistency"
-              isUnlocked={true}
-              earnedDate="2023-05-15"
-            />
+        {/* About the Platform Section */}
+        <div className="bg-card rounded-lg p-6 border mb-10">
+          <h2 className="text-2xl font-semibold mb-4">About the Platform</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <p className="text-muted-foreground mb-4">
+                Jio Learning is a comprehensive learning management system designed to help employees develop new skills, 
+                enhance existing capabilities, and grow professionally. Our platform offers a wide range of courses from 
+                technical skills to leadership development.
+              </p>
+              <p className="text-muted-foreground mb-4">
+                With personalized recommendations, skill-based learning paths, and interactive content, 
+                you can take control of your professional development journey and track your progress along the way.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-2">Key Features</h3>
+              <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                <li>Personalized course recommendations</li>
+                <li>Role-based learning paths</li>
+                <li>Interactive video content</li>
+                <li>Skill proficiency tracking</li>
+                <li>Mentoring opportunities</li>
+                <li>Achievement badges and certifications</li>
+                <li>Learning community and forums</li>
+                <li>Team learning management</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

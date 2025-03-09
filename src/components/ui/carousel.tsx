@@ -318,7 +318,7 @@ const CarouselFilters = React.forwardRef<
       <div className="overflow-hidden px-10">
         <div 
           ref={filtersRef} 
-          className="flex transition-transform duration-300 justify-center"
+          className="flex transition-transform duration-300 justify-start"
         >
           {visibleFilters.map((filter, index) => (
             <Button

@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
@@ -14,8 +14,17 @@ interface MyLearningProps {
 }
 
 const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
-  const [activeTab, setActiveTab] = useState('courses');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') || 'courses';
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
+  
+  // Update active tab when URL params change
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
   
   // Use the teamMemberId from props or from URL params
   const memberId = teamMemberId || params.memberId;

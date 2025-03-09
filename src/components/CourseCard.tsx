@@ -188,7 +188,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         <CardHeader className="p-4 pb-2">
           <h3 className="font-semibold text-base">{title}</h3>
         </CardHeader>
-        <CardContent className="p-4 pt-2">
+        <CardContent className="p-4 pt-0">
           <p className="text-sm text-muted-foreground mb-2">{description}</p>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
