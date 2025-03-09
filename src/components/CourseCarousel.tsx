@@ -232,19 +232,19 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           align: "start",
           loop: true,
         }}
-        className="w-full"
+        className="w-full overflow-visible"
         id={`${title.replace(/\s+/g, '-')}-carousel`}
       >
-        <CarouselContent>
+        <CarouselContent className="-ml-3">
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full" : "basis-1/4"}
+              className={isMobile ? "basis-full pl-3" : "basis-1/4 pl-3 -mr-16"} /* Set negative margin to show part of next card */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >
               <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group mr-4"
+                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
                 onClick={() => handleCardClick(course.id)}
               >
                 <div className="aspect-video relative overflow-hidden bg-muted">
@@ -339,7 +339,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        {/* Removed navigation buttons from here as they're now at the top */}
       </Carousel>
     </div>
   );
