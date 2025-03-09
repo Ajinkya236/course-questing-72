@@ -164,7 +164,7 @@ const DomainCoursesPage: React.FC = () => {
           variant="outline" 
           size="sm" 
           className="mb-6" 
-          onClick={() => navigate('/')}  {/* Changed to navigate to home page */}
+          onClick={() => navigate('/')}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
