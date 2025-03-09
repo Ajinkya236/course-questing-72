@@ -47,14 +47,20 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           <Button 
             variant="default" 
             className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
-            onClick={handleWatchClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleWatchClick(e);
+            }}
           >
             <Play className="h-3 w-3 mr-1" /> Watch
           </Button>
           <Button 
             variant="outline" 
             size="icon"
-            onClick={handleShareClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShareClick(e);
+            }}
             aria-label="Share"
             className="h-8 w-8"
           >
@@ -63,7 +69,10 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           <Button 
             variant="outline" 
             size="icon"
-            onClick={handleBookmarkToggle}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleBookmarkToggle(e);
+            }}
             aria-label="Bookmark"
             className={`h-8 w-8 ${isBookmarked ? "border-primary text-primary" : ""}`}
           >
@@ -73,7 +82,10 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         <Button 
           variant="outline" 
           className="w-full h-8 text-xs"
-          onClick={handleAssignClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAssignClick(e);
+          }}
         >
           <UserPlus className="h-3 w-3 mr-1" /> Assign
         </Button>

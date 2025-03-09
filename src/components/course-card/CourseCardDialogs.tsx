@@ -13,14 +13,10 @@ import {
   Mail, 
   User, 
   Search,
-  Check,
   X,
   Send,
   PlusCircle,
   UserPlus,
-  Users,
-  Target,
-  ListTodo,
   Goal
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -141,7 +137,8 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     }
   };
 
-  const handleShareCourse = () => {
+  const handleShareCourse = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (emailRecipients.length === 0) {
       toast({
         title: "No Recipients",
@@ -198,7 +195,8 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     });
   };
 
-  const handleAssignCourse = () => {
+  const handleAssignCourse = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // Check which tab is active and handle accordingly
     if (assignTab === "self") {
       toast({
@@ -325,7 +323,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     <>
       {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
             <DialogTitle>Share Course</DialogTitle>
             <DialogDescription>
@@ -357,7 +355,10 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     type="button" 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => handleAddEmailRecipient()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddEmailRecipient();
+                    }}
                     disabled={!currentEmail}
                     className="ml-2"
                   >
@@ -372,7 +373,8 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                       <div 
                         key={employee.email}
                         className="p-2 hover:bg-muted cursor-pointer flex items-center"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleAddEmailRecipient(employee.email);
                         }}
                       >
@@ -394,7 +396,10 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     <div key={recipient.id} className="bg-muted px-2 py-1 rounded-md flex items-center text-sm">
                       <span className="mr-1">{recipient.email}</span>
                       <button 
-                        onClick={() => handleRemoveEmailRecipient(recipient.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveEmailRecipient(recipient.id);
+                        }}
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <X className="h-3 w-3" />
@@ -422,7 +427,10 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
             <Button 
               type="button" 
               variant="outline"
-              onClick={() => setShowShareDialog(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowShareDialog(false);
+              }}
             >
               Cancel
             </Button>
@@ -450,7 +458,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
 
       {/* Assign Dialog */}
       <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
             <DialogTitle>Assign Course</DialogTitle>
             <DialogDescription>
@@ -489,6 +497,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     className="pl-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </div>
@@ -510,6 +519,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                           checked={selectedTeamMembers.includes(member.id)}
                           onCheckedChange={() => handleSelectTeamMember(member.id)}
                           className="mr-3"
+                          onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex items-center flex-1">
                           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
@@ -542,6 +552,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     className="pl-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </div>
@@ -563,6 +574,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                           checked={selectedMentees.includes(mentee.id)}
                           onCheckedChange={() => handleSelectMentee(mentee.id)}
                           className="mr-3"
+                          onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex items-center flex-1">
                           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
@@ -606,6 +618,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                     className="pl-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </div>
@@ -627,6 +640,7 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
                           checked={selectedTeamForGoals.includes(member.id)}
                           onCheckedChange={() => handleSelectTeamForGoals(member.id)}
                           className="mr-3"
+                          onClick={(e) => e.stopPropagation()}
                         />
                         <div className="flex items-center flex-1">
                           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
@@ -652,7 +666,10 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
           <DialogFooter className="mt-6">
             <Button
               variant="outline"
-              onClick={() => setShowAssignDialog(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAssignDialog(false);
+              }}
             >
               Cancel
             </Button>

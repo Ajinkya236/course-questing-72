@@ -103,7 +103,10 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
             <Button 
               variant="outline" 
               size="icon"
-              onClick={(e) => handleShareClick(e, course.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShareClick(e, course.id);
+              }}
               aria-label="Share"
               className="h-8 w-8"
             >
@@ -112,7 +115,10 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
             <Button 
               variant="outline" 
               size="icon"
-              onClick={(e) => handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked);
+              }}
               aria-label="Bookmark"
               className="h-8 w-8"
             >
@@ -122,7 +128,10 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           <Button 
             variant="outline" 
             className="w-full h-8 text-xs"
-            onClick={(e) => handleAssignClick(e, course.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAssignClick(e, course.id);
+            }}
           >
             <UserPlus className="h-3 w-3 mr-1" /> Assign
           </Button>
