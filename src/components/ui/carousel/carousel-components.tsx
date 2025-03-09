@@ -130,7 +130,7 @@ const CarouselContent = React.forwardRef<
         ref={ref}
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-2" : "-mt-2 flex-col", // Reduced spacing for cards
+          orientation === "horizontal" ? "-ml-1" : "-mt-1 flex-col", // Further reduced spacing for cards
           className
         )}
         {...props}
@@ -140,7 +140,7 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
-// CarouselItem component - we'll modify this to allow partial visibility of the 5th card
+// CarouselItem component - modified to allow partial visibility of the 5th card
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -154,7 +154,7 @@ const CarouselItem = React.forwardRef<
       aria-roledescription="slide"
       className={cn(
         "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-2" : "pt-2", // Reduced spacing between items
+        orientation === "horizontal" ? "pl-1" : "pt-1", // Reduced spacing between items
         className
       )}
       {...props}

@@ -172,11 +172,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         className="w-full overflow-visible"
         id={carouselId}
       >
-        <CarouselContent className="-ml-2 pr-2">
+        <CarouselContent className="-ml-1 pr-4">
           {normalizedCourses.map((course) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-2" : "basis-1/5 pl-2"} /* Show 5 cards per row with reduced spacing */
+              className={isMobile ? "basis-full pl-1" : "basis-1/5 pl-1 last:pr-6"} /* Show 5 cards per row with reduced spacing and the 5th card partially visible */
               onMouseEnter={() => setHoveredCourseId(course.id)}
               onMouseLeave={() => setHoveredCourseId(null)}
             >
