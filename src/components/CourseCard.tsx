@@ -1,9 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
+import { useCourseEventListener } from '@/hooks/useCourseEvents';
 import CourseCardMedia from './course-card/CourseCardMedia';
 import CourseCardContent from './course-card/CourseCardContent';
 import CourseCardDialogs from './course-card/CourseCardDialogs';
@@ -52,30 +53,13 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Setup event listeners for dialog events
-  useEffect(() => {
-    const handleOpenShareDialog = (event: Event) => {
-      const customEvent = event as CustomEvent;
-      if (customEvent.detail && customEvent.detail.courseId === id) {
-        setShowShareDialog(true);
-      }
-    };
-
-    const handleOpenAssignDialog = (event: Event) => {
-      const customEvent = event as CustomEvent;
-      if (customEvent.detail && customEvent.detail.courseId === id) {
-        setShowAssignDialog(true);
-      }
-    };
-
-    document.addEventListener('openShareDialog', handleOpenShareDialog);
-    document.addEventListener('openAssignDialog', handleOpenAssignDialog);
-
-    return () => {
-      document.removeEventListener('openShareDialog', handleOpenShareDialog);
-      document.removeEventListener('openAssignDialog', handleOpenAssignDialog);
-    };
-  }, [id]);
+  // Use the new event listener system
+  useCourseEventListener(
+    id,
+    () => setShowShareDialog(true),
+    () => setShowAssignDialog(true),
+    () => setCurrentBookmarked(prev => !prev)
+  );
 
   // Effect to check saved courses in localStorage during component initialization
   useEffect(() => {
@@ -117,24 +101,22 @@ const CourseCard: React.FC<CourseCardProps> = ({
     }
   }, [currentBookmarked, id, title, description, imageUrl, category, duration, rating, trainingCategory, previewUrl, isHot, isNew]);
 
-  // Handle course click to navigate to course player
-  const handleCourseClick = (e: React.MouseEvent) => {
+  // Memoized handlers
+  const handleCourseClick = useCallback((e: React.MouseEvent) => {
     // Don't navigate if the click was on a button or if a dialog is open
     if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       e.stopPropagation();
       return;
     }
     navigate(`/course/${id}`);
-  };
+  }, [id, navigate, showShareDialog, showAssignDialog]);
 
-  // Handle watch button click
-  const handleWatchClick = (e: React.MouseEvent) => {
+  const handleWatchClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/course/${id}`);
-  };
+  }, [id, navigate]);
 
-  // Handle bookmark toggle
-  const handleBookmarkToggle = (e: React.MouseEvent) => {
+  const handleBookmarkToggle = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     const newBookmarked = !currentBookmarked;
     setCurrentBookmarked(newBookmarked);
@@ -145,19 +127,17 @@ const CourseCard: React.FC<CourseCardProps> = ({
         ? `"${title}" has been added to your saved courses` 
         : `"${title}" has been removed from your saved courses`,
     });
-  };
+  }, [currentBookmarked, title, toast]);
 
-  // Handle share button click
-  const handleShareClick = (e: React.MouseEvent) => {
+  const handleShareClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setShowShareDialog(true);
-  };
+  }, []);
 
-  // Handle assign button click
-  const handleAssignClick = (e: React.MouseEvent) => {
+  const handleAssignClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setShowAssignDialog(true);
-  };
+  }, []);
 
   return (
     <>
@@ -206,4 +186,5 @@ const CourseCard: React.FC<CourseCardProps> = ({
   );
 };
 
-export default CourseCard;
+// Memoize the component to prevent unnecessary renders
+export default memo(CourseCard);

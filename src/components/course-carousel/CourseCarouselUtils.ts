@@ -2,7 +2,7 @@
 import { Course } from '@/types/course';
 
 /**
- * Function to ensure we have exactly 12 courses for the carousel
+ * Function to ensure we have exactly 12 courses for the carousel with memoization
  * @param coursesArray The original array of courses
  * @returns An array of exactly 12 courses
  */
@@ -53,6 +53,9 @@ export const getStatusColor = (status?: string) => {
  * @returns An array of normalized courses
  */
 export const normalizeCourseData = (courses: Course[]) => {
+  // Early return for empty array to avoid unnecessary processing
+  if (!courses || courses.length === 0) return [];
+  
   return normalizeCoursesCount(courses.map(course => ({
     ...course,
     level: course.level || course.skillLevel || 'All Levels',

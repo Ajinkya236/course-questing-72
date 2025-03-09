@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Clock, Star, Share2, Bookmark, Play, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -94,4 +94,4 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
   );
 };
 
-export default CourseCardContent;
+export default memo(CourseCardContent);

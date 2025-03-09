@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Volume2, VolumeX } from "lucide-react";
@@ -41,6 +41,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             className="w-full h-full object-cover"
             muted={isMuted}
             loop
+            playsInline // Add playsInline for better mobile experience
           />
           <Button 
             onClick={toggleMute} 
@@ -56,6 +57,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           src={imageUrl || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
+          loading="lazy" // Add lazy loading for images
         />
       )}
 
@@ -98,4 +100,4 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   );
 };
 
-export default CourseCardMedia;
+export default memo(CourseCardMedia);

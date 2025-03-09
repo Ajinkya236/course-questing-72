@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Course } from '@/types/course';
-import { normalizeCourseData } from './CourseCarouselUtils';
+import { useCourseData } from '@/hooks/useCourseData';
+import { triggerCourseEvent } from '@/hooks/useCourseEvents';
 import CourseCarouselHeader from './CourseCarouselHeader';
 import CourseCarouselCard from './CourseCarouselCard';
 import { 
@@ -47,10 +48,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const normalizedCourses = normalizeCourseData(courses);
+  // Use optimized hook for course data handling
+  const { normalizedCourses } = useCourseData(courses);
   const carouselId = `${title.replace(/\s+/g, '-')}-carousel`;
 
-  const handleCardClick = (courseId: string) => {
+  // Memoized card click handler
+  const handleCardClick = useCallback((courseId: string) => {
     // Remove any clone suffix for handling clicks on duplicated courses
     const originalId = courseId.split('-clone-')[0];
     if (onCourseClick) {
@@ -58,9 +61,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     } else {
       navigate(`/course/${originalId}`);
     }
-  };
+  }, [onCourseClick, navigate]);
 
-  const handleFilterSelect = (filter: string) => {
+  // Memoized filter selection handlers
+  const handleFilterSelect = useCallback((filter: string) => {
     setSelectedFilter(filter);
     // Reset sub-filter when main filter changes
     if (subFilterOptions && subFilterOptions[filter]) {
@@ -70,14 +74,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     } else {
       setSelectedSubFilter('All Sub-Academies');
     }
-  };
+  }, [subFilterOptions]);
 
-  const handleSubFilterClick = (subFilter: string) => {
+  const handleSubFilterClick = useCallback((subFilter: string) => {
     setSelectedSubFilter(subFilter);
-  };
+  }, []);
 
-  // Handle bookmark toggle
-  const handleBookmarkToggle = (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
+  // Memoized button click handlers
+  const handleBookmarkToggle = useCallback((e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
     e.stopPropagation();
     const newBookmarked = !isBookmarked;
     
@@ -107,43 +111,34 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         ? `"${title}" has been added to your saved courses` 
         : `"${title}" has been removed from your saved courses`,
     });
-  };
+  }, [normalizedCourses, toast]);
 
-  // Handle share button click
-  const handleShareClick = (e: React.MouseEvent, courseId: string) => {
+  // Handle share button click - now using the event system
+  const handleShareClick = useCallback((e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
-    // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
     const courseToShare = normalizedCourses.find(course => course.id === courseId);
     if (courseToShare) {
-      // We'll use the course title in the dialog header
-      localStorage.setItem('currentCourseToShare', JSON.stringify({
-        id: courseId,
-        title: courseToShare.title
-      }));
+      triggerCourseEvent('share', courseId, courseToShare.title);
     }
-    
-    // Open share dialog through CourseCard
-    const shareDialogEvent = new CustomEvent('openShareDialog', { detail: { courseId } });
-    document.dispatchEvent(shareDialogEvent);
-  };
+  }, [normalizedCourses]);
 
-  // Handle assign button click
-  const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
+  // Handle assign button click - now using the event system
+  const handleAssignClick = useCallback((e: React.MouseEvent, courseId: string) => {
     e.stopPropagation();
-    // For now, just show a toast notification - actual dialog opening is handled in the CourseCard component
     const courseToAssign = normalizedCourses.find(course => course.id === courseId);
     if (courseToAssign) {
-      // We'll use the course title in the dialog header
-      localStorage.setItem('currentCourseToAssign', JSON.stringify({
-        id: courseId,
-        title: courseToAssign.title
-      }));
+      triggerCourseEvent('assign', courseId, courseToAssign.title);
     }
-    
-    // Open assign dialog through CourseCard
-    const assignDialogEvent = new CustomEvent('openAssignDialog', { detail: { courseId } });
-    document.dispatchEvent(assignDialogEvent);
-  };
+  }, [normalizedCourses]);
+
+  // Hover handlers
+  const handleMouseEnter = useCallback((courseId: string) => {
+    setHoveredCourseId(courseId);
+  }, []);
+  
+  const handleMouseLeave = useCallback(() => {
+    setHoveredCourseId(null);
+  }, []);
 
   // Get available sub-filters based on selected main filter, removing duplicates
   const availableSubFilters = subFilterOptions[selectedFilter] ? 
@@ -193,8 +188,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             <CarouselItem 
               key={course.id} 
               className={isMobile ? "basis-full pl-2" : "basis-1/4 pl-2 md:last:pr-[70%]"} /* Show 4 cards per row with the 5th card ~30% visible */
-              onMouseEnter={() => setHoveredCourseId(course.id)}
-              onMouseLeave={() => setHoveredCourseId(null)}
+              onMouseEnter={() => handleMouseEnter(course.id)}
+              onMouseLeave={handleMouseLeave}
             >
               <CourseCarouselCard
                 course={course}
@@ -213,4 +208,5 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   );
 };
 
-export default CourseCarousel;
+// Memoize the component to prevent unnecessary renders
+export default memo(CourseCarousel);

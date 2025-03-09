@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,17 @@ interface CourseCarouselCardProps {
   showTrainingCategory?: boolean;
 }
 
+const getStatusColor = (status?: string) => {
+  switch (status) {
+    case 'Completed':
+      return 'bg-green-500';
+    case 'In Progress':
+      return 'bg-blue-500';
+    default:
+      return 'bg-gray-500';
+  }
+};
+
 const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   course,
   hoveredCourseId,
@@ -25,27 +36,27 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   handleAssignClick,
   showTrainingCategory = false
 }) => {
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-500';
-      case 'In Progress':
-        return 'bg-blue-500';
-      default:
-        return 'bg-gray-500';
+  // Define an optimized click handler to prevent event propagation
+  const onCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if the click was on a button
+    if ((e.target as HTMLElement).closest('button')) {
+      e.stopPropagation();
+      return;
     }
+    handleCardClick(course.id);
   };
 
   return (
     <Card
       className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
-      onClick={() => handleCardClick(course.id)}
+      onClick={onCardClick}
     >
       <div className="aspect-video relative overflow-hidden bg-muted">
         <img
           src={course.imageUrl}
           alt={course.title}
           className="object-cover w-full h-full transition-transform hover:scale-105 duration-500"
+          loading="lazy" // Add lazy loading for images
         />
         {course.enrollmentStatus && (
           <div className="absolute top-2 right-2">
@@ -103,10 +114,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
             <Button 
               variant="outline" 
               size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleShareClick(e, course.id);
-              }}
+              onClick={(e) => handleShareClick(e, course.id)}
               aria-label="Share"
               className="h-8 w-8"
             >
@@ -115,10 +123,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
             <Button 
               variant="outline" 
               size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked);
-              }}
+              onClick={(e) => handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked)}
               aria-label="Bookmark"
               className="h-8 w-8"
             >
@@ -128,10 +133,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           <Button 
             variant="outline" 
             className="w-full h-8 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAssignClick(e, course.id);
-            }}
+            onClick={(e) => handleAssignClick(e, course.id)}
           >
             <UserPlus className="h-3 w-3 mr-1" /> Assign
           </Button>
@@ -141,4 +143,5 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   );
 };
 
-export default CourseCarouselCard;
+// Memoize the component to prevent unnecessary renders
+export default memo(CourseCarouselCard);
