@@ -129,9 +129,12 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
               {filteredCourses.map((course, index) => (
                 <div 
                   key={course.id}
-                  className={`snap-start flex-shrink-0 ${
-                    index === 4 ? 'w-[35%]' : 'w-1/4'
-                  } px-1`}
+                  className={`snap-start flex-shrink-0 w-[calc(25%-12px)] transition-transform duration-300 hover:scale-[1.03]`}
+                  style={{
+                    marginRight: index === filteredCourses.length - 1 ? '0' : '-40px', // Overlap cards
+                    zIndex: filteredCourses.length - index, // Stack cards with higher z-index for earlier cards
+                    position: 'relative'
+                  }}
                 >
                   <CourseCard {...course} />
                 </div>
