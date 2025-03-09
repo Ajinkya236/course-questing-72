@@ -3,10 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Play, Share2, Bookmark, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '@/types/course';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Carousel, 
   CarouselContent, 
@@ -45,8 +46,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   // Function to ensure we have exactly 12 courses for the carousel
   const normalizeCoursesCount = (coursesArray: Course[]) => {
@@ -109,6 +112,37 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   const handleSubFilterClick = (subFilter: string) => {
     setSelectedSubFilter(subFilter);
+  };
+
+  // Handle bookmark toggle
+  const handleBookmarkToggle = (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
+    e.stopPropagation();
+    const newBookmarked = !isBookmarked;
+    
+    toast({
+      title: newBookmarked ? "Course Saved" : "Course Removed",
+      description: newBookmarked 
+        ? `"${title}" has been added to your saved courses` 
+        : `"${title}" has been removed from your saved courses`,
+    });
+  };
+
+  // Handle share button click
+  const handleShareClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    toast({
+      title: "Share Course",
+      description: "Sharing options are now available for this course",
+    });
+  };
+
+  // Handle assign button click
+  const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    toast({
+      title: "Assign Course",
+      description: "You can now assign this course to team members",
+    });
   };
 
   // Get available sub-filters based on selected main filter, removing duplicates
@@ -203,9 +237,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       >
         <CarouselContent>
           {normalizedCourses.map((course) => (
-            <CarouselItem key={course.id} className={isMobile ? "basis-full" : "basis-1/5"}>
+            <CarouselItem 
+              key={course.id} 
+              className={isMobile ? "basis-full" : "basis-1/4 pr-1"}
+              onMouseEnter={() => setHoveredCourseId(course.id)}
+              onMouseLeave={() => setHoveredCourseId(null)}
+            >
               <Card
-                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors"
+                className="overflow-hidden h-full cursor-pointer hover:border-primary/50 transition-colors group"
                 onClick={() => handleCardClick(course.id)}
               >
                 <div className="aspect-video relative overflow-hidden bg-muted">
@@ -254,6 +293,47 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                       </div>
                     </div>
                   )}
+                  
+                  {/* Course actions that appear on hover */}
+                  <div className={`pt-2 ${hoveredCourseId === course.id ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200`}>
+                    <div className="flex gap-1 mb-1">
+                      <Button 
+                        variant="default" 
+                        className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCardClick(course.id);
+                        }}
+                      >
+                        <Play className="h-3 w-3 mr-1" /> Watch
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={(e) => handleShareClick(e, course.id)}
+                        aria-label="Share"
+                        className="h-8 w-8"
+                      >
+                        <Share2 className="h-3 w-3" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={(e) => handleBookmarkToggle(e, course.id, course.title, !!course.isBookmarked)}
+                        aria-label="Bookmark"
+                        className="h-8 w-8"
+                      >
+                        <Bookmark className={`h-3 w-3 ${course.isBookmarked ? "fill-current" : ""}`} />
+                      </Button>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-8 text-xs"
+                      onClick={(e) => handleAssignClick(e, course.id)}
+                    >
+                      <UserPlus className="h-3 w-3 mr-1" /> Assign
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </CarouselItem>

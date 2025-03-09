@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Check, Clock, Bookmark, Share } from 'lucide-react';
@@ -95,8 +93,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
 
   // Calculate overall learning progress
   const totalCourses = assignedCourses.length + completedCourses.length + inProgressCourses.length;
-  const completedPercentage = Math.round((completedCourses.length / (totalCourses || 1)) * 100);
-  const inProgressPercentage = Math.round((inProgressCourses.length / (totalCourses || 1)) * 100);
 
   // Get courses based on active filter
   const getFilteredCourses = () => {
@@ -136,31 +132,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
 
   return (
     <div className="space-y-8">
-      {/* Learning Progress Section */}
-      <Card>
-        <CardContent className="pt-6">
-          <h3 className="text-lg font-medium mb-2">Learning Progress</h3>
-          <div className="flex items-center gap-4">
-            <Progress value={completedPercentage} className="h-2 flex-1" />
-            <span className="text-sm font-medium">{completedPercentage}%</span>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{assignedCourses.length}</p>
-              <p className="text-sm text-muted-foreground">Assigned</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold">{inProgressCourses.length}</p>
-              <p className="text-sm text-muted-foreground">In Progress</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold">{completedCourses.length}</p>
-              <p className="text-sm text-muted-foreground">Completed</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Course Filters */}
       <div className="flex flex-wrap gap-2">
         <Button 

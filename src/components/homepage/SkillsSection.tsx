@@ -31,7 +31,7 @@ const SkillsSection = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  Edit Skills <MoveRight className="h-4 w-4" />
+                  View All Skills <MoveRight className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-6" align="end">

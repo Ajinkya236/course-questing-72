@@ -22,6 +22,10 @@ const DomainCatalog = () => {
     navigate(`/domain/${domainId}`);
   };
 
+  const handleViewAllClick = () => {
+    navigate('/view-all/domains');
+  };
+
   return (
     <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-none shadow-sm">
       <CardContent className="py-6 px-6">
@@ -31,7 +35,7 @@ const DomainCatalog = () => {
             <Button 
               variant="link" 
               className="flex items-center gap-1 p-0 text-blue-600"
-              onClick={() => navigate('/view-all/domains')}
+              onClick={handleViewAllClick}
             >
               View All <MoveRight className="h-4 w-4" />
             </Button>
