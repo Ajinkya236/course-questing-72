@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
@@ -55,7 +55,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl });
 
-  // Use the new event listener system
+  // Use the event listener system
   useCourseEventListener(
     id,
     () => setShowShareDialog(true),
@@ -116,6 +116,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
+    // Prevent infinite loop if placeholder also fails
+    target.onerror = null;
   };
 
   return (

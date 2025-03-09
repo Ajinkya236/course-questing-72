@@ -125,16 +125,11 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         <h2 className="text-xl font-semibold mb-4">{getFilterTitle()}</h2>
         {filteredCourses.length > 0 ? (
           <div className="overflow-hidden">
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-              {filteredCourses.map((course, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className={`snap-start flex-shrink-0 w-[calc(25%-12px)] transition-transform duration-300 hover:scale-[1.03]`}
-                  style={{
-                    marginRight: index === filteredCourses.length - 1 ? '0' : '-40px', // Overlap cards
-                    zIndex: filteredCourses.length - index, // Stack cards with higher z-index for earlier cards
-                    position: 'relative'
-                  }}
+                  className="transition-transform duration-300 hover:scale-[1.03]"
                 >
                   <CourseCard {...course} />
                 </div>

@@ -33,8 +33,21 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   toggleMute,
   onImageError
 }) => {
+  // Default image error handler if none provided
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    if (onImageError) {
+      onImageError(e);
+    } else {
+      // Default fallback behavior
+      const target = e.target as HTMLImageElement;
+      target.src = "/placeholder.svg";
+      // Prevent infinite loading attempts if placeholder also fails
+      target.onerror = null;
+    }
+  };
+
   return (
-    <div className="relative aspect-video overflow-hidden bg-muted">
+    <div className="relative aspect-video overflow-hidden bg-muted rounded-t-md">
       {/* Show video preview when hovered if available */}
       {previewUrl && isHovered ? (
         <>
@@ -63,7 +76,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           alt={title}
           className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
           loading="lazy"
-          onError={onImageError}
+          onError={handleImageError}
         />
       )}
 
