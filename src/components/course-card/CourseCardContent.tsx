@@ -42,25 +42,19 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex gap-2 mb-2">
+      <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex gap-1 mb-2">
           <Button 
             variant="default" 
             className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-8 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleWatchClick(e);
-            }}
+            onClick={handleWatchClick}
           >
             <Play className="h-3 w-3 mr-1" /> Watch
           </Button>
           <Button 
             variant="outline" 
             size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShareClick(e);
-            }}
+            onClick={handleShareClick}
             aria-label="Share"
             className="h-8 w-8"
           >
@@ -69,10 +63,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           <Button 
             variant="outline" 
             size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBookmarkToggle(e);
-            }}
+            onClick={handleBookmarkToggle}
             aria-label="Bookmark"
             className={`h-8 w-8 ${isBookmarked ? "border-primary text-primary" : ""}`}
           >
@@ -82,10 +73,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         <Button 
           variant="outline" 
           className="w-full h-8 text-xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAssignClick(e);
-          }}
+          onClick={handleAssignClick}
         >
           <UserPlus className="h-3 w-3 mr-1" /> Assign
         </Button>

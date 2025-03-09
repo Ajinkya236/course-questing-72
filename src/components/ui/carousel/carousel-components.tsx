@@ -28,7 +28,7 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: true, // Add loop option for circular scrolling
+        loop: true, // Enable loop for circular scrolling
       },
       plugins
     )
@@ -140,7 +140,7 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
-// CarouselItem component - modified to allow partial visibility of the 5th card
+// CarouselItem component - modified to allow partial visibility of the next card
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

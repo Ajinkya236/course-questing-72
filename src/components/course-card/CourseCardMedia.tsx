@@ -31,6 +31,23 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   videoRef,
   toggleMute
 }) => {
+  // Placeholder image for fallback
+  const placeholderImage = "/placeholder.svg";
+  
+  // Pick a random Unsplash image if imageUrl doesn't start with http
+  // This ensures we always have a valid image URL
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"
+  ];
+  
+  const effectiveImageUrl = imageUrl && imageUrl.startsWith('http') 
+    ? imageUrl 
+    : fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
+
   return (
     <div className="relative aspect-video overflow-hidden">
       {previewUrl && isHovered ? (
@@ -54,14 +71,14 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
         </>
       ) : (
         <img
-          src={imageUrl || "/placeholder.svg"}
+          src={effectiveImageUrl}
           alt={title}
           className="w-full h-full object-cover"
           loading="lazy" 
           onError={(e) => {
             // Fallback to placeholder if image fails to load
             const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
+            target.src = placeholderImage;
             console.log(`Image load error for ${title}, using placeholder instead`);
           }}
         />

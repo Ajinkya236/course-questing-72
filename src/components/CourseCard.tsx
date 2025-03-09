@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
 import { useCourseEventListener } from '@/hooks/useCourseEvents';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
+import { triggerCourseEvent } from '@/hooks/useCourseEvents';
 import CourseCardMedia from './course-card/CourseCardMedia';
 import CourseCardContent from './course-card/CourseCardContent';
 import CourseCardDialogs from './course-card/CourseCardDialogs';

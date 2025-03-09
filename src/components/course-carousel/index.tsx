@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -144,10 +145,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         id={carouselId}
       >
         <CarouselContent className="-ml-2 pr-4">
-          {normalizedCourses.map((course) => (
+          {normalizedCourses.map((course, index) => (
             <CarouselItem 
               key={course.id} 
-              className={isMobile ? "basis-full pl-2" : "basis-1/4 pl-2 md:last:pr-[65%]"}
+              className={isMobile ? "basis-full pl-2" : `basis-1/4 pl-2 ${index === normalizedCourses.length - 1 ? "pr-[30%]" : ""}`}
               onMouseEnter={() => handleMouseEnter(course.id)}
               onMouseLeave={handleMouseLeave}
             >

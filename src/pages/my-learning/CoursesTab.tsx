@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -124,13 +125,13 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         <h2 className="text-xl font-semibold mb-4">{getFilterTitle()}</h2>
         {filteredCourses.length > 0 ? (
           <div className="overflow-hidden">
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
               {filteredCourses.map((course, index) => (
                 <div 
                   key={course.id}
                   className={`snap-start flex-shrink-0 ${
                     index === 4 ? 'w-[35%]' : 'w-1/4'
-                  }`}
+                  } px-1`}
                 >
                   <CourseCard {...course} />
                 </div>
