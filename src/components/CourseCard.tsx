@@ -56,6 +56,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   } = useVideoPreview({ previewUrl });
 
   // Use the event listener system
+  // Modified this to fix the TypeScript error - using lambda functions that properly match expected signatures
   useCourseEventListener(
     id,
     () => setShowShareDialog(true),
