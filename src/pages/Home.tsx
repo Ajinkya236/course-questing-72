@@ -3,90 +3,38 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/CourseCarousel';
-import { Button } from '@/components/ui/button';
-import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { mockCourses } from '@/data/mockCoursesData';
 
-// Import new components
+// Import utility functions and data
+import { 
+  generateHomepageCourseCollections,
+  mockBanners,
+  trainingCategories,
+  skillFilters
+} from '@/utils/courseDataUtils';
+
+// Import components
 import SkillsSection from '@/components/homepage/SkillsSection';
 import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
-
-// Ensure each course has a unique ID and required properties for display
-const prepareCourses = (courses, startIdx = 0, count = 12) => {
-  return courses
-    .slice(startIdx, startIdx + count)
-    .map((course, idx) => ({
-      ...course,
-      id: course.id || `course-${startIdx + idx}`,
-      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      progress: course.progress || (course.status === 'in-progress' ? Math.floor(Math.random() * 90) + 10 : 0)
-    }));
-};
-
-// Filter courses for different categories
-const continueLearningCourses = prepareCourses(
-  mockCourses.filter(course => course.status === 'in-progress')
-);
-
-const assignedCourses = prepareCourses(
-  mockCourses.filter(course => course.status === 'assigned')
-);
-
-const chosenForYou = prepareCourses(mockCourses, 0, 12);
-
-const basedOnInterest = prepareCourses(mockCourses, 12, 12);
-
-const forYourRoleCourses = prepareCourses(mockCourses, 24, 12);
-
-const trendingCourses = prepareCourses(
-  [...mockCourses].sort((a, b) => (b.rating || 0) - (a.rating || 0)),
-  0, 12
-).map((course, idx) => ({
-  ...course,
-  title: `${idx + 1}. ${course.title}` // Add ranking to title
-}));
-
-const popularWithSimilarUsers = prepareCourses(mockCourses, 36, 12);
-
-// Mock banner data for BannerCarousel
-const mockBanners = [
-  {
-    id: 1,
-    title: "New Leadership Course Available",
-    description: "Enhance your leadership skills with our new comprehensive course",
-    imageUrl: "/placeholder.svg",
-    link: "/discover"
-  },
-  {
-    id: 2,
-    title: "Technical Certification Paths",
-    description: "Advance your career with industry recognized certifications",
-    imageUrl: "/placeholder.svg",
-    link: "/discover"
-  }
-];
-
-// Mock training categories for filter
-const trainingCategories = [
-  'All Categories', 'Technical', 'Soft Skills', 'Leadership', 'Compliance', 
-  'Product', 'Onboarding', 'Business', 'Management'
-];
-
-// Mock skills for filter
-const skillFilters = [
-  'All Skills', 'JavaScript', 'React', 'Node.js', 'Python', 'Data Science', 
-  'Leadership', 'Communication', 'Design', 'Product Management'
-];
 
 const Home = () => {
   const navigate = useNavigate();
   const [trainingFilter, setTrainingFilter] = useState('All Categories');
   const [skillFilter, setSkillFilter] = useState('All Skills');
   const [roleSkillFilter, setRoleSkillFilter] = useState('All Skills');
+  
+  // Get course collections from our utility function
+  const {
+    continueLearningCourses,
+    assignedCourses,
+    chosenForYou,
+    basedOnInterest,
+    forYourRoleCourses,
+    trendingCourses,
+    popularWithSimilarUsers
+  } = generateHomepageCourseCollections();
   
   return (
     <>
