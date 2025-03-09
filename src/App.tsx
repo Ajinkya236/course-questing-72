@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
 import { useTheme } from "./components/hooks/use-theme"
@@ -26,25 +25,31 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
-import SignIn from './pages/SignIn';
-import Home from './pages/Home';
-import Discover from './pages/Discover';
-import MyLearning from './pages/MyLearning';
-import CoursePlayer from './pages/CoursePlayer';
-import Notifications from './pages/Notifications';
-import Profile from './pages/Profile';
-import ViewAllPage from './pages/ViewAllPage';
-import SearchResults from './pages/SearchResults';
-import Actionables from './pages/Actionables';
-import LeaderboardFullView from './pages/LeaderboardFullView';
-import Mentoring from './pages/Mentoring';
-import MyTeam from './pages/MyTeam';
-import FAQ from './pages/FAQ';
-import NotFound from './pages/NotFound';
-import RecommendedMentorsPage from './pages/RecommendedMentorsPage';
+const SignIn = lazy(() => import('./pages/SignIn'));
+const Home = lazy(() => import('./pages/Home'));
+const Discover = lazy(() => import('./pages/Discover'));
+const MyLearning = lazy(() => import('./pages/MyLearning'));
+const CoursePlayer = lazy(() => import('./pages/CoursePlayer'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Profile = lazy(() => import('./pages/Profile'));
+const ViewAllPage = lazy(() => import('./pages/ViewAllPage'));
+const SearchResults = lazy(() => import('./pages/SearchResults'));
+const Actionables = lazy(() => import('./pages/Actionables'));
+const LeaderboardFullView = lazy(() => import('./pages/LeaderboardFullView'));
+const Mentoring = lazy(() => import('./pages/Mentoring'));
+const MyTeam = lazy(() => import('./pages/MyTeam'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
+const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
+const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
-import ViewAllDomainsPage from './pages/ViewAllDomainsPage';
-import DomainCoursesPage from './pages/DomainCoursesPage';
+const PageLoader = () => (
+  <div className="flex items-center justify-center h-screen">
+    <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+    <span className="ml-3 text-primary">Loading...</span>
+  </div>
+);
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -213,38 +218,40 @@ function App() {
           enableSystem
           disableTransitionOnChange
         >
-          <Routes>
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <PageLayout>
-                  <Outlet />
-                </PageLayout>
-              </ProtectedRoute>
-            }>
-              <Route index element={<Home />} />
-              <Route path="/discover" element={<Discover />} />
-              <Route path="/my-learning" element={<MyLearning />} />
-              <Route path="/course/:courseId" element={<CoursePlayer />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/view-all/:category" element={<ViewAllPage />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/actionables" element={<Actionables />} />
-              <Route path="/milestones" element={<LeaderboardFullView />} />
-              <Route path="/mentoring" element={<Mentoring />} />
-              <Route path="/my-team" element={<MyTeam />} />
-              <Route path="/my-team/member/:memberId" element={<Profile />} />
-              <Route path="/faq" element={<FAQ />} />
-              
-              <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />
-              <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
-              
-              <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
-              <Route path="/leaderboard" element={<LeaderboardFullView />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <PageLayout>
+                    <Outlet />
+                  </PageLayout>
+                </ProtectedRoute>
+              }>
+                <Route index element={<Home />} />
+                <Route path="/discover" element={<Discover />} />
+                <Route path="/my-learning" element={<MyLearning />} />
+                <Route path="/course/:courseId" element={<CoursePlayer />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/view-all/:category" element={<ViewAllPage />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/actionables" element={<Actionables />} />
+                <Route path="/milestones" element={<LeaderboardFullView />} />
+                <Route path="/mentoring" element={<Mentoring />} />
+                <Route path="/my-team" element={<MyTeam />} />
+                <Route path="/my-team/member/:memberId" element={<Profile />} />
+                <Route path="/faq" element={<FAQ />} />
+                
+                <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />
+                <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
+                
+                <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
+                <Route path="/leaderboard" element={<LeaderboardFullView />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </ThemeProvider>
       </AuthProvider>
     </Router>

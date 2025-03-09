@@ -41,7 +41,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             className="w-full h-full object-cover"
             muted={isMuted}
             loop
-            playsInline // Add playsInline for better mobile experience
+            playsInline
+            loading="lazy"
           />
           <Button 
             onClick={toggleMute} 
@@ -57,7 +58,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           src={imageUrl || "/placeholder.svg"}
           alt={title}
           className="w-full h-full object-cover"
-          loading="lazy" // Add lazy loading for images
+          loading="lazy"
+          decoding="async"
         />
       )}
 
