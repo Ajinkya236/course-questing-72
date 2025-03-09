@@ -113,9 +113,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
-  // Calculate how many cards to show at once based on viewport
-  // Show 4 full cards and 1 partial (20% of the next card)
-  const itemsToShow = isMobile ? 1 : 4.2; // 4 full cards + 20% of the 5th card
+  // Calculate card width to show 4 full cards and 20% of the next card
+  const getCardPercentage = () => {
+    if (isMobile) return 100; // Full width on mobile
+    return 23; // Approximately 23% for desktop (4 cards + 20% of 5th)
+  };
 
   return (
     <div className="space-y-4 overflow-hidden">
@@ -161,7 +163,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             {normalizedCourses.map((course) => (
               <CarouselItem 
                 key={course.id} 
-                className={isMobile ? "basis-full pl-4" : `basis-1/${itemsToShow} pl-4`}
+                className={`pl-4 ${isMobile ? 'basis-full' : `basis-[${getCardPercentage()}%]`}`}
+                style={{ flex: `0 0 ${getCardPercentage()}%` }}
               >
                 <div 
                   className="cursor-pointer"
@@ -183,8 +186,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           
           {!isMobile && (
             <>
-              <CarouselPrevious className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-3" />
-              <CarouselNext className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-3" />
+              <CarouselPrevious className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-3" data-embla-prev />
+              <CarouselNext className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-3" data-embla-next />
             </>
           )}
         </Carousel>

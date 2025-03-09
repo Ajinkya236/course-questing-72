@@ -68,8 +68,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   }, [isHovered, previewUrl, videoRef]);
 
   return (
-    <div className="relative overflow-hidden bg-muted rounded-t-md">
-      <AspectRatio ratio={16/9}>
+    <div className="relative overflow-hidden bg-muted rounded-t-md h-[170px]">
+      <AspectRatio ratio={16/9} className="h-full">
         {/* Show video preview when hovered if available */}
         {previewUrl && isHovered ? (
           <>

@@ -27,7 +27,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
   handleAssignClick
 }) => {
   return (
-    <div className="p-3 space-y-2 max-h-[150px]">
+    <div className="p-3 space-y-2 flex flex-col h-[180px]">
       <h3 className="font-medium text-sm leading-tight line-clamp-1">{title}</h3>
       <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
 
@@ -42,7 +42,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="pt-1 mt-auto">
         <div className="flex gap-1 mb-1">
           <Button 
             variant="default" 

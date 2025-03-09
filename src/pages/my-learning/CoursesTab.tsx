@@ -130,6 +130,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
                 <div 
                   key={course.id}
                   className="transition-transform duration-300 hover:scale-[1.03]"
+                  style={{ height: '350px' }}
                 >
                   <CourseCard {...course} />
                 </div>

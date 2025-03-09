@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -183,7 +182,7 @@ const ViewAllPage = () => {
               <div 
                 key={course.id} 
                 onClick={() => handleCourseClick(course.id)}
-                className="cursor-pointer"
+                className="cursor-pointer h-[350px]"
               >
                 <CourseCard 
                   {...course} 

@@ -29,11 +29,19 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   };
 
   const triggerCarouselPrev = () => {
-    document.querySelector(`#${carouselId} .embla__prev`)?.dispatchEvent(new Event('click'));
+    const carousel = document.getElementById(carouselId);
+    if (carousel) {
+      const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
+      if (prevButton) prevButton.click();
+    }
   };
 
   const triggerCarouselNext = () => {
-    document.querySelector(`#${carouselId} .embla__next`)?.dispatchEvent(new Event('click'));
+    const carousel = document.getElementById(carouselId);
+    if (carousel) {
+      const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
+      if (nextButton) nextButton.click();
+    }
   };
 
   return (

@@ -153,7 +153,7 @@ const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
+        "min-w-0 shrink-0 grow-0",
         orientation === "horizontal" ? "pl-4" : "pt-4",
         className
       )}
@@ -183,6 +183,7 @@ const CarouselPrevious = React.forwardRef<
         className
       )}
       onClick={scrollPrev}
+      data-embla-prev
       {...props}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -212,6 +213,7 @@ const CarouselNext = React.forwardRef<
         className
       )}
       onClick={scrollNext}
+      data-embla-next
       {...props}
     >
       <ArrowRight className="h-4 w-4" />
