@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -46,6 +46,7 @@ type FormValues = z.infer<typeof formSchema>;
 const SignUp = () => {
   const navigate = useNavigate();
   const { user, signup, isAuthenticating } = useContext(AuthContext);
+  const [signupError, setSignupError] = useState<string | null>(null);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -61,16 +62,22 @@ const SignUp = () => {
   // If already logged in, redirect to home
   useEffect(() => {
     if (user) {
+      console.log('User is already logged in, redirecting to home');
       navigate('/');
     }
   }, [user, navigate]);
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
+    console.log('Attempting to sign up with email:', data.email);
+    setSignupError(null);
+    
     try {
       const { error } = await signup(data.email, data.password);
       
       if (error) {
+        console.error('Sign up error:', error);
+        setSignupError(error.message);
         toast({
           title: "Sign up failed",
           description: error.message,
@@ -79,6 +86,7 @@ const SignUp = () => {
         return;
       }
       
+      console.log('Sign up successful');
       toast({
         title: "Sign up successful!",
         description: "Please check your email to verify your account.",
@@ -86,9 +94,12 @@ const SignUp = () => {
       
       navigate('/sign-in');
     } catch (error) {
+      console.error('Unexpected sign up error:', error);
+      const errorMessage = error instanceof Error ? error.message : "There was a problem with your signup.";
+      setSignupError(errorMessage);
       toast({
         title: "Sign up failed",
-        description: "There was a problem with your signup.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -114,6 +125,12 @@ const SignUp = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {signupError && (
+                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4">
+                  {signupError}
+                </div>
+              )}
+              
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField

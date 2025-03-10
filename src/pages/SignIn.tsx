@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-// Import our new components
+// Import our components
 import AuthHeader from '@/components/auth/AuthHeader';
 import SignInForm, { SignInFormValues } from '@/components/auth/SignInForm';
 import SignInFooter from '@/components/auth/SignInFooter';
@@ -30,18 +30,21 @@ const SignIn = () => {
   // If already logged in, redirect to home
   useEffect(() => {
     if (user) {
+      console.log('User is logged in, redirecting to:', from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
 
   // Form submission handler
   const onSubmit = async (data: SignInFormValues) => {
+    console.log('Attempting to sign in with:', data.email);
     setLoginError(null);
     
     try {
       const { error, data: authData } = await login(data.email, data.password, data.rememberMe);
       
       if (error) {
+        console.error('Sign in error:', error);
         setLoginError(error.message);
         toast({
           title: "Sign in failed",
@@ -52,14 +55,19 @@ const SignIn = () => {
       }
       
       if (authData?.user) {
+        console.log('Sign in successful, user:', authData.user);
         toast({
           title: "Welcome to the Learning Portal!",
           description: "You have successfully signed in.",
         });
         // Navigate after successful login
         navigate(from, { replace: true });
+      } else {
+        console.warn('No user data returned after login');
+        setLoginError("Login succeeded but no user data was returned.");
       }
     } catch (error) {
+      console.error('Unexpected sign in error:', error);
       const errorMessage = error instanceof Error ? error.message : "There was a problem signing you in.";
       setLoginError(errorMessage);
       toast({
