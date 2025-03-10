@@ -41,11 +41,12 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isAuthenticating, setIsAuthenticating] = useState(true); // Set to true initially
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [authInitialized, setAuthInitialized] = useState(false);
+  const [authInitTimeoutId, setAuthInitTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Helper function to fetch user profile
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string): Promise<any> => {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -120,6 +121,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
+    // Safety timeout to prevent infinite loading state
+    const timeoutId = setTimeout(() => {
+      console.log('Auth initialization timeout reached');
+      if (!authInitialized) {
+        setIsAuthenticating(false);
+        setAuthInitialized(true);
+      }
+    }, 5000); // 5 second timeout
+    
+    setAuthInitTimeoutId(timeoutId);
+
     initializeAuth();
 
     // Listen for auth changes
@@ -151,11 +163,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Always ensure loading state is off after auth state change
         setIsAuthenticating(false);
+        setAuthInitialized(true);
       }
     );
 
     return () => {
       subscription.unsubscribe();
+      // Clear timeout on cleanup
+      if (authInitTimeoutId) {
+        clearTimeout(authInitTimeoutId);
+      }
     };
   }, []);
 
@@ -336,7 +353,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resetPassword, 
       isAuthenticating 
     }}>
-      {authInitialized ? children : (
+      {authInitialized || !isAuthenticating ? children : (
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
           <span className="ml-3 text-primary">Loading authentication...</span>

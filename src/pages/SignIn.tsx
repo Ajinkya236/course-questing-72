@@ -23,20 +23,23 @@ const SignIn = () => {
   const location = useLocation();
   const { user, login, isAuthenticating } = useContext(AuthContext);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [redirectAttempted, setRedirectAttempted] = useState(false);
 
   // Get the intended destination from location state, or default to '/'
   const from = location.state?.from?.pathname || '/';
 
   console.log('SignIn page - Location state:', location.state);
   console.log('SignIn page - Redirect destination:', from);
+  console.log('SignIn page - Current auth state:', { isAuthenticated: !!user, isAuthenticating });
 
   // If already logged in, redirect to home or previous location
   useEffect(() => {
-    if (user) {
+    if (user && !redirectAttempted) {
       console.log('User is already logged in, redirecting to:', from);
+      setRedirectAttempted(true);
       navigate(from, { replace: true });
     }
-  }, [user, navigate, from]);
+  }, [user, navigate, from, redirectAttempted]);
 
   // Form submission handler
   const onSubmit = async (data: SignInFormValues) => {
@@ -59,6 +62,7 @@ const SignIn = () => {
           description: "You have successfully signed in.",
         });
         // Navigate after successful login
+        setRedirectAttempted(true);
         navigate(from, { replace: true });
       } else {
         console.warn('No user data returned after login');
