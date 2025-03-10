@@ -5,9 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, User, Users } from 'lucide-react';
+import { Calendar, ChevronRight, Target, User, Users } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
+import CourseCarousel from '@/components/CourseCarousel';
 
 interface LearningGoalsTabProps {
   teamMemberId?: string;
@@ -93,7 +94,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         </TabsList>
       </Tabs>
 
-      {/* Learning Goals Display - Using CourseCard component */}
+      {/* Learning Goals Display */}
       <div className="space-y-8">
         {getActiveGoals().map(goal => (
           <Card key={goal.id} className="overflow-hidden">
@@ -118,25 +119,12 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
             <CardContent className="pt-4">
               <div className="pt-2">
                 <h4 className="text-sm font-medium mb-3">Assigned Courses</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {goal.courses.map(course => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      imageUrl={course.imageUrl}
-                      category={course.category}
-                      duration={course.duration}
-                      rating={course.rating}
-                      trainingCategory={course.trainingCategory}
-                      isBookmarked={course.isBookmarked}
-                      previewUrl={course.imageUrl} // Use imageUrl as fallback since videoUrl might not exist
-                      isHot={course.isHot}
-                      isNew={course.isNew}
-                    />
-                  ))}
-                </div>
+                <CourseCarousel 
+                  title="" 
+                  courses={goal.courses}
+                  showNavigation={true}
+                  showPartialNextCard={true}
+                />
               </div>
             </CardContent>
           </Card>
@@ -158,7 +146,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         )}
       </div>
 
-      {/* Skills and Proficiency Section moved to bottom */}
+      {/* Skills and Proficiency Section */}
       <Card>
         <CardHeader>
           <h3 className="text-lg font-medium">Skills & Proficiency</h3>
@@ -174,9 +162,9 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
                     {skill.proficiency}% / {skill.target}%
                   </span>
                 </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                <div className="h-2 bg-secondary/20 rounded-full overflow-hidden">
                   <div 
-                    className={`h-full rounded-full ${skill.proficiency >= skill.target ? 'bg-primary' : 'bg-primary'}`}
+                    className={`h-full rounded-full ${skill.proficiency >= skill.target ? 'bg-primary' : 'bg-primary/80'}`}
                     style={{ width: `${(skill.proficiency / skill.target) * 100}%` }}
                   ></div>
                 </div>
