@@ -59,8 +59,11 @@ const RecommendedMentorsCarousel: React.FC = () => {
     if (containerRef.current) {
       const cards = containerRef.current.querySelectorAll('.mentor-card');
       if (cards[index]) {
+        const cardWidth = cards[0].getBoundingClientRect().width;
+        const scrollPosition = index * (cardWidth + 16) - 10; // 16px for gap, 10px offset for partial view
+        
         containerRef.current.scrollTo({
-          left: cards[index].getBoundingClientRect().left + containerRef.current.scrollLeft - containerRef.current.getBoundingClientRect().left,
+          left: scrollPosition,
           behavior: 'smooth'
         });
         setCurrentIndex(index);
@@ -117,21 +120,25 @@ const RecommendedMentorsCarousel: React.FC = () => {
 
       <div 
         ref={containerRef} 
-        className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide"
-        style={{ scrollSnapType: 'x mandatory', scrollPaddingLeft: '16px' }}
+        className="flex items-stretch overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide"
+        style={{ 
+          scrollSnapType: 'x mandatory', 
+          scrollPaddingLeft: '16px',
+          maskImage: 'linear-gradient(to right, transparent, black 10px, black calc(100% - 60px), transparent)'
+        }}
       >
         {recommendedMentors.map((mentor, index) => (
           <Card 
             key={mentor.id}
-            className={`mentor-card flex-shrink-0 w-[280px] scroll-snap-align-start ${index < recommendedMentors.length - 1 ? 'mr-4' : ''}`}
+            className={`mentor-card flex-shrink-0 w-[280px] scroll-snap-align-start ${index === currentIndex ? 'z-10' : 'z-0'}`}
             style={{ 
               scrollSnapAlign: 'start',
+              marginRight: index < recommendedMentors.length - 1 ? '16px' : '0',
               transform: index === currentIndex ? 'scale(1)' : 'scale(0.95)',
               transition: 'transform 0.3s ease',
-              // Add padding to show a partial view of the next card
-              position: 'relative',
-              right: index === currentIndex ? '-20px' : '0'
+              cursor: 'pointer'
             }}
+            onClick={() => navigate(`/mentoring/mentor/${mentor.id}`)}
           >
             <CardContent className="p-4">
               <div className="flex flex-col items-center text-center">
@@ -164,7 +171,6 @@ const RecommendedMentorsCarousel: React.FC = () => {
         ))}
       </div>
 
-      {/* Fixed the style tag here - removed jsx property */}
       <style>
         {`
         .scrollbar-hide::-webkit-scrollbar {

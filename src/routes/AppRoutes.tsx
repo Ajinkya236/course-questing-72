@@ -24,6 +24,7 @@ const MyTeam = lazy(() => import('@/pages/MyTeam'));
 const FAQ = lazy(() => import('@/pages/FAQ'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('@/pages/RecommendedMentorsPage'));
+const MentorProfilePage = lazy(() => import('@/pages/MentorProfilePage'));
 const ViewAllDomainsPage = lazy(() => import('@/pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('@/pages/DomainCoursesPage'));
 
@@ -71,6 +72,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/domain/:domainId" element={<DomainCoursesPage />} />
           
           <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
+          <Route path="/mentoring/mentor/:mentorId" element={<MentorProfilePage />} />
           <Route path="/leaderboard" element={<LeaderboardFullView />} />
         </Route>
         
