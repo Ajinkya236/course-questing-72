@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +16,7 @@ interface UserData {
 interface AuthContextType {
   user: UserData | null;
   session: Session | null;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: Error | null }>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: Error | null; data: any }>;
   signup: (email: string, password: string) => Promise<{ error: Error | null }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
@@ -25,7 +26,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
-  login: async () => ({ error: null }),
+  login: async () => ({ error: null, data: null }),
   signup: async () => ({ error: null }),
   logout: async () => {},
   resetPassword: async () => ({ error: null }),
@@ -106,13 +107,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
-        return { error };
+        return { error, data: null };
       }
       
-      return { error: null };
+      return { error: null, data };
     } catch (error) {
       console.error('Login error:', error);
-      return { error: error as Error };
+      return { error: error as Error, data: null };
     } finally {
       setIsAuthenticating(false);
     }

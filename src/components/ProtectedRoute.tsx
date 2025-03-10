@@ -8,8 +8,18 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user, isAuthenticating } = useContext(AuthContext);
   const location = useLocation();
+
+  // Show loading state while authentication status is being determined
+  if (isAuthenticating) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        <span className="ml-3 text-primary">Authenticating...</span>
+      </div>
+    );
+  }
 
   if (!user) {
     // Redirect to the login page, but save the current location they were

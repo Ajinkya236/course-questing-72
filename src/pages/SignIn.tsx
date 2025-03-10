@@ -1,7 +1,7 @@
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,7 +39,12 @@ type FormValues = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, login, isAuthenticating } = useContext(AuthContext);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Get the intended destination from location state, or default to '/'
+  const from = location.state?.from?.pathname || '/';
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -54,16 +59,19 @@ const SignIn = () => {
   // If already logged in, redirect to home
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate(from, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
+    setLoginError(null);
+    
     try {
-      const { error } = await login(data.email, data.password, data.rememberMe);
+      const { error, data: authData } = await login(data.email, data.password, data.rememberMe);
       
       if (error) {
+        setLoginError(error.message);
         toast({
           title: "Sign in failed",
           description: error.message,
@@ -72,16 +80,20 @@ const SignIn = () => {
         return;
       }
       
-      toast({
-        title: "Welcome to the Learning Portal!",
-        description: "You have successfully signed in.",
-      });
-      
-      navigate('/');
+      if (authData?.user) {
+        toast({
+          title: "Welcome to the Learning Portal!",
+          description: "You have successfully signed in.",
+        });
+        // Navigate after successful login
+        navigate(from, { replace: true });
+      }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "There was a problem signing you in.";
+      setLoginError(errorMessage);
       toast({
         title: "Sign in failed",
-        description: "There was a problem signing you in.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -107,6 +119,12 @@ const SignIn = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {loginError && (
+                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4">
+                  {loginError}
+                </div>
+              )}
+              
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
