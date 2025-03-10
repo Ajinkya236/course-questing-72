@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let isMounted = true;
-    let timeoutId: NodeJS.Timeout;
+    let authTimeoutId: NodeJS.Timeout | null = null;
     
     // Initial auth state check
     const initializeAuth = async () => {
@@ -64,6 +64,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Start initialization
     initializeAuth();
 
+    // Create a faster failsafe timeout (3 seconds instead of 5)
+    authTimeoutId = setTimeout(() => {
+      if (isMounted && !authInitialized) {
+        console.log('Auth initialization timeout reached (3s)');
+        setIsAuthenticating(false);
+        setAuthInitialized(true);
+      }
+    }, 3000);
+
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
@@ -72,8 +81,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!isMounted) return;
 
         // Clear any pending timeout when auth state changes
-        if (timeoutId) {
-          clearTimeout(timeoutId);
+        if (authTimeoutId) {
+          clearTimeout(authTimeoutId);
+          authTimeoutId = null;
         }
         
         setSession(newSession);
@@ -108,18 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Timeout as a fallback, but longer to allow for initial auth check
-    timeoutId = setTimeout(() => {
-      if (isMounted && !authInitialized) {
-        console.log('Auth initialization timeout reached');
-        setIsAuthenticating(false);
-        setAuthInitialized(true);
-      }
-    }, 5000);
-
     return () => {
       isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
+      if (authTimeoutId) {
+        clearTimeout(authTimeoutId);
+      }
       subscription.unsubscribe();
     };
   }, []);

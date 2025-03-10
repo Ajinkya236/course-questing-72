@@ -38,6 +38,7 @@ const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const { resetPassword, isAuthenticating } = useContext(AuthContext);
   const [emailSent, setEmailSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -50,6 +51,7 @@ const ForgotPassword: React.FC = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
+      setIsSubmitting(true);
       const { error } = await resetPassword(data.email);
       
       if (error) {
@@ -73,6 +75,8 @@ const ForgotPassword: React.FC = () => {
         description: "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -134,8 +138,8 @@ const ForgotPassword: React.FC = () => {
                       )}
                     />
                     
-                    <Button type="submit" className="w-full" disabled={isAuthenticating}>
-                      {isAuthenticating ? (
+                    <Button type="submit" className="w-full" disabled={isSubmitting || isAuthenticating}>
+                      {isSubmitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Sending...
