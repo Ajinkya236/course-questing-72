@@ -9,7 +9,7 @@ import { BrainCircuit, ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { AuthContext } from '@/contexts/AuthContext';
+import { AuthContext } from '@/contexts/auth/AuthContext';
 import {
   Card,
   CardContent,

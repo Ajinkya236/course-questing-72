@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -14,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '../ui/mode-toggle';
-import { AuthContext } from '@/contexts/AuthContext';
+import { AuthContext } from '@/contexts/auth/AuthContext';
 import { 
   DropdownMenu,
   DropdownMenuContent,
