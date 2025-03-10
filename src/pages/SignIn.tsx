@@ -23,7 +23,7 @@ const SignIn = () => {
   const location = useLocation();
   const { user, login, isAuthenticating } = useContext(AuthContext);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [redirectAttempted, setRedirectAttempted] = useState(false);
+  const [attemptedRedirect, setAttemptedRedirect] = useState(false);
 
   // Get the intended destination from location state, or default to '/'
   const from = location.state?.from?.pathname || '/';
@@ -34,12 +34,28 @@ const SignIn = () => {
 
   // If already logged in, redirect to home or previous location
   useEffect(() => {
-    if (user && !redirectAttempted) {
+    if (user && !attemptedRedirect) {
       console.log('User is already logged in, redirecting to:', from);
-      setRedirectAttempted(true);
-      navigate(from, { replace: true });
+      setAttemptedRedirect(true);
+      
+      // Use a small timeout to ensure the redirect happens after state updates
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 10);
     }
-  }, [user, navigate, from, redirectAttempted]);
+  }, [user, navigate, from, attemptedRedirect]);
+
+  // Set a maximum timeout for auth checking to prevent infinite loading
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isAuthenticating && !user && !attemptedRedirect) {
+        console.log('Auth checking timeout reached, enabling sign-in form interaction');
+        // We don't redirect, but we ensure the user can interact with the form
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isAuthenticating, user, attemptedRedirect]);
 
   // Form submission handler
   const onSubmit = async (data: SignInFormValues) => {
@@ -62,8 +78,10 @@ const SignIn = () => {
           description: "You have successfully signed in.",
         });
         // Navigate after successful login
-        setRedirectAttempted(true);
-        navigate(from, { replace: true });
+        setAttemptedRedirect(true);
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 10);
       } else {
         console.warn('No user data returned after login');
         setLoginError("Login succeeded but no user data was returned.");

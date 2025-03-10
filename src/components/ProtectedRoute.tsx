@@ -11,7 +11,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, session, isAuthenticating } = useContext(AuthContext);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingTimeoutReached, setLoadingTimeoutReached] = useState(false);
+  const [authCheckTimedOut, setAuthCheckTimedOut] = useState(false);
 
   useEffect(() => {
     // Log authentication status for debugging
@@ -24,8 +24,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      setLoadingTimeoutReached(true);
-      setIsLoading(false);
+      if (isLoading) {
+        console.log('Auth check timeout reached, proceeding with available auth state');
+        setAuthCheckTimedOut(true);
+        setIsLoading(false);
+      }
     }, 3000); // 3 second timeout
 
     // If auth state is determined, update loading state
@@ -36,10 +39,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [user, isAuthenticating, location.pathname]);
+  }, [user, isAuthenticating, location.pathname, isLoading]);
 
-  // If we're still loading and haven't reached the timeout, show loading
-  if (isLoading && !loadingTimeoutReached) {
+  // Show brief loading state but don't let it persist
+  if (isLoading && !authCheckTimedOut && isAuthenticating) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>

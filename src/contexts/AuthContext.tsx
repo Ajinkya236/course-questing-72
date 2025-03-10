@@ -43,7 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [authInitialized, setAuthInitialized] = useState(false);
-  const [authInitTimeoutId, setAuthInitTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Helper function to fetch user profile
   const fetchUserProfile = async (userId: string): Promise<any> => {
@@ -96,12 +95,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let isMounted = true;
+    
     // Initial auth state check
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth state...');
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         console.log('Initial auth session:', currentSession?.user?.id || 'No session');
+        
+        if (!isMounted) return;
         
         setSession(currentSession);
         
@@ -112,25 +115,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
-        setUser(null);
-        setSession(null);
+        if (isMounted) {
+          setUser(null);
+          setSession(null);
+        }
       } finally {
-        setIsAuthenticating(false);
-        setAuthInitialized(true);
-        console.log('Auth initialization complete');
+        if (isMounted) {
+          setIsAuthenticating(false);
+          setAuthInitialized(true);
+          console.log('Auth initialization complete');
+        }
       }
     };
 
     // Safety timeout to prevent infinite loading state
     const timeoutId = setTimeout(() => {
       console.log('Auth initialization timeout reached');
-      if (!authInitialized) {
+      if (isMounted && !authInitialized) {
         setIsAuthenticating(false);
         setAuthInitialized(true);
       }
-    }, 5000); // 5 second timeout
-    
-    setAuthInitTimeoutId(timeoutId);
+    }, 3000); // 3 second timeout
 
     initializeAuth();
 
@@ -138,6 +143,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log('Auth state changed:', event, newSession?.user?.id || 'No user');
+        
+        if (!isMounted) return;
         
         setSession(newSession);
         
@@ -168,11 +175,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
-      // Clear timeout on cleanup
-      if (authInitTimeoutId) {
-        clearTimeout(authInitTimeoutId);
-      }
+      clearTimeout(timeoutId);
     };
   }, []);
 
