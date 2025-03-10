@@ -1,8 +1,7 @@
-
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '@/contexts/AuthContext';
+import { AuthContext } from '@/contexts/auth/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import {
   Card,
