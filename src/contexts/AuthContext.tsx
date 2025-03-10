@@ -96,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
     
     // Initial auth state check
     const initializeAuth = async () => {
@@ -113,71 +114,81 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUser(null);
         }
+
+        // Only set authInitialized after we've handled the session
+        setAuthInitialized(true);
+        setIsAuthenticating(false);
+        console.log('Auth initialization complete');
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (isMounted) {
           setUser(null);
           setSession(null);
-        }
-      } finally {
-        if (isMounted) {
-          setIsAuthenticating(false);
           setAuthInitialized(true);
-          console.log('Auth initialization complete');
+          setIsAuthenticating(false);
         }
       }
     };
 
-    // Safety timeout to prevent infinite loading state
-    const timeoutId = setTimeout(() => {
-      console.log('Auth initialization timeout reached');
-      if (isMounted && !authInitialized) {
-        setIsAuthenticating(false);
-        setAuthInitialized(true);
-      }
-    }, 3000); // 3 second timeout
-
+    // Start initialization
     initializeAuth();
 
-    // Listen for auth changes
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log('Auth state changed:', event, newSession?.user?.id || 'No user');
         
         if (!isMounted) return;
-        
-        setSession(newSession);
-        
-        // Handle different auth events
-        switch(event) {
-          case 'SIGNED_IN':
-          case 'USER_UPDATED':
-            if (newSession?.user) {
-              await updateUserState(newSession.user);
-            }
-            break;
-          case 'SIGNED_OUT':
-            setUser(null);
-            break;
-          default:
-            // For other events, just update based on session state
-            if (newSession?.user) {
-              await updateUserState(newSession.user);
-            } else {
-              setUser(null);
-            }
+
+        // Clear any pending timeout when auth state changes
+        if (timeoutId) {
+          clearTimeout(timeoutId);
         }
         
-        // Always ensure loading state is off after auth state change
-        setIsAuthenticating(false);
-        setAuthInitialized(true);
+        setSession(newSession);
+        setIsAuthenticating(true);
+        
+        try {
+          switch(event) {
+            case 'SIGNED_IN':
+            case 'USER_UPDATED':
+              if (newSession?.user) {
+                await updateUserState(newSession.user);
+              }
+              break;
+            case 'SIGNED_OUT':
+              setUser(null);
+              break;
+            default:
+              if (newSession?.user) {
+                await updateUserState(newSession.user);
+              } else {
+                setUser(null);
+              }
+          }
+        } finally {
+          // Always ensure we update our loading states
+          if (isMounted) {
+            setIsAuthenticating(false);
+            setAuthInitialized(true);
+          }
+        }
       }
     );
 
+    // Timeout as a fallback, but longer to allow for initial auth check
+    timeoutId = setTimeout(() => {
+      if (isMounted && !authInitialized) {
+        console.log('Auth initialization timeout reached');
+        setIsAuthenticating(false);
+        setAuthInitialized(true);
+      }
+    }, 5000); // Increased to 5 seconds to allow more time for initial auth
+
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
       subscription.unsubscribe();
-      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -358,7 +369,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resetPassword, 
       isAuthenticating 
     }}>
-      {authInitialized || !isAuthenticating ? children : (
+      {authInitialized ? children : (
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
           <span className="ml-3 text-primary">Loading authentication...</span>

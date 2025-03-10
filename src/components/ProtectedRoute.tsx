@@ -8,10 +8,9 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, session, isAuthenticating } = useContext(AuthContext);
+  const { user, isAuthenticating } = useContext(AuthContext);
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [authCheckTimedOut, setAuthCheckTimedOut] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     // Log authentication status for debugging
@@ -22,27 +21,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       path: location.pathname
     });
 
-    // Set a timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        console.log('Auth check timeout reached, proceeding with available auth state');
-        setAuthCheckTimedOut(true);
-        setIsLoading(false);
-      }
-    }, 3000); // 3 second timeout
-
-    // If auth state is determined, update loading state
-    if (!isAuthenticating) {
-      setIsLoading(false);
+    // Only set redirect after auth is complete and user is not present
+    if (!isAuthenticating && !user) {
+      setShouldRedirect(true);
     }
+  }, [user, isAuthenticating, location.pathname]);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [user, isAuthenticating, location.pathname, isLoading]);
-
-  // Show brief loading state but don't let it persist
-  if (isLoading && !authCheckTimedOut && isAuthenticating) {
+  // Show loading state while authenticating
+  if (isAuthenticating) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -51,16 +37,25 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // If we're no longer loading or timeout reached, check auth status
-  if (!user) {
+  // Only redirect after we've confirmed auth is complete and user is not present
+  if (shouldRedirect) {
     console.log('User not authenticated, redirecting to sign-in from:', location.pathname);
-    // Redirect to the login page, but save the current location they were
-    // trying to go to so we can redirect them back after logging in
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
-  console.log('User authenticated, allowing access to:', location.pathname);
-  return <>{children}</>;
+  // If we have a user, render the protected content
+  if (user) {
+    console.log('User authenticated, allowing access to:', location.pathname);
+    return <>{children}</>;
+  }
+
+  // Default loading state while we determine auth status
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      <span className="ml-3 text-primary">Loading...</span>
+    </div>
+  );
 };
 
 export default ProtectedRoute;
