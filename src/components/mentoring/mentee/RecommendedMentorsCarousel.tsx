@@ -164,7 +164,9 @@ const RecommendedMentorsCarousel: React.FC = () => {
         ))}
       </div>
 
-      <style jsx>{`
+      {/* Fixed the style tag here - removed jsx property */}
+      <style>
+        {`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -172,7 +174,8 @@ const RecommendedMentorsCarousel: React.FC = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };

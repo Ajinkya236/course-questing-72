@@ -37,7 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  // Initialize auth state
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -45,7 +44,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const { user } = session;
           setSession(session);
           
-          // Fetch user profile data
           if (user) {
             const { data: profile } = await supabase
               .from('profiles')
@@ -68,13 +66,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Initial session check
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setSession(session);
         
-        // Fetch user profile data
         if (session.user) {
           const { data: profile } = await supabase
             .from('profiles')
@@ -106,11 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ 
         email, 
-        password,
-        options: { 
-          // If rememberMe is true, keep the session for 30 days, otherwise use default
-          persistSession: rememberMe
-        } 
+        password
       });
       
       if (error) {
