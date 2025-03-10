@@ -1,8 +1,7 @@
 
-import React, { useState, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
-import { useTheme } from "./components/hooks/use-theme"
 import { Toaster } from "@/components/ui/toaster"
 import { ModeToggle } from './components/ui/mode-toggle';
 import { Button } from '@/components/ui/button';
@@ -15,9 +14,11 @@ import {
   Users, 
   Headphones, 
   HelpCircle,
-  ChevronDown
+  ChevronDown,
+  LogOut
 } from 'lucide-react';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, AuthContext } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +27,11 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
+// Lazy load pages
 const SignIn = lazy(() => import('./pages/SignIn'));
+const SignUp = lazy(() => import('./pages/SignUp'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Home = lazy(() => import('./pages/Home'));
 const Discover = lazy(() => import('./pages/Discover'));
 const MyLearning = lazy(() => import('./pages/MyLearning'));
@@ -44,7 +49,6 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center h-screen">
@@ -52,20 +56,6 @@ const PageLoader = () => (
     <span className="ml-3 text-primary">Loading...</span>
   </div>
 );
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(true);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/sign-in" />;
-  }
-
-  return <>{children}</>;
-};
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -84,7 +74,12 @@ const courseCategories = [
 ];
 
 const TopNavigation: React.FC = () => {
-  const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
+  const [isDiscoverHovered, setIsDiscoverHovered] = React.useState(false);
+  const { user, logout } = React.useContext(AuthContext);
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
@@ -172,7 +167,7 @@ const TopNavigation: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80" 
+                  src={user?.avatar_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"} 
                   alt="Profile" 
                   className="h-8 w-8 rounded-full"
                 />
@@ -186,7 +181,10 @@ const TopNavigation: React.FC = () => {
                 <Link to="/faq">FAQs</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Sign Out</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -224,7 +222,13 @@ function App() {
         >
           <Suspense fallback={<PageLoader />}>
             <Routes>
+              {/* Public Routes */}
               <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Protected Routes */}
               <Route path="/" element={
                 <ProtectedRoute>
                   <PageLayout>
@@ -252,9 +256,9 @@ function App() {
                 
                 <Route path="/mentoring/recommended-mentors" element={<RecommendedMentorsPage />} />
                 <Route path="/leaderboard" element={<LeaderboardFullView />} />
-                
-                <Route path="/forgot-password" element={<ForgotPassword />} />
               </Route>
+              
+              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
