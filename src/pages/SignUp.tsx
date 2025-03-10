@@ -73,16 +73,19 @@ const SignUp = () => {
     setSignupError(null);
     
     try {
-      const { error } = await signup(data.email, data.password);
+      const { error, data: authData } = await signup(data.email, data.password);
       
       if (error) {
         console.error('Sign up error:', error);
         setSignupError(error.message);
-        toast({
-          title: "Sign up failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        return;
+      }
+      
+      // Supabase can return success but with empty identities, which means the user already exists
+      if (!authData?.user || authData.user.identities?.length === 0) {
+        const errorMsg = "This email is already registered. Please sign in instead.";
+        console.warn('Sign up issue - likely existing user:', errorMsg);
+        setSignupError(errorMsg);
         return;
       }
       
@@ -97,11 +100,6 @@ const SignUp = () => {
       console.error('Unexpected sign up error:', error);
       const errorMessage = error instanceof Error ? error.message : "There was a problem with your signup.";
       setSignupError(errorMessage);
-      toast({
-        title: "Sign up failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
     }
   };
 

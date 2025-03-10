@@ -41,47 +41,82 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true); // Set to true initially
   const [authInitialized, setAuthInitialized] = useState(false);
+
+  // Helper function to fetch user profile
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+        
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      return profile;
+    } catch (err) {
+      console.error('Unexpected error fetching user profile:', err);
+      return null;
+    }
+  };
+
+  // Helper function to set user state
+  const updateUserState = async (sessionUser: User | null) => {
+    if (!sessionUser) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const profile = await fetchUserProfile(sessionUser.id);
+      
+      setUser({
+        id: sessionUser.id,
+        email: sessionUser.email || '',
+        first_name: profile?.first_name || '',
+        last_name: profile?.last_name || '',
+        avatar_url: profile?.avatar_url || '',
+      });
+      
+      console.log('User state updated:', sessionUser.id);
+    } catch (err) {
+      console.error('Error updating user state:', err);
+      // Set basic user info if profile fetch fails
+      setUser({
+        id: sessionUser.id,
+        email: sessionUser.email || '',
+      });
+    }
+  };
 
   useEffect(() => {
     // Initial auth state check
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Initial auth session:', session);
+        console.log('Initializing auth state...');
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        console.log('Initial auth session:', currentSession?.user?.id || 'No session');
         
-        setSession(session);
+        setSession(currentSession);
         
-        if (session?.user) {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-              
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-              first_name: profile?.first_name || '',
-              last_name: profile?.last_name || '',
-              avatar_url: profile?.avatar_url || '',
-            });
-            console.log('User profile loaded:', profile);
-          } catch (err) {
-            console.error('Error fetching user profile:', err);
-            // Still set the basic user even if profile fetch fails
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-            });
-          }
+        if (currentSession?.user) {
+          await updateUserState(currentSession.user);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
+        setUser(null);
+        setSession(null);
       } finally {
+        setIsAuthenticating(false);
         setAuthInitialized(true);
+        console.log('Auth initialization complete');
       }
     };
 
@@ -89,36 +124,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        setSession(session);
+      async (event, newSession) => {
+        console.log('Auth state changed:', event, newSession?.user?.id || 'No user');
         
-        if (session?.user) {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-              
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-              first_name: profile?.first_name || '',
-              last_name: profile?.last_name || '',
-              avatar_url: profile?.avatar_url || '',
-            });
-          } catch (err) {
-            console.error('Error fetching user profile on auth change:', err);
-            // Still set the basic user even if profile fetch fails
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-            });
-          }
-        } else {
-          setUser(null);
+        setSession(newSession);
+        
+        // Handle different auth events
+        switch(event) {
+          case 'SIGNED_IN':
+          case 'USER_UPDATED':
+            if (newSession?.user) {
+              await updateUserState(newSession.user);
+            }
+            break;
+          case 'SIGNED_OUT':
+            setUser(null);
+            break;
+          default:
+            // For other events, just update based on session state
+            if (newSession?.user) {
+              await updateUserState(newSession.user);
+            } else {
+              setUser(null);
+            }
         }
+        
+        // Always ensure loading state is off after auth state change
+        setIsAuthenticating(false);
       }
     );
 
@@ -139,13 +171,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Login error from Supabase:', error);
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error, data: null };
       }
       
-      console.log('Login successful, data:', data);
+      console.log('Login successful, user:', data?.user?.id);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      
       return { error: null, data };
     } catch (error) {
       console.error('Unexpected login error:', error);
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
       return { error: error as Error, data: null };
     } finally {
       setIsAuthenticating(false);
@@ -164,13 +211,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Signup error from Supabase:', error);
+        toast({
+          title: "Signup Failed",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error, data: null };
       }
       
-      console.log('Signup successful, data:', data);
+      // Check for specific conditions where Supabase returns success but there's an issue
+      if (!data.user || data.user.identities?.length === 0) {
+        const errorMsg = "This email is already registered. Please sign in instead.";
+        console.warn('Signup issue - likely existing user:', errorMsg);
+        toast({
+          title: "Signup Failed",
+          description: errorMsg,
+          variant: "destructive",
+        });
+        return { 
+          error: new Error(errorMsg), 
+          data: null 
+        };
+      }
+      
+      console.log('Signup successful, user:', data?.user?.id);
+      toast({
+        title: "Signup Successful",
+        description: "Please check your email to verify your account.",
+      });
+      
       return { error: null, data };
     } catch (error) {
       console.error('Unexpected signup error:', error);
+      toast({
+        title: "Signup Failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
       return { error: error as Error, data: null };
     } finally {
       setIsAuthenticating(false);
@@ -194,6 +271,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Logout successful');
         setUser(null);
         setSession(null);
+        toast({
+          title: "Logged Out",
+          description: "You have successfully logged out.",
+        });
       }
     } catch (error) {
       console.error('Unexpected logout error:', error);
@@ -218,13 +299,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Password reset error:', error);
+        toast({
+          title: "Password Reset Failed",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error, data: null };
       }
       
       console.log('Password reset email sent');
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Please check your email for the password reset link.",
+      });
       return { error: null, data: { message: 'Password reset email sent' } };
     } catch (error) {
       console.error('Unexpected password reset error:', error);
+      toast({
+        title: "Password Reset Failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
       return { error: error as Error, data: null };
     } finally {
       setIsAuthenticating(false);

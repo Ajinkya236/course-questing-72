@@ -27,10 +27,13 @@ const SignIn = () => {
   // Get the intended destination from location state, or default to '/'
   const from = location.state?.from?.pathname || '/';
 
-  // If already logged in, redirect to home
+  console.log('SignIn page - Location state:', location.state);
+  console.log('SignIn page - Redirect destination:', from);
+
+  // If already logged in, redirect to home or previous location
   useEffect(() => {
     if (user) {
-      console.log('User is logged in, redirecting to:', from);
+      console.log('User is already logged in, redirecting to:', from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
@@ -46,11 +49,6 @@ const SignIn = () => {
       if (error) {
         console.error('Sign in error:', error);
         setLoginError(error.message);
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
         return;
       }
       
@@ -70,11 +68,6 @@ const SignIn = () => {
       console.error('Unexpected sign in error:', error);
       const errorMessage = error instanceof Error ? error.message : "There was a problem signing you in.";
       setLoginError(errorMessage);
-      toast({
-        title: "Sign in failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
     }
   };
 
