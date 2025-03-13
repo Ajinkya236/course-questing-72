@@ -34,6 +34,7 @@
   background-color: white; /* Ensuring buttons have a solid background */
 }
 
+/* Show buttons when hovering over the entire carousel area */
 .embla:hover .embla__button,
 .group:hover .embla__button,
 .group\\/carousel:hover .embla__button {
