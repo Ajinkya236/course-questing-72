@@ -242,14 +242,14 @@ serve(async (req) => {
       }
     )
     
-    // Get query parameters to control what we sync
-    const url = new URL(req.url)
-    const syncDomains = url.searchParams.get('domains') === 'true'
-    const syncSkills = url.searchParams.get('skills') === 'true'
-    const syncJobRoles = url.searchParams.get('job_roles') === 'true'
-    const syncRewards = url.searchParams.get('rewards') === 'true'
-    const syncBadges = url.searchParams.get('badges') === 'true'
-    const syncAll = url.searchParams.get('all') === 'true'
+    // Get options from request body instead of query parameters
+    const options = await req.json();
+    const syncDomains = options.domains === true;
+    const syncSkills = options.skills === true;
+    const syncJobRoles = options.job_roles === true;
+    const syncRewards = options.rewards === true;
+    const syncBadges = options.badges === true;
+    const syncAll = options.all === true;
     
     const results = {}
     

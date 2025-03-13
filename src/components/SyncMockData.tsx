@@ -20,13 +20,9 @@ export const SyncMockData = () => {
   const handleSync = async () => {
     setIsLoading(true);
     try {
-      const queryParams = new URLSearchParams();
-      Object.entries(syncOptions).forEach(([key, value]) => {
-        if (value) queryParams.append(key, 'true');
-      });
-
+      // Instead of using query params, pass the options in the body
       const { data, error } = await supabase.functions.invoke('sync-mock-data', {
-        query: queryParams,
+        body: syncOptions,
       });
 
       if (error) {
