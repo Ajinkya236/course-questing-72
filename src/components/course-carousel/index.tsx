@@ -129,7 +129,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   };
 
   return (
-    <div className="space-y-4 overflow-hidden">
+    <div className="space-y-4 overflow-visible">
       <CourseCarouselHeader 
         title={title}
         onViewAllClick={onViewAllClick}
@@ -159,7 +159,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       )}
 
-      <div className="relative group/carousel px-8">
+      <div className="relative group/carousel px-12">
         <Carousel
           opts={{
             align: "start",
@@ -200,11 +200,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {!isMobile && (
             <>
               <CarouselPrevious 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -left-12" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -left-14 z-20" 
                 data-embla-prev 
               />
               <CarouselNext 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -right-12" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -right-14 z-20" 
                 data-embla-next 
               />
             </>
