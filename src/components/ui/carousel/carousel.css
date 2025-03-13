@@ -1,0 +1,15 @@
+
+/* Custom styles for the carousel to show partial view of next card */
+.card-partial-visible {
+  padding-right: 12px;
+}
+
+/* Make carousel navigation buttons more visible on hover */
+.embla__button {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.embla:hover .embla__button {
+  opacity: 1;
+}

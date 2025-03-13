@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
@@ -60,6 +63,18 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
     }
   };
 
+  // Handle back button for team member view
+  const handleBack = () => {
+    navigate('/my-team');
+  };
+
+  // Mock user data for team member view
+  const teamMemberData = memberId ? {
+    name: "Alex Johnson",
+    role: "Software Developer",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+  } : null;
+
   return (
     <>
       <Helmet>
@@ -67,6 +82,33 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       </Helmet>
       
       <div className="space-y-6">
+        {/* Back button and user info for team member view */}
+        {memberId && (
+          <div className="flex items-center space-x-4 mb-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2" 
+              onClick={handleBack}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Team
+            </Button>
+            
+            {teamMemberData && (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <img src={teamMemberData.avatar} alt={teamMemberData.name} />
+                </Avatar>
+                <div>
+                  <h3 className="font-medium">{teamMemberData.name}</h3>
+                  <p className="text-sm text-muted-foreground">{teamMemberData.role}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight">
             {memberId ? "Team Member's Learning" : "My Learning"}

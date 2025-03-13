@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import useEmblaCarousel from "embla-carousel-react"
+import useEmblaCarousel, { EmblaCarouselType, EmblaOptionsType } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -28,14 +28,14 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: true, // Enable loop for circular scrolling
+        loop: opts?.loop !== undefined ? opts.loop : true, // Enable loop by default for circular scrolling
       },
       plugins
     )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-    const onSelect = React.useCallback((emblaApi: ReturnType<typeof useEmblaCarousel>[1]) => {
+    const onSelect = React.useCallback((emblaApi: EmblaCarouselType) => {
       if (!emblaApi) {
         return
       }
@@ -45,11 +45,15 @@ const Carousel = React.forwardRef<
     }, [])
 
     const scrollPrev = React.useCallback(() => {
-      api?.scrollPrev()
+      if (api) {
+        api.scrollPrev()
+      }
     }, [api])
 
     const scrollNext = React.useCallback(() => {
-      api?.scrollNext()
+      if (api) {
+        api.scrollNext()
+      }
     }, [api])
 
     const handleKeyDown = React.useCallback(
@@ -79,11 +83,11 @@ const Carousel = React.forwardRef<
       }
 
       onSelect(api)
-      api.on("reInit", onSelect)
-      api.on("select", onSelect)
+      api.on("reInit", () => onSelect(api))
+      api.on("select", () => onSelect(api))
 
       return () => {
-        api?.off("select", onSelect)
+        api.off("select", () => onSelect(api))
       }
     }, [api, onSelect])
 
@@ -153,7 +157,7 @@ const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 card-partial-visible",
+        "min-w-0 shrink-0 grow-0 basis-full p-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4",
         orientation === "horizontal" ? "pl-4" : "pt-4",
         className
       )}
@@ -184,7 +188,7 @@ const CarouselPrevious = React.forwardRef<
       )}
       onClick={scrollPrev}
       disabled={!canScrollPrev}
-      data-embla-prev
+      data-carousel-button="prev"
       {...props}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -215,7 +219,7 @@ const CarouselNext = React.forwardRef<
       )}
       onClick={scrollNext}
       disabled={!canScrollNext}
-      data-embla-next
+      data-carousel-button="next"
       {...props}
     >
       <ArrowRight className="h-4 w-4" />
@@ -227,6 +231,8 @@ CarouselNext.displayName = "CarouselNext"
 
 // Export all components
 export {
+  type EmblaCarouselType as CarouselApi,
+  type EmblaOptionsType as CarouselOptions,
   Carousel,
   CarouselContent,
   CarouselItem,

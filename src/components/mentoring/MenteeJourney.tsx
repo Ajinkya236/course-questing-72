@@ -40,11 +40,18 @@ const MenteeJourney = () => {
           setSelectedTopics(JSON.parse(savedTopics));
         } catch (e) {
           console.error("Failed to parse saved topics", e);
+          // If we can't parse the saved topics, set some default ones
+          setSelectedTopics(["Leadership", "Software Development"]);
         }
+      } else {
+        // If no saved topics, set some default ones
+        setSelectedTopics(["Leadership", "Software Development"]);
       }
     } else {
       // If preferences aren't set, show the dialog on initial load
       setShowPreferencesDialog(true);
+      // Set some default topics
+      setSelectedTopics(["Leadership", "Software Development"]);
     }
   }, []);
   

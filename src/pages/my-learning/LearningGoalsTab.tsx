@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, User, Users, ArrowLeft } from 'lucide-react';
+import { Calendar, Target, User, Users } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -48,26 +48,8 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
     return activeFilter === 'self' ? selfAssignedCourses : managerAssignedCourses;
   };
 
-  // Handle back button when viewing team member's goals
-  const handleBack = () => {
-    navigate('/my-team');
-  };
-
   return (
     <div className="space-y-8">
-      {/* Back button for team member view */}
-      {memberId && (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="mb-4" 
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Team
-        </Button>
-      )}
-
       {/* Simplified Filter Tabs */}
       <Tabs value={activeFilter} onValueChange={setActiveFilter}>
         <TabsList className="grid grid-cols-2 w-full max-w-md">

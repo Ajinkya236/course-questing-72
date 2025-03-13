@@ -4,7 +4,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Search, Star, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
@@ -18,6 +19,10 @@ interface Mentor {
   rating: number;
   reviews: number;
   topics: string[];
+  bio?: string;
+  experience?: string;
+  availability?: string;
+  expectations?: string;
 }
 
 interface RecommendedMentorsCarouselProps {
@@ -34,7 +39,11 @@ const sampleMentors: Mentor[] = [
     image: "https://randomuser.me/api/portraits/women/44.jpg",
     rating: 4.9,
     reviews: 38,
-    topics: ["Data Analysis", "Machine Learning", "Statistics"]
+    topics: ["Data Analysis", "Machine Learning", "Statistics"],
+    bio: "I'm passionate about helping others understand complex data concepts and apply them to real-world problems.",
+    experience: "15+ years of experience in data science and analytics across various industries.",
+    availability: "Available for 1-hour sessions weekly",
+    expectations: "Looking for dedicated mentees who are willing to complete assignments between sessions."
   },
   {
     id: 2,
@@ -43,7 +52,11 @@ const sampleMentors: Mentor[] = [
     image: "https://randomuser.me/api/portraits/men/32.jpg",
     rating: 4.8,
     reviews: 27,
-    topics: ["Product Management", "UX Design", "Agile Methodologies"]
+    topics: ["Product Management", "UX Design", "Agile Methodologies"],
+    bio: "Product leader focused on building user-centric experiences and coaching the next generation of product thinkers.",
+    experience: "Led product teams at several tech startups and Fortune 500 companies.",
+    availability: "Available biweekly for mentoring sessions",
+    expectations: "I expect mentees to come prepared with specific questions or challenges they're facing."
   },
   {
     id: 3,
@@ -52,7 +65,11 @@ const sampleMentors: Mentor[] = [
     image: "https://randomuser.me/api/portraits/women/28.jpg",
     rating: 5.0,
     reviews: 42,
-    topics: ["Leadership", "Communication", "Career Development"]
+    topics: ["Leadership", "Communication", "Career Development"],
+    bio: "Helping professionals navigate career transitions and develop leadership skills.",
+    experience: "20+ years in HR leadership and executive coaching.",
+    availability: "Flexible scheduling, typically 45-60 minute sessions",
+    expectations: "Open to both short-term and long-term mentoring relationships."
   },
   {
     id: 4,
@@ -61,7 +78,11 @@ const sampleMentors: Mentor[] = [
     image: "https://randomuser.me/api/portraits/men/86.jpg",
     rating: 4.7,
     reviews: 31,
-    topics: ["Software Development", "Cloud Computing", "System Architecture"]
+    topics: ["Software Development", "Cloud Computing", "System Architecture"],
+    bio: "Engineer turned leader who loves helping others grow their technical and leadership skills.",
+    experience: "15 years building and leading engineering teams at tech companies.",
+    availability: "Weekly 30-minute check-ins or biweekly deep dives",
+    expectations: "Looking for mentees who have clear goals and are passionate about technology."
   },
   {
     id: 5,
@@ -70,7 +91,11 @@ const sampleMentors: Mentor[] = [
     image: "https://randomuser.me/api/portraits/women/79.jpg",
     rating: 4.6,
     reviews: 24,
-    topics: ["Digital Marketing", "Content Strategy", "Brand Development"]
+    topics: ["Digital Marketing", "Content Strategy", "Brand Development"],
+    bio: "Marketing strategist specializing in digital transformation and content marketing.",
+    experience: "12+ years in marketing across B2B and B2C sectors.",
+    availability: "Monthly sessions with email support in between",
+    expectations: "Prefer mentees who are currently working in marketing roles."
   }
 ];
 
@@ -82,6 +107,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState('All');
   const isMobile = useIsMobile();
+  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   // Extract all unique topics from mentors for filters
   const allTopics = selectedTopics.length > 0 
@@ -100,18 +127,24 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
     navigate('/mentoring/recommended-mentors');
   };
 
-  const handleMentorSelect = (mentorId: number) => {
-    toast({
-      title: "Mentor Selected",
-      description: "You've selected a mentor. You can now view their full profile."
-    });
-    // Would navigate to mentor profile in a real app
-    // navigate(`/mentoring/mentor/${mentorId}`);
+  const handleMentorSelect = (mentor: Mentor) => {
+    setSelectedMentor(mentor);
+    setDialogOpen(true);
+  };
+
+  const handleSendRequest = () => {
+    if (selectedMentor) {
+      toast({
+        title: "Mentorship Request Sent",
+        description: `Your request has been sent to ${selectedMentor.name}.`
+      });
+      setDialogOpen(false);
+    }
   };
   
   // Calculate card width to show proper number of items and partial next item
   const getCardPercentage = () => {
-    if (isMobile) return 100; // Full width on mobile
+    if (isMobile) return 85; // Full width on mobile
     return 23; // Shows 4 mentors + 20% of the 5th one
   };
   
@@ -157,8 +190,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                   }}
                 >
                   <Card 
-                    className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer h-[300px]"
-                    onClick={() => handleMentorSelect(mentor.id)}
+                    className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group"
                   >
                     <CardContent className="p-4">
                       <div className="flex flex-col items-center text-center">
@@ -184,7 +216,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                           <span className="text-xs text-muted-foreground">({mentor.reviews})</span>
                         </div>
                         
-                        <div className="flex flex-wrap gap-1 justify-center">
+                        <div className="flex flex-wrap gap-1 justify-center mb-3">
                           {mentor.topics.slice(0, 2).map(topic => (
                             <Badge key={topic} variant="secondary" className="text-xs">{topic}</Badge>
                           ))}
@@ -193,7 +225,14 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                           )}
                         </div>
                         
-                        <Button size="sm" className="w-full mt-3">Request Mentoring</Button>
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleMentorSelect(mentor)}
+                          className="w-full mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2"
+                        >
+                          <Send className="h-3 w-3" /> 
+                          Request Mentoring
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -212,6 +251,77 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           <CarouselNext className="opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300 -right-3" />
         </Carousel>
       </div>
+
+      {/* Mentor Details Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Mentor Details</DialogTitle>
+            <DialogDescription>
+              Review mentor information before sending a request
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMentor && (
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full overflow-hidden">
+                  <img 
+                    src={selectedMentor.image} 
+                    alt={selectedMentor.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg">{selectedMentor.name}</h3>
+                  <p className="text-muted-foreground">{selectedMentor.title}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                    <span className="text-sm">{selectedMentor.rating}</span>
+                    <span className="text-xs text-muted-foreground">({selectedMentor.reviews} reviews)</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <h4 className="text-sm font-semibold">Bio</h4>
+                  <p className="text-sm">{selectedMentor.bio}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-semibold">Experience</h4>
+                  <p className="text-sm">{selectedMentor.experience}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-semibold">Availability</h4>
+                  <p className="text-sm">{selectedMentor.availability}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-semibold">Expectations</h4>
+                  <p className="text-sm">{selectedMentor.expectations}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-semibold">Topics</h4>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {selectedMentor.topics.map(topic => (
+                      <Badge key={topic} variant="secondary" className="text-xs">{topic}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSendRequest}>Send Request</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
