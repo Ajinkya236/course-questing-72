@@ -48,7 +48,7 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
 
-  // Handle tab changes
+  // Handle tab changes - Fixed to ensure proper navigation
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     
@@ -56,11 +56,8 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
       : '/my-learning';
       
-    if (value === 'courses') {
-      navigate(`${basePath}?tab=courses&status=in-progress`);
-    } else {
-      navigate(`${basePath}?tab=${value}`);
-    }
+    // Direct navigation to the appropriate tab
+    navigate(`${basePath}?tab=${value}${value === 'courses' ? '&status=in-progress' : ''}`);
   };
 
   // Handle back button for team member view
