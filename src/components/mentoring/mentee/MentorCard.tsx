@@ -28,7 +28,7 @@ const MentorCard: React.FC<MentorCardProps> = ({
       onMouseLeave={onMouseLeave}
     >
       <CardContent className="p-4 flex flex-col h-full">
-        <div className="flex flex-col items-center text-center">
+        <div className="flex flex-col items-center text-center mb-auto">
           <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
             <img 
               src={mentor.image} 
@@ -65,7 +65,7 @@ const MentorCard: React.FC<MentorCardProps> = ({
         <Button 
           size="sm" 
           onClick={() => onSelectMentor(mentor)}
-          className="w-full mt-auto flex items-center justify-center gap-2 mentor-request-button"
+          className="w-full mt-3 flex items-center justify-center gap-2 mentor-request-button"
         >
           <Send className="h-3 w-3" /> 
           Request Mentoring

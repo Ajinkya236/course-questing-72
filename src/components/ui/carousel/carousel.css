@@ -117,17 +117,20 @@
   z-index: 20;
 }
 
-/* Ensure course action buttons are always visible */
-.pt-2.opacity-100 {
-  display: block !important;
-  opacity: 1 !important;
+/* Make buttons only visible on hover for course cards */
+.course-card-actions {
+  opacity: 0;
+  visibility: hidden;
+  display: block;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-/* Make course card buttons always visible */
-.course-card-actions {
+/* Show course card actions on hover */
+.carousel-card:hover .course-card-actions,
+.card:hover .course-card-actions,
+.w-full:hover .course-card-actions {
   opacity: 1 !important;
   visibility: visible !important;
-  display: block !important;
 }
 
 /* Make mentor request button always visible */

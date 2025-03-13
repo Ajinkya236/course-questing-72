@@ -78,7 +78,7 @@ function App() {
                 <Route path="/my-team" element={<PageLayout><MyTeam /></PageLayout>} />
                 <Route path="/my-team/member/:memberId" element={<PageLayout><Profile /></PageLayout>} />
                 <Route path="/my-team/member/:memberId/learning" element={<PageLayout><MyLearning /></PageLayout>} />
-                <Route path="/my-team/member/:memberId/goals" element={<PageLayout><MyLearning /></PageLayout>} />
+                <Route path="/my-team/member/:memberId/goals" element={<PageLayout><MyLearning tab="goals" /></PageLayout>} />
                 <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
                 <Route path="/view-all/domains" element={<PageLayout><ViewAllDomainsPage /></PageLayout>} />
                 <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
