@@ -42,11 +42,11 @@
 
 /* Position buttons outside the carousel content */
 .embla__button--prev {
-  left: -20px;
+  left: -40px; /* Moved further to the left */
 }
 
 .embla__button--next {
-  right: -20px;
+  right: -40px; /* Moved further to the right */
 }
 
 /* Enhance overflow to ensure next card is partially visible */
