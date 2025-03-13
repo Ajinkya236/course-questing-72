@@ -1,3 +1,4 @@
+
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -26,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bell, User } from "lucide-react";
 import { ModeToggle } from "../ui/mode-toggle";
-import { AuthContext } from '@/contexts/auth/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const NavBarUnused = () => {
   const { user, logout } = useContext(AuthContext);
