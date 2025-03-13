@@ -1,19 +1,19 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import CourseCarouselCard from "./CourseCarouselCard";
-import CourseCarouselHeader from "./CourseCarouselHeader";
-import { Course } from "@/types/course";
 import { useVideoPreview } from '@/hooks/useVideoPreview';
+import { Course } from "@/types/course";
+import CourseCarouselHeader from "./CourseCarouselHeader";
+import CarouselNavButton from "./CarouselNavButton";
+import CourseCarouselItem from "./CourseCarouselItem";
 
 interface CourseCarouselProps {
   title: string;
   courses: Course[];
   viewAllLink?: string;
-  viewAllUrl?: string; // Add viewAllUrl prop for compatibility with Home.tsx
+  viewAllUrl?: string;
   showTrainingCategory?: boolean;
   onCourseSelect?: (courseId: string) => void;
-  onViewAllClick?: () => void; // Add the missing onViewAllClick prop
+  onViewAllClick?: () => void;
   filterOptions?: string[];
   showSkillFilters?: boolean;
 }
@@ -22,10 +22,10 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   title,
   courses,
   viewAllLink,
-  viewAllUrl, // Add viewAllUrl to the props
+  viewAllUrl,
   showTrainingCategory = false,
   onCourseSelect,
-  onViewAllClick, // Add the prop to the component
+  onViewAllClick,
   filterOptions,
   showSkillFilters,
 }) => {
@@ -125,18 +125,15 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       <CourseCarouselHeader 
         title={title} 
         viewAllUrl={viewAllUrl || viewAllLink} 
+        onViewAllClick={onViewAllClick}
       />
       
       <div className="relative group">
-        <Button 
-          variant="outline"
-          size="icon"
-          className={`absolute -left-4 top-1/2 transform -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${scrollPosition <= 0 ? 'invisible' : ''}`}
+        <CarouselNavButton 
+          direction="left" 
           onClick={() => handleScroll("left")}
           disabled={scrollPosition <= 0}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
+        />
         
         <div 
           ref={carouselRef}
@@ -151,45 +148,24 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         >
           <div className="flex gap-4 pl-2 pr-16">
             {courses.map((course) => (
-              <div 
+              <CourseCarouselItem
                 key={course.id}
-                data-course-item
-                className="flex-shrink-0 w-[280px] transition-transform duration-300 hover:scale-[1.02]"
-                onMouseEnter={() => handleCourseHover(course.id)}
-                onMouseLeave={handleCourseLeave}
-              >
-                <CourseCarouselCard
-                  course={course}
-                  hoveredCourseId={hoveredCourseId}
-                  handleCardClick={handleCourseSelect}
-                  handleShareClick={(e, courseId) => {
-                    e.stopPropagation();
-                    // Handle share logic
-                  }}
-                  handleBookmarkToggle={(e, courseId, title, isBookmarked) => {
-                    e.stopPropagation();
-                    // Handle bookmark logic
-                  }}
-                  handleAssignClick={(e, courseId) => {
-                    e.stopPropagation();
-                    // Handle assign logic
-                  }}
-                  showTrainingCategory={showTrainingCategory}
-                />
-              </div>
+                course={course}
+                hoveredCourseId={hoveredCourseId}
+                handleCourseHover={handleCourseHover}
+                handleCourseLeave={handleCourseLeave}
+                handleCardClick={handleCourseSelect}
+                showTrainingCategory={showTrainingCategory}
+              />
             ))}
           </div>
         </div>
 
-        <Button 
-          variant="outline"
-          size="icon"
-          className={`absolute -right-4 top-1/2 transform -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${scrollPosition >= maxScroll ? 'invisible' : ''}`}
+        <CarouselNavButton 
+          direction="right" 
           onClick={() => handleScroll("right")}
           disabled={scrollPosition >= maxScroll}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
+        />
       </div>
     </div>
   );
