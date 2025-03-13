@@ -1,68 +1,186 @@
-
 import React, { createContext, useState, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
+import { toast } from '@/hooks/use-toast';
 
-interface User {
-  name?: string;
+interface UserData {
+  id: string;
   email: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string, rememberMe?: boolean) => void;
-  logout: () => void;
-  resetPassword: (email: string) => Promise<void>;
+  user: UserData | null;
+  session: Session | null;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: Error | null }>;
+  signup: (email: string, password: string) => Promise<{ error: Error | null }>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: Error | null }>;
   isAuthenticating: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: () => {},
-  logout: () => {},
-  resetPassword: async () => {},
+  session: null,
+  login: async () => ({ error: null }),
+  signup: async () => ({ error: null }),
+  logout: async () => {},
+  resetPassword: async () => ({ error: null }),
   isAuthenticating: false,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useLocalStorage<User | null>('user', null);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const login = (email: string, password: string, rememberMe = false) => {
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          const { user } = session;
+          setSession(session);
+          
+          if (user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', user.id)
+              .single();
+              
+            setUser({
+              id: user.id,
+              email: user.email || '',
+              first_name: profile?.first_name || '',
+              last_name: profile?.last_name || '',
+              avatar_url: profile?.avatar_url || '',
+            });
+          }
+        } else {
+          setSession(null);
+          setUser(null);
+        }
+      }
+    );
+
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setSession(session);
+        
+        if (session.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            first_name: profile?.first_name || '',
+            last_name: profile?.last_name || '',
+            avatar_url: profile?.avatar_url || '',
+          });
+        }
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const login = async (email: string, password: string, rememberMe = false) => {
     setIsAuthenticating(true);
     
     try {
-      // In a real app, this would authenticate against an API
-      const newUser = { email };
-      setUser(newUser);
+      const { data, error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password
+      });
       
-      // If rememberMe is false, we don't need to do anything as the user is already stored in localStorage
-      // from the useLocalStorage hook which persists by default
+      if (error) {
+        return { error };
+      }
       
-      // In a real app with a backend, you'd set a session cookie with an appropriate expiry based on rememberMe
+      return { error: null };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { error: error as Error };
     } finally {
       setIsAuthenticating(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-  };
-
-  const resetPassword = async (email: string): Promise<void> => {
+  const signup = async (email: string, password: string) => {
     setIsAuthenticating(true);
     
     try {
-      // In a real app, this would make an API call to trigger password reset
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password 
+      });
       
-      // Success response is handled in the component
+      if (error) {
+        return { error };
+      }
+      
+      return { error: null };
+    } catch (error) {
+      console.error('Signup error:', error);
+      return { error: error as Error };
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsAuthenticating(true);
+    
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Logout Error",
+        description: "Failed to log you out. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    setIsAuthenticating(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      return { error };
     } finally {
       setIsAuthenticating(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, resetPassword, isAuthenticating }}>
+    <AuthContext.Provider value={{ 
+      user,
+      session,
+      login, 
+      signup,
+      logout, 
+      resetPassword, 
+      isAuthenticating 
+    }}>
       {children}
     </AuthContext.Provider>
   );

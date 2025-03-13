@@ -50,7 +50,16 @@ const ForgotPassword: React.FC = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
-      await resetPassword(data.email);
+      const { error } = await resetPassword(data.email);
+      
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
       
       setEmailSent(true);
       

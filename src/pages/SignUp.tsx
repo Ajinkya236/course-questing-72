@@ -32,14 +32,20 @@ import {
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  rememberMe: z.boolean().default(false),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'You must agree to the terms and conditions',
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const SignIn = () => {
+const SignUp = () => {
   const navigate = useNavigate();
-  const { user, login, isAuthenticating } = useContext(AuthContext);
+  const { user, signup, isAuthenticating } = useContext(AuthContext);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -47,7 +53,8 @@ const SignIn = () => {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      confirmPassword: '',
+      terms: false,
     },
   });
 
@@ -61,11 +68,11 @@ const SignIn = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
-      const { error } = await login(data.email, data.password, data.rememberMe);
+      const { error } = await signup(data.email, data.password);
       
       if (error) {
         toast({
-          title: "Sign in failed",
+          title: "Sign up failed",
           description: error.message,
           variant: "destructive",
         });
@@ -73,15 +80,15 @@ const SignIn = () => {
       }
       
       toast({
-        title: "Welcome to the Learning Portal!",
-        description: "You have successfully signed in.",
+        title: "Sign up successful!",
+        description: "Please check your email to verify your account.",
       });
       
-      navigate('/');
+      navigate('/sign-in');
     } catch (error) {
       toast({
-        title: "Sign in failed",
-        description: "There was a problem signing you in.",
+        title: "Sign up failed",
+        description: "There was a problem with your signup.",
         variant: "destructive",
       });
     }
@@ -90,7 +97,7 @@ const SignIn = () => {
   return (
     <>
       <Helmet>
-        <title>Sign In | Learning Management System</title>
+        <title>Sign Up | Learning Management System</title>
       </Helmet>
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-muted/30">
         <div className="w-full max-w-md">
@@ -101,9 +108,9 @@ const SignIn = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Sign in to your account</CardTitle>
+              <CardTitle>Create your account</CardTitle>
               <CardDescription>
-                Enter your email to sign in to your account
+                Enter your details to create a new account
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -132,17 +139,7 @@ const SignIn = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Password</FormLabel>
-                          <Button 
-                            variant="link" 
-                            className="p-0 h-auto text-xs"
-                            type="button"
-                            onClick={() => navigate('/forgot-password')}
-                          >
-                            Forgot password?
-                          </Button>
-                        </div>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
                           <Input type="password" {...field} />
                         </FormControl>
@@ -153,7 +150,21 @@ const SignIn = () => {
                   
                   <FormField
                     control={form.control}
-                    name="rememberMe"
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="terms"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                         <FormControl>
@@ -164,7 +175,7 @@ const SignIn = () => {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>
-                            Remember me
+                            I agree to the terms of service and privacy policy
                           </FormLabel>
                         </div>
                       </FormItem>
@@ -175,10 +186,10 @@ const SignIn = () => {
                     {isAuthenticating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
+                        Creating account...
                       </>
                     ) : (
-                      "Sign in"
+                      "Create account"
                     )}
                   </Button>
                 </form>
@@ -187,14 +198,14 @@ const SignIn = () => {
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-center text-sm text-muted-foreground">
                 <p>
-                  By signing in, you agree to our terms of service and privacy policy.
+                  By signing up, you agree to our terms of service and privacy policy.
                 </p>
               </div>
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
-                  Don't have an account?{" "}
+                  Already have an account?{" "}
                   <Button variant="link" className="p-0 h-auto text-primary" asChild>
-                    <Link to="/sign-up">Sign up</Link>
+                    <Link to="/sign-in">Sign in</Link>
                   </Button>
                 </p>
               </div>
@@ -206,4 +217,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

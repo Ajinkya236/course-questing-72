@@ -36,46 +36,6 @@ const Mentoring = () => {
     }
   ];
 
-  // Mock recommended mentors data
-  const recommendedMentors = [
-    {
-      id: 1,
-      name: "Dr. Sarah Johnson",
-      title: "Senior Data Scientist",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      rating: 4.9,
-      reviews: 38,
-      topics: ["Data Analysis", "Machine Learning", "Statistics"]
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      title: "Product Manager",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      rating: 4.8,
-      reviews: 27,
-      topics: ["Product Management", "UX Design", "Agile Methodologies"]
-    },
-    {
-      id: 3,
-      name: "Elena Rodriguez",
-      title: "Executive Coach",
-      image: "https://randomuser.me/api/portraits/women/28.jpg",
-      rating: 5.0,
-      reviews: 42,
-      topics: ["Leadership", "Communication", "Career Development"]
-    },
-    {
-      id: 4,
-      name: "James Wilson",
-      title: "Software Engineering Lead",
-      image: "https://randomuser.me/api/portraits/men/86.jpg",
-      rating: 4.7,
-      reviews: 31,
-      topics: ["Software Development", "Cloud Computing", "System Architecture"]
-    }
-  ];
-
   return (
     <>
       <Helmet>
@@ -98,10 +58,8 @@ const Mentoring = () => {
             {/* Recommended Mentors Section placed above the Mentee Journey */}
             <Card className="mb-6">
               <CardContent className="p-6">
-                <RecommendedMentorsCarousel 
-                  mentors={recommendedMentors} 
-                  selectedTopics={["Leadership", "Software Development"]}
-                />
+                {/* Removed the props that don't match the component's interface */}
+                <RecommendedMentorsCarousel />
               </CardContent>
             </Card>
             
