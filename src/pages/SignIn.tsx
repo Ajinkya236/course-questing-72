@@ -61,16 +61,8 @@ const SignIn = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
-      const { error } = await login(data.email, data.password, data.rememberMe);
-      
-      if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      // For demo purposes, we'll use the context login function
+      login(data.email, data.password, data.rememberMe);
       
       toast({
         title: "Welcome to the Learning Portal!",
@@ -192,10 +184,7 @@ const SignIn = () => {
               </div>
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
-                  Don't have an account?{" "}
-                  <Button variant="link" className="p-0 h-auto text-primary" asChild>
-                    <Link to="/sign-up">Sign up</Link>
-                  </Button>
+                  Don't have an account? Contact your HR department.
                 </p>
               </div>
             </CardFooter>
