@@ -97,12 +97,19 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   }, []);
 
-  // Show a partial view of the next item (information scent)
-  const partialViewStyle = {
-    // Add right padding to the container to show a partial view of the next item
-    // Typically around 15% of the next card is visible
-    paddingRight: 'calc(15% + 16px)'
+  // Calculate course card width to show partial next card
+  const getCardWidth = () => {
+    // Calculate width to show exactly 4 cards with 20% of the 5th
+    // For desktop, this will be around 23% of container width
+    return {
+      base: 'min-w-[85%]', // Mobile: 1 full card + 15% of next
+      sm: 'sm:min-w-[46%]', // Tablet: 2 cards + partial
+      md: 'md:min-w-[30%]', // Small desktop: 3 cards + partial
+      lg: 'lg:min-w-[23%]', // Large desktop: 4 cards + partial
+    };
   };
+
+  const cardWidths = getCardWidth();
 
   if (courses.length === 0) {
     return null;
@@ -127,7 +134,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               size="icon" 
               onClick={scrollLeft} 
               disabled={scrollPosition <= 0}
-              className="h-8 w-8"
+              className="h-8 w-8 embla__button"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -136,7 +143,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               size="icon" 
               onClick={scrollRight} 
               disabled={scrollPosition >= maxScroll}
-              className="h-8 w-8"
+              className="h-8 w-8 embla__button"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -146,16 +153,18 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
       <div 
         ref={carouselRef} 
-        className="overflow-x-auto scrollbar-hide pb-4" 
+        className="overflow-x-auto scrollbar-hide pb-4 course-carousel-container" 
         style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <div 
           ref={contentRef} 
-          className="flex space-x-4 pl-1"
-          style={partialViewStyle}
+          className="flex space-x-4 pl-1 course-carousel-content"
         >
           {courses.map((course) => (
-            <div key={course.id} className="min-w-[250px] max-w-[250px]">
+            <div 
+              key={course.id} 
+              className={`carousel-item-wrapper ${cardWidths.base} ${cardWidths.sm} ${cardWidths.md} ${cardWidths.lg} carousel-card`}
+            >
               <CourseCard
                 id={course.id}
                 title={course.title}
