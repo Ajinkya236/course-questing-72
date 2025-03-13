@@ -127,6 +127,7 @@
 .course-card-actions {
   opacity: 1 !important;
   visibility: visible !important;
+  display: block !important;
 }
 
 /* Make mentor request button always visible */

@@ -53,11 +53,15 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
     setActiveTab(value);
     
     let basePath = memberId 
-      ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
+      ? `/my-team/member/${memberId}/learning`
       : '/my-learning';
       
     // Direct navigation to the appropriate tab
-    navigate(`${basePath}?tab=${value}${value === 'courses' ? '&status=in-progress' : ''}`);
+    if (value === 'courses') {
+      navigate(`${basePath}?tab=${value}&status=in-progress`);
+    } else {
+      navigate(`${basePath}?tab=${value}`);
+    }
   };
 
   // Handle back button for team member view
@@ -71,6 +75,9 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
     role: "Software Developer",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg"
   } : null;
+
+  // Determine if we're in goals view mode
+  const isGoalsView = params.tab === 'goals';
 
   return (
     <>
@@ -117,35 +124,42 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
           </p>
         </div>
 
-        <Tabs 
-          defaultValue="courses" 
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="space-y-4"
-        >
-          <TabsList>
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="goals">Learning Goals</TabsTrigger>
-            <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
-            <TabsTrigger value="rewards">Rewards</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="courses" className="space-y-4">
-            <CoursesTab teamMemberId={memberId} />
-          </TabsContent>
-          
-          <TabsContent value="goals" className="space-y-4">
-            <LearningGoalsTab teamMemberId={memberId} />
-          </TabsContent>
-          
-          <TabsContent value="badges" className="space-y-4">
-            <BadgesTab teamMemberId={memberId} />
-          </TabsContent>
-          
-          <TabsContent value="rewards" className="space-y-4">
-            <RewardsTab teamMemberId={memberId} />
-          </TabsContent>
-        </Tabs>
+        {/* Show specific tab if viewing from team member section */}
+        {memberId && isGoalsView ? (
+          <LearningGoalsTab teamMemberId={memberId} />
+        ) : memberId ? (
+          <CoursesTab teamMemberId={memberId} />
+        ) : (
+          <Tabs 
+            defaultValue="courses" 
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="space-y-4"
+          >
+            <TabsList>
+              <TabsTrigger value="courses">Courses</TabsTrigger>
+              <TabsTrigger value="goals">Learning Goals</TabsTrigger>
+              <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
+              <TabsTrigger value="rewards">Rewards</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="courses" className="space-y-4">
+              <CoursesTab teamMemberId={memberId} />
+            </TabsContent>
+            
+            <TabsContent value="goals" className="space-y-4">
+              <LearningGoalsTab teamMemberId={memberId} />
+            </TabsContent>
+            
+            <TabsContent value="badges" className="space-y-4">
+              <BadgesTab teamMemberId={memberId} />
+            </TabsContent>
+            
+            <TabsContent value="rewards" className="space-y-4">
+              <RewardsTab teamMemberId={memberId} />
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </>
   );
