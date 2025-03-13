@@ -1,21 +1,19 @@
 
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.25.0'
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
-// Set up CORS headers for browser requests
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
-  
+
   try {
-    // Create a Supabase client with the Auth context of the logged in user
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -24,267 +22,239 @@ serve(async (req) => {
           headers: { Authorization: req.headers.get('Authorization')! },
         },
       }
-    )
+    );
+
+    // Get the current user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     
-    // Check if user is authenticated
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser()
-    
-    if (!user) {
+    if (userError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Not authenticated' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401 
-        }
-      )
+        JSON.stringify({ error: "User not authenticated" }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-    
-    // Parse request body
-    const requestData = await req.json()
-    const { action, courseId, progress, position, status, content } = requestData
-    
-    let result = null
-    
+
+    const { action, courseId, progress, position, status, content } = await req.json();
+
     switch (action) {
-      case 'bookmark':
-        // Bookmark a course
-        const { data: bookmarkData, error: bookmarkError } = await supabaseClient
-          .from('user_bookmarks')
-          .insert({
-            user_id: user.id,
-            course_id: courseId
-          })
-          .select()
-        
-        if (bookmarkError) {
-          if (bookmarkError.code === '23505') { // Unique violation
-            return new Response(
-              JSON.stringify({ message: 'Course already bookmarked' }),
-              { 
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 400 
-              }
-            )
-          }
-          throw bookmarkError
-        }
-        
-        result = { success: true, data: bookmarkData }
-        break
-      
-      case 'unbookmark':
-        // Remove a bookmark
-        const { data: unbookmarkData, error: unbookmarkError } = await supabaseClient
-          .from('user_bookmarks')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('course_id', courseId)
-          .select()
-        
-        if (unbookmarkError) throw unbookmarkError
-        
-        result = { success: true, data: unbookmarkData }
-        break
-      
-      case 'get-bookmarks':
-        // Get all bookmarked courses
-        const { data: bookmarks, error: bookmarksError } = await supabaseClient
-          .from('user_bookmarks')
-          .select('course_id, created_at, courses(*)')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-        
-        if (bookmarksError) throw bookmarksError
-        
-        result = { 
-          success: true, 
-          data: bookmarks.map(item => ({
-            ...item.courses,
-            bookmarked_at: item.created_at
-          }))
-        }
-        break
-      
-      case 'update-progress':
-        // Update course progress
-        if (typeof progress !== 'number' || progress < 0 || progress > 100) {
-          return new Response(
-            JSON.stringify({ error: 'Progress must be a number between 0 and 100' }),
-            { 
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 400 
-            }
-          )
-        }
-        
-        let updateData = {
-          user_id: user.id,
-          course_id: courseId,
-          progress_percentage: progress,
-          last_position: position || null,
-          updated_at: new Date().toISOString()
-        }
-        
-        // If status is provided, update it
-        if (status && ['not_started', 'in_progress', 'completed', 'saved'].includes(status)) {
-          updateData = { ...updateData, status }
-          
-          // If completing the course, set completed_at
-          if (status === 'completed') {
-            updateData = { 
-              ...updateData, 
-              completed_at: new Date().toISOString(),
-              progress_percentage: 100
-            }
-            
-            // Award points for completion
-            await supabaseClient.rpc('award_user_points', {
-              user_id: user.id,
-              points_amount: 50,
-              reason: 'Completed course',
-              ref_type: 'course',
-              ref_id: courseId
-            })
-          }
-        }
-        
-        const { data: progressData, error: progressError } = await supabaseClient
-          .from('user_course_progress')
-          .upsert(updateData)
-          .select()
-        
-        if (progressError) throw progressError
-        
-        result = { success: true, data: progressData }
-        break
-      
-      case 'get-progress':
-        // Get progress for a specific course
-        const { data: courseProgress, error: courseProgressError } = await supabaseClient
-          .from('user_course_progress')
+      case 'update-progress': {
+        // Check if progress record exists
+        const { data: existingProgress } = await supabaseClient
+          .from('course_progress')
           .select('*')
           .eq('user_id', user.id)
           .eq('course_id', courseId)
-          .single()
+          .single();
+
+        let result;
         
-        if (courseProgressError) {
-          if (courseProgressError.code === 'PGRST116') { // No rows returned
-            result = { 
-              success: true, 
-              data: {
-                user_id: user.id,
-                course_id: courseId,
-                progress_percentage: 0,
-                status: 'not_started',
-                last_position: null
-              }
-            }
-          } else {
-            throw courseProgressError
+        if (existingProgress) {
+          // Update existing record
+          const updateData: any = { 
+            progress,
+            updated_at: new Date().toISOString()
+          };
+          
+          if (position !== undefined) {
+            updateData.last_position_seconds = position;
           }
-        } else {
-          result = { success: true, data: courseProgress }
-        }
-        break
-      
-      case 'get-all-progress':
-        // Get progress for all courses
-        const { data: allProgress, error: allProgressError } = await supabaseClient
-          .from('user_course_progress')
-          .select('*, courses(*)')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false })
-        
-        if (allProgressError) throw allProgressError
-        
-        result = { 
-          success: true, 
-          data: allProgress.map(item => ({
-            ...item.courses,
-            progress: item.progress_percentage,
-            status: item.status,
-            last_position: item.last_position,
-            started_at: item.started_at,
-            completed_at: item.completed_at,
-            updated_at: item.updated_at
-          }))
-        }
-        break
-      
-      case 'save-note':
-        // Save a note for a course
-        if (!content) {
-          return new Response(
-            JSON.stringify({ error: 'Note content is required' }),
-            { 
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 400 
+          
+          if (status) {
+            if (status === 'completed') {
+              updateData.completed_at = new Date().toISOString();
             }
-          )
-        }
-        
-        const { data: noteData, error: noteError } = await supabaseClient
-          .from('user_course_notes')
-          .upsert({
+          }
+          
+          if (progress === 100 && !existingProgress.completed_at) {
+            updateData.completed_at = new Date().toISOString();
+          }
+          
+          result = await supabaseClient
+            .from('course_progress')
+            .update(updateData)
+            .eq('id', existingProgress.id)
+            .select()
+            .single();
+        } else {
+          // Create new record
+          const insertData: any = {
             user_id: user.id,
             course_id: courseId,
-            content,
-            updated_at: new Date().toISOString()
-          })
-          .select()
+            progress: progress || 0,
+          };
+          
+          if (position !== undefined) {
+            insertData.last_position_seconds = position;
+          }
+          
+          if (progress === 100) {
+            insertData.completed_at = new Date().toISOString();
+          }
+          
+          result = await supabaseClient
+            .from('course_progress')
+            .insert(insertData)
+            .select()
+            .single();
+        }
         
-        if (noteError) throw noteError
-        
-        result = { success: true, data: noteData }
-        break
+        return new Response(
+          JSON.stringify(result.data),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       
-      case 'get-note':
-        // Get note for a course
-        const { data: noteContent, error: noteContentError } = await supabaseClient
-          .from('user_course_notes')
-          .select('content, created_at, updated_at')
+      case 'get-progress': {
+        const { data, error } = await supabaseClient
+          .from('course_progress')
+          .select('*')
           .eq('user_id', user.id)
           .eq('course_id', courseId)
-          .single()
-        
-        if (noteContentError) {
-          if (noteContentError.code === 'PGRST116') { // No rows returned
-            result = { success: true, data: null }
-          } else {
-            throw noteContentError
-          }
-        } else {
-          result = { success: true, data: noteContent }
+          .single();
+          
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "No rows returned" error
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
-        break
+        
+        return new Response(
+          JSON.stringify({ progress: data || { progress: 0 } }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'get-all-progress': {
+        const { data, error } = await supabaseClient
+          .from('course_progress')
+          .select('*, courses(*)')
+          .eq('user_id', user.id);
+          
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        return new Response(
+          JSON.stringify({ progress: data || [] }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'bookmark': {
+        const { data: existingBookmark } = await supabaseClient
+          .from('bookmarks')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', courseId)
+          .single();
+          
+        if (!existingBookmark) {
+          const { data, error } = await supabaseClient
+            .from('bookmarks')
+            .insert({
+              user_id: user.id,
+              course_id: courseId
+            })
+            .select()
+            .single();
+            
+          if (error) {
+            return new Response(
+              JSON.stringify({ error: error.message }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          
+          return new Response(
+            JSON.stringify({ bookmark: data, isBookmarked: true }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        return new Response(
+          JSON.stringify({ bookmark: existingBookmark, isBookmarked: true }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'unbookmark': {
+        const { error } = await supabaseClient
+          .from('bookmarks')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('course_id', courseId);
+          
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        return new Response(
+          JSON.stringify({ isBookmarked: false }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'get-bookmarks': {
+        const { data, error } = await supabaseClient
+          .from('bookmarks')
+          .select('*, courses(*)')
+          .eq('user_id', user.id);
+          
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        // Transform into the format expected by the frontend
+        const bookmarkedCourses = data.map(bookmark => ({
+          ...bookmark.courses,
+          isBookmarked: true
+        }));
+        
+        return new Response(
+          JSON.stringify({ bookmarks: bookmarkedCourses }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'save-note': {
+        // Save a note for a course
+        // Note: In a real system, we'd need a notes table
+        return new Response(
+          JSON.stringify({ success: true, message: "Notes saving not implemented yet" }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      case 'get-note': {
+        // Get a note for a course
+        // Note: In a real system, we'd need a notes table
+        return new Response(
+          JSON.stringify({ note: "" }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       
       default:
         return new Response(
-          JSON.stringify({ error: 'Invalid action' }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400 
-          }
-        )
+          JSON.stringify({ error: "Invalid action" }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
     }
-    
-    return new Response(
-      JSON.stringify(result),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
-    )
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error("Server error:", error.message);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      }
-    )
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
-})
+});

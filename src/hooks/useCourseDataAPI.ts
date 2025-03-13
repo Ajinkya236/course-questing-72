@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { Course } from '@/types/course';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface UseCourseDataAPIProps {
   domain?: string;
@@ -30,50 +32,58 @@ export const useCourseDataAPI = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      let path = 'course-data';
-      let params: Record<string, string> = {};
-      
-      // If courseId is provided, we're fetching a single course
       if (courseId) {
-        path = courseId;
+        // Fetch a single course
+        const { data, error: fetchError } = await supabase.functions.invoke(`course-data/${courseId}`);
+        
+        if (fetchError) {
+          throw new Error(fetchError.message);
+        }
+        
+        if (data?.course) {
+          setCourse(data.course);
+        }
       } else {
-        // Otherwise, we're fetching multiple courses with filters
+        // Fetch multiple courses with filters
+        const params: Record<string, any> = {};
         if (domain) params.domain = domain;
         if (skill) params.skill = skill;
         if (search) params.search = search;
         if (limit) params.limit = limit.toString();
+        
+        const { data, error: fetchError } = await supabase.functions.invoke('course-data', {
+          body: params
+        });
+        
+        if (fetchError) {
+          throw new Error(fetchError.message);
+        }
+        
+        if (data?.courses) {
+          setCourses(data.courses);
+        }
       }
-      
-      const { data, error: functionError } = await supabase.functions.invoke(path, {
-        body: params
-      });
-      
-      if (functionError) {
-        throw new Error(functionError.message);
-      }
-      
-      if (courseId && data.course) {
-        setCourse(data.course);
-      } else if (data.courses) {
-        setCourses(data.courses);
-      }
-      
     } catch (err) {
       console.error('Error fetching course data:', err);
       setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+      toast({
+        title: "Error fetching courses",
+        description: err instanceof Error ? err.message : "An unknown error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [domain, skill, search, limit, courseId]);
 
   useEffect(() => {
     fetchData();
-  }, [domain, skill, search, limit, courseId]);
+  }, [fetchData]);
 
   return {
     courses,

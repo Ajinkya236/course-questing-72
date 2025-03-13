@@ -49,13 +49,9 @@ export function useSupabase() {
     setError(null);
     
     try {
-      let url = `get-recommendations?type=${type}&limit=${limit}`;
-      
-      if (skillIds && skillIds.length > 0) {
-        url += `&skillIds=${skillIds.join(',')}`;
-      }
-      
-      const { data, error } = await supabase.functions.invoke(url);
+      const { data, error } = await supabase.functions.invoke('get-course-recommendations', {
+        body: { type, limit, skillIds }
+      });
       
       if (error) throw new Error(error.message);
       return data || [];
@@ -72,7 +68,7 @@ export function useSupabase() {
     }
   }, []);
 
-  // Skills management
+  // Skills management (placeholders for now)
   const followSkill = useCallback(async (skillId: string) => {
     return fetchData('user-skills', 'follow', { skillId });
   }, [fetchData]);
@@ -140,7 +136,7 @@ export function useSupabase() {
     return fetchData('course-progress', 'get-note', { courseId });
   }, [fetchData]);
 
-  // Gamification
+  // Gamification (placeholders)
   const getUserPoints = useCallback(async () => {
     return fetchData('gamification', 'get-points');
   }, [fetchData]);
@@ -187,7 +183,7 @@ export function useSupabase() {
     return fetchData('gamification', 'get-user-rank');
   }, [fetchData]);
 
-  // Domains and skills
+  // Domains and skills (placeholders)
   const getDomains = useCallback(async () => {
     setLoading(true);
     setError(null);

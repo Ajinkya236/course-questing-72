@@ -1,102 +1,137 @@
 
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.25.0'
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
-// Set up CORS headers for browser requests
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
-  
-  try {
-    // Create a Supabase client with admin privileges
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
 
-    // Parse the request URL to extract any path parameters or query params
-    const url = new URL(req.url)
-    const path = url.pathname.split('/').pop() || ''
+  try {
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: req.headers.get('Authorization')! },
+        },
+      }
+    );
+
+    // Check if we're fetching a single course or multiple courses
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/').filter(Boolean);
     
-    // If a course ID is provided, return that specific course
-    if (path && path !== 'course-data') {
-      console.log(`Fetching course with ID: ${path}`)
-      const { data: course, error } = await supabaseAdmin
+    // The last part after /functions/course-data/ would be the course ID if present
+    const courseId = pathParts.length > 0 ? pathParts[pathParts.length - 1] : null;
+    
+    if (courseId && courseId !== 'course-data') {
+      // Fetch a single course by ID
+      const { data: course, error } = await supabaseClient
         .from('courses')
         .select('*')
-        .eq('id', path)
-        .single()
+        .eq('id', courseId)
+        .single();
+        
+      if (error) {
+        return new Response(
+          JSON.stringify({ error: error.message }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       
-      if (error) throw new Error(`Error fetching course: ${error.message}`)
+      // Try to get the bookmark status if user is logged in
+      const { data: authUser } = await supabaseClient.auth.getUser();
+      let isBookmarked = false;
+      
+      if (authUser?.user) {
+        const { data: bookmarkData } = await supabaseClient
+          .from('bookmarks')
+          .select('*')
+          .eq('user_id', authUser.user.id)
+          .eq('course_id', courseId)
+          .single();
+          
+        isBookmarked = !!bookmarkData;
+      }
+      
+      // Add the bookmark status to the course
+      const courseWithBookmark = {
+        ...course,
+        isBookmarked
+      };
       
       return new Response(
-        JSON.stringify({ course }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      )
-    }
-    
-    // Handle query parameters for filtering courses
-    const domain = url.searchParams.get('domain')
-    const skill = url.searchParams.get('skill')
-    const search = url.searchParams.get('search')
-    const limit = parseInt(url.searchParams.get('limit') || '20')
-    
-    // Build the database query based on filters
-    let query = supabaseAdmin.from('courses').select('*')
-    
-    if (domain) {
-      query = query.eq('domain', domain)
-    }
-    
-    if (skill) {
-      query = query.contains('skills', [skill])
-    }
-    
-    if (search) {
-      query = query.ilike('title', `%${search}%`)
-    }
-    
-    // Execute the query with a limit
-    const { data: courses, error } = await query.limit(limit)
-    
-    if (error) throw new Error(`Error fetching courses: ${error.message}`)
-    
-    return new Response(
-      JSON.stringify({ 
-        courses,
-        count: courses.length,
-        filters: { domain, skill, search }
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        JSON.stringify({ course: courseWithBookmark }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } else {
+      // Fetch multiple courses with optional filters
+      const { domain, skill, search, limit = '20' } = await req.json();
+      
+      let query = supabaseClient.from('courses').select('*');
+      
+      if (domain) {
+        query = query.eq('domain', domain);
       }
-    )
-    
+      
+      if (skill) {
+        query = query.contains('skills', [skill]);
+      }
+      
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      }
+      
+      const { data: courses, error } = await query.limit(parseInt(limit));
+      
+      if (error) {
+        return new Response(
+          JSON.stringify({ error: error.message }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      // Try to get bookmarks if user is logged in
+      const { data: authUser } = await supabaseClient.auth.getUser();
+      let bookmarks: Record<string, boolean> = {};
+      
+      if (authUser?.user) {
+        const { data: bookmarkData } = await supabaseClient
+          .from('bookmarks')
+          .select('course_id')
+          .eq('user_id', authUser.user.id);
+          
+        if (bookmarkData) {
+          bookmarks = bookmarkData.reduce((acc: Record<string, boolean>, bookmark) => {
+            acc[bookmark.course_id] = true;
+            return acc;
+          }, {});
+        }
+      }
+      
+      // Add the bookmark status to each course
+      const coursesWithBookmarks = courses.map(course => ({
+        ...course,
+        isBookmarked: !!bookmarks[course.id]
+      }));
+      
+      return new Response(
+        JSON.stringify({ courses: coursesWithBookmarks }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error("Server error:", error.message);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      }
-    )
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
-})
+});

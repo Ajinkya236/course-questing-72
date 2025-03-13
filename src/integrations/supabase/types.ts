@@ -9,6 +9,130 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bookmarks: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_progress: {
+        Row: {
+          completed_at: string | null
+          course_id: string
+          created_at: string
+          id: string
+          last_position_seconds: number | null
+          progress: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          last_position_seconds?: number | null
+          progress?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          last_position_seconds?: number | null
+          progress?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          author: string | null
+          created_at: string
+          description: string
+          domain: string | null
+          duration: string | null
+          id: string
+          imageurl: string | null
+          ishot: boolean | null
+          isnew: boolean | null
+          level: string | null
+          skills: string[] | null
+          title: string
+          trainingcategory: string | null
+          updated_at: string
+          videourl: string | null
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          description: string
+          domain?: string | null
+          duration?: string | null
+          id: string
+          imageurl?: string | null
+          ishot?: boolean | null
+          isnew?: boolean | null
+          level?: string | null
+          skills?: string[] | null
+          title: string
+          trainingcategory?: string | null
+          updated_at?: string
+          videourl?: string | null
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          description?: string
+          domain?: string | null
+          duration?: string | null
+          id?: string
+          imageurl?: string | null
+          ishot?: boolean | null
+          isnew?: boolean | null
+          level?: string | null
+          skills?: string[] | null
+          title?: string
+          trainingcategory?: string | null
+          updated_at?: string
+          videourl?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
