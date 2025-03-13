@@ -1,5 +1,5 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { BrainCircuit, ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { AuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Card,
   CardContent,
@@ -37,7 +37,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
-  const { resetPassword, isAuthenticating } = useContext(AuthContext);
+  const { resetPassword } = useAuth(); // Use the hook properly
+  const [isAuthenticating, setIsAuthenticating] = useState(false); // Add local state
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +53,7 @@ const ForgotPassword: React.FC = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     setError(null);
+    setIsAuthenticating(true);
     try {
       await resetPassword(data.email);
       
@@ -63,6 +65,8 @@ const ForgotPassword: React.FC = () => {
       });
     } catch (error: any) {
       setError(error.message || "Something went wrong. Please try again later.");
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 

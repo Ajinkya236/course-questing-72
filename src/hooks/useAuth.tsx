@@ -5,6 +5,7 @@ import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+// Make sure to export these types and context
 export interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -17,7 +18,8 @@ export interface AuthContextType {
   setUserActivity: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Export the context
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -74,9 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateLastActive = async (userId: string) => {
     try {
+      // Only include fields that definitely exist in the profiles table
       const { error } = await supabase
         .from('profiles')
-        .update({ last_active: new Date().toISOString() })
+        .update({ updated_at: new Date().toISOString() })
         .eq('id', userId);
       
       if (error) throw error;

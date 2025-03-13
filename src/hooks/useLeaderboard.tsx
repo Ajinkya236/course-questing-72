@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from './use-toast';
 import { UserRank, TeamRank } from '@/components/rewards/types';
+import { mockUserRankings, mockTeamRankings } from '@/utils/mockData';
 
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all-time';
 
@@ -19,53 +20,71 @@ export function useLeaderboard() {
     setIsLoading(true);
     
     try {
-      // Fetch from leaderboard_entries table
-      let query = supabase
-        .from('leaderboard_entries')
-        .select(`
-          *,
-          user:profiles(*)
-        `)
-        .eq('period', period)
-        .order('position', { ascending: true });
+      // Use mock data for now
+      let filteredRankings = [...mockUserRankings];
       
-      // Apply any filters
+      // Apply any filters if provided
       if (filterType && filterValue) {
-        query = query.eq(filterType, filterValue);
+        filteredRankings = filteredRankings.filter(user => {
+          const value = user[filterType as keyof UserRank];
+          return value === filterValue;
+        });
       }
       
-      const { data, error } = await query;
+      setUserRankings(filteredRankings);
       
-      if (error) throw error;
+      // Find current user in rankings
+      if (user) {
+        const currentUser = filteredRankings.find(rank => rank.id === user.id) || null;
+        setCurrentUserRank(currentUser);
+      }
       
-      if (data) {
-        const formattedRankings: UserRank[] = data.map(item => {
-          const userData = item.user as any;
-          return {
-            id: item.user_id,
-            name: `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'User',
-            position: item.position,
-            positionChange: item.position_change,
-            points: item.points,
-            avatar: userData.avatar_url || '',
-            department: item.department,
-            team: item.team,
-            role: userData.role,
-            details: {
-              assessmentScore: 0, // These could be added to the leaderboard_entries table
-              engagementScore: 0,
-              completionRate: 0
-            }
-          };
-        });
+      console.log('Fetched leaderboard from mock data');
+      
+      // Try using Supabase (will work once the database is properly set up)
+      try {
+        const { data, error } = await supabase
+          .from('leaderboard_entries')
+          .select(`
+            *,
+            user:profiles(*)
+          `)
+          .eq('period', period)
+          .order('position', { ascending: true });
         
-        setUserRankings(formattedRankings);
-        
-        // Find current user in rankings
-        if (user) {
-          const currentUser = formattedRankings.find(rank => rank.id === user.id) || null;
-          setCurrentUserRank(currentUser);
+        if (!error && data && data.length > 0) {
+          const formattedRankings: UserRank[] = data.map(item => {
+            const userData = item.user as any;
+            return {
+              id: item.user_id,
+              name: `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'User',
+              position: item.position,
+              positionChange: item.position_change,
+              points: item.points,
+              avatar: userData.avatar_url || '',
+              department: item.department,
+              team: item.team,
+              role: userData.role,
+              details: {
+                assessmentScore: 0,
+                engagementScore: 0,
+                completionRate: 0
+              }
+            };
+          });
+          
+          setUserRankings(formattedRankings);
+          
+          // Find current user in rankings
+          if (user) {
+            const currentUser = formattedRankings.find(rank => rank.id === user.id) || null;
+            setCurrentUserRank(currentUser);
+          }
+          
+          console.log('Fetched leaderboard from Supabase');
         }
+      } catch (error) {
+        console.log('Could not fetch from Supabase, using mock data');
       }
     } catch (error: any) {
       console.error('Error fetching leaderboard:', error);
@@ -84,74 +103,19 @@ export function useLeaderboard() {
     setIsLoading(true);
     
     try {
-      // This would be a more complex query in a real app
-      // Here we're simulating team rankings
-      const mockTeams: TeamRank[] = [
-        {
-          id: 'team1',
-          name: 'Frontend Team',
-          position: 1,
-          positionChange: 2,
-          points: 5430,
-          avatar: '',
-          memberCount: 8,
-          department: 'Engineering',
-          winStreak: 3,
-          isCurrentUserGroup: true
-        },
-        {
-          id: 'team2',
-          name: 'Backend Team',
-          position: 2,
-          positionChange: -1,
-          points: 5240,
-          avatar: '',
-          memberCount: 7,
-          department: 'Engineering',
-          winStreak: 0,
-          isCurrentUserGroup: false
-        },
-        {
-          id: 'team3',
-          name: 'Design Team',
-          position: 3,
-          positionChange: -1,
-          points: 4980,
-          avatar: '',
-          memberCount: 6,
-          department: 'Design',
-          winStreak: 0,
-          isCurrentUserGroup: false
-        },
-        {
-          id: 'team4',
-          name: 'QA Team',
-          position: 4,
-          positionChange: 1,
-          points: 4650,
-          avatar: '',
-          memberCount: 5,
-          department: 'Engineering',
-          winStreak: 0,
-          isCurrentUserGroup: false
-        },
-        {
-          id: 'team5',
-          name: 'Product Team',
-          position: 5,
-          positionChange: 0,
-          points: 4320,
-          avatar: '',
-          memberCount: 4,
-          department: 'Product',
-          winStreak: 0,
-          isCurrentUserGroup: false
-        }
-      ];
+      // Use mock team rankings
+      setTeamRankings(mockTeamRankings);
       
-      setTeamRankings(mockTeams);
+      console.log('Fetched team rankings from mock data');
+      
+      // In the future, update this to use actual Supabase data
     } catch (error: any) {
       console.error('Error fetching team rankings:', error);
+      toast({
+        title: 'Failed to load team rankings',
+        description: error.message || 'An error occurred',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
