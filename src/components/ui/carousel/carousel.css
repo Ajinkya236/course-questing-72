@@ -122,3 +122,15 @@
   display: block !important;
   opacity: 1 !important;
 }
+
+/* Make course card buttons always visible */
+.course-card-actions {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Make mentor request button always visible */
+.mentor-request-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

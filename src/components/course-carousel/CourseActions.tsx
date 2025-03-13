@@ -17,7 +17,7 @@ const CourseActions: React.FC<CourseActionsProps> = ({
   handleAssignClick
 }) => {
   return (
-    <div className="pt-2">
+    <div className="pt-2 course-card-actions">
       <div className="flex gap-1 mb-1">
         <Button 
           variant="default" 

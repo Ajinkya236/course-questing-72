@@ -43,7 +43,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
       </div>
 
       {/* Always show buttons, removed opacity transitions */}
-      <div className="pt-1 mt-auto">
+      <div className="pt-1 mt-auto course-card-actions">
         <div className="flex gap-1 mb-1">
           <Button 
             variant="default" 
