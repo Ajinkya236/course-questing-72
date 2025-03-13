@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
@@ -226,12 +225,12 @@ const RecommendedMentorsPage = () => {
           {filteredMentors.map(mentor => (
             <Card 
               key={mentor.id} 
-              className="overflow-hidden transition-all duration-300 cursor-pointer hover:border-primary hover:shadow-md group"
+              className="overflow-hidden transition-all duration-300 cursor-pointer hover:border-primary hover:shadow-md group h-[340px]"
               onMouseEnter={() => setHoveredMentorId(mentor.id)}
               onMouseLeave={() => setHoveredMentorId(null)}
             >
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center">
+              <CardContent className="p-4 flex flex-col h-full">
+                <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-24 h-24 rounded-full overflow-hidden mb-3">
                     <img 
                       src={mentor.image} 
@@ -257,16 +256,14 @@ const RecommendedMentorsPage = () => {
                       <Badge key={topic} variant="secondary" className="text-xs">{topic}</Badge>
                     ))}
                   </div>
-                  <Button 
-                    className={`mt-4 w-full transition-all duration-300 ${
-                      hoveredMentorId === mentor.id ? 'opacity-100' : 'opacity-0'
-                    }`} 
-                    size="sm"
-                    onClick={() => handleMentorSelect(mentor)}
-                  >
-                    <Send className="h-3 w-3 mr-1" /> Request Mentorship
-                  </Button>
                 </div>
+                <Button 
+                  className="mt-4 w-full"
+                  size="sm"
+                  onClick={() => handleMentorSelect(mentor)}
+                >
+                  <Send className="h-3 w-3 mr-1" /> Request Mentorship
+                </Button>
               </CardContent>
             </Card>
           ))}

@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Star, Filter, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import RecommendedMentorsCarousel from './RecommendedMentorsCarousel';
 
 // Import types we need
 interface Mentor {
@@ -147,11 +146,8 @@ const MentorDiscovery: React.FC<{selectedTopics?: string[]}> = ({ selectedTopics
 
   return (
     <div className="space-y-8">
-      {/* Recommended Mentors Carousel */}
-      <RecommendedMentorsCarousel mentors={sampleMentors} selectedTopics={selectedTopics} />
-      
       {/* Search and Filters */}
-      <div className="mt-8">
+      <div>
         <h2 className="text-xl font-semibold mb-4">Find a Mentor</h2>
         
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -216,12 +212,12 @@ const MentorDiscovery: React.FC<{selectedTopics?: string[]}> = ({ selectedTopics
           filteredMentors.map(mentor => (
             <Card 
               key={mentor.id} 
-              className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group hover:border-primary hover:shadow-md"
+              className="overflow-hidden transition-all duration-300 cursor-pointer h-[340px] group hover:border-primary hover:shadow-md"
               onMouseEnter={() => setHoveredMentorId(mentor.id)}
               onMouseLeave={() => setHoveredMentorId(null)}
             >
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center">
+              <CardContent className="p-4 flex flex-col h-full">
+                <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
                     <img 
                       src={mentor.image} 
@@ -252,18 +248,16 @@ const MentorDiscovery: React.FC<{selectedTopics?: string[]}> = ({ selectedTopics
                       <Badge variant="outline" className="text-xs">+{mentor.topics.length - 3}</Badge>
                     )}
                   </div>
-                  
-                  <Button 
-                    size="sm" 
-                    onClick={() => handleMentorSelect(mentor)}
-                    className={`w-full mt-3 transition-all duration-300 flex items-center justify-center gap-2 ${
-                      hoveredMentorId === mentor.id ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    <Send className="h-3 w-3" /> 
-                    Request Mentoring
-                  </Button>
                 </div>
+                
+                <Button 
+                  size="sm" 
+                  onClick={() => handleMentorSelect(mentor)}
+                  className="w-full mt-auto transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Send className="h-3 w-3" /> 
+                  Request Mentoring
+                </Button>
               </CardContent>
             </Card>
           ))
