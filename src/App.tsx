@@ -1,8 +1,27 @@
-import React, { lazy, Suspense, useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
-import { ThemeProvider } from "./components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
+import React, { lazy, Suspense, useContext, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
+import { Button } from "@/components/ui/button";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { 
+  Home as HomeIcon, 
+  Compass, 
+  BookOpen, 
+  Users, 
+  Headphones,
+  Bell, 
+  HelpCircle,
+  ChevronDown
+} from "lucide-react";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));
