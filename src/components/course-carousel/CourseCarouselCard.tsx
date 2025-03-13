@@ -40,6 +40,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   // Define an optimized click handler to prevent event propagation
@@ -57,6 +58,10 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
     target.onerror = null;
+  };
+  
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
   };
 
   // Handle video mute toggle
@@ -100,12 +105,18 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
 
   return (
     <Card
-      className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md hover:scale-105"
+      className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md hover:scale-105 carousel-card"
       onClick={onCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="relative overflow-hidden bg-muted">
+        {!isImageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
+            <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+          </div>
+        )}
+        
         <AspectRatio ratio={16/9}>
           {isHovered && course.videoUrl ? (
             <>
@@ -134,6 +145,8 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
               className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-500"
               loading="lazy" 
               onError={handleImageError}
+              onLoad={handleImageLoad}
+              style={{ opacity: isImageLoaded ? 1 : 0 }}
             />
           )}
         </AspectRatio>

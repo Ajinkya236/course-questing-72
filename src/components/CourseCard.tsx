@@ -21,6 +21,7 @@ interface CourseCardProps {
   trainingCategory?: string;
   isBookmarked?: boolean;
   previewUrl?: string;
+  videoUrl?: string;
   isHot?: boolean;
   isNew?: boolean;
 }
@@ -36,6 +37,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   trainingCategory,
   isBookmarked = false,
   previewUrl,
+  videoUrl,
   isHot,
   isNew
 }) => {
@@ -46,6 +48,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const { isBookmarked: checkIsBookmarked, toggleBookmark } = useCourseBookmarks();
   const [currentBookmarked, setCurrentBookmarked] = useState(isBookmarked || checkIsBookmarked(id));
   
+  const videoPreviewUrl = previewUrl || videoUrl;
+  
   const {
     isHovered,
     isMuted,
@@ -53,7 +57,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     handleMouseEnter,
     handleMouseLeave,
     toggleMute
-  } = useVideoPreview({ previewUrl });
+  } = useVideoPreview({ previewUrl: videoPreviewUrl });
 
   // Parameter-less callbacks for the event listener
   const handleShareEvent = useCallback(() => {
@@ -103,7 +107,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
       rating,
       trainingCategory,
       isBookmarked: currentBookmarked,
-      previewUrl,
+      previewUrl: videoPreviewUrl,
       isHot,
       isNew
     });
@@ -113,7 +117,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     triggerCourseEvent('bookmark', id, title);
   }, [
     id, title, description, imageUrl, category, duration, rating, 
-    trainingCategory, currentBookmarked, previewUrl, isHot, isNew, toggleBookmark
+    trainingCategory, currentBookmarked, videoPreviewUrl, isHot, isNew, toggleBookmark
   ]);
 
   const handleShareClick = useCallback((e: React.MouseEvent) => {
@@ -149,7 +153,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
           trainingCategory={trainingCategory}
           isHot={isHot}
           isNew={isNew}
-          previewUrl={previewUrl}
+          previewUrl={videoPreviewUrl}
           isHovered={isHovered}
           isMuted={isMuted}
           videoRef={videoRef}

@@ -109,6 +109,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const isMobile = useIsMobile();
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [hoveredMentorId, setHoveredMentorId] = useState<number | null>(null);
   
   // Extract all unique topics from mentors for filters
   const allTopics = selectedTopics.length > 0 
@@ -123,6 +124,13 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
     ? mentors 
     : mentors.filter(mentor => mentor.topics.includes(activeFilter));
   
+  // Initialize active filter with the first selected topic if available
+  useEffect(() => {
+    if (selectedTopics && selectedTopics.length > 0) {
+      setActiveFilter(selectedTopics[0]);
+    }
+  }, [selectedTopics]);
+
   const handleViewAll = () => {
     navigate('/mentoring/recommended-mentors');
   };
@@ -144,8 +152,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   
   // Calculate card width to show proper number of items and partial next item
   const getCardPercentage = () => {
-    if (isMobile) return 85; // Full width on mobile
-    return 23; // Shows 4 mentors + 20% of the 5th one
+    if (isMobile) return 85; // Full width on mobile with a hint of the next card
+    return 23; // Shows partial hint of the next mentor card
   };
   
   return (
@@ -177,6 +185,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           opts={{
             align: "start",
             loop: true,
+            skipSnaps: false,
           }}
         >
           <CarouselContent>
@@ -184,13 +193,12 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
               filteredMentors.map(mentor => (
                 <CarouselItem 
                   key={mentor.id} 
-                  style={{ 
-                    flex: `0 0 ${getCardPercentage()}%`, 
-                    maxWidth: `${getCardPercentage()}%`
-                  }}
+                  className="mentor-carousel-item" // Use the custom class for proper sizing
                 >
                   <Card 
-                    className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group"
+                    className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group hover:border-primary hover:shadow-md"
+                    onMouseEnter={() => setHoveredMentorId(mentor.id)}
+                    onMouseLeave={() => setHoveredMentorId(null)}
                   >
                     <CardContent className="p-4">
                       <div className="flex flex-col items-center text-center">
@@ -228,7 +236,9 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
                         <Button 
                           size="sm" 
                           onClick={() => handleMentorSelect(mentor)}
-                          className="w-full mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2"
+                          className={`w-full mt-3 transition-all duration-300 flex items-center justify-center gap-2 ${
+                            hoveredMentorId === mentor.id ? 'opacity-100' : 'opacity-0'
+                          }`}
                         >
                           <Send className="h-3 w-3" /> 
                           Request Mentoring
@@ -247,8 +257,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             )}
           </CarouselContent>
           
-          <CarouselPrevious className="opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300 -left-3" />
-          <CarouselNext className="opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300 -right-3" />
+          <CarouselPrevious className="z-10 opacity-70 hover:opacity-100 -left-3" />
+          <CarouselNext className="z-10 opacity-70 hover:opacity-100 -right-3" />
         </Carousel>
       </div>
 

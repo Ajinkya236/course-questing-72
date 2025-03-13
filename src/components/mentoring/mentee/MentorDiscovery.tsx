@@ -1,18 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Star, Send } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search, Star, Filter, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import RecommendedMentorsCarousel from './RecommendedMentorsCarousel';
 
-interface MentorDiscoveryProps {
-  selectedTopics?: string[];
-}
-
+// Import types we need
 interface Mentor {
   id: number;
   name: string;
@@ -27,131 +25,116 @@ interface Mentor {
   expectations?: string;
 }
 
-const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }) => {
+// Sample mentors data
+const sampleMentors: Mentor[] = [
+  {
+    id: 1,
+    name: "Dr. Sarah Johnson",
+    title: "Senior Data Scientist",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    rating: 4.9,
+    reviews: 38,
+    topics: ["Data Analysis", "Machine Learning", "Statistics"],
+    bio: "I'm passionate about helping others understand complex data concepts and apply them to real-world problems.",
+    experience: "15+ years of experience in data science and analytics across various industries.",
+    availability: "Available for 1-hour sessions weekly",
+    expectations: "Looking for dedicated mentees who are willing to complete assignments between sessions."
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    title: "Product Manager",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 4.8,
+    reviews: 27,
+    topics: ["Product Management", "UX Design", "Agile Methodologies"],
+    bio: "Product leader focused on building user-centric experiences and coaching the next generation of product thinkers.",
+    experience: "Led product teams at several tech startups and Fortune 500 companies.",
+    availability: "Available biweekly for mentoring sessions",
+    expectations: "I expect mentees to come prepared with specific questions or challenges they're facing."
+  },
+  {
+    id: 3,
+    name: "Elena Rodriguez",
+    title: "Executive Coach",
+    image: "https://randomuser.me/api/portraits/women/28.jpg",
+    rating: 5.0,
+    reviews: 42,
+    topics: ["Leadership", "Communication", "Career Development"],
+    bio: "Helping professionals navigate career transitions and develop leadership skills.",
+    experience: "20+ years in HR leadership and executive coaching.",
+    availability: "Flexible scheduling, typically 45-60 minute sessions",
+    expectations: "Open to both short-term and long-term mentoring relationships."
+  },
+  {
+    id: 4,
+    name: "James Wilson",
+    title: "Software Engineering Lead",
+    image: "https://randomuser.me/api/portraits/men/86.jpg",
+    rating: 4.7,
+    reviews: 31,
+    topics: ["Software Development", "Cloud Computing", "System Architecture"],
+    bio: "Engineer turned leader who loves helping others grow their technical and leadership skills.",
+    experience: "15 years building and leading engineering teams at tech companies.",
+    availability: "Weekly 30-minute check-ins or biweekly deep dives",
+    expectations: "Looking for mentees who have clear goals and are passionate about technology."
+  },
+  {
+    id: 5,
+    name: "Aisha Patel",
+    title: "Marketing Director",
+    image: "https://randomuser.me/api/portraits/women/79.jpg",
+    rating: 4.6,
+    reviews: 24,
+    topics: ["Digital Marketing", "Content Strategy", "Brand Development"],
+    bio: "Marketing strategist specializing in digital transformation and content marketing.",
+    experience: "12+ years in marketing across B2B and B2C sectors.",
+    availability: "Monthly sessions with email support in between",
+    expectations: "Prefer mentees who are currently working in marketing roles."
+  }
+];
+
+// Component for mentor discovery
+const MentorDiscovery: React.FC<{selectedTopics?: string[]}> = ({ selectedTopics = [] }) => {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [expertiseFilter, setExpertiseFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("relevance");
-  const [filteredMentors, setFilteredMentors] = useState<Mentor[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [topicFilter, setTopicFilter] = useState('All');
+  const [ratingFilter, setRatingFilter] = useState('Any');
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const recommendedMentors: Mentor[] = [
-    {
-      id: 1,
-      name: "Dr. Sarah Johnson",
-      title: "Senior Data Scientist",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      rating: 4.9,
-      reviews: 38,
-      topics: ["Data Analysis", "Machine Learning", "Statistics"],
-      bio: "I'm passionate about helping others understand complex data concepts and apply them to real-world problems.",
-      experience: "15+ years of experience in data science and analytics across various industries.",
-      availability: "Available for 1-hour sessions weekly",
-      expectations: "Looking for dedicated mentees who are willing to complete assignments between sessions."
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      title: "Product Manager",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      rating: 4.8,
-      reviews: 27,
-      topics: ["Product Management", "UX Design", "Agile Methodologies"],
-      bio: "Product leader focused on building user-centric experiences and coaching the next generation of product thinkers.",
-      experience: "Led product teams at several tech startups and Fortune 500 companies.",
-      availability: "Available biweekly for mentoring sessions",
-      expectations: "I expect mentees to come prepared with specific questions or challenges they're facing."
-    },
-    {
-      id: 3,
-      name: "Elena Rodriguez",
-      title: "Executive Coach",
-      image: "https://randomuser.me/api/portraits/women/28.jpg",
-      rating: 5.0,
-      reviews: 42,
-      topics: ["Leadership", "Communication", "Career Development"],
-      bio: "Helping professionals navigate career transitions and develop leadership skills.",
-      experience: "20+ years in HR leadership and executive coaching.",
-      availability: "Flexible scheduling, typically 45-60 minute sessions",
-      expectations: "Open to both short-term and long-term mentoring relationships."
-    },
-    {
-      id: 4,
-      name: "James Wilson",
-      title: "Software Engineering Lead",
-      image: "https://randomuser.me/api/portraits/men/86.jpg",
-      rating: 4.7,
-      reviews: 31,
-      topics: ["Software Development", "Cloud Computing", "System Architecture"],
-      bio: "Engineer turned leader who loves helping others grow their technical and leadership skills.",
-      experience: "15 years building and leading engineering teams at tech companies.",
-      availability: "Weekly 30-minute check-ins or biweekly deep dives",
-      expectations: "Looking for mentees who have clear goals and are passionate about technology."
-    }
-  ];
-
-  // Filter and sort mentors whenever search, filter or sort criteria change
-  useEffect(() => {
-    // Filter mentors based on search term and filters
-    const filtered = recommendedMentors.filter(mentor => {
-      // Search term filter
-      if (searchTerm && !mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()))) {
-        return false;
-      }
-      
-      // Expertise filter
-      if (expertiseFilter !== "all") {
-        const matchesExpertise = mentor.topics.some(topic => {
-          switch (expertiseFilter) {
-            case "technical":
-              return ["Data Analysis", "Machine Learning", "Software Development", "Cloud Computing", "System Architecture"].includes(topic);
-            case "leadership":
-              return ["Leadership", "Communication", "Team Building"].includes(topic);
-            case "career":
-              return ["Career Development", "Professional Growth"].includes(topic);
-            default:
-              return true;
-          }
-        });
-        
-        if (!matchesExpertise) return false;
-      }
-      
-      return true;
-    });
-
-    // Sort mentors based on sortBy
-    const sorted = [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case "rating":
-          return b.rating - a.rating;
-        case "reviews":
-          return b.reviews - a.reviews;
-        case "newest":
-          // For this example, we're just using the id as a proxy for "newest"
-          return a.id - b.id;
-        default:
-          // For relevance, prefer mentors with matching topics
-          if (selectedTopics.length > 0) {
-            const aMatchCount = a.topics.filter(topic => selectedTopics.includes(topic)).length;
-            const bMatchCount = b.topics.filter(topic => selectedTopics.includes(topic)).length;
-            return bMatchCount - aMatchCount;
-          }
-          return 0;
-      }
-    });
-
-    setFilteredMentors(sorted);
-  }, [searchTerm, expertiseFilter, sortBy, selectedTopics]);
-
+  const [hoveredMentorId, setHoveredMentorId] = useState<number | null>(null);
+  
+  // All unique topics from mentors
+  const allTopics = Array.from(
+    new Set(sampleMentors.flatMap(mentor => mentor.topics))
+  );
+  
+  // Filter mentors based on search, topic, and rating
+  const filteredMentors = sampleMentors.filter(mentor => {
+    const matchesSearch = 
+      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesTopic = topicFilter === 'All' || mentor.topics.includes(topicFilter);
+    
+    const matchesRating = 
+      ratingFilter === 'Any' ||
+      (ratingFilter === '4+' && mentor.rating >= 4.0) ||
+      (ratingFilter === '4.5+' && mentor.rating >= 4.5) ||
+      (ratingFilter === '5' && mentor.rating === 5.0);
+    
+    return matchesSearch && matchesTopic && matchesRating;
+  });
+  
+  // Handle opening the details dialog
   const handleMentorSelect = (mentor: Mentor) => {
     setSelectedMentor(mentor);
     setDialogOpen(true);
   };
-
+  
+  // Handle sending a mentorship request
   const handleSendRequest = () => {
     if (selectedMentor) {
       toast({
@@ -162,122 +145,136 @@ const MentorDiscovery: React.FC<MentorDiscoveryProps> = ({ selectedTopics = [] }
     }
   };
 
-  // Render mentor cards
-  const renderMentorCards = () => {
-    if (filteredMentors.length === 0) {
-      return (
-        <div className="py-8 text-center border rounded-lg bg-muted/30">
-          <p className="text-muted-foreground">
-            No mentors found matching your criteria. Try adjusting your filters.
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredMentors.map(mentor => (
-          <Card key={mentor.id} className="overflow-hidden transition-shadow group">
-            <CardContent className="p-4">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
-                  <img 
-                    src={mentor.image} 
-                    alt={mentor.name} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-                <h3 className="font-medium">{mentor.name}</h3>
-                <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
-                <div className="flex items-center gap-1 mb-3">
-                  <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                  <span className="text-sm font-medium">{mentor.rating}</span>
-                  <span className="text-xs text-muted-foreground">({mentor.reviews} reviews)</span>
-                </div>
-                <div className="flex flex-wrap gap-1 justify-center mb-3">
-                  {mentor.topics.map(topic => (
-                    <span key={topic} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleMentorSelect(mentor)}
-                  >
-                    View Profile
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1"
-                    onClick={() => handleMentorSelect(mentor)}
-                  >
-                    <Send className="h-3 w-3" />
-                    Request
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-8">
-      {/* Search and filter section */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search mentors..." 
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Select 
-              defaultValue="all" 
-              value={expertiseFilter}
-              onValueChange={setExpertiseFilter}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by expertise" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Expertise Areas</SelectItem>
-                <SelectItem value="technical">Technical Skills</SelectItem>
-                <SelectItem value="leadership">Leadership</SelectItem>
-                <SelectItem value="career">Career Development</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select 
-              defaultValue="relevance" 
-              value={sortBy}
-              onValueChange={setSortBy}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="relevance">Relevance</SelectItem>
-                <SelectItem value="rating">Highest Rating</SelectItem>
-                <SelectItem value="reviews">Most Reviews</SelectItem>
-                <SelectItem value="newest">Newest</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Recommended Mentors Carousel */}
+      <RecommendedMentorsCarousel mentors={sampleMentors} selectedTopics={selectedTopics} />
+      
+      {/* Search and Filters */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Find a Mentor</h2>
+        
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, role, or skill..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Mentors grid display */}
-      {renderMentorCards()}
-
+          
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </Button>
+        </div>
+        
+        {showFilters && (
+          <div className="flex flex-wrap gap-3 mb-6 p-4 border rounded-lg">
+            <div className="min-w-[200px]">
+              <label className="block text-sm font-medium mb-1">Topic</label>
+              <Select value={topicFilter} onValueChange={setTopicFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Topics</SelectItem>
+                  {allTopics.map(topic => (
+                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="min-w-[200px]">
+              <label className="block text-sm font-medium mb-1">Rating</label>
+              <Select value={ratingFilter} onValueChange={setRatingFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Rating" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Any">Any Rating</SelectItem>
+                  <SelectItem value="4+">4.0 and above</SelectItem>
+                  <SelectItem value="4.5+">4.5 and above</SelectItem>
+                  <SelectItem value="5">5.0 only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Search Results */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-fade-in">
+        {filteredMentors.length > 0 ? (
+          filteredMentors.map(mentor => (
+            <Card 
+              key={mentor.id} 
+              className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group hover:border-primary hover:shadow-md"
+              onMouseEnter={() => setHoveredMentorId(mentor.id)}
+              onMouseLeave={() => setHoveredMentorId(null)}
+            >
+              <CardContent className="p-4">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
+                    <img 
+                      src={mentor.image} 
+                      alt={mentor.name} 
+                      className="w-full h-full object-cover" 
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                        target.onerror = null;
+                      }}
+                    />
+                  </div>
+                  <h3 className="font-medium">{mentor.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-2">{mentor.title}</p>
+                  
+                  <div className="flex items-center gap-1 mb-3">
+                    <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                    <span className="text-sm">{mentor.rating}</span>
+                    <span className="text-xs text-muted-foreground">({mentor.reviews})</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1 justify-center mb-3">
+                    {mentor.topics.slice(0, 3).map(topic => (
+                      <Badge key={topic} variant="secondary" className="text-xs">{topic}</Badge>
+                    ))}
+                    {mentor.topics.length > 3 && (
+                      <Badge variant="outline" className="text-xs">+{mentor.topics.length - 3}</Badge>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    size="sm" 
+                    onClick={() => handleMentorSelect(mentor)}
+                    className={`w-full mt-3 transition-all duration-300 flex items-center justify-center gap-2 ${
+                      hoveredMentorId === mentor.id ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    <Send className="h-3 w-3" /> 
+                    Request Mentoring
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-full p-8 text-center border rounded-lg">
+            <p className="text-lg font-medium mb-2">No mentors found</p>
+            <p className="text-muted-foreground">Try adjusting your search or filters</p>
+          </div>
+        )}
+      </div>
+      
       {/* Mentor Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">

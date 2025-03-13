@@ -26,12 +26,17 @@
 
 /* Make carousel navigation buttons more visible on hover */
 .embla__button {
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10;
 }
 
 .embla:hover .embla__button {
   opacity: 1;
+}
+
+.embla__button:hover {
+  transform: scale(1.1);
 }
 
 /* Enhance overflow to ensure next card is partially visible */
@@ -64,5 +69,34 @@
 @media (min-width: 1024px) {
   .lg\:basis-1\/4 {
     flex-basis: 23%; /* Show 2% of the next card */
+  }
+}
+
+/* Fix for mentor carousel display */
+.mentor-carousel-item {
+  flex: 0 0 calc(90% - 1rem);
+  max-width: calc(90% - 1rem);
+  margin-right: 1rem;
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(45% - 1rem);
+    max-width: calc(45% - 1rem);
+  }
+}
+
+@media (min-width: 768px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(30% - 1rem);
+    max-width: calc(30% - 1rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(23% - 1rem);
+    max-width: calc(23% - 1rem);
   }
 }
