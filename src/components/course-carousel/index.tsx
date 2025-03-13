@@ -1,213 +1,180 @@
 
-import React, { useState, useCallback, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Course } from '@/types/course';
-import { useCourseData } from '@/hooks/useCourseData';
-import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
-import { triggerCourseEvent } from '@/hooks/useCourseEvents';
-import CourseCarouselHeader from './CourseCarouselHeader';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import CourseCard from '@/components/CourseCard';
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  CarouselFilters
-} from '@/components/ui/carousel';
+import { Course } from '@/types/course';
 
 interface CourseCarouselProps {
   title: string;
   courses: Course[];
-  showSkillFilters?: boolean;
-  onCourseClick?: (courseId: string) => void;
-  onViewAllClick?: () => void;
-  filterOptions?: string[];
-  viewAllUrl?: string;
-  subFilterOptions?: Record<string, string[]>;
-  showTrainingCategory?: boolean;
+  subtitle?: string;
+  viewAllLink?: string;
+  className?: string;
 }
 
-const CourseCarousel: React.FC<CourseCarouselProps> = ({ 
-  title, 
-  courses, 
-  showSkillFilters = false,
-  onCourseClick,
-  onViewAllClick,
-  filterOptions = [],
-  viewAllUrl = '/view-all',
-  subFilterOptions = {},
-  showTrainingCategory = false
+const CourseCarousel: React.FC<CourseCarouselProps> = ({
+  title,
+  courses,
+  subtitle,
+  viewAllLink,
+  className = '',
 }) => {
-  const uniqueFilterOptions = filterOptions.length > 0 ? [...new Set(filterOptions)] : [];
-  
-  const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
-  const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
-  const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const { toggleBookmark } = useCourseBookmarks();
-  
-  const { normalizedCourses } = useCourseData(courses);
-  const carouselId = `${title.replace(/\s+/g, '-')}-carousel`;
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(0);
+  const [visibleItems, setVisibleItems] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleCardClick = useCallback((courseId: string) => {
-    const originalId = courseId.split('-clone-')[0];
-    if (onCourseClick) {
-      onCourseClick(originalId);
-    } else {
-      navigate(`/course/${originalId}`);
+  // Calculate the maximum scroll position and visible items
+  useEffect(() => {
+    const updateScrollInfo = () => {
+      if (carouselRef.current && contentRef.current) {
+        const containerWidth = carouselRef.current.clientWidth;
+        const totalWidth = contentRef.current.scrollWidth;
+        const newMaxScroll = Math.max(0, totalWidth - containerWidth);
+        setMaxScroll(newMaxScroll);
+        
+        // Calculate visible items based on container width
+        // Each card is approximately 280px wide with margin
+        const itemWidth = 280;
+        const calculatedVisibleItems = Math.floor(containerWidth / itemWidth);
+        setVisibleItems(calculatedVisibleItems);
+      }
+    };
+
+    updateScrollInfo();
+    window.addEventListener('resize', updateScrollInfo);
+    return () => window.removeEventListener('resize', updateScrollInfo);
+  }, [courses.length]);
+
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      // Calculate item width (card width + margin)
+      const itemWidth = 280;
+      // Scroll by one item
+      const newPosition = Math.max(0, scrollPosition - itemWidth);
+      
+      carouselRef.current.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      
+      setScrollPosition(newPosition);
     }
-  }, [onCourseClick, navigate]);
-
-  const handleFilterSelect = useCallback((filter: string) => {
-    setSelectedFilter(filter);
-    if (subFilterOptions && subFilterOptions[filter]) {
-      const uniqueSubFilters = [...new Set(subFilterOptions[filter])];
-      setSelectedSubFilter(uniqueSubFilters[0]);
-    } else {
-      setSelectedSubFilter('All Sub-Academies');
-    }
-  }, [subFilterOptions]);
-
-  const handleSubFilterClick = useCallback((subFilter: string) => {
-    setSelectedSubFilter(subFilter);
-  }, []);
-
-  const handleBookmarkToggle = useCallback((e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
-    e.stopPropagation();
-    const courseToToggle = normalizedCourses.find(course => course.id === courseId);
-    if (courseToToggle) {
-      toggleBookmark(courseToToggle);
-      // Trigger the bookmark event
-      triggerCourseEvent('bookmark', courseId, title);
-    }
-  }, [normalizedCourses, toggleBookmark]);
-
-  const handleShareClick = useCallback((e: React.MouseEvent, courseId: string) => {
-    e.stopPropagation();
-    const courseToShare = normalizedCourses.find(course => course.id === courseId);
-    if (courseToShare) {
-      triggerCourseEvent('share', courseId, courseToShare.title);
-    }
-  }, [normalizedCourses]);
-
-  const handleAssignClick = useCallback((e: React.MouseEvent, courseId: string) => {
-    e.stopPropagation();
-    const courseToAssign = normalizedCourses.find(course => course.id === courseId);
-    if (courseToAssign) {
-      triggerCourseEvent('assign', courseId, courseToAssign.title);
-    }
-  }, [normalizedCourses]);
-
-  const handleMouseEnter = useCallback((courseId: string) => {
-    setHoveredCourseId(courseId);
-  }, []);
-  
-  const handleMouseLeave = useCallback(() => {
-    setHoveredCourseId(null);
-  }, []);
-
-  const availableSubFilters = subFilterOptions[selectedFilter] ? 
-    [...new Set(subFilterOptions[selectedFilter])] : 
-    [];
-
-  // Calculate number of visible cards based on screen size
-  const getCardsToShow = () => {
-    if (isMobile) return 1;
-    // For desktop, we'll show 4 cards plus 20% of the fifth
-    return 4.2;
   };
-  
-  // Calculate card width as a percentage to show partial cards
-  const getCardPercentage = () => {
-    if (isMobile) return 100; // Full width on mobile
-    
-    // On desktop, we want to show 4 full cards and 20% of the next
-    // If we're showing 4.2 cards, each card should take up 100/4.2 = ~23.8% of the width
-    return (100 / getCardsToShow());
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      // Calculate item width (card width + margin)
+      const itemWidth = 280;
+      // Scroll by one item
+      const newPosition = Math.min(maxScroll, scrollPosition + itemWidth);
+      
+      carouselRef.current.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      
+      setScrollPosition(newPosition);
+    }
   };
+
+  // Handle scroll events
+  const handleScroll = () => {
+    if (carouselRef.current) {
+      setScrollPosition(carouselRef.current.scrollLeft);
+    }
+  };
+
+  // Add scroll event listener
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener('scroll', handleScroll);
+      return () => carousel.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Show a partial view of the next item (information scent)
+  const partialViewStyle = {
+    // Add right padding to the container to show a partial view of the next item
+    // Typically around 15% of the next card is visible
+    paddingRight: 'calc(15% + 16px)'
+  };
+
+  if (courses.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="space-y-4 overflow-hidden">
-      <CourseCarouselHeader 
-        title={title}
-        onViewAllClick={onViewAllClick}
-        viewAllUrl={viewAllUrl}
-        carouselId={carouselId}
-      />
-      
-      {showSkillFilters && uniqueFilterOptions.length > 0 && (
-        <div className="relative">
-          <CarouselFilters
-            filters={uniqueFilterOptions}
-            selectedFilter={selectedFilter}
-            onFilterSelect={handleFilterSelect}
-            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
-          />
+    <div className={`space-y-4 ${className}`}>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+          {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
         </div>
-      )}
-      
-      {showSkillFilters && availableSubFilters.length > 0 && (
-        <div className="relative">
-          <CarouselFilters
-            filters={availableSubFilters}
-            selectedFilter={selectedSubFilter}
-            onFilterSelect={handleSubFilterClick}
-            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
-          />
-        </div>
-      )}
-
-      <div className="relative group/carousel">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-            dragFree: true, // Allow free dragging for smoother experience
-          }}
-          className="w-full relative"
-          id={carouselId}
-        >
-          <CarouselContent className="-ml-4">
-            {normalizedCourses.map((course) => (
-              <CarouselItem 
-                key={course.id} 
-                className="pl-4"
-                style={{ 
-                  flex: `0 0 ${getCardPercentage()}%`, 
-                  maxWidth: `${getCardPercentage()}%`
-                }}
-              >
-                <div 
-                  className="cursor-pointer"
-                  onMouseEnter={() => handleMouseEnter(course.id)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <CourseCard 
-                    {...course}
-                    trainingCategory={course.trainingCategory}
-                    isBookmarked={course.isBookmarked}
-                    previewUrl={course.videoUrl}
-                    isHot={course.isHot}
-                    isNew={course.isNew}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          
-          {!isMobile && (
-            <>
-              <CarouselPrevious className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-3" data-embla-prev />
-              <CarouselNext className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-3" data-embla-next />
-            </>
+        <div className="flex items-center space-x-2">
+          {viewAllLink && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={viewAllLink}>View All</a>
+            </Button>
           )}
-        </Carousel>
+          <div className="flex space-x-1">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={scrollLeft} 
+              disabled={scrollPosition <= 0}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={scrollRight} 
+              disabled={scrollPosition >= maxScroll}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div 
+        ref={carouselRef} 
+        className="overflow-x-auto scrollbar-hide pb-4" 
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <div 
+          ref={contentRef} 
+          className="flex space-x-4 pl-1"
+          style={partialViewStyle}
+        >
+          {courses.map((course) => (
+            <div key={course.id} className="min-w-[250px] max-w-[250px]">
+              <CourseCard
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.previewUrl}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default memo(CourseCarousel);
+export default CourseCarousel;
