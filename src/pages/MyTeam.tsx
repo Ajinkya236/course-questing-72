@@ -184,7 +184,7 @@ const MyTeam: React.FC = () => {
           </Card>
         </div>
         
-        {/* Team members section moved here - right after goals */}
+        {/* Team members section */}
         <div>
           <Card>
             <CardHeader>

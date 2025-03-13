@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
 
 import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
@@ -30,9 +32,12 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   // Default to 'in-progress' status for courses if no status is specified
   useEffect(() => {
     if (activeTab === 'courses' && !searchParams.get('status')) {
-      navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
+      navigate(memberId 
+        ? `/my-team/member/${memberId}/learning?tab=courses&status=in-progress`
+        : `/my-learning?tab=courses&status=in-progress`, 
+        { replace: true });
     }
-  }, [activeTab, searchParams, navigate]);
+  }, [activeTab, searchParams, navigate, memberId]);
   
   // Use the teamMemberId from props or from URL params
   const memberId = teamMemberId || params.memberId;
@@ -54,6 +59,11 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
     }
   };
 
+  // Handle back button click for team member view
+  const handleBackClick = () => {
+    navigate('/my-team');
+  };
+
   return (
     <>
       <Helmet>
@@ -61,6 +71,18 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       </Helmet>
       
       <div className="space-y-6">
+        {memberId && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleBackClick} 
+            className="mb-4 -ml-2 flex items-center"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            Back to My Team
+          </Button>
+        )}
+        
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight">
             {memberId ? "Team Member's Learning" : "My Learning"}

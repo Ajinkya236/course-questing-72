@@ -244,7 +244,6 @@ function App() {
                 <Route path="/mentoring" element={<Mentoring />} />
                 <Route path="/my-team" element={<MyTeam />} />
                 
-                {/* Add proper team member learning routes */}
                 <Route path="/my-team/member/:memberId/learning" element={<MyLearning />} />
                 
                 <Route path="/faq" element={<FAQ />} />
