@@ -31,7 +31,7 @@ const CourseCarouselVideo: React.FC<CourseCarouselVideoProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-7 w-7"
+          className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full h-7 w-7 mute-button"
           onClick={toggleMute}
         >
           {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}

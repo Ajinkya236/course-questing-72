@@ -121,7 +121,6 @@
 .course-card-actions {
   opacity: 0;
   visibility: hidden;
-  display: block;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
@@ -137,4 +136,11 @@
 .mentor-request-button {
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+/* Fix for mute/unmute button visibility */
+.mute-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 30 !important;
 }
