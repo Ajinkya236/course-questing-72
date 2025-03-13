@@ -169,7 +169,7 @@ const CarouselItem = React.forwardRef<
 })
 CarouselItem.displayName = "CarouselItem"
 
-// CarouselPrevious component - updated for better visibility
+// CarouselPrevious component - updated for better visibility and position
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
@@ -184,9 +184,9 @@ const CarouselPrevious = React.forwardRef<
       className={cn(
         "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
         orientation === "horizontal"
-          ? "left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" // Position further left to overlap
+          ? "left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" 
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--prev z-50", // Higher z-index
+        "embla__button embla__button--prev", 
         className
       )}
       onClick={scrollPrev}
@@ -201,7 +201,7 @@ const CarouselPrevious = React.forwardRef<
 })
 CarouselPrevious.displayName = "CarouselPrevious"
 
-// CarouselNext component - updated for better visibility
+// CarouselNext component - updated for better visibility and position
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
@@ -216,9 +216,9 @@ const CarouselNext = React.forwardRef<
       className={cn(
         "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
         orientation === "horizontal"
-          ? "right-0 top-1/2 -translate-y-1/2 translate-x-1/2" // Position further right to overlap
+          ? "right-0 top-1/2 -translate-y-1/2 translate-x-1/2" 
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--next z-50", // Higher z-index
+        "embla__button embla__button--next", 
         className
       )}
       onClick={scrollNext}

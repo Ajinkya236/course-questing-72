@@ -44,13 +44,15 @@
   transform: scale(1.1);
 }
 
-/* Position buttons outside the carousel content and make them overlap sections */
+/* Position buttons outside the carousel content to overlap with surrounding areas */
 .embla__button--prev {
-  left: -25px; /* Moved further left to overlap */
+  left: -20px; /* Positioned further left to overlap with the page boundary */
+  transform: translateX(-50%); /* Center the button on its position */
 }
 
 .embla__button--next {
-  right: -25px; /* Moved further right to overlap */
+  right: -20px; /* Positioned further right to overlap with the page boundary */
+  transform: translateX(50%); /* Center the button on its position */
 }
 
 /* Enhance overflow to ensure next card is partially visible */
