@@ -1,11 +1,14 @@
 
 import * as React from "react"
-import useEmblaCarousel, { type UseEmblaCarouselType, type EmblaOptionsType } from "embla-carousel-react"
+import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { CarouselContext, useCarousel, type CarouselProps } from "./carousel-context"
+
+type EmblaOptionsType = NonNullable<Parameters<typeof useEmblaCarousel>[0]>
+type UseEmblaCarouselType = ReturnType<typeof useEmblaCarousel>
 
 // Main Carousel component
 const Carousel = React.forwardRef<
@@ -243,4 +246,3 @@ export {
 // Export all the components and types from this single file for now
 export * from "./carousel-context"
 export * from "./carousel-filters"
-
