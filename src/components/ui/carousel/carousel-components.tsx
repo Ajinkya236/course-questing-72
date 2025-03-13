@@ -183,11 +183,11 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-8 w-8 rounded-full bg-background/95 border border-border shadow-md hover:bg-background",
+        "absolute h-8 w-8 rounded-full bg-background/80 border border-border shadow-sm hover:bg-background",
         orientation === "horizontal"
           ? "left-2 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--prev z-20", // Increased z-index to overlap other elements
+        "embla__button z-10", // Added z-index to ensure button is clickable
         className
       )}
       onClick={scrollPrev}
@@ -215,11 +215,11 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-8 w-8 rounded-full bg-background/95 border border-border shadow-md hover:bg-background",
+        "absolute h-8 w-8 rounded-full bg-background/80 border border-border shadow-sm hover:bg-background",
         orientation === "horizontal"
           ? "right-2 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--next z-20", // Increased z-index to overlap other elements
+        "embla__button z-10", // Added z-index to ensure button is clickable
         className
       )}
       onClick={scrollNext}

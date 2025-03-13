@@ -48,38 +48,8 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
     return activeFilter === 'self' ? selfAssignedCourses : managerAssignedCourses;
   };
 
-  // Mock progress data for learning goals
-  const progressData = {
-    completed: 8,
-    inProgress: 4,
-    notStarted: 3
-  };
-
   return (
     <div className="space-y-8">
-      {/* Progress Summary Card */}
-      <Card>
-        <CardHeader>
-          <h3 className="text-lg font-medium">Learning Goals Progress</h3>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-muted/30 p-4 rounded-lg text-center">
-              <h4 className="text-sm font-medium text-muted-foreground">Completed</h4>
-              <p className="text-3xl font-bold text-green-600">{progressData.completed}</p>
-            </div>
-            <div className="bg-muted/30 p-4 rounded-lg text-center">
-              <h4 className="text-sm font-medium text-muted-foreground">In Progress</h4>
-              <p className="text-3xl font-bold text-blue-600">{progressData.inProgress}</p>
-            </div>
-            <div className="bg-muted/30 p-4 rounded-lg text-center">
-              <h4 className="text-sm font-medium text-muted-foreground">Not Started</h4>
-              <p className="text-3xl font-bold text-orange-500">{progressData.notStarted}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Simplified Filter Tabs */}
       <Tabs value={activeFilter} onValueChange={setActiveFilter}>
         <TabsList className="grid grid-cols-2 w-full max-w-md">

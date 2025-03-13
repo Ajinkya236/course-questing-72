@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -129,7 +130,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   };
 
   return (
-    <div className="space-y-4 overflow-visible">
+    <div className="space-y-4 overflow-hidden">
       <CourseCarouselHeader 
         title={title}
         onViewAllClick={onViewAllClick}
@@ -159,7 +160,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       )}
 
-      <div className="relative group/carousel px-12">
+      <div className="relative group/carousel">
         <Carousel
           opts={{
             align: "start",
@@ -200,11 +201,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {!isMobile && (
             <>
               <CarouselPrevious 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -left-14 z-20" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-6" 
                 data-embla-prev 
               />
               <CarouselNext 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 absolute -right-14 z-20" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-6" 
                 data-embla-next 
               />
             </>

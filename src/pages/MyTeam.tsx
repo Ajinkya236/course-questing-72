@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from "@/components/ui/button";
@@ -88,16 +89,6 @@ const MyTeam: React.FC = () => {
   const teamTotals = calculateTeamTotals();
   const totalCourses = teamTotals.assigned + teamTotals.inProgress + teamTotals.completed;
   
-  // Function to navigate to team member's learning page with courses tab
-  const navigateToMemberLearning = (memberId: string) => {
-    navigate(`/my-team/member/${memberId}/learning?tab=courses&status=in-progress`);
-  };
-  
-  // Function to navigate to team member's goals page
-  const navigateToMemberGoals = (memberId: string) => {
-    navigate(`/my-team/member/${memberId}/learning?tab=goals`);
-  };
-  
   return (
     <>
       <Helmet>
@@ -184,7 +175,7 @@ const MyTeam: React.FC = () => {
           </Card>
         </div>
         
-        {/* Team members section */}
+        {/* Team members section moved here - right after goals */}
         <div>
           <Card>
             <CardHeader>
@@ -227,14 +218,14 @@ const MyTeam: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigateToMemberLearning(member.id)}
+                            onClick={() => navigate(`/my-team/member/${member.id}/learning?tab=courses`)}
                           >
                             View Learning
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigateToMemberGoals(member.id)}
+                            onClick={() => navigate(`/my-team/member/${member.id}/goals?tab=goals`)}
                           >
                             View Goals
                           </Button>

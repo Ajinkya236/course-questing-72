@@ -28,7 +28,7 @@
 .embla__button {
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 20; /* Increased z-index to ensure buttons are on top */
+  z-index: 10;
   position: absolute;
 }
 
@@ -40,13 +40,13 @@
   transform: scale(1.1);
 }
 
-/* Position buttons outside the carousel content and make them overlap */
+/* Position buttons outside the carousel content */
 .embla__button--prev {
-  left: -50px; /* Moved further to the left */
+  left: -20px;
 }
 
 .embla__button--next {
-  right: -50px; /* Moved further to the right */
+  right: -20px;
 }
 
 /* Enhance overflow to ensure next card is partially visible */
