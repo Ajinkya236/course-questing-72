@@ -63,9 +63,7 @@ const MentorCard: React.FC<MentorCardProps> = ({
           <Button 
             size="sm" 
             onClick={() => onSelectMentor(mentor)}
-            className={`w-full mt-3 transition-all duration-300 flex items-center justify-center gap-2 ${
-              isHovered ? 'opacity-100' : 'opacity-0'
-            }`}
+            className="w-full mt-3 transition-all duration-300 flex items-center justify-center gap-2 opacity-100"
           >
             <Send className="h-3 w-3" /> 
             Request Mentoring

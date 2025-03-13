@@ -109,6 +109,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setHoveredCourseId(null);
   };
 
+  // Handle course selection
+  const handleCourseSelect = (courseId: string) => {
+    if (onCourseSelect) {
+      onCourseSelect(courseId);
+    }
+  };
+
   if (!courses || courses.length === 0) {
     return null;
   }
@@ -117,7 +124,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     <div className="relative space-y-3 pb-6">
       <CourseCarouselHeader 
         title={title} 
-        viewAllLink={viewAllLink} 
+        viewAllUrl={viewAllLink} 
       />
       
       <div className="relative group">
@@ -155,13 +162,21 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               >
                 <CourseCarouselCard
                   course={course}
-                  isHovered={hoveredCourseId === course.id}
-                  isMuted={isMuted}
-                  isVideoPlaying={hoveredCourseId === course.id}
-                  videoRef={hoveredCourseId === course.id ? videoRef : null}
-                  toggleMute={toggleMute}
+                  hoveredCourseId={hoveredCourseId}
+                  handleCardClick={handleCourseSelect}
+                  handleShareClick={(e, courseId) => {
+                    e.stopPropagation();
+                    // Handle share logic
+                  }}
+                  handleBookmarkToggle={(e, courseId, title, isBookmarked) => {
+                    e.stopPropagation();
+                    // Handle bookmark logic
+                  }}
+                  handleAssignClick={(e, courseId) => {
+                    e.stopPropagation();
+                    // Handle assign logic
+                  }}
                   showTrainingCategory={showTrainingCategory}
-                  onSelect={onCourseSelect}
                 />
               </div>
             ))}

@@ -77,7 +77,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   }, [isHovered, previewUrl, videoRef]);
 
   return (
-    <div className="relative overflow-hidden rounded-t-md h-[170px]">
+    <div className="relative overflow-hidden rounded-t-md h-[150px]">
       {/* Loading indicator */}
       {isImageLoading && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
