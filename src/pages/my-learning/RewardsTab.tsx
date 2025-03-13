@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -741,3 +742,281 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
                     <div className="flex-1 flex items-center gap-3">
                       <div className="relative">
                         <div className="h-10 w-10 rounded-full overflow-hidden bg-secondary flex items-center justify-center">
+                          {team.avatar ? (
+                            <img src={team.avatar} alt={team.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <Users className="h-5 w-5 text-secondary-foreground" />
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <span className="font-medium">{team.name}</span>
+                          {team.isCurrentUserGroup && (
+                            <Badge variant="outline" className="ml-2 text-xs">Your Group</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          <span>{team.memberCount} members</span>
+                          {team.winStreak > 0 && (
+                            <span className="ml-2 text-amber-500 flex items-center">
+                              <Flame className="h-3 w-3 mr-1" />
+                              {team.winStreak} week streak
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Points */}
+                    <div className="text-right">
+                      <div className="font-medium">{team.points.toLocaleString()} pts</div>
+                      <div className="flex items-center text-xs">
+                        {team.positionChange > 0 ? (
+                          <span className="text-green-500 flex items-center">
+                            <ArrowUp className="h-3 w-3 mr-1" />
+                            {team.positionChange}
+                          </span>
+                        ) : team.positionChange < 0 ? (
+                          <span className="text-red-500 flex items-center">
+                            <ArrowDown className="h-3 w-3 mr-1" />
+                            {Math.abs(team.positionChange)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : activeLeaderboardType === 'team' && teamLeaderboardScope === 'intra' ? (
+                // Intra-Team Leaderboard (shows individual members within a team/group)
+                getIntraTeamLeaderboard().map((user, index) => (
+                  <div 
+                    key={user.id}
+                    className={`p-3 rounded-lg flex items-center gap-3 ${
+                      user.id === currentUser?.id ? 'bg-primary/10 border border-primary/20' : 
+                      index % 2 === 0 ? 'bg-muted/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      {user.position}
+                    </div>
+                    
+                    {/* User Info */}
+                    <div className="flex-1 flex items-center gap-3">
+                      <div className="relative">
+                        <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
+                        {user.id === currentUser?.id && (
+                          <div className="absolute -bottom-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            <User className="h-3 w-3" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center">
+                          <span className="font-medium">{user.name}</span>
+                          {user.id === currentUser?.id && (
+                            <Badge variant="outline" className="ml-2 text-xs">You</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {leaderboardFilter === 'team' ? user.team : 
+                           leaderboardFilter === 'role' ? user.role : 
+                           leaderboardFilter === 'department' ? user.department : 
+                           leaderboardFilter === 'location' ? user.location : 
+                           leaderboardFilter === 'job-family' ? user.jobFamily : 
+                           leaderboardFilter === 'job-segment' ? user.segment : ''}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* User Stats */}
+                    {showDetails && (
+                      <div className="hidden md:flex gap-2 text-xs">
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Assessment: {user.details.assessmentScore}%</span>
+                        </div>
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Engagement: {user.details.engagementScore}%</span>
+                        </div>
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Completion: {user.details.completionRate}%</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Points */}
+                    <div className="text-right">
+                      <div className="font-medium">{user.points.toLocaleString()} pts</div>
+                      <div className="flex items-center text-xs">
+                        {user.positionChange > 0 ? (
+                          <span className="text-green-500 flex items-center">
+                            <ArrowUp className="h-3 w-3 mr-1" />
+                            {user.positionChange}
+                          </span>
+                        ) : user.positionChange < 0 ? (
+                          <span className="text-red-500 flex items-center">
+                            <ArrowDown className="h-3 w-3 mr-1" />
+                            {Math.abs(user.positionChange)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : leaderboardFilter === 'personal' ? (
+                // Personal Best Progression
+                getPersonalBestLeaderboard().map((entry, index) => (
+                  <div 
+                    key={index}
+                    className={`p-3 rounded-lg flex items-center gap-3 ${
+                      index === getPersonalBestLeaderboard().length - 1 ? 'bg-primary/10 border border-primary/20' : 
+                      index % 2 === 0 ? 'bg-muted/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      {entry.position}
+                    </div>
+                    
+                    {/* User Info */}
+                    <div className="flex-1 flex items-center gap-3">
+                      <div className="relative">
+                        <img src={entry.avatar} alt={entry.name} className="h-10 w-10 rounded-full object-cover" />
+                      </div>
+                      <div>
+                        <div className="flex items-center">
+                          <span className="font-medium">{entry.name}</span>
+                          <Badge variant="outline" className="ml-2 text-xs">You</Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {entry.date}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Points */}
+                    <div className="text-right">
+                      <div className="font-medium">{entry.points.toLocaleString()} pts</div>
+                      <div className="flex items-center text-xs">
+                        {entry.positionChange > 0 ? (
+                          <span className="text-green-500 flex items-center">
+                            <ArrowUp className="h-3 w-3 mr-1" />
+                            {entry.positionChange}
+                          </span>
+                        ) : entry.positionChange < 0 ? (
+                          <span className="text-red-500 flex items-center">
+                            <ArrowDown className="h-3 w-3 mr-1" />
+                            {Math.abs(entry.positionChange)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                // Individual Leaderboard (relative)
+                getActiveLeaderboard().map((user, index) => (
+                  <div 
+                    key={user.id}
+                    className={`p-3 rounded-lg flex items-center gap-3 ${
+                      user.id === currentUser?.id ? 'bg-primary/10 border border-primary/20' : 
+                      index % 2 === 0 ? 'bg-muted/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      {user.position}
+                    </div>
+                    
+                    {/* User Info */}
+                    <div className="flex-1 flex items-center gap-3">
+                      <div className="relative">
+                        <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
+                        {user.id === currentUser?.id && (
+                          <div className="absolute -bottom-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            <User className="h-3 w-3" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center">
+                          <span className="font-medium">{user.name}</span>
+                          {user.id === currentUser?.id && (
+                            <Badge variant="outline" className="ml-2 text-xs">You</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground flex flex-wrap gap-1">
+                          <span>{user.department}</span>
+                          <span>•</span>
+                          <span>{user.team}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* User Stats */}
+                    {showDetails && (
+                      <div className="hidden md:flex gap-2 text-xs">
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Assessment: {user.details.assessmentScore}%</span>
+                        </div>
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Engagement: {user.details.engagementScore}%</span>
+                        </div>
+                        <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
+                          <span className="text-secondary-foreground">Completion: {user.details.completionRate}%</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Points */}
+                    <div className="text-right">
+                      <div className="font-medium">{user.points.toLocaleString()} pts</div>
+                      <div className="flex items-center text-xs">
+                        {user.positionChange > 0 ? (
+                          <span className="text-green-500 flex items-center">
+                            <ArrowUp className="h-3 w-3 mr-1" />
+                            {user.positionChange}
+                          </span>
+                        ) : user.positionChange < 0 ? (
+                          <span className="text-red-500 flex items-center">
+                            <ArrowDown className="h-3 w-3 mr-1" />
+                            {Math.abs(user.positionChange)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+
+              {/* View More Button */}
+              <Button variant="outline" className="w-full">
+                View Full Leaderboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Redeem Points Dialog */}
+      {showRedeemDialog && (
+        <RedeemPointsDialog 
+          open={showRedeemDialog}
+          onOpenChange={setShowRedeemDialog}
+          availablePoints={rewardsData.totalPoints}
+        />
+      )}
+    </div>
+  );
+};
+
+export default RewardsTab;
