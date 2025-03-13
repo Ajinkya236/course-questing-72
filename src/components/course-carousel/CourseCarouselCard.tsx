@@ -86,13 +86,11 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
         showTrainingCategory={showTrainingCategory}
       />
       
-      <CardHeader className="p-2">
+      <CardContent className="p-2">
         <CardTitle className="text-sm line-clamp-1">{course.title}</CardTitle>
         <CardDescription className="line-clamp-2 text-xs min-h-[2rem]">{course.description}</CardDescription>
-      </CardHeader>
-      
-      <CardContent className="p-2 pt-0">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
           <span>{course.duration}</span>
           <span>•</span>
           <span>{course.level || 'All Levels'}</span>
