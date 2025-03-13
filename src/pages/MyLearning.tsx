@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
@@ -22,12 +20,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
   
-  // Use the teamMemberId from props or from URL params
-  const memberId = teamMemberId || params.memberId;
-  
-  // Title suffix based on if viewing team member's learning
-  const titleSuffix = memberId ? ` - Team Member` : '';
-  
   // Update active tab when URL params change
   useEffect(() => {
     if (tabFromUrl) {
@@ -38,31 +30,15 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   // Default to 'in-progress' status for courses if no status is specified
   useEffect(() => {
     if (activeTab === 'courses' && !searchParams.get('status')) {
-      navigate(memberId 
-        ? `/my-team/member/${memberId}/learning?tab=courses&status=in-progress`
-        : `/my-learning?tab=courses&status=in-progress`, 
-        { replace: true });
+      navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
     }
-  }, [activeTab, searchParams, navigate, memberId]);
-
-  // Handle tab change with direct navigation
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    if (value === 'courses') {
-      navigate(memberId 
-        ? `/my-team/member/${memberId}/learning?tab=${value}&status=in-progress`
-        : `/my-learning?tab=${value}&status=in-progress`);
-    } else {
-      navigate(memberId 
-        ? `/my-team/member/${memberId}/learning?tab=${value}`
-        : `/my-learning?tab=${value}`);
-    }
-  };
-
-  // Handle back button click for team member view
-  const handleBackClick = () => {
-    navigate('/my-team');
-  };
+  }, [activeTab, searchParams, navigate]);
+  
+  // Use the teamMemberId from props or from URL params
+  const memberId = teamMemberId || params.memberId;
+  
+  // Title suffix based on if viewing team member's learning
+  const titleSuffix = memberId ? ` - Team Member` : '';
 
   return (
     <>
@@ -71,18 +47,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       </Helmet>
       
       <div className="space-y-6">
-        {memberId && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleBackClick} 
-            className="mb-4 -ml-2 flex items-center"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Back to My Team
-          </Button>
-        )}
-        
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight">
             {memberId ? "Team Member's Learning" : "My Learning"}
@@ -97,7 +61,14 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         <Tabs 
           defaultValue="courses" 
           value={activeTab}
-          onValueChange={handleTabChange}
+          onValueChange={(value) => {
+            setActiveTab(value);
+            if (value === 'courses') {
+              navigate('/my-learning?tab=courses&status=in-progress');
+            } else {
+              navigate(`/my-learning?tab=${value}`);
+            }
+          }}
           className="space-y-4"
         >
           <TabsList>

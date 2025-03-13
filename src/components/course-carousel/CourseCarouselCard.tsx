@@ -15,7 +15,6 @@ interface CourseCarouselCardProps {
   handleBookmarkToggle: (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => void;
   handleAssignClick: (e: React.MouseEvent, courseId: string) => void;
   showTrainingCategory?: boolean;
-  variant?: 'default' | 'compact' | 'minimal';
 }
 
 const getStatusColor = (status?: string) => {
@@ -36,8 +35,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   handleShareClick,
   handleBookmarkToggle,
   handleAssignClick,
-  showTrainingCategory = false,
-  variant = 'default'
+  showTrainingCategory = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
