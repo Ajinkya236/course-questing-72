@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card } from '@/components/ui/card';
@@ -25,20 +24,16 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [hoveredMentorId, setHoveredMentorId] = useState<number | null>(null);
   
-  // Extract all unique topics from mentors for filters
   const allTopics = selectedTopics.length > 0 
     ? selectedTopics 
     : Array.from(new Set(mentors.flatMap(mentor => mentor.topics)));
   
-  // Add "All" as the first filter option
   const filterTopics = ["All", ...allTopics];
   
-  // Filter mentors based on selected topic
   const filteredMentors = activeFilter === "All" 
     ? mentors 
     : mentors.filter(mentor => mentor.topics.includes(activeFilter));
   
-  // Initialize active filter with the first selected topic if available
   useEffect(() => {
     if (selectedTopics && selectedTopics.length > 0) {
       setActiveFilter(selectedTopics[0]);
@@ -76,7 +71,6 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
         </div>
       </div>
       
-      {/* Topics filter carousel */}
       <div className="mb-4 relative">
         <CarouselFilters
           filters={filterTopics}
@@ -86,7 +80,6 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
         />
       </div>
       
-      {/* Mentors carousel */}
       <div className="relative group/mentors">
         <Carousel 
           className="w-full"
@@ -101,7 +94,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
               filteredMentors.map(mentor => (
                 <CarouselItem 
                   key={mentor.id} 
-                  className="mentor-carousel-item" // Use the custom class for proper sizing
+                  className="mentor-carousel-item"
                 >
                   <MentorCard
                     mentor={mentor}
@@ -121,12 +114,11 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             )}
           </CarouselContent>
           
-          <CarouselPrevious className="z-10 opacity-70 hover:opacity-100 -left-3" />
-          <CarouselNext className="z-10 opacity-70 hover:opacity-100 -right-3" />
+          <CarouselPrevious className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
+          <CarouselNext className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
         </Carousel>
       </div>
 
-      {/* Mentor Details Dialog */}
       <MentorDetailsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

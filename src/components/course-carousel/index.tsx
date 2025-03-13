@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -201,11 +200,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           {!isMobile && (
             <>
               <CarouselPrevious 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-6" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
                 data-embla-prev 
               />
               <CarouselNext 
-                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-6" 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
                 data-embla-next 
               />
             </>

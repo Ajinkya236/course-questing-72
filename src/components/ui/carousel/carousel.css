@@ -28,12 +28,15 @@
 .embla__button {
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 50; /* Increased z-index to make buttons overlap other elements */
+  z-index: 50; /* Increased z-index to ensure buttons are on top */
   position: absolute;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Added shadow for better visibility */
+  background-color: white; /* Ensuring buttons have a solid background */
 }
 
-.embla:hover .embla__button {
+.embla:hover .embla__button,
+.group:hover .embla__button,
+.group\\/carousel:hover .embla__button {
   opacity: 1;
 }
 

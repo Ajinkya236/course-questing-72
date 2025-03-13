@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
@@ -123,7 +122,7 @@ const Carousel = React.forwardRef<
 )
 Carousel.displayName = "Carousel"
 
-// CarouselContent component - updated to set proper overflow to show partial next card
+// CarouselContent component - updated to set proper overflow
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -146,7 +145,7 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
-// CarouselItem component - modified to allow partial visibility of the next card
+// CarouselItem component
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -161,7 +160,7 @@ const CarouselItem = React.forwardRef<
       className={cn(
         "min-w-0 shrink-0 grow-0 basis-full p-4",
         orientation === "horizontal" ? "pl-4" : "pt-4",
-        "card-partial-visible", // Added class for partial visibility styling
+        "card-partial-visible", // Class for partial visibility styling
         className
       )}
       {...props}
@@ -183,11 +182,11 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-background/90 border border-border shadow-md hover:bg-background",
+        "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
         orientation === "horizontal"
-          ? "left-2 top-1/2 -translate-y-1/2"
+          ? "left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" // Position further left to overlap
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--prev z-50", // Increased z-index for better visibility
+        "embla__button embla__button--prev z-50", // Higher z-index
         className
       )}
       onClick={scrollPrev}
@@ -215,11 +214,11 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-background/90 border border-border shadow-md hover:bg-background",
+        "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
         orientation === "horizontal"
-          ? "right-2 top-1/2 -translate-y-1/2"
+          ? "right-0 top-1/2 -translate-y-1/2 translate-x-1/2" // Position further right to overlap
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--next z-50", // Increased z-index for better visibility
+        "embla__button embla__button--next z-50", // Higher z-index
         className
       )}
       onClick={scrollNext}
