@@ -1,15 +1,15 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrainCircuit, ArrowLeft, Loader2, MailCheck } from 'lucide-react';
+import { BrainCircuit, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { AuthContext } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Card,
   CardContent,
@@ -30,46 +30,66 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Form validation schema
 const formSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const ForgotPassword: React.FC = () => {
+const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
-  const { resetPassword, isAuthenticating } = useContext(AuthContext);
-  const [emailSent, setEmailSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     setError(null);
+    setIsLoading(true);
+    
     try {
-      await resetPassword(data.email);
-      
-      setEmailSent(true);
+      const { error } = await supabase.auth.updateUser({
+        password: data.password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setIsComplete(true);
       
       toast({
-        title: "Reset link sent",
-        description: `We've sent a password reset link to ${data.email}`,
+        title: "Password updated",
+        description: "Your password has been updated successfully.",
       });
+
+      // Redirect to sign in after 3 seconds
+      setTimeout(() => {
+        navigate('/sign-in');
+      }, 3000);
     } catch (error: any) {
-      setError(error.message || "Something went wrong. Please try again later.");
+      setError(error.message || "Failed to update password. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Forgot Password | Learning Management System</title>
+        <title>Reset Password | Learning Management System</title>
       </Helmet>
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-muted/30">
         <div className="w-full max-w-md">
@@ -80,9 +100,9 @@ const ForgotPassword: React.FC = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Reset your password</CardTitle>
+              <CardTitle>Set new password</CardTitle>
               <CardDescription>
-                Enter your email address and we'll send you a link to reset your password.
+                Enter a new password for your account
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -92,14 +112,14 @@ const ForgotPassword: React.FC = () => {
                 </Alert>
               )}
               
-              {emailSent ? (
+              {isComplete ? (
                 <div className="text-center py-4">
-                  <div className="bg-primary/10 text-primary rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <MailCheck className="w-8 h-8" />
+                  <div className="bg-green-100 text-green-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 dark:bg-green-900 dark:text-green-200">
+                    <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">Check your email</h3>
+                  <h3 className="text-lg font-medium mb-2">Password updated</h3>
                   <p className="text-muted-foreground mb-4">
-                    We've sent a password reset link to your email address.
+                    Your password has been updated successfully. You will be redirected to the sign in page shortly.
                   </p>
                   <Button 
                     variant="outline" 
@@ -114,14 +134,14 @@ const ForgotPassword: React.FC = () => {
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>New Password</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="name@company.com" 
-                              type="email" 
+                              type="password" 
+                              placeholder="••••••••" 
                               {...field} 
                             />
                           </FormControl>
@@ -130,30 +150,38 @@ const ForgotPassword: React.FC = () => {
                       )}
                     />
                     
-                    <Button type="submit" className="w-full" disabled={isAuthenticating}>
-                      {isAuthenticating ? (
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm New Password</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="••••••••" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Sending...
+                          Updating password...
                         </>
                       ) : (
-                        "Send reset link"
+                        "Reset password"
                       )}
                     </Button>
                   </form>
                 </Form>
               )}
             </CardContent>
-            <CardFooter className="justify-center">
-              <Button 
-                variant="link" 
-                className="flex items-center" 
-                onClick={() => navigate('/sign-in')}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Sign In
-              </Button>
-            </CardFooter>
           </Card>
         </div>
       </div>
@@ -161,4 +189,4 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

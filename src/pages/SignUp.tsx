@@ -1,15 +1,13 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrainCircuit, Loader2 } from 'lucide-react';
+import { BrainCircuit, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from '@/hooks/use-toast';
 import { AuthContext } from '@/contexts/AuthContext';
 import {
   Card,
@@ -33,15 +31,19 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  rememberMe: z.boolean().default(false),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const SignIn = () => {
+const SignUp = () => {
   const navigate = useNavigate();
-  const { user, login, isAuthenticating } = useContext(AuthContext);
+  const { user, signup, isAuthenticating } = useContext(AuthContext);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // React Hook Form with Zod validation
   const form = useForm<FormValues>({
@@ -49,7 +51,7 @@ const SignIn = () => {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      confirmPassword: '',
     },
   });
 
@@ -63,24 +65,22 @@ const SignIn = () => {
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     setError(null);
+    setSuccessMessage(null);
+    
     try {
-      await login(data.email, data.password, data.rememberMe);
+      await signup(data.email, data.password);
       
-      toast({
-        title: "Welcome to the Learning Portal!",
-        description: "You have successfully signed in.",
-      });
-      
-      navigate('/');
+      setSuccessMessage("Registration successful! Please check your email to verify your account.");
+      form.reset();
     } catch (error: any) {
-      setError(error.message || "Failed to sign in. Please check your credentials.");
+      setError(error.message || "Failed to create account. Please try again.");
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Sign In | Learning Management System</title>
+        <title>Sign Up | Learning Management System</title>
       </Helmet>
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-muted/30">
         <div className="w-full max-w-md">
@@ -91,15 +91,21 @@ const SignIn = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Sign in to your account</CardTitle>
+              <CardTitle>Create an account</CardTitle>
               <CardDescription>
-                Enter your email to sign in to your account
+                Enter your details to create a new account
               </CardDescription>
             </CardHeader>
             <CardContent>
               {error && (
                 <Alert variant="destructive" className="mb-4">
                   <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              {successMessage && (
+                <Alert className="mb-4 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                  <AlertDescription>{successMessage}</AlertDescription>
                 </Alert>
               )}
               
@@ -128,41 +134,33 @@ const SignIn = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Password</FormLabel>
-                          <Button 
-                            variant="link" 
-                            className="p-0 h-auto text-xs"
-                            type="button"
-                            onClick={() => navigate('/forgot-password')}
-                          >
-                            Forgot password?
-                          </Button>
-                        </div>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
-                    name="rememberMe"
+                    name="confirmPassword"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field} 
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            Remember me
-                          </FormLabel>
-                        </div>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -171,10 +169,10 @@ const SignIn = () => {
                     {isAuthenticating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
+                        Creating account...
                       </>
                     ) : (
-                      "Sign in"
+                      "Create account"
                     )}
                   </Button>
                 </form>
@@ -183,15 +181,15 @@ const SignIn = () => {
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
-                  Don't have an account?{' '}
-                  <Button variant="link" className="p-0" onClick={() => navigate('/sign-up')}>
-                    Sign up
+                  Already have an account?{' '}
+                  <Button variant="link" className="p-0" onClick={() => navigate('/sign-in')}>
+                    Sign in
                   </Button>
                 </p>
               </div>
               <div className="text-center text-sm text-muted-foreground">
                 <p>
-                  By signing in, you agree to our terms of service and privacy policy.
+                  By creating an account, you agree to our terms of service and privacy policy.
                 </p>
               </div>
             </CardFooter>
@@ -202,4 +200,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
