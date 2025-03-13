@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -17,15 +17,9 @@ import {
   Headphones,
   Bell, 
   HelpCircle,
-  ChevronDown,
-  LogOut
+  ChevronDown
 } from "lucide-react";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { useAuth } from '@/hooks/useAuth';
-import { useNotifications } from '@/hooks/useNotifications';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useUserProfile } from '@/hooks/useUserProfile';
 
 const courseCategories = [
   "Leadership & Management",
@@ -40,33 +34,7 @@ const courseCategories = [
 ];
 
 const TopNavigation: React.FC = () => {
-  const navigate = useNavigate();
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
-  const { signOut, user } = useAuth();
-  const { unreadCount, fetchNotifications } = useNotifications();
-  const { profile } = useUserProfile();
-
-  // Fetch unread notifications count when component mounts
-  React.useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user]);
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  // Get user initials for avatar fallback
-  const getUserInitials = () => {
-    if (profile?.firstName && profile?.lastName) {
-      return `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
-    }
-    if (user?.email) {
-      return user.email.charAt(0).toUpperCase();
-    }
-    return 'U';
-  };
 
   return (
     <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
@@ -139,14 +107,9 @@ const TopNavigation: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" asChild className="relative">
+          <Button variant="ghost" size="icon" asChild>
             <Link to="/notifications">
               <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </Badge>
-              )}
             </Link>
           </Button>
           <Button variant="ghost" size="icon" asChild>
@@ -158,10 +121,11 @@ const TopNavigation: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={profile?.avatarUrl} alt="Profile" />
-                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                </Avatar>
+                <img 
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80" 
+                  alt="Profile" 
+                  className="h-8 w-8 rounded-full"
+                />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -172,10 +136,7 @@ const TopNavigation: React.FC = () => {
                 <Link to="/faq">FAQs</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
+              <DropdownMenuItem>Sign Out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           

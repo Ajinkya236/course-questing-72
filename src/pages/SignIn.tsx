@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -9,7 +9,8 @@ import { BrainCircuit, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
+import { AuthContext } from '@/contexts/AuthContext';
 import {
   Card,
   CardContent,
@@ -39,7 +40,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { user, signIn, isLoading } = useAuth();
+  const { user, login, isAuthenticating } = useContext(AuthContext);
   const [error, setError] = useState<string | null>(null);
 
   // React Hook Form with Zod validation
@@ -52,8 +53,8 @@ const SignIn = () => {
     },
   });
 
-  // Redirect to home if already logged in
-  React.useEffect(() => {
+  // If already logged in, redirect to home
+  useEffect(() => {
     if (user) {
       navigate('/');
     }
@@ -63,7 +64,14 @@ const SignIn = () => {
   const onSubmit = async (data: FormValues) => {
     setError(null);
     try {
-      await signIn(data.email, data.password);
+      await login(data.email, data.password, data.rememberMe);
+      
+      toast({
+        title: "Welcome to the Learning Portal!",
+        description: "You have successfully signed in.",
+      });
+      
+      navigate('/');
     } catch (error: any) {
       setError(error.message || "Failed to sign in. Please check your credentials.");
     }
@@ -159,8 +167,8 @@ const SignIn = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
+                  <Button type="submit" className="w-full" disabled={isAuthenticating}>
+                    {isAuthenticating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Signing in...

@@ -1,14 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrainCircuit, Loader2 } from 'lucide-react';
+import { BrainCircuit, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/hooks/useAuth';
+import { AuthContext } from '@/contexts/AuthContext';
 import {
   Card,
   CardContent,
@@ -29,8 +29,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Form validation schema
 const formSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
@@ -43,7 +41,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { user, signUp, isLoading } = useAuth();
+  const { user, signup, isAuthenticating } = useContext(AuthContext);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -51,16 +49,14 @@ const SignUp = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   });
 
-  // Redirect to home if already logged in
-  React.useEffect(() => {
+  // If already logged in, redirect to home
+  useEffect(() => {
     if (user) {
       navigate('/');
     }
@@ -72,14 +68,7 @@ const SignUp = () => {
     setSuccessMessage(null);
     
     try {
-      await signUp(
-        data.email, 
-        data.password, 
-        { 
-          first_name: data.firstName, 
-          last_name: data.lastName 
-        }
-      );
+      await signup(data.email, data.password);
       
       setSuccessMessage("Registration successful! Please check your email to verify your account.");
       form.reset();
@@ -122,36 +111,6 @@ const SignUp = () => {
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="John" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Doe" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
                   <FormField
                     control={form.control}
                     name="email"
@@ -206,8 +165,8 @@ const SignUp = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
+                  <Button type="submit" className="w-full" disabled={isAuthenticating}>
+                    {isAuthenticating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Creating account...

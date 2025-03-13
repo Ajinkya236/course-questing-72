@@ -30,9 +30,7 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: opts?.loop !== undefined ? opts.loop : true, // Enable loop by default
-        align: opts?.align || "start", // Default to start alignment for partial next item visibility
-        containScroll: opts?.containScroll || "trimSnaps", // Default to trimSnaps for better partial view
+        loop: opts?.loop !== undefined ? opts.loop : true, // Enable loop by default for circular scrolling
       },
       plugins
     )
@@ -125,7 +123,7 @@ const Carousel = React.forwardRef<
 )
 Carousel.displayName = "Carousel"
 
-// CarouselContent component - updated to show partial next card
+// CarouselContent component - updated to set proper overflow to show partial next card
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -138,7 +136,7 @@ const CarouselContent = React.forwardRef<
         ref={ref}
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col", 
           className
         )}
         {...props}
@@ -148,7 +146,7 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
-// CarouselItem component - modified for partial visibility of next card
+// CarouselItem component - modified to allow partial visibility of the next card
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -161,7 +159,7 @@ const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
+        "min-w-0 shrink-0 grow-0 basis-full p-4",
         orientation === "horizontal" ? "pl-4" : "pt-4",
         "card-partial-visible", // Added class for partial visibility styling
         className

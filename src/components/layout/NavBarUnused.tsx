@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
   DropdownMenu,
@@ -22,12 +25,12 @@ import {
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, User } from "lucide-react";
 import { ModeToggle } from "../ui/mode-toggle";
-import { useAuth } from '@/hooks/useAuth';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const NavBarUnused = () => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <div className="bg-background border-b">
@@ -86,7 +89,7 @@ const NavBarUnused = () => {
                 <Link to="/my-team">My Team</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()}>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

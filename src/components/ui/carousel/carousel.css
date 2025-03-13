@@ -5,12 +5,12 @@
   transition: transform 0.3s ease;
 }
 
-/* Show 15-20% of the next card as information scent */
+/* Show 10-20% of the next card as information scent */
 .embla {
   overflow: hidden;
+  padding: 0;
+  margin: 0 -8%;
   position: relative;
-  /* Adjusted padding to show partial next card */
-  margin: 0 -4%;
 }
 
 .embla__viewport {
@@ -72,49 +72,31 @@
   }
 }
 
-/* Fix for showing partial next card */
-.partial-next-card {
-  flex: 0 0 80%;
-  max-width: 80%;
+/* Fix for mentor carousel display */
+.mentor-carousel-item {
+  flex: 0 0 calc(90% - 1rem);
+  max-width: calc(90% - 1rem);
+  margin-right: 1rem;
   transition: transform 0.3s ease;
 }
 
 @media (min-width: 640px) {
-  .partial-next-card {
-    flex: 0 0 46%;
-    max-width: 46%;
+  .mentor-carousel-item {
+    flex: 0 0 calc(45% - 1rem);
+    max-width: calc(45% - 1rem);
   }
 }
 
 @media (min-width: 768px) {
-  .partial-next-card {
-    flex: 0 0 30%;
-    max-width: 30%;
+  .mentor-carousel-item {
+    flex: 0 0 calc(30% - 1rem);
+    max-width: calc(30% - 1rem);
   }
 }
 
 @media (min-width: 1024px) {
-  .partial-next-card {
-    flex: 0 0 23%;
-    max-width: 23%;
+  .mentor-carousel-item {
+    flex: 0 0 calc(23% - 1rem);
+    max-width: calc(23% - 1rem);
   }
-}
-
-/* Show next card partially */
-.course-carousel-container {
-  overflow-x: visible;
-  position: relative;
-  padding-right: 20%;
-}
-
-.course-carousel-content {
-  display: flex;
-  gap: 1rem;
-}
-
-/* Ensures partial view of next card */
-.carousel-item-wrapper {
-  flex-shrink: 0;
-  width: 280px;
-  margin-right: -20px;
 }
