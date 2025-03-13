@@ -11,16 +11,22 @@ interface CourseCarouselProps {
   title: string;
   courses: Course[];
   viewAllLink?: string;
+  viewAllUrl?: string; // Add viewAllUrl prop for compatibility with Home.tsx
   showTrainingCategory?: boolean;
   onCourseSelect?: (courseId: string) => void;
+  filterOptions?: string[];
+  showSkillFilters?: boolean;
 }
 
 const CourseCarousel: React.FC<CourseCarouselProps> = ({
   title,
   courses,
   viewAllLink,
+  viewAllUrl, // Add viewAllUrl to the props
   showTrainingCategory = false,
   onCourseSelect,
+  filterOptions,
+  showSkillFilters,
 }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -124,7 +130,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     <div className="relative space-y-3 pb-6">
       <CourseCarouselHeader 
         title={title} 
-        viewAllUrl={viewAllLink} 
+        viewAllUrl={viewAllUrl || viewAllLink} 
       />
       
       <div className="relative group">

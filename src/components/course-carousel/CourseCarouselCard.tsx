@@ -14,6 +14,7 @@ interface CourseCarouselCardProps {
   handleBookmarkToggle: (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => void;
   handleAssignClick: (e: React.MouseEvent, courseId: string) => void;
   showTrainingCategory?: boolean;
+  isHovered?: boolean; // Added for backwards compatibility
 }
 
 const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
@@ -23,9 +24,10 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   handleShareClick,
   handleBookmarkToggle,
   handleAssignClick,
-  showTrainingCategory = false
+  showTrainingCategory = false,
+  isHovered: propIsHovered,
 }) => {
-  const isHovered = hoveredCourseId === course.id;
+  const isHovered = propIsHovered !== undefined ? propIsHovered : hoveredCourseId === course.id;
   
   // Define an optimized click handler to prevent event propagation
   const onCardClick = (e: React.MouseEvent) => {
