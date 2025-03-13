@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import useEmblaCarousel, { EmblaCarouselType, EmblaOptionsType } from "embla-carousel-react"
+import useEmblaCarousel, { type UseEmblaCarouselType, type EmblaOptionsType } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -35,7 +35,7 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-    const onSelect = React.useCallback((emblaApi: EmblaCarouselType) => {
+    const onSelect = React.useCallback((emblaApi: UseEmblaCarouselType[1]) => {
       if (!emblaApi) {
         return
       }
@@ -231,7 +231,7 @@ CarouselNext.displayName = "CarouselNext"
 
 // Export all components
 export {
-  type EmblaCarouselType as CarouselApi,
+  type UseEmblaCarouselType as CarouselApi,
   type EmblaOptionsType as CarouselOptions,
   Carousel,
   CarouselContent,
@@ -243,3 +243,4 @@ export {
 // Export all the components and types from this single file for now
 export * from "./carousel-context"
 export * from "./carousel-filters"
+

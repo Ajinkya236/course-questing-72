@@ -13,3 +13,17 @@
 .embla:hover .embla__button {
   opacity: 1;
 }
+
+/* Enhance overflow to ensure next card is partially visible */
+.overflow-visible {
+  overflow: visible !important;
+}
+
+/* Style for cards to show information scent */
+.carousel-card {
+  transition: transform 0.3s ease;
+}
+
+.carousel-card:hover {
+  transform: translateY(-5px);
+}
