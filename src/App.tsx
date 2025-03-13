@@ -1,4 +1,3 @@
-
 import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, Link } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider"
@@ -244,7 +243,10 @@ function App() {
                 <Route path="/milestones" element={<LeaderboardFullView />} />
                 <Route path="/mentoring" element={<Mentoring />} />
                 <Route path="/my-team" element={<MyTeam />} />
-                <Route path="/my-team/member/:memberId" element={<Profile />} />
+                
+                {/* Add proper team member learning routes */}
+                <Route path="/my-team/member/:memberId/learning" element={<MyLearning />} />
+                
                 <Route path="/faq" element={<FAQ />} />
                 
                 <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />

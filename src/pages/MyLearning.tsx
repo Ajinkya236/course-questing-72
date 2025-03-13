@@ -40,6 +40,20 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
 
+  // Handle tab change with direct navigation
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === 'courses') {
+      navigate(memberId 
+        ? `/my-team/member/${memberId}/learning?tab=${value}&status=in-progress`
+        : `/my-learning?tab=${value}&status=in-progress`);
+    } else {
+      navigate(memberId 
+        ? `/my-team/member/${memberId}/learning?tab=${value}`
+        : `/my-learning?tab=${value}`);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -61,14 +75,7 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         <Tabs 
           defaultValue="courses" 
           value={activeTab}
-          onValueChange={(value) => {
-            setActiveTab(value);
-            if (value === 'courses') {
-              navigate('/my-learning?tab=courses&status=in-progress');
-            } else {
-              navigate(`/my-learning?tab=${value}`);
-            }
-          }}
+          onValueChange={handleTabChange}
           className="space-y-4"
         >
           <TabsList>
