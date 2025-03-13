@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Calendar, Target, User, Users, ArrowLeft } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface LearningGoalsTabProps {
   teamMemberId?: string;
@@ -18,6 +18,10 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
   const navigate = useNavigate();
+  const params = useParams();
+  
+  // Use the teamMemberId from props or from URL params
+  const memberId = teamMemberId || params.memberId;
   
   // Mock learning goals data with courses
   const selfAssignedCourses = mockCourses.filter((_, index) => index < 6);
@@ -52,7 +56,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   return (
     <div className="space-y-8">
       {/* Back button for team member view */}
-      {teamMemberId && (
+      {memberId && (
         <Button 
           variant="outline" 
           size="sm" 
@@ -69,7 +73,7 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         <TabsList className="grid grid-cols-2 w-full max-w-md">
           <TabsTrigger value="self" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            {teamMemberId ? 'Self-Assigned' : 'Assigned by Me'}
+            {memberId ? 'Self-Assigned' : 'Assigned by Me'}
           </TabsTrigger>
           <TabsTrigger value="manager" className="flex items-center gap-2">
             <Users className="h-4 w-4" />

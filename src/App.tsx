@@ -235,6 +235,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="/discover" element={<Discover />} />
                 <Route path="/my-learning" element={<MyLearning />} />
+                <Route path="/my-learning/:tab" element={<MyLearning />} />
                 <Route path="/course/:courseId" element={<CoursePlayer />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/profile" element={<Profile />} />
@@ -245,6 +246,8 @@ function App() {
                 <Route path="/mentoring" element={<Mentoring />} />
                 <Route path="/my-team" element={<MyTeam />} />
                 <Route path="/my-team/member/:memberId" element={<Profile />} />
+                <Route path="/my-team/member/:memberId/learning" element={<MyLearning />} />
+                <Route path="/my-team/member/:memberId/goals" element={<MyLearning />} />
                 <Route path="/faq" element={<FAQ />} />
                 
                 <Route path="/view-all/domains" element={<ViewAllDomainsPage />} />

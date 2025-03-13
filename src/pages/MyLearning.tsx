@@ -16,7 +16,8 @@ interface MyLearningProps {
 const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get('tab') || 'courses';
+  const { tab } = useParams();
+  const tabFromUrl = tab || searchParams.get('tab') || 'courses';
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
   
@@ -25,20 +26,39 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   
   // Update active tab when URL params change
   useEffect(() => {
-    if (tabFromUrl) {
-      setActiveTab(tabFromUrl);
+    if (tab || searchParams.get('tab')) {
+      setActiveTab(tab || searchParams.get('tab') || 'courses');
     }
-  }, [tabFromUrl]);
+  }, [tab, searchParams]);
 
   // Default to 'in-progress' status for courses if no status is specified
   useEffect(() => {
     if (activeTab === 'courses' && !searchParams.get('status')) {
-      navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
+      if (memberId) {
+        navigate(`/my-team/member/${memberId}/learning?tab=courses&status=in-progress`, { replace: true });
+      } else {
+        navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
+      }
     }
-  }, [activeTab, searchParams, navigate]);
+  }, [activeTab, searchParams, navigate, memberId]);
   
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
+
+  // Handle tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    
+    let basePath = memberId 
+      ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
+      : '/my-learning';
+      
+    if (value === 'courses') {
+      navigate(`${basePath}?tab=courses&status=in-progress`);
+    } else {
+      navigate(`${basePath}?tab=${value}`);
+    }
+  };
 
   return (
     <>
@@ -61,20 +81,7 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         <Tabs 
           defaultValue="courses" 
           value={activeTab}
-          onValueChange={(value) => {
-            setActiveTab(value);
-            if (value === 'courses') {
-              navigate('/my-learning?tab=courses&status=in-progress');
-            } else if (value === 'goals') {
-              navigate('/my-learning?tab=goals');
-            } else if (value === 'badges') {
-              navigate('/my-learning?tab=badges');
-            } else if (value === 'rewards') {
-              navigate('/my-learning?tab=rewards');
-            } else {
-              navigate(`/my-learning?tab=${value}`);
-            }
-          }}
+          onValueChange={handleTabChange}
           className="space-y-4"
         >
           <TabsList>

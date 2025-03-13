@@ -218,14 +218,14 @@ const MyTeam: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/my-team/member/${member.id}/learning`)}
+                            onClick={() => navigate(`/my-team/member/${member.id}/learning?tab=courses`)}
                           >
                             View Learning
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/my-team/member/${member.id}/goals`)}
+                            onClick={() => navigate(`/my-team/member/${member.id}/goals?tab=goals`)}
                           >
                             View Goals
                           </Button>
