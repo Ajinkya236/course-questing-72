@@ -1,5 +1,4 @@
 
-// Re-export AuthProvider and AuthContext from useAuth
-import { AuthProvider, AuthContext, useAuth } from '@/hooks/useAuth';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
 
-export { AuthProvider, AuthContext, useAuth };
+export { AuthProvider, useAuth };

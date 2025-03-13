@@ -109,7 +109,7 @@ export function useUserProfile() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         // Map data to database format
-        const profileUpdate = {
+        const profileUpdate: any = {
           first_name: data.firstName,
           last_name: data.lastName,
           avatar_url: data.avatarUrl,

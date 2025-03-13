@@ -37,12 +37,12 @@ export function useCourses() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { data, error } = await supabase
-          .from('courses')
+          .from('courses' as any)
           .select('*')
           .limit(limit || 10);
         
         if (!error && data && data.length > 0) {
-          const formattedCourses: Course[] = data.map(course => ({
+          const formattedCourses: Course[] = data.map((course: any) => ({
             id: course.id,
             title: course.title,
             description: course.description || '',
@@ -101,7 +101,7 @@ export function useCourses() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { data, error } = await supabase
-          .from('user_courses')
+          .from('user_courses' as any)
           .select(`
             *,
             course:courses(*)
@@ -112,7 +112,7 @@ export function useCourses() {
           .order('last_accessed', { ascending: false });
         
         if (!error && data && data.length > 0) {
-          const formattedCourses: Course[] = data.map(item => {
+          const formattedCourses: Course[] = data.map((item: any) => {
             const course = item.course as any;
             return {
               id: course.id,
@@ -186,7 +186,7 @@ export function useCourses() {
       try {
         // Check if already enrolled
         const { data: existingEnrollment, error: checkError } = await supabase
-          .from('user_courses')
+          .from('user_courses' as any)
           .select('*')
           .eq('user_id', user.id)
           .eq('course_id', courseId)
@@ -196,7 +196,7 @@ export function useCourses() {
           if (existingEnrollment) {
             // Update last accessed timestamp
             await supabase
-              .from('user_courses')
+              .from('user_courses' as any)
               .update({
                 last_accessed: new Date().toISOString(),
                 status: 'in-progress'
@@ -205,7 +205,7 @@ export function useCourses() {
           } else {
             // Create new enrollment
             await supabase
-              .from('user_courses')
+              .from('user_courses' as any)
               .insert({
                 user_id: user.id,
                 course_id: courseId,
@@ -261,7 +261,7 @@ export function useCourses() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { data: userCourse, error: fetchError } = await supabase
-          .from('user_courses')
+          .from('user_courses' as any)
           .select('*')
           .eq('user_id', user.id)
           .eq('course_id', courseId)
@@ -270,7 +270,7 @@ export function useCourses() {
         if (!fetchError) {
           if (userCourse) {
             await supabase
-              .from('user_courses')
+              .from('user_courses' as any)
               .update({
                 progress,
                 last_accessed: new Date().toISOString(),
@@ -336,7 +336,7 @@ export function useCourses() {
       try {
         // Check if already enrolled/saved
         const { data: existingRecord, error: checkError } = await supabase
-          .from('user_courses')
+          .from('user_courses' as any)
           .select('*')
           .eq('user_id', user.id)
           .eq('course_id', courseId)
@@ -346,7 +346,7 @@ export function useCourses() {
           if (existingRecord) {
             // Toggle bookmark status
             await supabase
-              .from('user_courses')
+              .from('user_courses' as any)
               .update({
                 is_bookmarked: !existingRecord.is_bookmarked,
                 status: existingRecord.is_bookmarked ? existingRecord.status : 'saved',
@@ -356,7 +356,7 @@ export function useCourses() {
           } else {
             // Create new saved course
             await supabase
-              .from('user_courses')
+              .from('user_courses' as any)
               .insert({
                 user_id: user.id,
                 course_id: courseId,

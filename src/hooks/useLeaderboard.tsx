@@ -44,7 +44,7 @@ export function useLeaderboard() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { data, error } = await supabase
-          .from('leaderboard_entries')
+          .from('leaderboard_entries' as any)
           .select(`
             *,
             user:profiles(*)
@@ -53,7 +53,7 @@ export function useLeaderboard() {
           .order('position', { ascending: true });
         
         if (!error && data && data.length > 0) {
-          const formattedRankings: UserRank[] = data.map(item => {
+          const formattedRankings: UserRank[] = data.map((item: any) => {
             const userData = item.user as any;
             return {
               id: item.user_id,

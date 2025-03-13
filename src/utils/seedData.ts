@@ -9,7 +9,7 @@ export async function seedCoursesData() {
     // Check if courses already exist by checking if the table exists
     try {
       const { data: existingCourses, error: checkError } = await supabase
-        .from('courses')
+        .from('courses' as any)
         .select('id')
         .limit(1);
       
@@ -42,8 +42,8 @@ export async function seedCoursesData() {
       
       // Insert courses
       const { error: insertError } = await supabase
-        .from('courses')
-        .insert(coursesData);
+        .from('courses' as any)
+        .insert(coursesData as any);
       
       if (insertError) throw insertError;
       
@@ -67,7 +67,7 @@ export async function seedDomainsData() {
     // Check if domains already exist
     try {
       const { data: existingDomains, error: checkError } = await supabase
-        .from('domains')
+        .from('domains' as any)
         .select('id')
         .limit(1);
       
@@ -124,8 +124,8 @@ export async function seedDomainsData() {
       
       // Insert domains
       const { error: insertError } = await supabase
-        .from('domains')
-        .insert(domainsData);
+        .from('domains' as any)
+        .insert(domainsData as any);
       
       if (insertError) throw insertError;
       

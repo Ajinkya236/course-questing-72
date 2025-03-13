@@ -24,10 +24,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bell } from "lucide-react";
 import { ModeToggle } from "../ui/mode-toggle";
-import { useAuth } from '@/hooks/useAuth'; // Import directly from useAuth
+import { useAuth } from '@/hooks/useAuth';
 
 const NavBarUnused = () => {
-  const { user, signOut } = useAuth(); // Use the properly exported hook
+  const { user, signOut } = useAuth();
 
   return (
     <div className="bg-background border-b">

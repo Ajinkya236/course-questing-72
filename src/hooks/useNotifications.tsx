@@ -46,13 +46,13 @@ export function useNotifications() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { data, error } = await supabase
-          .from('notifications')
+          .from('notifications' as any)
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
         
         if (!error && data && data.length > 0) {
-          const formattedNotifications: Notification[] = data.map(item => ({
+          const formattedNotifications: Notification[] = data.map((item: any) => ({
             id: item.id,
             type: item.type,
             title: item.title,
@@ -101,7 +101,7 @@ export function useNotifications() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { error } = await supabase
-          .from('notifications')
+          .from('notifications' as any)
           .update({ is_read: true })
           .eq('id', notificationId)
           .eq('user_id', user.id);
@@ -139,7 +139,7 @@ export function useNotifications() {
       // Try using Supabase (will work once the database is properly set up)
       try {
         const { error } = await supabase
-          .from('notifications')
+          .from('notifications' as any)
           .update({ is_read: true })
           .eq('user_id', user.id)
           .eq('is_read', false);
