@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Award, Gift, ArrowUp, ArrowDown, Star, Medal, Trophy, Users, 
   Calendar, Clock, User, Target, Zap, ArrowLeft, Filter, RefreshCw,
-  BookOpen, Sparkles, Flame, Compass
+  BookOpen, Sparkles, Flame, Compass, Building, Briefcase, UserPlus
 } from 'lucide-react';
 
 interface UserRank {
@@ -25,6 +25,9 @@ interface UserRank {
   team?: string;
   role?: string;
   location?: string;
+  segment?: string;
+  jobFamily?: string;
+  skill?: string;
   details: {
     assessmentScore: number;
     engagementScore: number;
@@ -32,16 +35,37 @@ interface UserRank {
   };
 }
 
+interface TeamRank {
+  id: string;
+  name: string;
+  position: number;
+  positionChange: number;
+  points: number;
+  avatar: string;
+  memberCount: number;
+  department?: string;
+  segment?: string;
+  winStreak?: number;
+}
+
 interface RewardsTabProps {
   teamMemberId?: string;
 }
 
 const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [pointsPeriod, setPointsPeriod] = useState('all-time');
-  const [leaderboardType, setLeaderboardType] = useState('relative');
+  // State for various leaderboard filters and types
+  const [activeLeaderboardType, setActiveLeaderboardType] = useState('individual');
+  const [individualLeaderboardScope, setIndividualLeaderboardScope] = useState('relative');
+  const [teamLeaderboardScope, setTeamLeaderboardScope] = useState('intra');
   const [leaderboardFilter, setLeaderboardFilter] = useState('all');
   const [leaderboardPeriod, setLeaderboardPeriod] = useState('month');
+  const [pointsPeriod, setPointsPeriod] = useState('all-time');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [segmentFilter, setSegmentFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [jobFamilyFilter, setJobFamilyFilter] = useState('all');
+  const [skillFilter, setSkillFilter] = useState('all');
+  const [showDetails, setShowDetails] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -62,6 +86,9 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
       team: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E', 'Team F'][i % 6],
       role: ['Developer', 'Manager', 'Designer', 'Analyst', 'Specialist', 'Director'][i % 6],
       location: ['New York', 'San Francisco', 'London', 'Tokyo', 'Singapore', 'Berlin'][i % 6],
+      segment: ['Enterprise', 'SMB', 'Consumer', 'Government', 'Education'][i % 5],
+      jobFamily: ['Technical', 'Business', 'Creative', 'Support', 'Leadership'][i % 5],
+      skill: ['JavaScript', 'Python', 'Leadership', 'Design', 'Marketing', 'Communication'][i % 6],
       details: {
         assessmentScore: Math.floor(70 + Math.random() * 30),
         engagementScore: Math.floor(60 + Math.random() * 40),
@@ -72,8 +99,26 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
     return allUsers;
   };
 
+  // Generate mock team leaderboard data
+  const generateMockTeamLeaderboard = () => {
+    return Array.from({ length: 20 }, (_, i) => ({
+      id: `team-${i + 1}`,
+      name: `Team ${String.fromCharCode(65 + i)}`,
+      position: i + 1,
+      positionChange: Math.floor(Math.random() * 5) - 2,
+      points: Math.floor(25000 - i * (500 + Math.random() * 300)),
+      avatar: `/placeholder.svg`,
+      memberCount: Math.floor(3 + Math.random() * 10),
+      department: ['Engineering', 'Marketing', 'Sales', 'Finance', 'HR', 'Operations'][i % 6],
+      segment: ['Enterprise', 'SMB', 'Consumer', 'Government', 'Education'][i % 5],
+      winStreak: i < 3 ? Math.floor(1 + Math.random() * 5) : 0
+    }));
+  };
+
   const allUsers = generateMockLeaderboardData();
+  const allTeams = generateMockTeamLeaderboard();
   const currentUser = allUsers.find(user => user.position === currentUserPosition);
+  const currentTeam = allTeams.find(team => team.name === currentUser?.team);
 
   // Mock data for rewards and points
   const rewardsData = {
@@ -100,7 +145,7 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
     ]
   };
 
-  // Get Relative Leaderboard (2 users above and 2 below current user)
+  // Get Relative Individual Leaderboard (2 users above and 2 below current user)
   const getRelativeLeaderboard = () => {
     if (!currentUser) return [];
     
@@ -111,24 +156,66 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
     return allUsers.slice(startIndex, endIndex);
   };
 
-  // Get Team Leaderboard
-  const getTeamLeaderboard = () => {
-    return allUsers.filter(user => user.team === currentUser?.team).slice(0, 5);
+  // Get filtered individual leaderboard
+  const getFilteredIndividualLeaderboard = () => {
+    let filteredUsers = [...allUsers];
+    
+    // Apply segment filter
+    if (segmentFilter !== 'all') {
+      filteredUsers = filteredUsers.filter(user => user.segment === segmentFilter);
+    }
+    
+    // Apply role filter
+    if (roleFilter !== 'all') {
+      filteredUsers = filteredUsers.filter(user => user.role === roleFilter);
+    }
+    
+    // Apply job family filter
+    if (jobFamilyFilter !== 'all') {
+      filteredUsers = filteredUsers.filter(user => user.jobFamily === jobFamilyFilter);
+    }
+    
+    // Apply skill filter
+    if (skillFilter !== 'all') {
+      filteredUsers = filteredUsers.filter(user => user.skill === skillFilter);
+    }
+    
+    // Apply team filter
+    if (leaderboardFilter === 'team') {
+      filteredUsers = filteredUsers.filter(user => user.team === currentUser?.team);
+    }
+    // Apply department filter
+    else if (leaderboardFilter === 'department') {
+      filteredUsers = filteredUsers.filter(user => user.department === currentUser?.department);
+    }
+    // Apply location filter
+    else if (leaderboardFilter === 'location') {
+      filteredUsers = filteredUsers.filter(user => user.location === currentUser?.location);
+    }
+    // Apply role filter
+    else if (leaderboardFilter === 'role') {
+      filteredUsers = filteredUsers.filter(user => user.role === currentUser?.role);
+    }
+    
+    return filteredUsers.slice(0, 5);
   };
 
-  // Get Department Leaderboard
-  const getDepartmentLeaderboard = () => {
-    return allUsers.filter(user => user.department === currentUser?.department).slice(0, 5);
+  // Get Intra Team Leaderboard (users within the same team)
+  const getIntraTeamLeaderboard = () => {
+    if (!currentUser?.team) return [];
+    return allUsers.filter(user => user.team === currentUser.team).slice(0, 5);
   };
 
-  // Get Role-based Leaderboard
-  const getRoleLeaderboard = () => {
-    return allUsers.filter(user => user.role === currentUser?.role).slice(0, 5);
-  };
-
-  // Get Location-based Leaderboard
-  const getLocationLeaderboard = () => {
-    return allUsers.filter(user => user.location === currentUser?.location).slice(0, 5);
+  // Get Inter Team Leaderboard (competition between teams)
+  const getInterTeamLeaderboard = () => {
+    // Apply filters to teams
+    let filteredTeams = [...allTeams];
+    
+    if (segmentFilter !== 'all') {
+      filteredTeams = filteredTeams.filter(team => team.segment === segmentFilter);
+    }
+    
+    return filteredTeams.slice(0, 5);
   };
 
   // Get Personal Best (tracking own progress)
@@ -142,22 +229,33 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
     ];
   };
 
-  // Get active leaderboard based on filter
+  // Get active leaderboard based on current settings
   const getActiveLeaderboard = () => {
-    switch (leaderboardFilter) {
-      case 'team':
-        return getTeamLeaderboard();
-      case 'department':
-        return getDepartmentLeaderboard();
-      case 'role':
-        return getRoleLeaderboard();
-      case 'location':
-        return getLocationLeaderboard();
-      case 'personal':
-        return getPersonalBestLeaderboard();
-      default:
-        return leaderboardType === 'relative' ? getRelativeLeaderboard() : allUsers.slice(0, 5);
+    if (activeLeaderboardType === 'team') {
+      return teamLeaderboardScope === 'intra' ? getIntraTeamLeaderboard() : getInterTeamLeaderboard();
+    } else if (leaderboardFilter === 'personal') {
+      return getPersonalBestLeaderboard();
+    } else {
+      return individualLeaderboardScope === 'relative' ? getRelativeLeaderboard() : getFilteredIndividualLeaderboard();
     }
+  };
+
+  // Calculate next milestone for user
+  const getNextMilestone = () => {
+    if (!currentUser) return null;
+    
+    const leaderboard = individualLeaderboardScope === 'relative' ? getRelativeLeaderboard() : getFilteredIndividualLeaderboard();
+    const currentIndex = leaderboard.findIndex(user => user.id === currentUser.id);
+    
+    if (currentIndex <= 0) return null;
+    
+    const nextUser = leaderboard[currentIndex - 1];
+    const pointsNeeded = nextUser.points - currentUser.points;
+    
+    return {
+      name: nextUser.name,
+      points: pointsNeeded
+    };
   };
 
   // Handle back button
@@ -167,6 +265,32 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
 
   // Calculate progress percentage
   const progressPercentage = (rewardsData.totalPoints / rewardsData.nextRewardThreshold) * 100;
+
+  // Get the current leaderboard title
+  const getLeaderboardTitle = () => {
+    if (activeLeaderboardType === 'team') {
+      return teamLeaderboardScope === 'intra' ? 'Intra-Team Leaderboard' : 'Inter-Team Leaderboard';
+    } else if (leaderboardFilter === 'personal') {
+      return 'Personal Best Progression';
+    } else {
+      return individualLeaderboardScope === 'relative' ? 'Your Relative Ranking' : 'Individual Leaderboard';
+    }
+  };
+
+  // Get the current leaderboard description
+  const getLeaderboardDescription = () => {
+    if (activeLeaderboardType === 'team') {
+      return teamLeaderboardScope === 'intra' 
+        ? `See how team members within ${currentUser?.team} compare` 
+        : 'See how different teams compare against each other';
+    } else if (leaderboardFilter === 'personal') {
+      return 'Track your own progress over time';
+    } else {
+      return individualLeaderboardScope === 'relative' 
+        ? 'See how you rank compared to others near your position' 
+        : 'See how you rank in the overall leaderboard';
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -306,25 +430,52 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
           
           <div className="flex flex-wrap gap-2">
             {/* Leaderboard Type Selector */}
-            <Select 
-              value={leaderboardType} 
-              onValueChange={setLeaderboardType}
-            >
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Leaderboard Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="relative">Relative Ranking</SelectItem>
-                <SelectItem value="top">Top Performers</SelectItem>
-              </SelectContent>
-            </Select>
+            <Tabs value={activeLeaderboardType} onValueChange={setActiveLeaderboardType} className="w-auto">
+              <TabsList>
+                <TabsTrigger value="individual" className="text-xs px-2 py-1">
+                  <User className="h-3 w-3 mr-1" />
+                  Individual
+                </TabsTrigger>
+                <TabsTrigger value="team" className="text-xs px-2 py-1">
+                  <Users className="h-3 w-3 mr-1" />
+                  Team
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            {/* Individual Leaderboard Scope */}
+            {activeLeaderboardType === 'individual' && (
+              <Tabs value={individualLeaderboardScope} onValueChange={setIndividualLeaderboardScope} className="w-auto">
+                <TabsList>
+                  <TabsTrigger value="relative" className="text-xs px-2 py-1">Relative</TabsTrigger>
+                  <TabsTrigger value="absolute" className="text-xs px-2 py-1">Absolute</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
+            
+            {/* Team Leaderboard Scope */}
+            {activeLeaderboardType === 'team' && (
+              <Tabs value={teamLeaderboardScope} onValueChange={setTeamLeaderboardScope} className="w-auto">
+                <TabsList>
+                  <TabsTrigger value="intra" className="text-xs px-2 py-1">
+                    <UserPlus className="h-3 w-3 mr-1" />
+                    Intra-Team
+                  </TabsTrigger>
+                  <TabsTrigger value="inter" className="text-xs px-2 py-1">
+                    <Building className="h-3 w-3 mr-1" />
+                    Inter-Team
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
             
             {/* Period Selector */}
             <Select 
               value={leaderboardPeriod} 
               onValueChange={setLeaderboardPeriod}
             >
-              <SelectTrigger className="w-[130px]">
+              <SelectTrigger className="h-8 text-xs w-[110px]">
+                <Calendar className="h-3 w-3 mr-1" />
                 <SelectValue placeholder="Time Period" />
               </SelectTrigger>
               <SelectContent>
@@ -338,157 +489,318 @@ const RewardsTab: React.FC<RewardsTabProps> = ({ teamMemberId }) => {
           </div>
         </div>
         
-        {/* Filter Pills */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <Badge 
-            variant={leaderboardFilter === 'all' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('all')}
-          >
-            <Users className="h-3 w-3 mr-1" /> All
-          </Badge>
-          <Badge 
-            variant={leaderboardFilter === 'team' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('team')}
-          >
-            <Users className="h-3 w-3 mr-1" /> Team
-          </Badge>
-          <Badge 
-            variant={leaderboardFilter === 'department' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('department')}
-          >
-            <BookOpen className="h-3 w-3 mr-1" /> Department
-          </Badge>
-          <Badge 
-            variant={leaderboardFilter === 'role' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('role')}
-          >
-            <User className="h-3 w-3 mr-1" /> Job Role
-          </Badge>
-          <Badge 
-            variant={leaderboardFilter === 'location' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('location')}
-          >
-            <Compass className="h-3 w-3 mr-1" /> Location
-          </Badge>
-          <Badge 
-            variant={leaderboardFilter === 'personal' ? 'default' : 'outline'} 
-            className="cursor-pointer"
-            onClick={() => setLeaderboardFilter('personal')}
-          >
-            <Target className="h-3 w-3 mr-1" /> Personal Best
-          </Badge>
-        </div>
+        {/* Filter Pills for Individual Leaderboards */}
+        {activeLeaderboardType === 'individual' && individualLeaderboardScope === 'absolute' && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge 
+              variant={leaderboardFilter === 'all' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('all')}
+            >
+              <Users className="h-3 w-3 mr-1" /> All
+            </Badge>
+            <Badge 
+              variant={leaderboardFilter === 'team' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('team')}
+            >
+              <Users className="h-3 w-3 mr-1" /> Team
+            </Badge>
+            <Badge 
+              variant={leaderboardFilter === 'department' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('department')}
+            >
+              <BookOpen className="h-3 w-3 mr-1" /> Department
+            </Badge>
+            <Badge 
+              variant={leaderboardFilter === 'role' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('role')}
+            >
+              <Briefcase className="h-3 w-3 mr-1" /> Job Role
+            </Badge>
+            <Badge 
+              variant={leaderboardFilter === 'location' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('location')}
+            >
+              <Compass className="h-3 w-3 mr-1" /> Location
+            </Badge>
+            <Badge 
+              variant={leaderboardFilter === 'personal' ? 'default' : 'outline'} 
+              className="cursor-pointer"
+              onClick={() => setLeaderboardFilter('personal')}
+            >
+              <Target className="h-3 w-3 mr-1" /> Personal Best
+            </Badge>
+          </div>
+        )}
+        
+        {/* Additional Filters for Teams and Segments */}
+        {(activeLeaderboardType === 'team' || (activeLeaderboardType === 'individual' && individualLeaderboardScope === 'absolute')) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+            {/* Job Segment Filter */}
+            <Select 
+              value={segmentFilter} 
+              onValueChange={setSegmentFilter}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Job Segment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Segments</SelectItem>
+                <SelectItem value="Enterprise">Enterprise</SelectItem>
+                <SelectItem value="SMB">SMB</SelectItem>
+                <SelectItem value="Consumer">Consumer</SelectItem>
+                <SelectItem value="Government">Government</SelectItem>
+                <SelectItem value="Education">Education</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Job Role Filter */}
+            <Select 
+              value={roleFilter} 
+              onValueChange={setRoleFilter}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Job Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="Developer">Developer</SelectItem>
+                <SelectItem value="Manager">Manager</SelectItem>
+                <SelectItem value="Designer">Designer</SelectItem>
+                <SelectItem value="Analyst">Analyst</SelectItem>
+                <SelectItem value="Specialist">Specialist</SelectItem>
+                <SelectItem value="Director">Director</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Job Family Filter */}
+            <Select 
+              value={jobFamilyFilter} 
+              onValueChange={setJobFamilyFilter}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Job Family" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Families</SelectItem>
+                <SelectItem value="Technical">Technical</SelectItem>
+                <SelectItem value="Business">Business</SelectItem>
+                <SelectItem value="Creative">Creative</SelectItem>
+                <SelectItem value="Support">Support</SelectItem>
+                <SelectItem value="Leadership">Leadership</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Skill Filter */}
+            <Select 
+              value={skillFilter} 
+              onValueChange={setSkillFilter}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Skill" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Skills</SelectItem>
+                <SelectItem value="JavaScript">JavaScript</SelectItem>
+                <SelectItem value="Python">Python</SelectItem>
+                <SelectItem value="Leadership">Leadership</SelectItem>
+                <SelectItem value="Design">Design</SelectItem>
+                <SelectItem value="Marketing">Marketing</SelectItem>
+                <SelectItem value="Communication">Communication</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Leaderboard Display */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>
-              {leaderboardFilter === 'all' && (leaderboardType === 'relative' ? 'Your Relative Ranking' : 'Top Performers')}
-              {leaderboardFilter === 'team' && 'Team Leaderboard'}
-              {leaderboardFilter === 'department' && 'Department Leaderboard'}
-              {leaderboardFilter === 'role' && 'Job Role Leaderboard'}
-              {leaderboardFilter === 'location' && 'Location Leaderboard'}
-              {leaderboardFilter === 'personal' && 'Your Progress Over Time'}
-            </CardTitle>
-            <CardDescription>
-              {leaderboardFilter === 'all' && leaderboardType === 'relative' && 'See how you rank compared to others near your position'}
-              {leaderboardFilter === 'all' && leaderboardType === 'top' && 'The highest-ranking learners overall'}
-              {leaderboardFilter === 'team' && `Ranking within ${currentUser?.team}`}
-              {leaderboardFilter === 'department' && `Ranking within ${currentUser?.department}`}
-              {leaderboardFilter === 'role' && `Ranking compared to other ${currentUser?.role}s`}
-              {leaderboardFilter === 'location' && `Ranking within ${currentUser?.location}`}
-              {leaderboardFilter === 'personal' && 'Track your own progress over time'}
-            </CardDescription>
+            <CardTitle>{getLeaderboardTitle()}</CardTitle>
+            <CardDescription>{getLeaderboardDescription()}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {getActiveLeaderboard().map((user, index) => (
-                <div 
-                  key={index}
-                  className={`p-3 rounded-lg flex items-center gap-3 ${
-                    user.id === currentUser?.id ? 'bg-primary/10 border border-primary/20' : 
-                    index % 2 === 0 ? 'bg-muted/20' : ''
-                  }`}
-                >
-                  {/* Position */}
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
-                    {leaderboardFilter === 'personal' ? (index + 1) : user.position}
-                  </div>
-                  
-                  {/* Avatar and Name */}
-                  <div className="flex-1 flex items-center gap-3">
-                    <div className="relative">
-                      <div className="h-10 w-10 rounded-full overflow-hidden">
-                        <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+              {/* For Team Leaderboards */}
+              {activeLeaderboardType === 'team' && teamLeaderboardScope === 'inter' ? (
+                // Inter-Team Leaderboard
+                getInterTeamLeaderboard().map((team, index) => (
+                  <div 
+                    key={team.id}
+                    className={`p-3 rounded-lg flex items-center gap-3 ${
+                      team.id === currentTeam?.id ? 'bg-primary/10 border border-primary/20' : 
+                      index % 2 === 0 ? 'bg-muted/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      {team.position}
+                    </div>
+                    
+                    {/* Team Info */}
+                    <div className="flex-1 flex items-center gap-3">
+                      <div className="relative">
+                        <div className="h-10 w-10 rounded-full overflow-hidden bg-secondary">
+                          <img src={team.avatar} alt={team.name} className="h-full w-full object-cover" />
+                        </div>
+                        {team.positionChange !== 0 && (
+                          <div className={`absolute -bottom-1 -right-1 rounded-full p-1 
+                            ${team.positionChange > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                            {team.positionChange > 0 ? 
+                              <ArrowUp className="h-3 w-3" /> : 
+                              <ArrowDown className="h-3 w-3" />
+                            }
+                          </div>
+                        )}
                       </div>
-                      {user.positionChange !== 0 && !leaderboardFilter.includes('personal') && (
-                        <div className={`absolute -bottom-1 -right-1 rounded-full p-1 
-                          ${user.positionChange > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                          {user.positionChange > 0 ? 
-                            <ArrowUp className="h-3 w-3" /> : 
-                            <ArrowDown className="h-3 w-3" />
-                          }
+                      <div>
+                        <div className="font-medium">
+                          {team.name}
+                          {team.id === currentTeam?.id && <span className="ml-2 text-xs">(Your Team)</span>}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {team.memberCount} members • {team.department}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Score and Details */}
+                    <div className="text-right">
+                      <div className="font-bold">{team.points.toLocaleString()} pts</div>
+                      {team.winStreak > 0 && (
+                        <div className="flex gap-1 mt-1 justify-end">
+                          <div className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 flex items-center">
+                            <Flame className="h-3 w-3 mr-1" />
+                            {team.winStreak} week streak
+                          </div>
                         </div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-medium">
-                        {user.name}
-                        {user.id === currentUser?.id && <span className="ml-2 text-xs">(You)</span>}
+                  </div>
+                ))
+              ) : (
+                // Individual or Intra-Team Leaderboards
+                getActiveLeaderboard().map((user, index) => (
+                  <div 
+                    key={typeof user.id === 'string' ? user.id : index}
+                    className={`p-3 rounded-lg flex items-center gap-3 ${
+                      user.id === currentUser?.id ? 'bg-primary/10 border border-primary/20' : 
+                      index % 2 === 0 ? 'bg-muted/20' : ''
+                    }`}
+                  >
+                    {/* Position */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
+                      {leaderboardFilter === 'personal' ? (index + 1) : user.position}
+                    </div>
+                    
+                    {/* Avatar and Name */}
+                    <div className="flex-1 flex items-center gap-3">
+                      <div className="relative">
+                        <div className="h-10 w-10 rounded-full overflow-hidden">
+                          <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+                        </div>
+                        {user.positionChange !== 0 && !leaderboardFilter.includes('personal') && (
+                          <div className={`absolute -bottom-1 -right-1 rounded-full p-1 
+                            ${user.positionChange > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                            {user.positionChange > 0 ? 
+                              <ArrowUp className="h-3 w-3" /> : 
+                              <ArrowDown className="h-3 w-3" />
+                            }
+                          </div>
+                        )}
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {leaderboardFilter === 'personal' ? 
-                          (user as any).date : 
-                          user.department}
+                      <div>
+                        <div className="font-medium">
+                          {user.name}
+                          {user.id === currentUser?.id && <span className="ml-2 text-xs">(You)</span>}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {leaderboardFilter === 'personal' ? 
+                            (user as any).date : 
+                            `${user.role} • ${user.team}`}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Score and Details */}
-                  <div className="text-right">
-                    <div className="font-bold">{user.points} pts</div>
-                    <div className="flex gap-2 mt-1">
-                      {!leaderboardFilter.includes('personal') && (
-                        <>
+                    
+                    {/* Score and Details */}
+                    <div className="text-right">
+                      <div className="font-bold">{user.points.toLocaleString()} pts</div>
+                      {showDetails && !leaderboardFilter.includes('personal') && (
+                        <div className="flex gap-2 mt-1 justify-end">
                           <div className="text-xs px-1.5 py-0.5 rounded bg-secondary/30">
                             A: {user.details.assessmentScore}%
                           </div>
                           <div className="text-xs px-1.5 py-0.5 rounded bg-secondary/30">
                             E: {user.details.engagementScore}%
                           </div>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
 
               {/* Next Milestone Prompt */}
-              {!leaderboardFilter.includes('personal') && (
+              {activeLeaderboardType === 'individual' && !leaderboardFilter.includes('personal') && (
                 <div className="mt-6 p-4 border rounded-lg bg-primary/5">
                   <h4 className="font-medium flex items-center">
                     <Target className="h-4 w-4 mr-2" />
                     Your Next Milestone
                   </h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Earn 50 more points to overtake the next person in the rankings!
-                  </p>
+                  {getNextMilestone() ? (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Earn {getNextMilestone()?.points} more points to overtake {getNextMilestone()?.name} in the rankings!
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Congratulations! You're at the top of this leaderboard!
+                    </p>
+                  )}
                   <div className="mt-2">
                     <Progress value={75} className="h-1.5" />
                   </div>
                 </div>
               )}
+              
+              {/* Team Milestone for Inter-Team Leaderboard */}
+              {activeLeaderboardType === 'team' && teamLeaderboardScope === 'inter' && currentTeam && (
+                <div className="mt-6 p-4 border rounded-lg bg-primary/5">
+                  <h4 className="font-medium flex items-center">
+                    <Target className="h-4 w-4 mr-2" />
+                    Team Milestone
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Your team needs 500 more points to move up in the rankings! Encourage your team members to complete more courses.
+                  </p>
+                  <div className="mt-2">
+                    <Progress value={65} className="h-1.5" />
+                  </div>
+                </div>
+              )}
             </div>
             
+            {/* Action Buttons */}
             <div className="mt-6 flex justify-center">
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Filter className="h-4 w-4" />
-                <span>More Filters</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-1"
+                onClick={() => setShowDetails(!showDetails)}
+              >
+                {showDetails ? (
+                  <>
+                    <Filter className="h-4 w-4" />
+                    <span>Hide Details</span>
+                  </>
+                ) : (
+                  <>
+                    <Filter className="h-4 w-4" />
+                    <span>Show Details</span>
+                  </>
+                )}
               </Button>
               <Button variant="outline" size="sm" className="ml-2 flex items-center gap-1">
                 <RefreshCw className="h-4 w-4" />

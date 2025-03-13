@@ -19,45 +19,10 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   const [activeFilter, setActiveFilter] = useState('self');
   const navigate = useNavigate();
   
-  // Mock learning goals data
-  const selfAssignedGoals = [
-    {
-      id: 1,
-      title: 'Improve Leadership Skills',
-      description: 'Develop better leadership capabilities to lead a team effectively',
-      progress: 60,
-      deadline: '2023-12-31',
-      courses: mockCourses.filter((_, index) => index < 3),
-    },
-    {
-      id: 2, 
-      title: 'Master Data Analysis',
-      description: 'Learn advanced data analysis techniques for better decision making',
-      progress: 30,
-      deadline: '2023-11-15',
-      courses: mockCourses.filter((_, index) => index >= 3 && index < 6),
-    }
-  ];
+  // Mock learning goals data with courses
+  const selfAssignedCourses = mockCourses.filter((_, index) => index < 6);
+  const managerAssignedCourses = mockCourses.filter((_, index) => index >= 6 && index < 12);
   
-  const managerAssignedGoals = [
-    {
-      id: 3,
-      title: 'Technical Certification',
-      description: 'Complete certification for project management',
-      progress: 45,
-      deadline: '2023-10-30',
-      courses: mockCourses.filter((_, index) => index >= 6 && index < 9),
-    },
-    {
-      id: 4,
-      title: 'Client Management',
-      description: 'Improve skills for better client interactions and management',
-      progress: 20,
-      deadline: '2023-12-15',
-      courses: mockCourses.filter((_, index) => index >= 9 && index < 12),
-    }
-  ];
-
   // Calculate overall skills proficiency across all goals
   const allSkills = [
     { name: 'Leadership', proficiency: 65, target: 80 },
@@ -74,9 +39,9 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
     { name: 'Problem Solving', proficiency: 45, target: 75 },
   ];
   
-  // Get the active goals based on the current filter
-  const getActiveGoals = () => {
-    return activeFilter === 'self' ? selfAssignedGoals : managerAssignedGoals;
+  // Get the active courses based on the current filter
+  const getActiveCourses = () => {
+    return activeFilter === 'self' ? selfAssignedCourses : managerAssignedCourses;
   };
 
   // Handle back button when viewing team member's goals
@@ -113,72 +78,55 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         </TabsList>
       </Tabs>
 
-      {/* Learning Goals Display - Using CourseCard component */}
-      <div className="space-y-8">
-        {getActiveGoals().map(goal => (
-          <Card key={goal.id} className="overflow-hidden">
-            <CardHeader className="bg-primary/5 pb-2">
-              <div className="flex flex-col md:flex-row justify-between">
-                <div>
-                  <h3 className="text-lg font-medium">{goal.title}</h3>
-                  <p className="text-sm text-muted-foreground">{goal.description}</p>
-                </div>
-                <div className="flex mt-2 md:mt-0 space-x-2">
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Calendar className="h-4 w-4" />
-                    <span>Due: {new Date(goal.deadline).toLocaleDateString()}</span>
-                  </div>
-                  <Badge variant={goal.progress >= 75 ? "secondary" : "secondary"}>
-                    {goal.progress}% Complete
-                  </Badge>
-                </div>
+      {/* Global List of Courses without grouping */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-medium">
+            {activeFilter === 'self' ? 'Self-Assigned Courses' : 'Manager-Assigned Courses'}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {activeFilter === 'self' 
+              ? 'Courses you have selected for your learning journey' 
+              : 'Courses assigned to you by your manager'}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+            {getActiveCourses().length > 0 ? (
+              getActiveCourses().map(course => (
+                <CourseCard
+                  key={course.id}
+                  id={course.id}
+                  title={course.title}
+                  description={course.description}
+                  imageUrl={course.imageUrl}
+                  category={course.category}
+                  duration={course.duration}
+                  rating={course.rating}
+                  trainingCategory={course.trainingCategory}
+                  isBookmarked={course.isBookmarked}
+                  previewUrl={course.imageUrl} // Use imageUrl as fallback since videoUrl might not exist
+                  isHot={course.isHot}
+                  isNew={course.isNew}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-10">
+                <Target className="h-12 w-12 text-muted mb-4" />
+                <h3 className="text-lg font-medium">No courses found</h3>
+                <p className="text-muted-foreground text-center max-w-md mt-2">
+                  You don't have any {activeFilter === 'self' ? 'self-assigned' : 'manager-assigned'} courses yet.
+                </p>
+                <Button variant="outline" className="mt-4">
+                  {activeFilter === 'self' ? 'Browse Courses' : 'Request Course'}
+                </Button>
               </div>
-              <Progress value={goal.progress} className="h-2 mt-2" />
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="pt-2">
-                <h4 className="text-sm font-medium mb-3">Assigned Courses</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {goal.courses.map(course => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      imageUrl={course.imageUrl}
-                      category={course.category}
-                      duration={course.duration}
-                      rating={course.rating}
-                      trainingCategory={course.trainingCategory}
-                      isBookmarked={course.isBookmarked}
-                      previewUrl={course.imageUrl} // Use imageUrl as fallback since videoUrl might not exist
-                      isHot={course.isHot}
-                      isNew={course.isNew}
-                    />
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-        {getActiveGoals().length === 0 && (
-          <Card className="bg-muted/20">
-            <CardContent className="flex flex-col items-center justify-center py-10">
-              <Target className="h-12 w-12 text-muted mb-4" />
-              <h3 className="text-lg font-medium">No learning goals found</h3>
-              <p className="text-muted-foreground text-center max-w-md mt-2">
-                You don't have any {activeFilter === 'self' ? 'self-assigned' : 'manager-assigned'} learning goals yet.
-              </p>
-              <Button variant="outline" className="mt-4">
-                {activeFilter === 'self' ? 'Create Goal' : 'Request Goal'}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Skills and Proficiency Section moved to bottom */}
+      {/* Skills and Proficiency Section */}
       <Card>
         <CardHeader>
           <h3 className="text-lg font-medium">Skills & Proficiency</h3>
