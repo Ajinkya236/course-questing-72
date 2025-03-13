@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, User, Users } from 'lucide-react';
+import { Calendar, Target, User, Users, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -26,6 +26,25 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
   // Mock learning goals data with courses
   const selfAssignedCourses = mockCourses.filter((_, index) => index < 6);
   const managerAssignedCourses = mockCourses.filter((_, index) => index >= 6 && index < 12);
+  
+  // Mock progress metrics for both self and manager assigned courses
+  const progressMetrics = {
+    self: {
+      completed: 8,
+      inProgress: 4,
+      notStarted: 3,
+      total: 15
+    },
+    manager: {
+      completed: 5,
+      inProgress: 7,
+      notStarted: 6,
+      total: 18
+    }
+  };
+  
+  // Get current metrics based on active filter
+  const currentMetrics = activeFilter === 'self' ? progressMetrics.self : progressMetrics.manager;
   
   // Calculate overall skills proficiency across all goals
   const allSkills = [
@@ -63,6 +82,68 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
           </TabsTrigger>
         </TabsList>
       </Tabs>
+      
+      {/* Learning Progress Summary Card */}
+      <Card>
+        <CardHeader>
+          <h3 className="text-lg font-medium">Learning Progress</h3>
+          <p className="text-sm text-muted-foreground">
+            {activeFilter === 'self' 
+              ? 'Progress on self-assigned learning goals' 
+              : 'Progress on manager-assigned learning goals'}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-secondary/30 rounded-lg p-4 flex items-center">
+              <div className="rounded-full bg-green-100 dark:bg-green-900/30 p-2 mr-3">
+                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Completed</p>
+                <div className="flex items-center gap-1">
+                  <h4 className="text-2xl font-bold">{currentMetrics.completed}</h4>
+                  <span className="text-sm text-muted-foreground">courses</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-secondary/30 rounded-lg p-4 flex items-center">
+              <div className="rounded-full bg-blue-100 dark:bg-blue-900/30 p-2 mr-3">
+                <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">In Progress</p>
+                <div className="flex items-center gap-1">
+                  <h4 className="text-2xl font-bold">{currentMetrics.inProgress}</h4>
+                  <span className="text-sm text-muted-foreground">courses</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-secondary/30 rounded-lg p-4 flex items-center">
+              <div className="rounded-full bg-amber-100 dark:bg-amber-900/30 p-2 mr-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Not Started</p>
+                <div className="flex items-center gap-1">
+                  <h4 className="text-2xl font-bold">{currentMetrics.notStarted}</h4>
+                  <span className="text-sm text-muted-foreground">courses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-2 mb-6">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Overall progress</span>
+              <span>{currentMetrics.completed} of {currentMetrics.total} courses</span>
+            </div>
+            <Progress value={(currentMetrics.completed / currentMetrics.total) * 100} className="h-2" />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Global List of Courses without grouping */}
       <Card>
