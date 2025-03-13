@@ -28,10 +28,16 @@
 .embla__button {
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 50; /* Increased z-index to ensure buttons are on top */
+  z-index: 100; /* Increased z-index to ensure buttons are always on top */
   position: absolute;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Added shadow for better visibility */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
   background-color: white; /* Ensuring buttons have a solid background */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Show buttons when hovering over the entire carousel area */
@@ -43,19 +49,26 @@
 
 .embla__button:hover {
   transform: scale(1.1);
+  background-color: #f8f9fa;
 }
 
 /* Position buttons completely outside the carousel content */
 .embla__button--prev {
-  left: -30px; /* Positioned further left outside the content */
+  left: -20px; /* Brought slightly closer to content edge */
   top: 50%;
   transform: translateY(-50%);
 }
 
 .embla__button--next {
-  right: -30px; /* Positioned further right outside the content */
+  right: -20px; /* Brought slightly closer to content edge */
   top: 50%;
   transform: translateY(-50%);
+}
+
+/* Ensure buttons remain in viewport even with overflow */
+.carousel-container {
+  position: relative;
+  padding: 0 20px; /* Add padding to make space for the buttons */
 }
 
 /* Enhance overflow to ensure next card is partially visible */

@@ -183,9 +183,9 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
+        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
         orientation === "horizontal"
-          ? "left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" 
+          ? "left-0 top-1/2 -translate-y-1/2" 
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
         "embla__button embla__button--prev", 
         className
@@ -216,9 +216,9 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
+        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
         orientation === "horizontal"
-          ? "right-0 top-1/2 -translate-y-1/2 translate-x-1/2" 
+          ? "right-0 top-1/2 -translate-y-1/2" 
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
         "embla__button embla__button--next", 
         className
