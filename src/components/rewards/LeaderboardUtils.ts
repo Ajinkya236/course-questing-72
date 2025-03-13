@@ -171,6 +171,7 @@ export const getInterTeamLeaderboard = (
         memberCount: 0,
         position: 0,
         positionChange: Math.floor(Math.random() * 5) - 2,
+        avatar: '/placeholder.svg', // Adding the missing avatar property
         isCurrentUserGroup: (
           (leaderboardFilter === 'role' && currentUser?.role === groupKey) ||
           (leaderboardFilter === 'department' && currentUser?.department === groupKey) ||
