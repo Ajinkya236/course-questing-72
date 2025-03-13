@@ -193,7 +193,7 @@ export function useCourses() {
           .maybeSingle();
         
         if (!checkError) {
-          if (existingEnrollment) {
+          if (existingEnrollment && (existingEnrollment as any).id) {
             // Update last accessed timestamp
             await supabase
               .from('user_courses' as any)
@@ -201,7 +201,7 @@ export function useCourses() {
                 last_accessed: new Date().toISOString(),
                 status: 'in-progress'
               })
-              .eq('id', existingEnrollment.id);
+              .eq('id', (existingEnrollment as any).id);
           } else {
             // Create new enrollment
             await supabase
@@ -268,7 +268,7 @@ export function useCourses() {
           .maybeSingle();
         
         if (!fetchError) {
-          if (userCourse) {
+          if (userCourse && (userCourse as any).id) {
             await supabase
               .from('user_courses' as any)
               .update({
@@ -277,7 +277,7 @@ export function useCourses() {
                 status: progress >= 100 ? 'completed' : 'in-progress',
                 completed_at: progress >= 100 ? new Date().toISOString() : null
               })
-              .eq('id', userCourse.id);
+              .eq('id', (userCourse as any).id);
             
             console.log('Course progress updated in Supabase');
           } else {
@@ -344,15 +344,16 @@ export function useCourses() {
         
         if (!checkError) {
           if (existingRecord) {
+            const recordData = existingRecord as any;
             // Toggle bookmark status
             await supabase
               .from('user_courses' as any)
               .update({
-                is_bookmarked: !existingRecord.is_bookmarked,
-                status: existingRecord.is_bookmarked ? existingRecord.status : 'saved',
+                is_bookmarked: !recordData.is_bookmarked,
+                status: recordData.is_bookmarked ? recordData.status : 'saved',
                 last_accessed: new Date().toISOString()
               })
-              .eq('id', existingRecord.id);
+              .eq('id', (existingRecord as any).id);
           } else {
             // Create new saved course
             await supabase

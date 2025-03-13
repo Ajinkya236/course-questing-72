@@ -56,21 +56,22 @@ export function useUserProfile() {
           .single();
         
         if (!profileError && profileData) {
-          // Create the user profile object
+          // Create the user profile object - use type assertion to handle missing fields
+          const profileDataWithDefaults = profileData as any;
           const userProfileFromDb: UserProfile = {
             id: profileData.id,
             firstName: profileData.first_name || '',
             lastName: profileData.last_name || '',
             avatarUrl: profileData.avatar_url || '',
-            bio: profileData.bio || '',
-            jobTitle: profileData.job_title || '',
-            department: profileData.department || '',
-            role: profileData.role || '',
-            experiencePoints: profileData.experience_points || 0,
-            streakDays: profileData.streak_days || 0,
-            lastActive: profileData.last_active || '',
+            bio: profileDataWithDefaults.bio || '',
+            jobTitle: profileDataWithDefaults.job_title || '',
+            department: profileDataWithDefaults.department || '',
+            role: profileDataWithDefaults.role || '',
+            experiencePoints: profileDataWithDefaults.experience_points || 0,
+            streakDays: profileDataWithDefaults.streak_days || 0,
+            lastActive: profileDataWithDefaults.last_active || '',
             skills: mockUserProfile.skills, // Use mock skills for now
-            achievements: profileData.achievements || []
+            achievements: profileDataWithDefaults.achievements || []
           };
           
           setProfile(userProfileFromDb);
