@@ -23,12 +23,12 @@ const MentorCard: React.FC<MentorCardProps> = ({
 }) => {
   return (
     <Card 
-      className="overflow-hidden transition-all duration-300 cursor-pointer h-[300px] group hover:border-primary hover:shadow-md transform hover:scale-105 relative"
+      className="overflow-hidden transition-all duration-300 cursor-pointer h-[320px] group hover:border-primary hover:shadow-md transform hover:scale-105 relative"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <CardContent className="p-4">
-        <div className="flex flex-col items-center text-center h-full">
+      <CardContent className="p-4 flex flex-col h-full">
+        <div className="flex flex-col items-center text-center">
           <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
             <img 
               src={mentor.image} 
@@ -59,16 +59,17 @@ const MentorCard: React.FC<MentorCardProps> = ({
               <Badge variant="outline" className="text-xs">+{mentor.topics.length - 2}</Badge>
             )}
           </div>
-          
-          <Button 
-            size="sm" 
-            onClick={() => onSelectMentor(mentor)}
-            className="w-full mt-2 transition-all duration-300 flex items-center justify-center gap-2 opacity-100 absolute bottom-4 left-0 right-0 mx-4"
-          >
-            <Send className="h-3 w-3" /> 
-            Request Mentoring
-          </Button>
         </div>
+        
+        {/* Always visible button at bottom of card */}
+        <Button 
+          size="sm" 
+          onClick={() => onSelectMentor(mentor)}
+          className="w-full mt-auto flex items-center justify-center gap-2"
+        >
+          <Send className="h-3 w-3" /> 
+          Request Mentoring
+        </Button>
       </CardContent>
     </Card>
   );
