@@ -200,8 +200,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           
           {!isMobile && (
             <>
-              <CarouselPrevious className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-3" data-embla-prev />
-              <CarouselNext className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-3" data-embla-next />
+              <CarouselPrevious 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -left-6" 
+                data-embla-prev 
+              />
+              <CarouselNext 
+                className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 -right-6" 
+                data-embla-next 
+              />
             </>
           )}
         </Carousel>

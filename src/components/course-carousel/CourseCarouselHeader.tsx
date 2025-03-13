@@ -69,7 +69,7 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
       </div>
       
       {/* Navigation controls for carousel - displayed next to title */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <Button 
           variant="outline" 
           size="icon" 

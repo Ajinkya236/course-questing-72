@@ -26,9 +26,10 @@
 
 /* Make carousel navigation buttons more visible on hover */
 .embla__button {
-  opacity: 0.8;
+  opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 10;
+  position: absolute;
 }
 
 .embla:hover .embla__button {
@@ -37,6 +38,15 @@
 
 .embla__button:hover {
   transform: scale(1.1);
+}
+
+/* Position buttons outside the carousel content */
+.embla__button--prev {
+  left: -20px;
+}
+
+.embla__button--next {
+  right: -20px;
 }
 
 /* Enhance overflow to ensure next card is partially visible */
