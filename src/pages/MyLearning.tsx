@@ -22,6 +22,12 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
   
+  // Use the teamMemberId from props or from URL params
+  const memberId = teamMemberId || params.memberId;
+  
+  // Title suffix based on if viewing team member's learning
+  const titleSuffix = memberId ? ` - Team Member` : '';
+  
   // Update active tab when URL params change
   useEffect(() => {
     if (tabFromUrl) {
@@ -38,12 +44,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         { replace: true });
     }
   }, [activeTab, searchParams, navigate, memberId]);
-  
-  // Use the teamMemberId from props or from URL params
-  const memberId = teamMemberId || params.memberId;
-  
-  // Title suffix based on if viewing team member's learning
-  const titleSuffix = memberId ? ` - Team Member` : '';
 
   // Handle tab change with direct navigation
   const handleTabChange = (value: string) => {
