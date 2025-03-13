@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React, { memo, useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Course } from '@/types/course';
 import CourseCarouselMedia from './CourseCarouselMedia';
@@ -14,7 +14,6 @@ interface CourseCarouselCardProps {
   handleBookmarkToggle: (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => void;
   handleAssignClick: (e: React.MouseEvent, courseId: string) => void;
   showTrainingCategory?: boolean;
-  isHovered?: boolean; // Added for backwards compatibility
 }
 
 const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
@@ -24,11 +23,13 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
   handleShareClick,
   handleBookmarkToggle,
   handleAssignClick,
-  showTrainingCategory = false,
-  isHovered: propIsHovered,
+  showTrainingCategory = false
 }) => {
-  const isHovered = propIsHovered !== undefined ? propIsHovered : hoveredCourseId === course.id;
-  
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   // Define an optimized click handler to prevent event propagation
   const onCardClick = (e: React.MouseEvent) => {
     // Don't navigate if the click was on a button
@@ -39,18 +40,49 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
     handleCardClick(course.id);
   };
 
+  // Handle video mute toggle
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Handle mouse enter/leave for hover state
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (videoRef.current && course.videoUrl) {
+      videoRef.current.src = course.videoUrl;
+      videoRef.current.play()
+        .then(() => setIsVideoPlaying(true))
+        .catch(err => console.log("Video play prevented:", err));
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setIsVideoPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
   return (
     <Card
-      className="overflow-hidden h-full max-h-[330px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md carousel-card"
+      className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md hover:scale-105 carousel-card"
       onClick={onCardClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <CourseCarouselMedia
         course={course}
         isHovered={isHovered}
-        isMuted={true}
-        isVideoPlaying={isHovered}
-        videoRef={null}
-        toggleMute={(e) => e.stopPropagation()}
+        isMuted={isMuted}
+        isVideoPlaying={isVideoPlaying}
+        videoRef={videoRef}
+        toggleMute={toggleMute}
         showTrainingCategory={showTrainingCategory}
       />
       
@@ -66,7 +98,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
           <span>{course.level || 'All Levels'}</span>
         </div>
         
-        <CourseProgressBar progress={course.progress || 0} />
+        <CourseProgressBar progress={course.progress} />
         
         <CourseActions
           isBookmarked={!!course.isBookmarked}

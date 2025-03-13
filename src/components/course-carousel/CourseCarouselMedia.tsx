@@ -12,8 +12,6 @@ interface CourseCarouselMediaProps {
     videoUrl?: string;
     enrollmentStatus?: string;
     trainingCategory?: string;
-    isHot?: boolean;
-    isNew?: boolean;
   };
   isHovered: boolean;
   isMuted: boolean;
@@ -30,9 +28,21 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   isVideoPlaying,
   videoRef,
   toggleMute,
+  showTrainingCategory = false
 }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'Completed':
+        return 'bg-green-500';
+      case 'In Progress':
+        return 'bg-blue-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
@@ -54,9 +64,9 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden bg-muted">
       {!isImageLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
         </div>
       )}
@@ -83,24 +93,20 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
         )}
       </AspectRatio>
       
-      {/* Show enrollment status badge */}
       {course.enrollmentStatus && (
         <div className="absolute top-2 right-2">
-          <Badge className="bg-blue-500 text-white" variant="secondary">
+          <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
             {course.enrollmentStatus}
           </Badge>
         </div>
       )}
-      
-      {/* Display Hot/New badges only */}
-      <div className="absolute bottom-2 right-2 flex gap-1 z-20">
-        {course.isHot && (
-          <Badge className="bg-red-500 text-white">Hot</Badge>
-        )}
-        {course.isNew && (
-          <Badge className="bg-green-500 text-white">New</Badge>
-        )}
-      </div>
+      {showTrainingCategory && course.trainingCategory && (
+        <div className="absolute bottom-2 left-2">
+          <Badge variant="outline" className="bg-black/60 text-white border-none">
+            {course.trainingCategory}
+          </Badge>
+        </div>
+      )}
     </div>
   );
 };

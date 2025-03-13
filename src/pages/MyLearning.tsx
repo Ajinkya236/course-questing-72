@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useParams, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -14,15 +14,13 @@ import RewardsTab from './my-learning/RewardsTab';
 
 interface MyLearningProps {
   teamMemberId?: string;
-  tab?: string;
 }
 
-const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId, tab: propTab }) => {
+const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { tab } = useParams();
-  const tabFromUrl = tab || searchParams.get('tab') || propTab || 'courses';
+  const tabFromUrl = tab || searchParams.get('tab') || 'courses';
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
   
@@ -31,43 +29,35 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId, tab: propTab }) =
   
   // Update active tab when URL params change
   useEffect(() => {
-    const newTab = tab || searchParams.get('tab') || propTab || 'courses';
-    if (newTab !== activeTab) {
-      setActiveTab(newTab);
+    if (tab || searchParams.get('tab')) {
+      setActiveTab(tab || searchParams.get('tab') || 'courses');
     }
-  }, [tab, searchParams, propTab, activeTab]);
+  }, [tab, searchParams]);
 
   // Default to 'in-progress' status for courses if no status is specified
   useEffect(() => {
-    if (activeTab === 'courses' && !searchParams.get('status') && !location.pathname.includes('goals')) {
+    if (activeTab === 'courses' && !searchParams.get('status')) {
       if (memberId) {
         navigate(`/my-team/member/${memberId}/learning?tab=courses&status=in-progress`, { replace: true });
       } else {
         navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
       }
     }
-  }, [activeTab, searchParams, navigate, memberId, location.pathname]);
+  }, [activeTab, searchParams, navigate, memberId]);
   
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
 
-  // Handle tab changes - Fixed to ensure proper navigation
+  // Handle tab changes
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     
     let basePath = memberId 
-      ? `/my-team/member/${memberId}/learning`
+      ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
       : '/my-learning';
-    
-    // Special handling for goals tab when viewing team member
-    if (value === 'goals' && memberId) {
-      navigate(`/my-team/member/${memberId}/goals?tab=goals`);
-      return;
-    }
       
-    // Direct navigation to the appropriate tab
     if (value === 'courses') {
-      navigate(`${basePath}?tab=${value}&status=in-progress`);
+      navigate(`${basePath}?tab=courses&status=in-progress`);
     } else {
       navigate(`${basePath}?tab=${value}`);
     }
@@ -85,65 +75,10 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId, tab: propTab }) =
     avatar: "https://randomuser.me/api/portraits/men/32.jpg"
   } : null;
 
-  // Determine if we're in goals view mode
-  const isGoalsView = location.pathname.includes('goals') || params.tab === 'goals' || propTab === 'goals';
-
-  // Render different content based on whether we're viewing a team member's learning or goals
-  const renderContent = () => {
-    // For team member's goals view
-    if (memberId && isGoalsView) {
-      return <LearningGoalsTab teamMemberId={memberId} />;
-    }
-    
-    // For team member's learning view (courses only)
-    if (memberId) {
-      return <CoursesTab teamMemberId={memberId} />;
-    }
-    
-    // For personal learning view (with tabs)
-    return (
-      <Tabs 
-        defaultValue="courses" 
-        value={activeTab}
-        onValueChange={handleTabChange}
-        className="space-y-4"
-      >
-        <TabsList>
-          <TabsTrigger value="courses">Courses</TabsTrigger>
-          <TabsTrigger value="goals">Learning Goals</TabsTrigger>
-          <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
-          <TabsTrigger value="rewards">Rewards</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="courses" className="space-y-4">
-          <CoursesTab teamMemberId={memberId} />
-        </TabsContent>
-        
-        <TabsContent value="goals" className="space-y-4">
-          <LearningGoalsTab teamMemberId={memberId} />
-        </TabsContent>
-        
-        <TabsContent value="badges" className="space-y-4">
-          <BadgesTab teamMemberId={memberId} />
-        </TabsContent>
-        
-        <TabsContent value="rewards" className="space-y-4">
-          <RewardsTab teamMemberId={memberId} />
-        </TabsContent>
-      </Tabs>
-    );
-  };
-
   return (
     <>
       <Helmet>
-        <title>
-          {isGoalsView && memberId 
-            ? "Team Member's Learning Goals" 
-            : memberId 
-              ? "Team Member's Learning" 
-              : `My Learning${titleSuffix}`}
-        </title>
+        <title>My Learning{titleSuffix} | Learning Management System</title>
       </Helmet>
       
       <div className="space-y-6">
@@ -176,22 +111,44 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId, tab: propTab }) =
         
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold tracking-tight">
-            {isGoalsView && memberId 
-              ? "Team Member's Learning Goals" 
-              : memberId 
-                ? "Team Member's Learning" 
-                : "My Learning"}
+            {memberId ? "Team Member's Learning" : "My Learning"}
           </h1>
           <p className="text-muted-foreground">
-            {isGoalsView && memberId 
-              ? "View and manage this team member's learning goals" 
-              : memberId 
-                ? "View and manage this team member's learning journey" 
-                : "Track your progress and manage your learning journey"}
+            {memberId 
+              ? "View and manage this team member's learning journey" 
+              : "Track your progress and manage your learning journey"}
           </p>
         </div>
 
-        {renderContent()}
+        <Tabs 
+          defaultValue="courses" 
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="space-y-4"
+        >
+          <TabsList>
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="goals">Learning Goals</TabsTrigger>
+            <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
+            <TabsTrigger value="rewards">Rewards</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="courses" className="space-y-4">
+            <CoursesTab teamMemberId={memberId} />
+          </TabsContent>
+          
+          <TabsContent value="goals" className="space-y-4">
+            <LearningGoalsTab teamMemberId={memberId} />
+          </TabsContent>
+          
+          <TabsContent value="badges" className="space-y-4">
+            <BadgesTab teamMemberId={memberId} />
+          </TabsContent>
+          
+          <TabsContent value="rewards" className="space-y-4">
+            <RewardsTab teamMemberId={memberId} />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

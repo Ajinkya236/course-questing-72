@@ -34,25 +34,10 @@ const mockDomains = [
     name: 'Data Science',
     description: 'Data analysis, machine learning, and statistics',
     icon: 'BarChart'
-  },
-  {
-    name: 'Design',
-    description: 'User experience, graphic design, and visual communication',
-    icon: 'Palette'
-  },
-  {
-    name: 'Marketing',
-    description: 'Digital marketing, branding, and customer engagement',
-    icon: 'TrendingUp'
-  },
-  {
-    name: 'Communication',
-    description: 'Verbal, written, and interpersonal communication skills',
-    icon: 'MessageCircle'
   }
 ];
 
-// Expanded mock skills per domain
+// Mock skills per domain
 const mockSkillsByDomain = {
   'Technology': [
     'JavaScript',
@@ -61,13 +46,7 @@ const mockSkillsByDomain = {
     'Cloud Computing',
     'DevOps',
     'Cybersecurity',
-    'Mobile Development',
-    'Node.js',
-    'Artificial Intelligence',
-    'Blockchain',
-    'IoT',
-    'Web Development',
-    'Data Engineering'
+    'Mobile Development'
   ],
   'Business': [
     'Project Management',
@@ -75,13 +54,7 @@ const mockSkillsByDomain = {
     'Finance',
     'Entrepreneurship',
     'Sales',
-    'Business Strategy',
-    'Operations Management',
-    'Business Analysis',
-    'Supply Chain Management',
-    'Risk Management',
-    'Business Intelligence',
-    'Change Management'
+    'Business Strategy'
   ],
   'Leadership': [
     'Team Management',
@@ -89,13 +62,7 @@ const mockSkillsByDomain = {
     'Decision Making',
     'Conflict Resolution',
     'Coaching',
-    'Strategic Leadership',
-    'Delegation',
-    'Emotional Intelligence',
-    'Motivation',
-    'Performance Management',
-    'Change Leadership',
-    'Vision Setting'
+    'Strategic Leadership'
   ],
   'Personal Development': [
     'Time Management',
@@ -103,13 +70,7 @@ const mockSkillsByDomain = {
     'Critical Thinking',
     'Public Speaking',
     'Creativity',
-    'Emotional Intelligence',
-    'Mindfulness',
-    'Goal Setting',
-    'Personal Finance',
-    'Productivity',
-    'Work-Life Balance',
-    'Resilience'
+    'Emotional Intelligence'
   ],
   'Data Science': [
     'SQL',
@@ -118,59 +79,11 @@ const mockSkillsByDomain = {
     'Statistical Analysis',
     'Big Data',
     'Pandas',
-    'R',
-    'TensorFlow',
-    'Deep Learning',
-    'NLP',
-    'Data Cleaning',
-    'Predictive Analytics',
-    'A/B Testing'
-  ],
-  'Design': [
-    'UI Design',
-    'UX Design',
-    'Graphic Design',
-    'Web Design',
-    'Design Thinking',
-    'Visual Communication',
-    'Wireframing',
-    'Prototyping',
-    'Adobe Creative Suite',
-    'Typography',
-    'Color Theory',
-    'Responsive Design'
-  ],
-  'Marketing': [
-    'Digital Marketing',
-    'SEO',
-    'Social Media Marketing',
-    'Content Marketing',
-    'Email Marketing',
-    'Marketing Analytics',
-    'Brand Management',
-    'Market Research',
-    'Advertising',
-    'Growth Hacking',
-    'Customer Acquisition',
-    'Marketing Automation'
-  ],
-  'Communication': [
-    'Business Writing',
-    'Presentation Skills',
-    'Interpersonal Communication',
-    'Active Listening',
-    'Public Speaking',
-    'Negotiation',
-    'Persuasion',
-    'Cross-cultural Communication',
-    'Storytelling',
-    'Non-verbal Communication',
-    'Media Communication',
-    'Technical Writing'
+    'R'
   ]
 };
 
-// Expanded job roles
+// Mock job roles
 const mockJobRoles = [
   {
     code: 'JR001',
@@ -213,64 +126,10 @@ const mockJobRoles = [
     name: 'Senior Product Manager',
     description: 'Senior product management role',
     next_level_role_code: null
-  },
-  {
-    code: 'JR008',
-    name: 'UX Designer',
-    description: 'User experience design role',
-    next_level_role_code: 'JR009'
-  },
-  {
-    code: 'JR009',
-    name: 'Senior UX Designer',
-    description: 'Senior user experience design role',
-    next_level_role_code: 'JR010'
-  },
-  {
-    code: 'JR010',
-    name: 'UX Lead',
-    description: 'User experience team lead',
-    next_level_role_code: null
-  },
-  {
-    code: 'JR011',
-    name: 'Data Analyst',
-    description: 'Data analysis role',
-    next_level_role_code: 'JR012'
-  },
-  {
-    code: 'JR012',
-    name: 'Data Scientist',
-    description: 'Data science specialist',
-    next_level_role_code: 'JR013'
-  },
-  {
-    code: 'JR013',
-    name: 'Lead Data Scientist',
-    description: 'Lead data science role',
-    next_level_role_code: null
-  },
-  {
-    code: 'JR014',
-    name: 'Marketing Specialist',
-    description: 'Marketing professional role',
-    next_level_role_code: 'JR015'
-  },
-  {
-    code: 'JR015',
-    name: 'Marketing Manager',
-    description: 'Marketing team management role',
-    next_level_role_code: 'JR016'
-  },
-  {
-    code: 'JR016',
-    name: 'Marketing Director',
-    description: 'Senior marketing leadership role',
-    next_level_role_code: null
   }
 ];
 
-// Expanded rewards list
+// Mock rewards
 const mockRewards = [
   {
     name: '50 Points',
@@ -305,14 +164,6 @@ const mockRewards = [
     image_url: 'https://placehold.co/200x200?text=500+Points'
   },
   {
-    name: '1000 Points',
-    description: 'Earn 1000 bonus points',
-    type: 'points',
-    value: 1000,
-    probability: 0.02,
-    image_url: 'https://placehold.co/200x200?text=1000+Points'
-  },
-  {
     name: 'Completion Badge',
     description: 'Earn a special completion badge',
     type: 'badge',
@@ -335,34 +186,10 @@ const mockRewards = [
     value: null,
     probability: 0.05,
     image_url: 'https://placehold.co/200x200?text=Special'
-  },
-  {
-    name: 'Course Discount',
-    description: 'Get 25% off on premium courses',
-    type: 'discount',
-    value: 25,
-    probability: 0.08,
-    image_url: 'https://placehold.co/200x200?text=Discount'
-  },
-  {
-    name: 'Virtual Coffee with Expert',
-    description: 'Win a virtual coffee meeting with an industry expert',
-    type: 'experience',
-    value: null,
-    probability: 0.03,
-    image_url: 'https://placehold.co/200x200?text=Coffee'
-  },
-  {
-    name: 'Premium Course Access',
-    description: 'Get free access to a premium course',
-    type: 'course',
-    value: null,
-    probability: 0.04,
-    image_url: 'https://placehold.co/200x200?text=Premium'
   }
 ];
 
-// Expanded badges
+// Mock badges
 const mockBadges = [
   {
     name: 'Fast Learner',
@@ -393,60 +220,6 @@ const mockBadges = [
     description: 'Get 100% on a course assessment',
     image_url: 'https://placehold.co/200x200?text=Perfect+Score',
     criteria: 'Get 100% on a course assessment'
-  },
-  {
-    name: 'Data Wizard',
-    description: 'Complete 3 data science courses',
-    image_url: 'https://placehold.co/200x200?text=Data+Wizard',
-    criteria: 'Complete 3 data science courses'
-  },
-  {
-    name: 'Communication Pro',
-    description: 'Complete 3 communication courses',
-    image_url: 'https://placehold.co/200x200?text=Communication+Pro',
-    criteria: 'Complete 3 communication courses'
-  },
-  {
-    name: 'Design Thinker',
-    description: 'Complete 3 design courses',
-    image_url: 'https://placehold.co/200x200?text=Design+Thinker',
-    criteria: 'Complete 3 design courses'
-  },
-  {
-    name: 'Marketing Master',
-    description: 'Complete 3 marketing courses',
-    image_url: 'https://placehold.co/200x200?text=Marketing+Master',
-    criteria: 'Complete 3 marketing courses'
-  },
-  {
-    name: 'Streak Achieved',
-    description: 'Learn for 7 consecutive days',
-    image_url: 'https://placehold.co/200x200?text=Streak+Achieved',
-    criteria: 'Learn for 7 consecutive days'
-  },
-  {
-    name: 'Team Player',
-    description: 'Share 10 courses with team members',
-    image_url: 'https://placehold.co/200x200?text=Team+Player',
-    criteria: 'Share 10 courses with team members'
-  },
-  {
-    name: 'Knowledge Sharer',
-    description: 'Post 5 course reviews',
-    image_url: 'https://placehold.co/200x200?text=Knowledge+Sharer',
-    criteria: 'Post 5 course reviews'
-  },
-  {
-    name: 'Early Adopter',
-    description: 'Complete a course within 7 days of its release',
-    image_url: 'https://placehold.co/200x200?text=Early+Adopter',
-    criteria: 'Complete a course within 7 days of its release'
-  },
-  {
-    name: 'Skill Collector',
-    description: 'Earn proficiency in 10 different skills',
-    image_url: 'https://placehold.co/200x200?text=Skill+Collector',
-    criteria: 'Earn proficiency in 10 different skills'
   }
 ];
 
@@ -469,9 +242,14 @@ serve(async (req) => {
       }
     )
     
-    // Get options from the request body
-    const requestData = await req.json().catch(() => ({}));
-    const { syncDomains, syncSkills, syncJobRoles, syncRewards, syncBadges, syncAll } = requestData;
+    // Get query parameters to control what we sync
+    const url = new URL(req.url)
+    const syncDomains = url.searchParams.get('domains') === 'true'
+    const syncSkills = url.searchParams.get('skills') === 'true'
+    const syncJobRoles = url.searchParams.get('job_roles') === 'true'
+    const syncRewards = url.searchParams.get('rewards') === 'true'
+    const syncBadges = url.searchParams.get('badges') === 'true'
+    const syncAll = url.searchParams.get('all') === 'true'
     
     const results = {}
     
