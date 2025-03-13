@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card } from '@/components/ui/card';
@@ -114,8 +115,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             )}
           </CarouselContent>
           
-          <CarouselPrevious className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
-          <CarouselNext className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
+          <CarouselPrevious className="z-10 group-hover/mentors:opacity-100" />
+          <CarouselNext className="z-10 group-hover/mentors:opacity-100" />
         </Carousel>
       </div>
 

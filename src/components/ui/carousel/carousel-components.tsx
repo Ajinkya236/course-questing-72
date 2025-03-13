@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
@@ -182,7 +183,7 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
+        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
         orientation === "horizontal"
           ? "left-0 top-1/2 -translate-y-1/2 -translate-x-1/2" 
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -192,6 +193,7 @@ const CarouselPrevious = React.forwardRef<
       onClick={scrollPrev}
       disabled={!canScrollPrev}
       data-carousel-button="prev"
+      data-embla-prev
       {...props}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -214,7 +216,7 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-background border border-border shadow-md hover:bg-background",
+        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
         orientation === "horizontal"
           ? "right-0 top-1/2 -translate-y-1/2 translate-x-1/2" 
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -224,6 +226,7 @@ const CarouselNext = React.forwardRef<
       onClick={scrollNext}
       disabled={!canScrollNext}
       data-carousel-button="next"
+      data-embla-next
       {...props}
     >
       <ArrowRight className="h-4 w-4" />

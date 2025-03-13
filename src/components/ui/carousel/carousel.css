@@ -44,15 +44,17 @@
   transform: scale(1.1);
 }
 
-/* Position buttons outside the carousel content to overlap with surrounding areas */
+/* Position buttons completely outside the carousel content */
 .embla__button--prev {
-  left: -20px; /* Positioned further left to overlap with the page boundary */
-  transform: translateX(-50%); /* Center the button on its position */
+  left: -30px; /* Positioned further left outside the content */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .embla__button--next {
-  right: -20px; /* Positioned further right to overlap with the page boundary */
-  transform: translateX(50%); /* Center the button on its position */
+  right: -30px; /* Positioned further right outside the content */
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Enhance overflow to ensure next card is partially visible */
