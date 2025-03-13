@@ -1,91 +1,68 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface CourseCarouselHeaderProps {
   title: string;
+  subtitle?: string;
+  viewAllHref?: string;
   onViewAllClick?: () => void;
-  viewAllUrl?: string;
-  carouselId: string;
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+  onScrollLeft: () => void;
+  onScrollRight: () => void;
 }
 
 const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   title,
+  subtitle,
+  viewAllHref,
   onViewAllClick,
-  viewAllUrl = '/view-all',
-  carouselId
+  canScrollLeft,
+  canScrollRight,
+  onScrollLeft,
+  onScrollRight
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate();
-
-  const handleViewAllClick = () => {
-    if (onViewAllClick) {
-      onViewAllClick();
-    } else {
-      navigate(viewAllUrl);
-    }
-  };
-
-  const triggerCarouselPrev = () => {
-    const carousel = document.getElementById(carouselId);
-    if (carousel) {
-      const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
-      if (prevButton) prevButton.click();
-    }
-  };
-
-  const triggerCarouselNext = () => {
-    const carousel = document.getElementById(carouselId);
-    if (carousel) {
-      const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
-      if (nextButton) nextButton.click();
-    }
-  };
-
   return (
-    <div 
-      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex items-center">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <ChevronRight 
-          className="h-4 w-4 cursor-pointer ml-1" 
-          onClick={handleViewAllClick}
-        />
-        {isHovered && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="ml-1 p-0" 
-            onClick={handleViewAllClick}
-          >
-            View All
-          </Button>
-        )}
+        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       
-      {/* Navigation controls for carousel - displayed next to title */}
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselPrev}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselNext}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+      <div className="flex items-center gap-4">
+        {(viewAllHref || onViewAllClick) && (
+          <Button 
+            variant="link" 
+            className="p-0 h-auto text-sm font-medium"
+            onClick={onViewAllClick}
+            {...(viewAllHref ? { asChild: true } : {})}
+          >
+            {viewAllHref ? <a href={viewAllHref}>View all</a> : 'View all'}
+          </Button>
+        )}
+        
+        <div className="flex gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            disabled={!canScrollLeft}
+            onClick={onScrollLeft}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            disabled={!canScrollRight}
+            onClick={onScrollRight}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

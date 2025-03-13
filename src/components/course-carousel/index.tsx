@@ -2,8 +2,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CourseCarouselHeader } from './CourseCarouselHeader';
-import { CourseCarouselCard } from './CourseCarouselCard';
+import CourseCarouselHeader from './CourseCarouselHeader';
+import CourseCarouselCard from './CourseCarouselCard';
 import { calculateCardWidth } from './CourseCarouselUtils';
 import { Course } from '@/types/course';
 
@@ -12,10 +12,14 @@ interface CourseCarouselProps {
   subtitle?: string;
   courses: Course[];
   viewAllHref?: string;
+  viewAllUrl?: string; // Added to match what's used in Home.tsx
   onViewAllClick?: () => void;
   cardVariant?: 'default' | 'compact' | 'minimal';
   courseType?: string;
   isLoading?: boolean;
+  filterOptions?: string[];
+  showSkillFilters?: boolean;
+  showTrainingCategory?: boolean;
 }
 
 const CourseCarousel: React.FC<CourseCarouselProps> = ({
@@ -23,16 +27,21 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   subtitle,
   courses,
   viewAllHref,
+  viewAllUrl, // Added to handle the prop from Home.tsx
   onViewAllClick,
   cardVariant = 'default',
   courseType,
   isLoading = false,
+  showTrainingCategory = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [visibleCards, setVisibleCards] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Use viewAllUrl as a fallback for viewAllHref for backward compatibility
+  const effectiveViewAllHref = viewAllHref || viewAllUrl;
 
   // Calculate the card width and visible cards based on the container width and card variant
   useEffect(() => {
@@ -74,12 +83,35 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
 
   const peekAmount = 15; // Show 15% of the next card
 
+  // Handle card click mock function
+  const handleCardClick = (courseId: string) => {
+    console.log(`Card clicked: ${courseId}`);
+  };
+
+  // Handle share click mock function
+  const handleShareClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    console.log(`Share clicked: ${courseId}`);
+  };
+
+  // Handle bookmark toggle mock function
+  const handleBookmarkToggle = (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
+    e.stopPropagation();
+    console.log(`Bookmark toggled for ${title} (${courseId}): ${!isBookmarked}`);
+  };
+
+  // Handle assign click mock function
+  const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    console.log(`Assign clicked: ${courseId}`);
+  };
+
   return (
     <div className="w-full">
       <CourseCarouselHeader 
         title={title}
         subtitle={subtitle}
-        viewAllHref={viewAllHref}
+        viewAllHref={effectiveViewAllHref}
         onViewAllClick={onViewAllClick}
         canScrollLeft={canScrollLeft}
         canScrollRight={canScrollRight}
@@ -117,8 +149,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           className="flex transition-all duration-300 ease-in-out"
           style={{ 
             transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
-            width: `${(100 / visibleCards) * courses.length}%`,
-            paddingRight: canScrollRight ? `${peekAmount}%` : '0'
+            width: `${(100 / visibleCards) * courses.length}%`
           }}
         >
           {courses.map((course, index) => (
@@ -129,15 +160,19 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                 width: `${100 / courses.length}%`,
                 // When this is the last visible card and we can scroll right, 
                 // make it slightly wider to show part of the next card
-                width: index === currentIndex + visibleCards - 1 && canScrollRight 
-                  ? `${(100 / courses.length) + peekAmount}%` 
-                  : `${100 / courses.length}%`
+                ...(index === currentIndex + visibleCards - 1 && canScrollRight 
+                  ? { width: `${(100 / courses.length) + peekAmount}%` } 
+                  : {})
               }}
             >
               <CourseCarouselCard 
-                course={course} 
-                variant={cardVariant} 
-                courseType={courseType}
+                course={course}
+                hoveredCourseId={null}
+                handleCardClick={handleCardClick}
+                handleShareClick={handleShareClick}
+                handleBookmarkToggle={handleBookmarkToggle}
+                handleAssignClick={handleAssignClick}
+                showTrainingCategory={showTrainingCategory}
               />
             </div>
           ))}

@@ -48,6 +48,22 @@ export const getStatusColor = (status?: string) => {
 };
 
 /**
+ * Calculate the card width based on the variant
+ * @param variant The card variant
+ * @returns The card width in pixels
+ */
+export const calculateCardWidth = (variant?: 'default' | 'compact' | 'minimal') => {
+  switch (variant) {
+    case 'compact':
+      return 240;
+    case 'minimal':
+      return 200;
+    default:
+      return 280;
+  }
+};
+
+/**
  * Normalize course data to ensure all required properties exist
  * @param courses The array of courses to normalize
  * @returns An array of normalized courses
