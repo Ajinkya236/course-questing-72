@@ -20,6 +20,9 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const params = useParams();
   
+  // Use the teamMemberId from props or from URL params
+  const memberId = teamMemberId || params.memberId;
+  
   // Update active tab when URL params change
   useEffect(() => {
     if (tabFromUrl) {
@@ -33,9 +36,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
     }
   }, [activeTab, searchParams, navigate]);
-  
-  // Use the teamMemberId from props or from URL params
-  const memberId = teamMemberId || params.memberId;
   
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
@@ -65,6 +65,12 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
             setActiveTab(value);
             if (value === 'courses') {
               navigate('/my-learning?tab=courses&status=in-progress');
+            } else if (value === 'goals') {
+              navigate('/my-learning?tab=goals');
+            } else if (value === 'badges') {
+              navigate('/my-learning?tab=badges');
+            } else if (value === 'rewards') {
+              navigate('/my-learning?tab=rewards');
             } else {
               navigate(`/my-learning?tab=${value}`);
             }

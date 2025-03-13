@@ -5,9 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, User, Users } from 'lucide-react';
+import { Calendar, Target, User, Users, ArrowLeft } from 'lucide-react';
 import CourseCard from '@/components/CourseCard';
 import { mockCourses } from '@/data/mockCoursesData';
+import { useNavigate } from 'react-router-dom';
 
 interface LearningGoalsTabProps {
   teamMemberId?: string;
@@ -16,6 +17,7 @@ interface LearningGoalsTabProps {
 const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => {
   // Show only two filter tabs - self assigned and manager assigned
   const [activeFilter, setActiveFilter] = useState('self');
+  const navigate = useNavigate();
   
   // Mock learning goals data
   const selfAssignedGoals = [
@@ -77,14 +79,32 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
     return activeFilter === 'self' ? selfAssignedGoals : managerAssignedGoals;
   };
 
+  // Handle back button when viewing team member's goals
+  const handleBack = () => {
+    navigate('/my-team');
+  };
+
   return (
     <div className="space-y-8">
+      {/* Back button for team member view */}
+      {teamMemberId && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="mb-4" 
+          onClick={handleBack}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Team
+        </Button>
+      )}
+
       {/* Simplified Filter Tabs */}
       <Tabs value={activeFilter} onValueChange={setActiveFilter}>
         <TabsList className="grid grid-cols-2 w-full max-w-md">
           <TabsTrigger value="self" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            Self-Assigned
+            {teamMemberId ? 'Self-Assigned' : 'Assigned by Me'}
           </TabsTrigger>
           <TabsTrigger value="manager" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
