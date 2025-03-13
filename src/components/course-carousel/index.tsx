@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -14,6 +13,7 @@ interface CourseCarouselProps {
   viewAllUrl?: string; // Add viewAllUrl prop for compatibility with Home.tsx
   showTrainingCategory?: boolean;
   onCourseSelect?: (courseId: string) => void;
+  onViewAllClick?: () => void; // Add the missing onViewAllClick prop
   filterOptions?: string[];
   showSkillFilters?: boolean;
 }
@@ -25,6 +25,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   viewAllUrl, // Add viewAllUrl to the props
   showTrainingCategory = false,
   onCourseSelect,
+  onViewAllClick, // Add the prop to the component
   filterOptions,
   showSkillFilters,
 }) => {
@@ -40,7 +41,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     toggleMute
   } = useVideoPreview({ previewUrl: '' });
   
-  // Update carousel measurements
   useEffect(() => {
     const updateCarouselMeasurements = () => {
       if (carouselRef.current) {
@@ -65,14 +65,12 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     };
   }, [courses]);
 
-  // Calculate number of visible items
   const calculateVisibleItems = () => {
     if (!carouselRef.current) return 1;
     const containerWidth = carouselRef.current.clientWidth;
     return Math.floor(containerWidth / itemWidth);
   };
 
-  // Handle scroll controls
   const handleScroll = (direction: "left" | "right") => {
     if (!carouselRef.current) return;
 
@@ -80,7 +78,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     const scrollAmount = direction === "left" ? -itemWidth * visibleItems : itemWidth * visibleItems;
     
     let newPosition = scrollPosition + scrollAmount;
-    // Limit scroll to boundaries
     newPosition = Math.max(0, Math.min(newPosition, maxScroll));
     
     carouselRef.current.scrollTo({
@@ -91,7 +88,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setScrollPosition(newPosition);
   };
 
-  // Update scroll position when scrolled
   const handleScrollEvent = () => {
     if (carouselRef.current) {
       setScrollPosition(carouselRef.current.scrollLeft);
@@ -106,7 +102,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     }
   }, []);
 
-  // Handle hover state for videos
   const handleCourseHover = (courseId: string) => {
     setHoveredCourseId(courseId);
   };
@@ -115,7 +110,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setHoveredCourseId(null);
   };
 
-  // Handle course selection
   const handleCourseSelect = (courseId: string) => {
     if (onCourseSelect) {
       onCourseSelect(courseId);
@@ -134,7 +128,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       />
       
       <div className="relative group">
-        {/* Left scroll button */}
         <Button 
           variant="outline"
           size="icon"
@@ -145,7 +138,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <ChevronLeft className="h-5 w-5" />
         </Button>
         
-        {/* Course cards container with partial next card visibility */}
         <div 
           ref={carouselRef}
           className="flex overflow-x-auto scrollbar-hide scroll-smooth pb-4"
@@ -189,7 +181,6 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           </div>
         </div>
 
-        {/* Right scroll button */}
         <Button 
           variant="outline"
           size="icon"
