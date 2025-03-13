@@ -23,7 +23,7 @@ const CourseCarouselItem: React.FC<CourseCarouselItemProps> = ({
   return (
     <div 
       data-course-item
-      className="flex-shrink-0 w-[280px] transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-shrink-0 w-[280px] transition-all duration-300 transform hover:scale-105 hover:z-10"
       onMouseEnter={() => handleCourseHover(course.id)}
       onMouseLeave={handleCourseLeave}
     >

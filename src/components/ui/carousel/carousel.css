@@ -7,7 +7,7 @@
 
 /* Show 10-20% of the next card as information scent */
 .embla {
-  overflow: hidden;
+  overflow: visible;
   padding: 0;
   margin: 0 -8%;
   position: relative;
@@ -50,7 +50,8 @@
 }
 
 .carousel-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px) scale(1.05);
+  z-index: 10;
 }
 
 /* Adjust spacing to show partial next card (information scent) */
@@ -80,6 +81,11 @@
   transition: transform 0.3s ease;
 }
 
+.mentor-carousel-item:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
 @media (min-width: 640px) {
   .mentor-carousel-item {
     flex: 0 0 calc(45% - 1rem);
@@ -99,4 +105,20 @@
     flex: 0 0 calc(23% - 1rem);
     max-width: calc(23% - 1rem);
   }
+}
+
+/* Make buttons more visible when hovering over the carousel */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Filter carousel button positioning */
+.group\/filters .absolute {
+  z-index: 20;
+}
+
+/* Ensure course action buttons are always visible */
+.pt-2.opacity-100 {
+  display: block !important;
+  opacity: 1 !important;
 }

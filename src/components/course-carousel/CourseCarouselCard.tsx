@@ -41,7 +41,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
 
   return (
     <Card
-      className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md hover:scale-105 carousel-card"
+      className="overflow-hidden h-full max-h-[330px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md carousel-card"
       onClick={onCardClick}
     >
       <CourseCarouselMedia
