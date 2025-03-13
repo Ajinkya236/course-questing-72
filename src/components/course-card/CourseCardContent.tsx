@@ -42,7 +42,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      <div className="pt-1 mt-auto">
+      <div className="pt-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <div className="flex gap-1 mb-1">
           <Button 
             variant="default" 
