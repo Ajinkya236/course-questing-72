@@ -42,7 +42,21 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
         }
         
         if (data && data.length > 0) {
-          setLoadedMentors(data);
+          // Convert the Supabase data to match our Mentor interface
+          const mentorsData: Mentor[] = data.map(item => ({
+            id: Number(item.id.toString().substring(0, 8), 16), // Convert UUID to a number (for display purposes)
+            name: item.name,
+            title: item.title,
+            image: item.image,
+            rating: Number(item.rating),
+            reviews: item.reviews,
+            topics: item.topics,
+            bio: item.bio,
+            experience: item.experience,
+            availability: item.availability,
+            expectations: item.expectations
+          }));
+          setLoadedMentors(mentorsData);
         }
       } catch (error) {
         console.error('Error:', error);

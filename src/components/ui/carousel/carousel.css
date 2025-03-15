@@ -33,16 +33,29 @@
   position: relative;
 }
 
+/* Show 20% of the 5th card when using the mentors carousel */
+.mentor-carousel-item:nth-child(5n) {
+  margin-right: -5rem; /* This creates the effect of showing just 20% of the 5th card */
+}
+
 /* Add responsive design for mentor carousel */
 @media (max-width: 1200px) {
   .mentor-carousel-item {
     flex: 0 0 calc(25% - 0.8rem) !important; /* 4 items per row */
+  }
+  
+  .mentor-carousel-item:nth-child(4n) {
+    margin-right: -5rem; /* Show 20% of the 4th card on medium screens */
   }
 }
 
 @media (max-width: 768px) {
   .mentor-carousel-item {
     flex: 0 0 calc(33.333% - 0.8rem) !important; /* 3 items per row */
+  }
+  
+  .mentor-carousel-item:nth-child(3n) {
+    margin-right: -5rem; /* Show 20% of the 3rd card on smaller screens */
   }
 }
 

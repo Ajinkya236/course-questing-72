@@ -133,6 +133,51 @@ export type Database = {
         }
         Relationships: []
       }
+      mentors: {
+        Row: {
+          availability: string | null
+          bio: string | null
+          created_at: string
+          expectations: string | null
+          experience: string | null
+          id: string
+          image: string
+          name: string
+          rating: number
+          reviews: number
+          title: string
+          topics: string[]
+        }
+        Insert: {
+          availability?: string | null
+          bio?: string | null
+          created_at?: string
+          expectations?: string | null
+          experience?: string | null
+          id?: string
+          image: string
+          name: string
+          rating: number
+          reviews: number
+          title: string
+          topics: string[]
+        }
+        Update: {
+          availability?: string | null
+          bio?: string | null
+          created_at?: string
+          expectations?: string | null
+          experience?: string | null
+          id?: string
+          image?: string
+          name?: string
+          rating?: number
+          reviews?: number
+          title?: string
+          topics?: string[]
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
