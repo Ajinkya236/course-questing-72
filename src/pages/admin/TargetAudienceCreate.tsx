@@ -22,6 +22,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
