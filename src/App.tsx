@@ -28,6 +28,15 @@ const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
+// Admin pages
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminCourses = lazy(() => import('./pages/admin/Courses'));
+const AdminCourseCreate = lazy(() => import('./pages/admin/CourseCreate'));
+const AdminCourseEdit = lazy(() => import('./pages/admin/CourseEdit'));
+const AdminTargetAudience = lazy(() => import('./pages/admin/TargetAudience'));
+const AdminTargetAudienceCreate = lazy(() => import('./pages/admin/TargetAudienceCreate'));
+const AdminTargetAudienceEdit = lazy(() => import('./pages/admin/TargetAudienceEdit'));
+
 const PageLoader = () => (
   <div className="flex items-center justify-center h-screen">
     <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -84,6 +93,15 @@ function App() {
                 <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
                 <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
                 <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
+                <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
+                <Route path="/admin/courses/create" element={<PageLayout><AdminCourseCreate /></PageLayout>} />
+                <Route path="/admin/courses/edit/:courseId" element={<PageLayout><AdminCourseEdit /></PageLayout>} />
+                <Route path="/admin/target-audience" element={<PageLayout><AdminTargetAudience /></PageLayout>} />
+                <Route path="/admin/target-audience/create" element={<PageLayout><AdminTargetAudienceCreate /></PageLayout>} />
+                <Route path="/admin/target-audience/edit/:audienceId" element={<PageLayout><AdminTargetAudienceEdit /></PageLayout>} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
