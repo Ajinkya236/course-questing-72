@@ -1,6 +1,6 @@
 
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -17,11 +17,9 @@ import {
   Headphones,
   Bell, 
   HelpCircle,
-  ChevronDown,
-  SwitchCamera
+  ChevronDown
 } from "lucide-react";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { AuthContext } from '@/contexts/AuthContext';
 
 const courseCategories = [
   "Leadership & Management",
@@ -37,29 +35,6 @@ const courseCategories = [
 
 const TopNavigation: React.FC = () => {
   const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
-  const { logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(() => {
-    return localStorage.getItem('userRole') === 'admin';
-  });
-
-  const toggleAdminMode = () => {
-    const newRole = isAdmin ? 'learner' : 'admin';
-    localStorage.setItem('userRole', newRole);
-    setIsAdmin(!isAdmin);
-    
-    // Redirect to appropriate page based on role
-    if (newRole === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/');
-    }
-  };
-
-  const handleSignOut = async () => {
-    await logout();
-    navigate('/sign-in');
-  };
 
   return (
     <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
@@ -67,95 +42,68 @@ const TopNavigation: React.FC = () => {
         <div className="flex items-center space-x-4">
           <h1 className="font-bold text-lg">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
-            {!isAdmin && (
-              <>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/" className="flex items-center gap-1">
-                    <HomeIcon className="h-4 w-4" />
-                    <span>Home</span>
-                  </Link>
-                </Button>
-                
-                <DropdownMenu open={isDiscoverHovered} onOpenChange={setIsDiscoverHovered}>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex items-center gap-1"
-                      onMouseEnter={() => setIsDiscoverHovered(true)}
-                      onMouseLeave={() => setIsDiscoverHovered(false)}
-                      asChild
-                    >
-                      <Link to="/discover" className="flex items-center gap-1">
-                        <Compass className="h-4 w-4" />
-                        <span>Discover</span>
-                        <ChevronDown className="h-3 w-3 opacity-50" />
-                      </Link>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="start" 
-                    className="w-56"
-                    onMouseEnter={() => setIsDiscoverHovered(true)}
-                    onMouseLeave={() => setIsDiscoverHovered(false)}
-                  >
-                    {courseCategories.map((category) => (
-                      <DropdownMenuItem key={category} asChild>
-                        <Link to={`/discover?category=${encodeURIComponent(category)}`}>
-                          {category}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/discover">View All Categories</Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/my-learning" className="flex items-center gap-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>My Learning</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/my-team" className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>My Team</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/mentoring" className="flex items-center gap-1">
-                    <Headphones className="h-4 w-4" />
-                    <span>Mentoring</span>
-                  </Link>
-                </Button>
-              </>
-            )}
+            <Button variant="ghost" asChild size="sm">
+              <Link to="/" className="flex items-center gap-1">
+                <HomeIcon className="h-4 w-4" />
+                <span>Home</span>
+              </Link>
+            </Button>
             
-            {isAdmin && (
-              <>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/admin/dashboard" className="flex items-center gap-1">
-                    <HomeIcon className="h-4 w-4" />
-                    <span>Dashboard</span>
+            <DropdownMenu open={isDiscoverHovered} onOpenChange={setIsDiscoverHovered}>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onMouseEnter={() => setIsDiscoverHovered(true)}
+                  onMouseLeave={() => setIsDiscoverHovered(false)}
+                  asChild
+                >
+                  <Link to="/discover" className="flex items-center gap-1">
+                    <Compass className="h-4 w-4" />
+                    <span>Discover</span>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/admin/courses" className="flex items-center gap-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>Courses</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm">
-                  <Link to="/admin/target-audience" className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>Target Audience</span>
-                  </Link>
-                </Button>
-              </>
-            )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="start" 
+                className="w-56"
+                onMouseEnter={() => setIsDiscoverHovered(true)}
+                onMouseLeave={() => setIsDiscoverHovered(false)}
+              >
+                {courseCategories.map((category) => (
+                  <DropdownMenuItem key={category} asChild>
+                    <Link to={`/discover?category=${encodeURIComponent(category)}`}>
+                      {category}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/discover">View All Categories</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <Button variant="ghost" asChild size="sm">
+              <Link to="/my-learning" className="flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
+                <span>My Learning</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" asChild size="sm">
+              <Link to="/my-team" className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                <span>My Team</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" asChild size="sm">
+              <Link to="/mentoring" className="flex items-center gap-1">
+                <Headphones className="h-4 w-4" />
+                <span>Mentoring</span>
+              </Link>
+            </Button>
           </nav>
         </div>
         <div className="flex items-center space-x-2">
@@ -187,11 +135,8 @@ const TopNavigation: React.FC = () => {
               <DropdownMenuItem asChild>
                 <Link to="/faq">FAQs</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={toggleAdminMode}>
-                {isAdmin ? 'Switch to Learner' : 'Switch to Admin'}
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+              <DropdownMenuItem>Sign Out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
