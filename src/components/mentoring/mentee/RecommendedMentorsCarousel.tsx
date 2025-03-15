@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card } from '@/components/ui/card';
@@ -28,7 +27,6 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const [carouselApi, setCarouselApi] = useState<any>(null);
   const [loadedMentors, setLoadedMentors] = useState<Mentor[]>(mentors.length > 0 ? mentors : sampleMentors);
   
-  // Fetch mentors from the database if available
   useEffect(() => {
     const fetchMentors = async () => {
       try {
@@ -42,9 +40,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
         }
         
         if (data && data.length > 0) {
-          // Convert the Supabase data to match our Mentor interface
           const mentorsData: Mentor[] = data.map(item => ({
-            id: Number(item.id.toString().substring(0, 8), 16), // Convert UUID to a number (for display purposes)
+            id: parseInt(item.id.replace(/-/g, '').substring(0, 8), 16),
             name: item.name,
             title: item.title,
             image: item.image,
@@ -63,7 +60,6 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
       }
     };
     
-    // Only fetch if we don't already have mentors
     if (mentors.length === 0) {
       fetchMentors();
     }
