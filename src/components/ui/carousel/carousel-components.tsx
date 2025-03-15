@@ -1,14 +1,46 @@
+
 import * as React from "react"
-import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react"
+import useEmblaCarousel, {
+  type UseEmblaCarouselType,
+} from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { CarouselContext, useCarousel, type CarouselProps } from "./carousel-context"
 
-type EmblaOptionsType = NonNullable<Parameters<typeof useEmblaCarousel>[0]>
+type CarouselApi = UseEmblaCarouselType[1]
+type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
+type CarouselOptions = UseCarouselParameters[0]
+type CarouselPlugin = UseCarouselParameters[1]
 
-// Main Carousel component
+type CarouselProps = {
+  opts?: CarouselOptions
+  plugins?: CarouselPlugin
+  orientation?: "horizontal" | "vertical"
+  setApi?: (api: CarouselApi) => void
+}
+
+type CarouselContextProps = {
+  carouselRef: ReturnType<typeof useEmblaCarousel>[0]
+  api: ReturnType<typeof useEmblaCarousel>[1]
+  scrollPrev: () => void
+  scrollNext: () => void
+  canScrollPrev: boolean
+  canScrollNext: boolean
+} & CarouselProps
+
+const CarouselContext = React.createContext<CarouselContextProps | null>(null)
+
+function useCarousel() {
+  const context = React.useContext(CarouselContext)
+
+  if (!context) {
+    throw new Error("useCarousel must be used within a <Carousel />")
+  }
+
+  return context
+}
+
 const Carousel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & CarouselProps
@@ -29,32 +61,31 @@ const Carousel = React.forwardRef<
       {
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
-        loop: opts?.loop !== undefined ? opts.loop : true, // Enable loop by default for circular scrolling
+        // Show a partial peek of the next slide (10-20% as recommended)
+        startIndex: 0,
+        align: "start",
+        containScroll: "trimSnaps",
       },
       plugins
     )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-    const onSelect = React.useCallback((emblaApi: UseEmblaCarouselType[1]) => {
-      if (!emblaApi) {
+    const onSelect = React.useCallback((api: CarouselApi) => {
+      if (!api) {
         return
       }
 
-      setCanScrollPrev(emblaApi.canScrollPrev())
-      setCanScrollNext(emblaApi.canScrollNext())
+      setCanScrollPrev(api.canScrollPrev())
+      setCanScrollNext(api.canScrollNext())
     }, [])
 
     const scrollPrev = React.useCallback(() => {
-      if (api) {
-        api.scrollPrev()
-      }
+      api?.scrollPrev()
     }, [api])
 
     const scrollNext = React.useCallback(() => {
-      if (api) {
-        api.scrollNext()
-      }
+      api?.scrollNext()
     }, [api])
 
     const handleKeyDown = React.useCallback(
@@ -84,11 +115,11 @@ const Carousel = React.forwardRef<
       }
 
       onSelect(api)
-      api.on("reInit", () => onSelect(api))
-      api.on("select", () => onSelect(api))
+      api.on("reInit", onSelect)
+      api.on("select", onSelect)
 
       return () => {
-        api.off("select", () => onSelect(api))
+        api?.off("select", onSelect)
       }
     }, [api, onSelect])
 
@@ -122,7 +153,6 @@ const Carousel = React.forwardRef<
 )
 Carousel.displayName = "Carousel"
 
-// CarouselContent component - updated to set proper overflow
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -130,12 +160,12 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-visible">
+    <div ref={carouselRef} className="overflow-hidden">
       <div
         ref={ref}
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col", 
+          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
           className
         )}
         {...props}
@@ -145,7 +175,6 @@ const CarouselContent = React.forwardRef<
 })
 CarouselContent.displayName = "CarouselContent"
 
-// CarouselItem component
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -158,9 +187,8 @@ const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "min-w-0 shrink-0 grow-0 basis-full p-4",
+        "min-w-0 shrink-0 grow-0 basis-full",
         orientation === "horizontal" ? "pl-4" : "pt-4",
-        "card-partial-visible", // Class for partial visibility styling
         className
       )}
       {...props}
@@ -169,7 +197,6 @@ const CarouselItem = React.forwardRef<
 })
 CarouselItem.displayName = "CarouselItem"
 
-// CarouselPrevious component - updated for better visibility and position
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
@@ -182,17 +209,15 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
-          ? "left-0 top-1/2 -translate-y-1/2" 
+          ? "-left-12 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--prev", 
+        !canScrollPrev && "opacity-50",
         className
       )}
-      onClick={scrollPrev}
       disabled={!canScrollPrev}
-      data-carousel-button="prev"
-      data-embla-prev
+      onClick={scrollPrev}
       {...props}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -202,7 +227,6 @@ const CarouselPrevious = React.forwardRef<
 })
 CarouselPrevious.displayName = "CarouselPrevious"
 
-// CarouselNext component - updated for better visibility and position
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
@@ -215,17 +239,15 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute h-9 w-9 rounded-full bg-white border border-gray-200 shadow-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
-          ? "right-0 top-1/2 -translate-y-1/2" 
+          ? "-right-12 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        "embla__button embla__button--next", 
+        !canScrollNext && "opacity-50",
         className
       )}
-      onClick={scrollNext}
       disabled={!canScrollNext}
-      data-carousel-button="next"
-      data-embla-next
+      onClick={scrollNext}
       {...props}
     >
       <ArrowRight className="h-4 w-4" />
@@ -235,17 +257,11 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
-// Export all components
 export {
-  type UseEmblaCarouselType as CarouselApi,
-  type EmblaOptionsType as CarouselOptions,
+  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext
+  CarouselNext,
 }
-
-// Export all the components and types from this single file for now
-export * from "./carousel-context"
-export * from "./carousel-filters"

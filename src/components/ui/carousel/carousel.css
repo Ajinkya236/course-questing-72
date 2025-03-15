@@ -1,134 +1,187 @@
 
-/* Custom styles for the carousel to show partial view of next card */
-.card-partial-visible {
-  padding-right: 12px;
-  transition: transform 0.3s ease;
-}
-
-/* Show 10-20% of the next card as information scent */
 .embla {
-  overflow: hidden;
-  padding: 0;
-  margin: 0 -8%;
-  position: relative;
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
+  --slide-height: 19rem;
+  --variant-light: hsla(0, 0%, 100%, 1);
+  --variant-dark: hsla(0, 0%, 0%, 1);
+  padding: 1.6rem;
 }
 
 .embla__viewport {
-  overflow: visible;
+  overflow: hidden;
 }
 
 .embla__container {
+  backface-visibility: hidden;
   display: flex;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+  margin-left: calc(var(--slide-spacing) * -1);
 }
 
-/* Make carousel navigation buttons more visible on hover */
+.embla__slide {
+  flex: 0 0 var(--slide-size);
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+  position: relative;
+}
+
+/* Update this to show a partial view of the next slide */
+.embla__slide {
+  flex: 0 0 calc(var(--slide-size) - 15%); /* Show 15% of next slide */
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+  position: relative;
+}
+
+.embla__slide__number {
+  height: var(--slide-height);
+  color: var(--variant-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: 600;
+}
+
+.embla__controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-top: 1.8rem;
+}
+
+.embla__buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+}
+
 .embla__button {
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 100; /* Increased z-index to ensure buttons are always on top */
-  position: absolute;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
-  background-color: white; /* Ensuring buttons have a solid background */
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  width: 40px;
-  height: 40px;
+  -webkit-tap-highlight-color: rgba(var(--variant-dark), 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: inset 0 0 0 0.2rem var(--variant-dark);
+  width: 3.6rem;
+  height: 3.6rem;
+  z-index: 1;
+  border-radius: 50%;
+  color: var(--variant-dark);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Show buttons when hovering over the entire carousel area */
-.embla:hover .embla__button,
-.group:hover .embla__button,
-.group\\/carousel:hover .embla__button {
+.embla__button:disabled {
+  opacity: 0.3;
+}
+
+.embla__button__svg {
+  width: 35%;
+  height: 35%;
+}
+
+.embla__dot {
+  -webkit-tap-highlight-color: rgba(var(--variant-dark), 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 3.6rem;
+  height: 3.6rem;
+  display: flex;
+  align-items: center;
+}
+
+.embla__dot:after {
+  background: linear-gradient(
+    45deg,
+    var(--variant-dark),
+    var(--variant-dark)
+  );
+  border-radius: 0.2rem;
+  width: 100%;
+  height: 0.4rem;
+  content: '';
+}
+
+.embla__dot--selected:after {
+  background: linear-gradient(
+    45deg,
+    var(--variant-light),
+    var(--variant-dark)
+  );
+}
+
+/* Add this for course carousel */
+.course-carousel .embla__slide {
+  flex: 0 0 calc(25% - 1rem); /* Show 4 items per row with spacing */
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+  position: relative;
+}
+
+/* Add responsive design for course carousel */
+@media (max-width: 1200px) {
+  .course-carousel .embla__slide {
+    flex: 0 0 calc(33.333% - 1rem); /* 3 items per row */
+  }
+}
+
+@media (max-width: 768px) {
+  .course-carousel .embla__slide {
+    flex: 0 0 calc(50% - 1rem); /* 2 items per row */
+  }
+}
+
+@media (max-width: 480px) {
+  .course-carousel .embla__slide {
+    flex: 0 0 calc(85% - 1rem); /* 1 item per row with peek */
+  }
+}
+
+/* Make sure navigation buttons are visible on hover */
+.carousel-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-container:hover .carousel-nav-button {
   opacity: 1;
 }
 
-.embla__button:hover {
-  transform: scale(1.1);
-  background-color: #f8f9fa;
+.carousel-nav-prev {
+  left: 10px;
 }
 
-/* Position buttons completely outside the carousel content */
-.embla__button--prev {
-  left: -20px; /* Brought slightly closer to content edge */
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.embla__button--next {
-  right: -20px; /* Brought slightly closer to content edge */
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* Ensure buttons remain in viewport even with overflow */
-.carousel-container {
-  position: relative;
-  padding: 0 20px; /* Add padding to make space for the buttons */
-}
-
-/* Enhance overflow to ensure next card is partially visible */
-.overflow-visible {
-  overflow: visible !important;
-}
-
-/* Style for cards to show information scent */
-.carousel-card {
-  transition: transform 0.3s ease;
-}
-
-.carousel-card:hover {
-  transform: translateY(-5px);
-}
-
-/* Adjust spacing to show partial next card (information scent) */
-@media (min-width: 640px) {
-  .sm\:basis-1\/2 {
-    flex-basis: 46%; /* Show 4% of the next card */
-  }
-}
-
-@media (min-width: 768px) {
-  .md\:basis-1\/3 {
-    flex-basis: 31%; /* Show 2% of the next card */
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:basis-1\/4 {
-    flex-basis: 23%; /* Show 2% of the next card */
-  }
-}
-
-/* Fix for mentor carousel display */
-.mentor-carousel-item {
-  flex: 0 0 calc(90% - 1rem);
-  max-width: calc(90% - 1rem);
-  margin-right: 1rem;
-  transition: transform 0.3s ease;
-}
-
-@media (min-width: 640px) {
-  .mentor-carousel-item {
-    flex: 0 0 calc(45% - 1rem);
-    max-width: calc(45% - 1rem);
-  }
-}
-
-@media (min-width: 768px) {
-  .mentor-carousel-item {
-    flex: 0 0 calc(30% - 1rem);
-    max-width: calc(30% - 1rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .mentor-carousel-item {
-    flex: 0 0 calc(23% - 1rem);
-    max-width: calc(23% - 1rem);
-  }
+.carousel-nav-next {
+  right: 10px;
 }

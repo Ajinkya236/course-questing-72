@@ -10,13 +10,17 @@ export function useCourseData(courses: Course[]) {
   const normalizedCourses = useMemo(() => {
     if (!courses || courses.length === 0) return [];
     
-    // Generate a random Unsplash image URL for courses without images
+    // High-quality Unsplash image URLs for courses without images
     const sampleImageIds = [
       'photo-1649972904349-6e44c42644a7',
       'photo-1488590528505-98d2b5aba04b',
       'photo-1518770660439-4636190af475',
       'photo-1461749280684-dccba630e2f6',
-      'photo-1486312338219-ce68d2c6f44d'
+      'photo-1486312338219-ce68d2c6f44d',
+      'photo-1581091226825-a6a2a5aee158',
+      'photo-1531297484001-80022131f5a1',
+      'photo-1487058792275-0ad4aaf24ca7',
+      'photo-1498050108023-c5249f4df085'
     ];
     
     // Sample video URLs for previews
@@ -29,7 +33,7 @@ export function useCourseData(courses: Course[]) {
     ];
     
     return courses.map(course => {
-      // Ensure each course has an image
+      // Ensure each course has a high-quality image
       let imageUrl = course.imageUrl;
       if (!imageUrl || imageUrl === '/placeholder.svg') {
         const randomId = sampleImageIds[Math.floor(Math.random() * sampleImageIds.length)];

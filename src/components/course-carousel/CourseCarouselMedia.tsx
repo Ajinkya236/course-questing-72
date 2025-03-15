@@ -64,9 +64,9 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden bg-muted">
+    <div className="relative overflow-hidden">
       {!isImageLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
         </div>
       )}

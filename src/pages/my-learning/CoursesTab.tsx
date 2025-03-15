@@ -5,55 +5,67 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
-import { Course } from '@/types/course';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
+import { useCourseData } from '@/hooks/useCourseData';
 
 interface CoursesTabProps {
   teamMemberId?: string;
 }
 
 const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const statusFromUrl = searchParams.get('status');
   const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'in-progress');
   const { savedCourses } = useCourseBookmarks();
   
+  // Ensure we have the status parameter in the URL when component mounts
   useEffect(() => {
     if (statusFromUrl) {
       setActiveFilter(statusFromUrl);
     } else {
-      navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
+      setSearchParams({ tab: 'courses', status: 'in-progress' }, { replace: true });
     }
-  }, [statusFromUrl, navigate]);
+  }, [statusFromUrl, setSearchParams]);
   
-  const assignedCourses = mockCourses
-    .filter(course => course.status === 'assigned')
-    .map(course => ({
-      ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
-    }));
+  // Apply useCourseData to ensure high-quality images
+  const assignedCourses = useCourseData(
+    mockCourses
+      .filter(course => course.status === 'assigned')
+      .map(course => ({
+        ...course,
+        // These will be replaced by useCourseData with better images
+        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
+        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+      }))
+  ).normalizedCourses;
   
-  const completedCourses = mockCourses
-    .filter(course => course.status === 'completed')
-    .map(course => ({
-      ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' // Sample video
-    }));
+  const completedCourses = useCourseData(
+    mockCourses
+      .filter(course => course.status === 'completed')
+      .map(course => ({
+        ...course,
+        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
+        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+      }))
+  ).normalizedCourses;
   
-  const inProgressCourses = mockCourses
-    .filter(course => course.status === 'in-progress')
-    .map(course => ({
-      ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' // Sample video
-    }));
+  const inProgressCourses = useCourseData(
+    mockCourses
+      .filter(course => course.status === 'in-progress')
+      .map(course => ({
+        ...course,
+        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
+        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
+      }))
+  ).normalizedCourses;
+  
+  // Apply better images to saved courses as well
+  const normalizedSavedCourses = useCourseData(savedCourses).normalizedCourses;
   
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
-    navigate(`/my-learning?tab=courses&status=${filter}`);
+    setSearchParams({ tab: 'courses', status: filter }, { replace: true });
   };
   
   const getFilteredCourses = () => {
@@ -65,7 +77,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       case 'in-progress':
         return inProgressCourses;
       case 'saved':
-        return savedCourses;
+        return normalizedSavedCourses;
       default:
         return inProgressCourses;
     }
