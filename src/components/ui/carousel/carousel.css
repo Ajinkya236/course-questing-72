@@ -26,12 +26,30 @@
   position: relative;
 }
 
-/* Update this to show a partial view of the next slide */
-.embla__slide {
-  flex: 0 0 calc(var(--slide-size) - 15%); /* Show 15% of next slide */
+/* Specific styling for the mentor carousel items to show 5 items with the last one partially visible */
+.mentor-carousel-item {
+  flex: 0 0 calc(20% - 0.8rem) !important; /* Show 5 items per view with spacing */
   min-width: 0;
-  padding-left: var(--slide-spacing);
   position: relative;
+}
+
+/* Add responsive design for mentor carousel */
+@media (max-width: 1200px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(25% - 0.8rem) !important; /* 4 items per row */
+  }
+}
+
+@media (max-width: 768px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(33.333% - 0.8rem) !important; /* 3 items per row */
+  }
+}
+
+@media (max-width: 480px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(80% - 0.8rem) !important; /* 1 item per row with peek */
+  }
 }
 
 .embla__slide__number {

@@ -12,9 +12,10 @@ import MentorCard from './MentorCard';
 import MentorDetailsDialog from './MentorDetailsDialog';
 import { sampleMentors } from './sampleMentors';
 import { Mentor, RecommendedMentorsCarouselProps } from './types';
+import { supabase } from "@/integrations/supabase/client";
 
 const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({ 
-  mentors = sampleMentors, 
+  mentors = [], 
   selectedTopics = [] 
 }) => {
   const navigate = useNavigate();
@@ -24,16 +25,45 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [hoveredMentorId, setHoveredMentorId] = useState<number | null>(null);
+  const [carouselApi, setCarouselApi] = useState<any>(null);
+  const [loadedMentors, setLoadedMentors] = useState<Mentor[]>(mentors.length > 0 ? mentors : sampleMentors);
+  
+  // Fetch mentors from the database if available
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('mentors')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching mentors:', error);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          setLoadedMentors(data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    
+    // Only fetch if we don't already have mentors
+    if (mentors.length === 0) {
+      fetchMentors();
+    }
+  }, [mentors]);
   
   const allTopics = selectedTopics.length > 0 
     ? selectedTopics 
-    : Array.from(new Set(mentors.flatMap(mentor => mentor.topics)));
+    : Array.from(new Set(loadedMentors.flatMap(mentor => mentor.topics)));
   
   const filterTopics = ["All", ...allTopics];
   
   const filteredMentors = activeFilter === "All" 
-    ? mentors 
-    : mentors.filter(mentor => mentor.topics.includes(activeFilter));
+    ? loadedMentors 
+    : loadedMentors.filter(mentor => mentor.topics.includes(activeFilter));
   
   useEffect(() => {
     if (selectedTopics && selectedTopics.length > 0) {
@@ -89,6 +119,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             loop: true,
             skipSnaps: false,
           }}
+          setApi={setCarouselApi}
         >
           <CarouselContent>
             {filteredMentors.length > 0 ? (
@@ -115,8 +146,8 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             )}
           </CarouselContent>
           
-          <CarouselPrevious className="z-10 group-hover/mentors:opacity-100" />
-          <CarouselNext className="z-10 group-hover/mentors:opacity-100" />
+          <CarouselPrevious className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
+          <CarouselNext className="z-10 opacity-0 group-hover/mentors:opacity-100 transition-opacity duration-300" />
         </Carousel>
       </div>
 
