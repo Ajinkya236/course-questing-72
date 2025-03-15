@@ -30,7 +30,7 @@ import {
   TabsList, 
   TabsTrigger 
 } from "@/components/ui/tabs";
-import { PlusCircle, Trash, Video, Link, FileUpload } from "lucide-react";
+import { PlusCircle, Trash, VideoIcon, Link2, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface VideoActivityFormProps {
@@ -152,7 +152,7 @@ const VideoActivityForm: React.FC<VideoActivityFormProps> = ({ courseData, updat
             
             {videoActivities.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-lg">
-                <Video className="h-10 w-10 text-muted-foreground mb-2" />
+                <VideoIcon className="h-10 w-10 text-muted-foreground mb-2" />
                 <p className="text-muted-foreground">No video activities added yet</p>
               </div>
             ) : (
@@ -235,7 +235,7 @@ const VideoActivityForm: React.FC<VideoActivityFormProps> = ({ courseData, updat
                             />
                             {activity.type === "video" && (
                               <Button variant="outline" className="whitespace-nowrap">
-                                <FileUpload className="h-4 w-4 mr-2" />
+                                <Upload className="h-4 w-4 mr-2" />
                                 Upload
                               </Button>
                             )}

@@ -28,7 +28,9 @@ import {
   Award,
   FileCheck,
   Users,
-  Upload
+  Upload,
+  VideoIcon, // Changed Video to VideoIcon
+  Link2 // Changed Link to Link2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -252,9 +254,9 @@ const CoursePublishForm: React.FC<CoursePublishFormProps> = ({ courseData, onPub
                                 {moduleVideos.map((video: any) => (
                                   <div key={video.id} className="flex items-center gap-2">
                                     {video.type === 'video' ? (
-                                      <Video className="h-4 w-4 text-muted-foreground" />
+                                      <VideoIcon className="h-4 w-4 text-muted-foreground" />
                                     ) : (
-                                      <Link className="h-4 w-4 text-muted-foreground" />
+                                      <Link2 className="h-4 w-4 text-muted-foreground" />
                                     )}
                                     <span>{video.title}</span>
                                     <Badge variant="outline" className="ml-2">
