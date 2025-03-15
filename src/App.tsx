@@ -28,6 +28,13 @@ const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
+// Admin pages
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminCourses = lazy(() => import('./pages/admin/Courses'));
+const AdminModules = lazy(() => import('./pages/admin/Modules'));
+const AdminActivities = lazy(() => import('./pages/admin/Activities'));
+const CourseCreation = lazy(() => import('./pages/admin/CourseCreation'));
+
 const PageLoader = () => (
   <div className="flex items-center justify-center h-screen">
     <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -63,6 +70,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               
               <Route element={<ProtectedRoute />}>
+                {/* Learner Routes */}
                 <Route path="/" element={<PageLayout><Home /></PageLayout>} />
                 <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
                 <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
@@ -84,6 +92,13 @@ function App() {
                 <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
                 <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
                 <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
+                <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
+                <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />
+                <Route path="/admin/activities" element={<PageLayout><AdminActivities /></PageLayout>} />
+                <Route path="/admin/courses/create" element={<PageLayout><CourseCreation /></PageLayout>} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
