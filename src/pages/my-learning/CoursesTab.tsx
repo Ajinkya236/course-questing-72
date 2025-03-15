@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { mockCourses } from '@/data/mockCoursesData';
 import CourseCard from '@/components/CourseCard';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import { useCourseData } from '@/hooks/useCourseData';
+import { useCourseDataAPI } from '@/hooks/useCourseDataAPI';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -17,7 +17,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
   const statusFromUrl = searchParams.get('status');
   const [activeFilter, setActiveFilter] = useState(statusFromUrl || 'in-progress');
-  const { savedCourses } = useCourseBookmarks();
   
   // Ensure we have the status parameter in the URL when component mounts
   useEffect(() => {
@@ -28,62 +27,19 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
     }
   }, [statusFromUrl, setSearchParams]);
   
+  // Fetch courses from API based on active filter
+  const { courses: apiCourses, isLoading } = useCourseDataAPI({
+    status: activeFilter,
+    limit: 100 // Get more courses to ensure we have a good selection
+  });
+  
   // Apply useCourseData to ensure high-quality images
-  const assignedCourses = useCourseData(
-    mockCourses
-      .filter(course => course.status === 'assigned')
-      .map(course => ({
-        ...course,
-        // These will be replaced by useCourseData with better images
-        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
-        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
-      }))
-  ).normalizedCourses;
-  
-  const completedCourses = useCourseData(
-    mockCourses
-      .filter(course => course.status === 'completed')
-      .map(course => ({
-        ...course,
-        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
-        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-      }))
-  ).normalizedCourses;
-  
-  const inProgressCourses = useCourseData(
-    mockCourses
-      .filter(course => course.status === 'in-progress')
-      .map(course => ({
-        ...course,
-        imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
-        previewUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-      }))
-  ).normalizedCourses;
-  
-  // Apply better images to saved courses as well
-  const normalizedSavedCourses = useCourseData(savedCourses).normalizedCourses;
+  const { normalizedCourses } = useCourseData(apiCourses);
   
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
     setSearchParams({ tab: 'courses', status: filter }, { replace: true });
   };
-  
-  const getFilteredCourses = () => {
-    switch (activeFilter) {
-      case 'assigned':
-        return assignedCourses;
-      case 'completed':
-        return completedCourses;
-      case 'in-progress':
-        return inProgressCourses;
-      case 'saved':
-        return normalizedSavedCourses;
-      default:
-        return inProgressCourses;
-    }
-  };
-  
-  const filteredCourses = getFilteredCourses();
   
   const getFilterTitle = () => {
     switch (activeFilter) {
@@ -135,14 +91,19 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
       
       <div>
         <h2 className="text-xl font-semibold mb-4">{getFilterTitle()}</h2>
-        {filteredCourses.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i} className="h-[350px] bg-secondary/20 animate-pulse" />
+            ))}
+          </div>
+        ) : normalizedCourses.length > 0 ? (
           <div className="overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredCourses.map((course) => (
+              {normalizedCourses.map((course) => (
                 <div 
                   key={course.id}
                   className="transition-transform duration-300 hover:scale-[1.03]"
-                  style={{ height: '350px' }}
                 >
                   <CourseCard {...course} />
                 </div>

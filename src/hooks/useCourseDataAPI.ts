@@ -10,6 +10,7 @@ interface UseCourseDataAPIProps {
   search?: string;
   limit?: number;
   courseId?: string;
+  status?: string;
 }
 
 interface UseCourseDataAPIResult {
@@ -25,7 +26,8 @@ export const useCourseDataAPI = ({
   skill,
   search,
   limit = 20,
-  courseId
+  courseId,
+  status
 }: UseCourseDataAPIProps = {}): UseCourseDataAPIResult => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [course, setCourse] = useState<Course | null>(null);
@@ -39,7 +41,9 @@ export const useCourseDataAPI = ({
     try {
       if (courseId) {
         // Fetch a single course
-        const { data, error: fetchError } = await supabase.functions.invoke(`course-data/${courseId}`);
+        const { data, error: fetchError } = await supabase.functions.invoke('course-data', {
+          body: { courseId }
+        });
         
         if (fetchError) {
           throw new Error(fetchError.message);
@@ -55,6 +59,7 @@ export const useCourseDataAPI = ({
         if (skill) params.skill = skill;
         if (search) params.search = search;
         if (limit) params.limit = limit.toString();
+        if (status) params.status = status;
         
         const { data, error: fetchError } = await supabase.functions.invoke('course-data', {
           body: params
@@ -79,7 +84,7 @@ export const useCourseDataAPI = ({
     } finally {
       setIsLoading(false);
     }
-  }, [domain, skill, search, limit, courseId]);
+  }, [domain, skill, search, limit, courseId, status]);
 
   useEffect(() => {
     fetchData();
