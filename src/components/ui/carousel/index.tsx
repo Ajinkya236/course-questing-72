@@ -9,10 +9,11 @@ import {
   CarouselItem, 
   CarouselPrevious, 
   CarouselNext,
-  CarouselFilters,
   CarouselApi,
   CarouselOptions
 } from './carousel-components';
+
+import { CarouselFilters } from './carousel-filters';
 
 export {
   type CarouselApi,
