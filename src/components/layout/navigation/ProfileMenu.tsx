@@ -13,7 +13,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { User, LogOut, HelpCircle, Settings, Newspaper } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
 
 interface ProfileMenuProps {
   imgSrc?: string;
@@ -69,13 +68,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <LMSUpdatesDialog trigger={
-            <div className="flex items-center w-full cursor-pointer">
-              <Newspaper className="mr-2 h-4 w-4" />
-              <span>LMS Updates</span>
-            </div>
-          } />
+        <DropdownMenuItem onClick={() => navigate('/lms-updates')} className="flex items-center">
+          <Newspaper className="mr-2 h-4 w-4" />
+          <span>LMS Updates</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/faq')} className="flex items-center">
           <HelpCircle className="mr-2 h-4 w-4" />

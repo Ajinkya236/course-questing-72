@@ -27,6 +27,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
+const LMSUpdatesPage = lazy(() => import('./pages/LMSUpdatesPage'));
 
 // Admin pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -92,6 +93,7 @@ function App() {
                 <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
                 <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
                 <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                <Route path="/lms-updates" element={<PageLayout><LMSUpdatesPage /></PageLayout>} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
