@@ -20,15 +20,15 @@ const LMSUpdatesDialog: React.FC<LMSUpdatesDialogProps> = ({ trigger }) => {
     <Dialog>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="ghost" className="flex items-center gap-2">
+          <Button variant="ghost" className="flex items-center gap-2 w-full justify-start">
             <Newspaper className="h-4 w-4" />
             <span>LMS Updates</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>LMS Updates</DialogTitle>
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0">
+        <DialogHeader className="p-6 pb-0">
+          <DialogTitle className="text-2xl">LMS Feature Updates</DialogTitle>
         </DialogHeader>
         <LMSUpdatesNewsletter />
       </DialogContent>

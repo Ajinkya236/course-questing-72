@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Bell, Menu, GraduationCap, Users } from "lucide-react";
+import { Bell, Menu, GraduationCap, Users, Sun, Moon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { useTheme } from '@/components/ThemeProvider';

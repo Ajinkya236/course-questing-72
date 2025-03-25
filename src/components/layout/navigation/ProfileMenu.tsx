@@ -53,7 +53,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className={`relative h-8 w-8 rounded-full ${className}`}>
           <Avatar className="h-8 w-8">
-            <AvatarImage src={imgSrc} />
+            <AvatarImage src={imgSrc} alt="User avatar" />
             <AvatarFallback>{fallback}</AvatarFallback>
           </Avatar>
         </Button>

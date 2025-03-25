@@ -1,23 +1,26 @@
-
 import React from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { ArrowRight, BookOpen, Award, CheckCircle2 } from "lucide-react";
 
 interface FeatureItem {
   title: string;
   benefits: string[];
+  icon?: React.ReactNode;
 }
 
 const LMSUpdatesNewsletter: React.FC = () => {
   const features: FeatureItem[] = [
     {
       title: "OJT and VBA evaluations—videos, documents, and learning projects are assessed by evaluator roles and L1 managers.",
-      benefits: ["Maximize On-the-Job Application of Skills: Employees can immediately apply what they learn, ensuring that training translates into real-world performance"]
+      benefits: ["Maximize On-the-Job Application of Skills: Employees can immediately apply what they learn, ensuring that training translates into real-world performance"],
+      icon: <CheckCircle2 className="text-primary h-5 w-5" />
     },
     {
       title: "Enabled H5P activities including video activities (via an external Wowza media server), MCQs from multiple question banks, image sequences, drag-and-drop, find-the-hotspot, guess-the-answer, image hotspots, and interactive videos.",
-      benefits: ["Elevate Learner Engagement and Reduce Drop-Offs: Interactive, scenario-based activities cater to diverse learning styles, keeping learners actively engaged."]
+      benefits: ["Elevate Learner Engagement and Reduce Drop-Offs: Interactive, scenario-based activities cater to diverse learning styles, keeping learners actively engaged."],
+      icon: <BookOpen className="text-primary h-5 w-5" />
     },
     {
       title: "Administrators can add reference documents—guide videos, exercise files, and notes—to courses and learning paths.",
@@ -82,32 +85,47 @@ const LMSUpdatesNewsletter: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-950 rounded-lg shadow-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-primary/90 to-primary/60 p-6 text-white">
-        <h2 className="text-2xl font-bold mb-1">PeopleFirst LMS</h2>
-        <p className="text-xl">New Features Update</p>
+    <div className="w-full bg-white dark:bg-gray-950 rounded-lg shadow-lg overflow-hidden animate-fade-in">
+      <div className="bg-gradient-to-r from-primary to-primary/80 p-8 text-white">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">PeopleFirst LMS</h2>
+            <p className="text-xl font-medium">New Features Update</p>
+          </div>
+          <div className="text-right">
+            <div className="text-sm opacity-90">Issue #42</div>
+            <div className="text-sm opacity-90">May 2023</div>
+          </div>
+        </div>
       </div>
       
-      <ScrollArea className="h-[60vh] p-6">
-        <div className="space-y-6">
+      <ScrollArea className="h-[65vh]">
+        <div className="p-8 space-y-8">
           {features.map((feature, index) => (
-            <div key={index} className="pb-4">
-              <div className="flex items-start gap-3">
-                <Badge className="mt-1 shrink-0">Feature</Badge>
-                <p className="font-medium text-lg">{feature.title}</p>
-              </div>
-              
-              <div className="mt-2 pl-16">
-                {feature.benefits.map((benefit, benefitIndex) => (
-                  <div key={benefitIndex} className="flex items-start gap-2 mb-2">
-                    <span className="text-primary font-medium min-w-[70px] shrink-0">Benefit:</span>
-                    <p className="text-muted-foreground">{benefit}</p>
+            <div 
+              key={index} 
+              className="bg-card hover:shadow-md transition-all duration-300 rounded-lg p-6 border border-border"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 bg-primary/10 p-3 rounded-full">
+                  {feature.icon || <Award className="text-primary h-5 w-5" />}
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg text-foreground mb-3">{feature.title}</h3>
+                  
+                  <div className="space-y-3">
+                    {feature.benefits.map((benefit, benefitIndex) => (
+                      <div key={benefitIndex} className="flex items-start gap-2">
+                        <ArrowRight className="text-primary h-4 w-4 mt-1 flex-shrink-0" />
+                        <p className="text-muted-foreground">{benefit}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
               
               {index < features.length - 1 && (
-                <Separator className="mt-4" />
+                <Separator className="mt-6 opacity-50" />
               )}
             </div>
           ))}

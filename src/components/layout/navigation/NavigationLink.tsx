@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LucideIcon } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface NavigationLinkProps {
   to: string;
@@ -26,12 +27,14 @@ const NavigationLink: React.FC<NavigationLinkProps> = ({
   return (
     <Link
       to={to}
-      className={`flex items-center px-4 py-1.5 text-sm font-medium ${
-        isActive ? activeClassName : inactiveClassName
-      }`}
+      className={cn(
+        "flex items-center px-4 py-1.5 text-sm font-medium transition-all duration-300",
+        isActive ? activeClassName : inactiveClassName,
+        isActive ? "scale-105" : "hover:scale-105"
+      )}
       onClick={onClick}
     >
-      {Icon && <Icon className="mr-1 h-4 w-4" />}
+      {Icon && <Icon className={cn("mr-1 h-4 w-4 transition-transform duration-300", isActive ? "text-primary" : "")} />}
       {label}
     </Link>
   );
