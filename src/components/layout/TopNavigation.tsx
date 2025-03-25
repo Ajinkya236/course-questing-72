@@ -19,11 +19,13 @@ import {
   HelpCircle,
   ChevronDown,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  Newspaper
 } from "lucide-react";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { AuthContext } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
 
 const courseCategories = [
   "Leadership & Management",
@@ -210,6 +212,14 @@ const TopNavigation: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/faq">FAQs</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <LMSUpdatesDialog trigger={
+                  <div className="flex items-center w-full cursor-pointer">
+                    <Newspaper className="h-4 w-4 mr-2" />
+                    <span>LMS Updates</span>
+                  </div>
+                } />
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={toggleAdminMode}>

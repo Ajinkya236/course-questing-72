@@ -18,7 +18,8 @@ import {
   MessageSquare,
   Users,
   ChevronDown,
-  BrainCircuit
+  BrainCircuit,
+  Newspaper
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -39,6 +40,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import { useMediaQuery } from '@/hooks/use-mobile';
 import ThemeToggle from '@/components/ThemeToggle';
+import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
 
 // Correct import for NotificationsPanel
 import NotificationsPanel from '@/components/NotificationsPanel';
@@ -155,6 +157,14 @@ const NavbarEnhanced = () => {
                   <DropdownMenuItem onClick={() => navigate('/settings')}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <LMSUpdatesDialog trigger={
+                      <div className="flex items-center w-full cursor-pointer">
+                        <Newspaper className="mr-2 h-4 w-4" />
+                        <span>LMS Updates</span>
+                      </div>
+                    } />
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

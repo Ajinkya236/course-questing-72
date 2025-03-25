@@ -20,7 +20,8 @@ import {
   HelpCircle,
   GraduationCap,
   Sun,
-  Moon
+  Moon,
+  Newspaper
 } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -44,6 +45,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import NotificationsPanel from '../NotificationsPanel';
 import { useTheme } from '@/components/ThemeProvider';
+import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -267,6 +269,14 @@ const Navbar: React.FC = () => {
               <DropdownMenuItem onClick={() => navigate('/faq')} className="flex items-center gap-2">
                 <HelpCircle className="h-4 w-4" />
                 <span>FAQ</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="flex items-center gap-2">
+                <LMSUpdatesDialog trigger={
+                  <div className="flex items-center w-full cursor-pointer">
+                    <Newspaper className="h-4 w-4 mr-2" />
+                    <span>LMS Updates</span>
+                  </div>
+                } />
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-500">
