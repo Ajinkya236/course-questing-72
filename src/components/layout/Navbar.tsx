@@ -1,65 +1,24 @@
-
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Bell, 
-  Search, 
-  Menu, 
-  ChevronDown,
-  BookOpen,
-  Compass,
-  Award,
-  TrendingUp,
-  UserPlus,
-  Star,
-  Users,
-  User,
-  LogOut,
-  HelpCircle,
-  GraduationCap,
-  Sun,
-  Moon,
-  Newspaper
-} from "lucide-react";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger,
-  DropdownMenuGroup
-} from "@/components/ui/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Bell, Menu, GraduationCap, Users } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
-import NotificationsPanel from '../NotificationsPanel';
 import { useTheme } from '@/components/ThemeProvider';
-import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
+import NotificationsPanel from '../NotificationsPanel';
+import ProfileMenu from './navigation/ProfileMenu';
+import DiscoverHoverCard from './navigation/DiscoverHoverCard';
+import SearchInput from './navigation/SearchInput';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-
   const { theme, setTheme } = useTheme();
 
   const isActive = (path: string) => {
     return location.pathname === path;
-  };
-
-  const handleCategoryClick = (category: string) => {
-    navigate(`/view-all/${category.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
   const handleLogout = () => {
@@ -88,97 +47,7 @@ const Navbar: React.FC = () => {
               Home
             </Link>
             
-            <HoverCard openDelay={100} closeDelay={200}>
-              <HoverCardTrigger asChild>
-                <Link 
-                  to="/discover" 
-                  className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-1 ${
-                    isActive('/discover') ? 'text-primary' : 'text-foreground/60'
-                  }`}
-                >
-                  Discover <ChevronDown className="h-4 w-4" />
-                </Link>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-80 p-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Top Picks for You')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <Star className="h-4 w-4 text-primary" />
-                      Top Picks
-                    </div>
-                    <p className="text-xs text-muted-foreground">Curated courses just for you</p>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Based on Your Interests')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-primary" />
-                      Your Interests
-                    </div>
-                    <p className="text-xs text-muted-foreground">Matches your followed skills</p>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Role-based Skills')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <Compass className="h-4 w-4 text-primary" />
-                      Role-based
-                    </div>
-                    <p className="text-xs text-muted-foreground">Skills for your current role</p>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Popular with Similar Learners')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      Similar Learners
-                    </div>
-                    <p className="text-xs text-muted-foreground">Popular with peers like you</p>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Assigned Courses')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <UserPlus className="h-4 w-4 text-primary" />
-                      Assigned
-                    </div>
-                    <p className="text-xs text-muted-foreground">Mandatory and recommended</p>
-                  </div>
-                  
-                  <div 
-                    className="flex flex-col gap-1 p-2 hover:bg-secondary rounded-md cursor-pointer"
-                    onClick={() => handleCategoryClick('Trending')}
-                  >
-                    <div className="font-medium flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-primary" />
-                      Trending
-                    </div>
-                    <p className="text-xs text-muted-foreground">What's popular right now</p>
-                  </div>
-                </div>
-                
-                <div className="mt-4 pt-3 border-t">
-                  <Button 
-                    variant="link" 
-                    className="p-0 h-auto" 
-                    onClick={() => navigate('/discover')}
-                  >
-                    View all categories
-                  </Button>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
+            <DiscoverHoverCard isActive={isActive('/discover')} />
             
             <Link 
               to="/my-learning" 
@@ -216,14 +85,10 @@ const Navbar: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="relative hidden sm:flex items-center">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Search courses..."
-              className="rounded-full bg-secondary px-9 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
-            />
-          </div>
+          <SearchInput 
+            className="relative hidden sm:flex items-center"
+            placeholder="Search courses..."
+          />
           
           <Button 
             variant="ghost" 
@@ -250,41 +115,11 @@ const Navbar: React.FC = () => {
             </PopoverContent>
           </Popover>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="https://i.pravatar.cc/150?img=22" alt="User" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/profile')} className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>View My Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/faq')} className="flex items-center gap-2">
-                <HelpCircle className="h-4 w-4" />
-                <span>FAQ</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="flex items-center gap-2">
-                <LMSUpdatesDialog trigger={
-                  <div className="flex items-center w-full cursor-pointer">
-                    <Newspaper className="h-4 w-4 mr-2" />
-                    <span>LMS Updates</span>
-                  </div>
-                } />
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-500">
-                <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ProfileMenu 
+            imgSrc="https://i.pravatar.cc/150?img=22"
+            fallback="JD"
+            onLogout={handleLogout}
+          />
           
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />

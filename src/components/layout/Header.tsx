@@ -1,17 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { Search, Bell, User, Menu, X, Newspaper } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Search, Bell, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
-import LMSUpdatesDialog from '@/components/newsletter/LMSUpdatesDialog';
+import Logo from './navigation/Logo';
+import NavigationLink from './navigation/NavigationLink';
+import ProfileMenu from './navigation/ProfileMenu';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,48 +39,19 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <NavLink 
-              to="/" 
-              className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600"
-            >
-              <span className="flex items-center gap-2">
-                <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
-                  <path
-                    d="M12 2L2 7L12 12L22 7L12 2Z"
-                    className="fill-primary"
-                  />
-                  <path
-                    d="M2 17L12 22L22 17"
-                    className="stroke-primary"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M2 12L12 17L22 12"
-                    className="stroke-primary"
-                    strokeWidth="2"
-                  />
-                </svg>
-                <span className="text-foreground">EduSphere</span>
-              </span>
-            </NavLink>
+            <Logo />
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1">
             {navigationLinks.map((link) => (
-              <NavLink
+              <NavigationLink
                 key={link.path}
                 to={link.path}
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded-full transition-all duration-300 ${
-                    isActive
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
-                  }`
-                }
-              >
-                {link.name}
-              </NavLink>
+                label={link.name}
+                activeClassName="bg-primary/10 text-primary font-medium"
+                inactiveClassName="text-foreground/80 hover:text-primary hover:bg-primary/5"
+              />
             ))}
           </nav>
 
@@ -100,37 +64,11 @@ const Header: React.FC = () => {
               <Bell className="h-5 w-5" />
             </Button>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="h-8 w-8 transition-all duration-200 ring-2 ring-transparent hover:ring-primary cursor-pointer">
-                  <AvatarImage src="https://i.pravatar.cc/150?img=32" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <NavLink to="/profile" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </NavLink>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <LMSUpdatesDialog trigger={
-                    <div className="flex items-center w-full cursor-pointer">
-                      <Newspaper className="h-4 w-4 mr-2" />
-                      <span>LMS Updates</span>
-                    </div>
-                  } />
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <span className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span>Logout</span>
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ProfileMenu 
+              imgSrc="https://i.pravatar.cc/150?img=32"
+              fallback="JD"
+              className="transition-all duration-200 ring-2 ring-transparent hover:ring-primary cursor-pointer"
+            />
           </div>
 
           {/* Mobile Menu Button */}
@@ -153,30 +91,14 @@ const Header: React.FC = () => {
           <div className="px-4 py-6 space-y-4">
             <nav className="flex flex-col space-y-3">
               {navigationLinks.map((link) => (
-                <NavLink
+                <NavigationLink
                   key={link.path}
                   to={link.path}
-                  className={({ isActive }) =>
-                    `px-4 py-3 rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? 'bg-primary/10 text-primary font-medium'
-                        : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
-                    }`
-                  }
-                >
-                  {link.name}
-                </NavLink>
+                  label={link.name}
+                  activeClassName="bg-primary/10 text-primary font-medium"
+                  inactiveClassName="text-foreground/80 hover:text-primary hover:bg-primary/5"
+                />
               ))}
-              <NavLink
-                to="#"
-                className="px-4 py-3 rounded-xl transition-all duration-200 text-foreground/80 hover:text-primary hover:bg-primary/5"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <LMSUpdatesDialog />
-              </NavLink>
             </nav>
             <div className="flex items-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-800">
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -196,5 +118,8 @@ const Header: React.FC = () => {
     </header>
   );
 };
+
+// Import these at the top of the file to fix the missing imports
+import { User } from 'lucide-react';
 
 export default Header;
