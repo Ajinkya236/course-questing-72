@@ -11,6 +11,7 @@ import NotificationsPanel from '../NotificationsPanel';
 import ProfileMenu from './navigation/ProfileMenu';
 import DiscoverHoverCard from './navigation/DiscoverHoverCard';
 import SearchInput from './navigation/SearchInput';
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -91,18 +92,7 @@ const Navbar: React.FC = () => {
             placeholder="Search courses..."
           />
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
+          <ModeToggle />
           
           <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
             <PopoverTrigger asChild>
