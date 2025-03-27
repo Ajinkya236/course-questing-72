@@ -167,14 +167,44 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             className="flex overflow-x-auto scrollbar-hide py-4 -mx-4 px-4 gap-4 snap-x transition-all duration-300"
             onScroll={handleScroll}
           >
-            {courses.map((course) => (
-              <div 
-                key={course.id} 
-                className={`${getItemsPerViewClass()} flex-shrink-0 snap-start`}
-              >
-                <CourseCard {...course} />
-              </div>
-            ))}
+            {courses.map((course) => {
+              // Format the course data to match CourseCard props
+              const instructorStr = typeof course.instructor === 'string' 
+                ? course.instructor 
+                : course.instructor?.name || 'Instructor';
+              
+              return (
+                <div 
+                  key={course.id} 
+                  className={`${getItemsPerViewClass()} flex-shrink-0 snap-start`}
+                >
+                  <CourseCard 
+                    id={course.id}
+                    title={course.title}
+                    description={course.description}
+                    thumbnail={course.imageUrl || course.thumbnail}
+                    imageUrl={course.imageUrl}
+                    duration={course.duration}
+                    instructor={instructorStr}
+                    level={course.level}
+                    category={course.category}
+                    progress={course.progress}
+                    rating={course.rating}
+                    isBookmarked={course.isBookmarked}
+                    isAssigned={course.isAssigned}
+                    isCompleted={course.isCompleted}
+                    isNew={course.isNew}
+                    isHot={course.isHot}
+                    status={course.status}
+                    source={course.source}
+                    type={course.type}
+                    trainingCategory={course.trainingCategory}
+                    skill={course.skill}
+                    videoUrl={course.videoUrl}
+                  />
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="flex items-center justify-center h-40 bg-secondary/30 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">

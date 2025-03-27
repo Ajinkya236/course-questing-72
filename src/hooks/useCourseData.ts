@@ -41,7 +41,7 @@ export function useCourseData(courses: Course[]) {
       }
       
       // Add video preview if missing
-      let videoUrl = course.videoUrl || course.previewUrl;
+      let videoUrl = course.videoUrl;
       if (!videoUrl) {
         videoUrl = sampleVideoUrls[Math.floor(Math.random() * sampleVideoUrls.length)];
       }
@@ -50,7 +50,6 @@ export function useCourseData(courses: Course[]) {
         ...course,
         imageUrl,
         videoUrl,
-        previewUrl: videoUrl,
         level: course.level || course.skillLevel || 'All Levels',
         instructor: course.instructor || {
           name: 'Instructor',

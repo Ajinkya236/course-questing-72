@@ -6,16 +6,28 @@ export interface Instructor {
   bio?: string;
 }
 
+export interface Module {
+  id: string;
+  title: string;
+  activities: Activity[];
+}
+
 export interface Activity {
   id: string;
   title: string;
-  type: 'video' | 'quiz' | 'assignment' | 'article' | 'discussion' | 'interactive';
+  type: 'video' | 'quiz' | 'assignment' | 'article' | 'discussion' | 'interactive' | 'h5p';
   duration: string;
   status?: 'not-started' | 'in-progress' | 'completed';
   score?: number;
   isCompleted?: boolean;
+  completed?: boolean;
   description?: string;
   content?: string;
+}
+
+export interface Skill {
+  name: string;
+  proficiency: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
 export interface Course {
@@ -40,9 +52,17 @@ export interface Course {
   type?: string;
   trainingCategory?: string;
   skill?: string;
+  skillLevel?: string;
   videoUrl?: string;
+  previewUrl?: string;
   activities?: Activity[];
+  modules?: Module[];
   author?: string;
+  savedAt?: string;
+  enrollmentStatus?: string;
+  learningObjectives?: string[];
+  skills?: Skill[];
+  certificates?: string[];
 }
 
 // CourseProps for CourseCard component compatibility
@@ -53,7 +73,7 @@ export interface CourseProps {
   thumbnail: string;
   imageUrl?: string;
   duration: string;
-  instructor: Instructor | string;
+  instructor: string;
   level: string;
   category: string;
   progress?: number;

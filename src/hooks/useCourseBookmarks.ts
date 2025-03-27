@@ -31,9 +31,9 @@ export function useCourseBookmarks() {
       const courseToSave: Course = {
         ...course,
         isBookmarked: true,
-        savedAt: new Date().toISOString(),
         status: 'saved'
       };
+      
       updatedCourses = [...savedCourses, courseToSave];
       
       // Show success toast

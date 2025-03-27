@@ -77,7 +77,15 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       <CourseCarouselMedia
-        course={course}
+        course={{
+          id: course.id,
+          title: course.title,
+          imageUrl: course.imageUrl || course.thumbnail,
+          thumbnail: course.thumbnail,
+          videoUrl: course.videoUrl,
+          enrollmentStatus: course.status,
+          trainingCategory: course.trainingCategory
+        }}
         isHovered={isHovered}
         isMuted={isMuted}
         isVideoPlaying={isVideoPlaying}

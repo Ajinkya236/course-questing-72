@@ -32,6 +32,12 @@ export interface TeamRank {
   isCurrentUserGroup?: boolean;
 }
 
+export interface PointsBreakdownItem {
+  category: string;
+  points: number;
+  color: string;
+}
+
 export interface RewardsData {
   points: number;
   rank: number;
@@ -41,7 +47,10 @@ export interface RewardsData {
   totalPoints: number;
   nextRewardThreshold: number;
   multiplier: number;
-  nextMilestone: number;
+  nextMilestone: {
+    points: number;
+    reward: string;
+  };
   streak: {
     current: number;
     longest: number;
@@ -52,13 +61,33 @@ export interface RewardsData {
     assignments: number;
     engagement: number;
     special: number;
+    coursesCompleted: number;
+    quizzesPassed: number;
+    dailyLogins: number;
+    voluntaryActivities: number;
+    streakBonus: number;
   };
   courseWisePoints: {
+    id: string;
     courseName: string;
     points: number;
+    totalPoints: number;
+    breakdown: {
+      completion: number;
+      quizzes: number;
+      assignments: number;
+      participation: number;
+    };
   }[];
+  redeemablePoints: number;
 }
 
 export interface RewardsTabProps {
   teamMemberId?: string;
+}
+
+export interface PointsOverviewProps {
+  data: RewardsData;
+  onViewStreakDetails?: () => void;
+  onRedeemPoints?: () => void;
 }

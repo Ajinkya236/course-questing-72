@@ -7,7 +7,6 @@ import CourseCard from '@/components/CourseCard';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import { useCourseData } from '@/hooks/useCourseData';
 import { useCourseDataAPI } from '@/hooks/useCourseDataAPI';
-import { Course } from '@/types/course';
 
 interface CoursesTabProps {
   teamMemberId?: string;
@@ -57,25 +56,6 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
     }
   };
 
-  // Process courses to ensure they have all required fields
-  const processedCourses: Course[] = normalizedCourses.map(course => ({
-    id: course.id,
-    title: course.title,
-    description: course.description,
-    thumbnail: course.imageUrl || course.thumbnail || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}`,
-    imageUrl: course.imageUrl || course.thumbnail,
-    duration: course.duration,
-    instructor: course.author || course.instructor || 'Expert Instructor',
-    level: course.level || 'Intermediate',
-    category: course.category,
-    progress: course.progress || 0,
-    rating: course.rating || 0,
-    isAssigned: course.isAssigned || false,
-    isCompleted: course.isCompleted || course.progress === 100,
-    source: (course.source || 'Internal') as 'Internal' | 'Coursera' | 'LinkedIn',
-    type: course.type || 'Course',
-  }));
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2">
@@ -117,17 +97,43 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
               <Card key={i} className="h-[350px] bg-secondary/20 animate-pulse" />
             ))}
           </div>
-        ) : processedCourses.length > 0 ? (
+        ) : normalizedCourses.length > 0 ? (
           <div className="overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {processedCourses.map((course) => (
-                <div 
-                  key={course.id}
-                  className="transition-transform duration-300 hover:scale-[1.03]"
-                >
-                  <CourseCard {...course} />
-                </div>
-              ))}
+              {normalizedCourses.map((course) => {
+                // Get instructor as string
+                const instructorStr = typeof course.instructor === 'string' 
+                  ? course.instructor 
+                  : course.instructor?.name || course.author || 'Expert Instructor';
+                
+                return (
+                  <div 
+                    key={course.id}
+                    className="transition-transform duration-300 hover:scale-[1.03]"
+                  >
+                    <CourseCard 
+                      id={course.id}
+                      title={course.title}
+                      description={course.description}
+                      thumbnail={course.imageUrl || course.thumbnail}
+                      imageUrl={course.imageUrl}
+                      duration={course.duration}
+                      instructor={instructorStr}
+                      level={course.level || 'Intermediate'}
+                      category={course.category}
+                      progress={course.progress || 0}
+                      rating={course.rating || 0}
+                      isBookmarked={course.isBookmarked}
+                      isAssigned={course.isAssigned}
+                      isCompleted={course.isCompleted}
+                      status={course.status}
+                      source={course.source}
+                      type={course.type}
+                      trainingCategory={course.trainingCategory}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (
