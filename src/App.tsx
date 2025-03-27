@@ -5,11 +5,15 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import PageLayout from './components/layout/PageLayout';
 
-const SignIn = lazy(() => import('./pages/SignIn'));
-const SignUp = lazy(() => import('./pages/SignUp'));
+// Import essential pages directly to avoid dynamic loading issues
+import Home from './pages/Home';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import NotFound from './pages/NotFound';
+
+// Lazy load secondary pages
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const Home = lazy(() => import('./pages/Home'));
 const Discover = lazy(() => import('./pages/Discover'));
 const MyLearning = lazy(() => import('./pages/MyLearning'));
 const CoursePlayer = lazy(() => import('./pages/CoursePlayer'));
@@ -22,7 +26,6 @@ const LeaderboardFullView = lazy(() => import('./pages/LeaderboardFullView'));
 const Mentoring = lazy(() => import('./pages/Mentoring'));
 const MyTeam = lazy(() => import('./pages/MyTeam'));
 const FAQ = lazy(() => import('./pages/FAQ'));
-const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
@@ -58,14 +61,17 @@ function App() {
       >
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            {/* Auth routes - not lazy loaded for faster initial experience */}
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             
             <Route element={<ProtectedRoute />}>
-              {/* Learner Routes */}
+              {/* Home route is directly imported - not lazy loaded */}
               <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+              
+              {/* Learner Routes */}
               <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
               <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
               <Route path="/my-learning/:tab" element={<PageLayout><MyLearning /></PageLayout>} />
@@ -96,6 +102,7 @@ function App() {
               <Route path="/admin/courses/create" element={<PageLayout><CourseCreation /></PageLayout>} />
             </Route>
             
+            {/* 404 page directly imported - not lazy loaded */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

@@ -12,6 +12,7 @@ export interface UserRank {
   role?: string;
   jobFamily?: string;
   date?: string;
+  segment?: string;
   details?: {
     assessmentScore?: number;
     engagementScore?: number;
@@ -29,4 +30,35 @@ export interface TeamRank {
   positionChange?: number;
   winStreak?: number;
   isCurrentUserGroup?: boolean;
+}
+
+export interface RewardsData {
+  points: number;
+  rank: number;
+  badges: number;
+  streakDays: number;
+  completedCourses: number;
+  totalPoints: number;
+  nextRewardThreshold: number;
+  multiplier: number;
+  nextMilestone: number;
+  streak: {
+    current: number;
+    longest: number;
+  };
+  pointsBreakdown: {
+    courses: number;
+    quizzes: number;
+    assignments: number;
+    engagement: number;
+    special: number;
+  };
+  courseWisePoints: {
+    courseName: string;
+    points: number;
+  }[];
+}
+
+export interface RewardsTabProps {
+  teamMemberId?: string;
 }

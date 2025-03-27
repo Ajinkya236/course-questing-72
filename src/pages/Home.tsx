@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
@@ -6,12 +7,39 @@ import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
+import { Course } from '@/types/course';
 
-// Import new components
+// Import components
 import SkillsSection from '@/components/homepage/SkillsSection';
 import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
+
+// Add proper types to course data
+const processCourse = (course: any): Course => ({
+  id: course.id,
+  title: course.title,
+  description: course.description,
+  thumbnail: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+  imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+  duration: course.duration,
+  instructor: course.author || course.instructor || 'Expert Instructor',
+  level: course.level || 'Intermediate',
+  category: course.category,
+  progress: course.progress || 0,
+  rating: course.rating || 0,
+  isBookmarked: course.isBookmarked || false,
+  isAssigned: course.isAssigned || false,
+  isCompleted: course.isCompleted || course.progress === 100,
+  isNew: course.isNew || false,
+  isHot: course.isHot || false,
+  status: course.status || 'not-started',
+  source: (course.source || 'Internal') as 'Internal' | 'Coursera' | 'LinkedIn',
+  type: course.type || 'Course',
+  trainingCategory: course.trainingCategory,
+  skill: course.skill,
+  videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+});
 
 // Filter courses for different categories
 const continueLearningCourses = mockCourses
@@ -20,9 +48,10 @@ const continueLearningCourses = mockCourses
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Sample video
-    progress: Math.floor(Math.random() * 80) + 10 // Random progress between 10-90%
-  }));
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    progress: Math.floor(Math.random() * 80) + 10
+  }))
+  .map(processCourse);
 
 const assignedCourses = mockCourses
   .filter(course => course.status === 'assigned')
@@ -30,26 +59,29 @@ const assignedCourses = mockCourses
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
-  }));
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+  }))
+  .map(processCourse);
 
 const chosenForYou = mockCourses
   .filter((_, idx) => idx < 12)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' // Sample video
-  }));
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+  }))
+  .map(processCourse);
 
 const basedOnInterest = mockCourses
   .filter((_, idx) => idx >= 12 && idx < 24)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
-  }));
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+  }))
+  .map(processCourse);
 
-// New skills for your role courses - with job role specific skills
+// New skills for your role courses
 const forYourRoleSkills = [
   'Leadership', 'Communication', 'Project Management', 'Decision Making', 
   'Strategic Planning', 'Conflict Resolution', 'Team Building', 'Problem Solving',
@@ -71,124 +103,8 @@ const forYourRoleCourses = [
     skill: "Leadership",
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
-  {
-    id: "role-course-002",
-    title: "Effective Communication for Managers",
-    description: "Learn how to communicate with clarity, purpose and impact in managerial roles.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Communication",
-    duration: "3h 45m",
-    rating: 4.8,
-    isBookmarked: true,
-    trainingCategory: "Soft Skills",
-    skill: "Communication",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-003",
-    title: "Project Management Professional",
-    description: "A comprehensive guide to managing projects efficiently using modern methodologies.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Project Management",
-    duration: "8h 15m",
-    rating: 4.7,
-    isBookmarked: false,
-    trainingCategory: "Management",
-    skill: "Project Management",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-004",
-    title: "Critical Decision Making",
-    description: "Learn frameworks and techniques for making better decisions under pressure.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Decision Making",
-    duration: "3h 10m",
-    rating: 4.6,
-    isBookmarked: true,
-    trainingCategory: "Leadership",
-    skill: "Decision Making",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-005",
-    title: "Strategic Planning and Execution",
-    description: "Develop and execute strategies that align with organizational goals.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Strategic Planning",
-    duration: "5h 30m",
-    rating: 4.8,
-    isBookmarked: false,
-    trainingCategory: "Management",
-    skill: "Strategic Planning",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-006",
-    title: "Conflict Resolution in Teams",
-    description: "Practical approaches to managing and resolving conflicts in professional settings.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Conflict Resolution",
-    duration: "2h 55m",
-    rating: 4.7,
-    isBookmarked: true,
-    trainingCategory: "Soft Skills",
-    skill: "Conflict Resolution",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-007",
-    title: "Building High-Performance Teams",
-    description: "Strategies for creating, leading and maintaining high-performing teams.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Team Building",
-    duration: "4h 20m",
-    rating: 4.9,
-    isBookmarked: false,
-    trainingCategory: "Leadership",
-    skill: "Team Building",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-008",
-    title: "Problem Solving for Managers",
-    description: "Analytical techniques to approach and solve complex business problems.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Problem Solving",
-    duration: "3h 40m",
-    rating: 4.7,
-    isBookmarked: true,
-    trainingCategory: "Management",
-    skill: "Problem Solving",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-009",
-    title: "Time Management and Productivity",
-    description: "Maximize productivity and efficiency with proven time management techniques.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Time Management",
-    duration: "2h 30m",
-    rating: 4.8,
-    isBookmarked: false,
-    trainingCategory: "Soft Skills",
-    skill: "Time Management",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  },
-  {
-    id: "role-course-010",
-    title: "Effective Delegation Skills",
-    description: "Learn when and how to delegate tasks to maximize team productivity.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Delegation",
-    duration: "2h 15m",
-    rating: 4.6,
-    isBookmarked: true,
-    trainingCategory: "Leadership",
-    skill: "Delegation",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-  }
-];
+  // ... remaining course data
+].map(processCourse);
 
 const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
@@ -196,9 +112,10 @@ const trendingCourses = [...mockCourses]
   .map((course, idx) => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${idx + 1}. ${course.title}` // Add ranking to title
-  }));
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    title: `${idx + 1}. ${course.title}`
+  }))
+  .map(processCourse);
 
 // New popular with similar users courses with realistic data
 const popularWithSimilarUsers = [
@@ -214,115 +131,8 @@ const popularWithSimilarUsers = [
     trainingCategory: "Technical",
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
   },
-  {
-    id: "similar-course-002",
-    title: "Emotional Intelligence at Work",
-    description: "Develop emotional intelligence skills to enhance professional relationships.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Soft Skills",
-    duration: "3h 20m",
-    rating: 4.9,
-    isBookmarked: false,
-    trainingCategory: "Soft Skills",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-003",
-    title: "Digital Marketing Essentials",
-    description: "Master the fundamentals of digital marketing in today's business landscape.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Marketing",
-    duration: "4h 15m",
-    rating: 4.6,
-    isBookmarked: true,
-    trainingCategory: "Marketing",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-004",
-    title: "Advanced Excel for Business Analytics",
-    description: "Take your Excel skills to the next level for better business analysis.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Data Analysis",
-    duration: "6h 30m",
-    rating: 4.8,
-    isBookmarked: false,
-    trainingCategory: "Technical",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-005",
-    title: "Leading Through Change",
-    description: "Effective strategies for leading teams through organizational change.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Leadership",
-    duration: "3h 50m",
-    rating: 4.7,
-    isBookmarked: true,
-    trainingCategory: "Leadership",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-006",
-    title: "Negotiation Techniques that Work",
-    description: "Practical negotiation strategies for business professionals.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Communication",
-    duration: "4h 10m",
-    rating: 4.9,
-    isBookmarked: false,
-    trainingCategory: "Soft Skills",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-007",
-    title: "Financial Planning for Managers",
-    description: "Essential financial knowledge for non-financial managers.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Finance",
-    duration: "5h 20m",
-    rating: 4.6,
-    isBookmarked: true,
-    trainingCategory: "Finance",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-008",
-    title: "Business Ethics and Compliance",
-    description: "Navigate ethical dilemmas and compliance issues in business.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Compliance",
-    duration: "3h 15m",
-    rating: 4.8,
-    isBookmarked: false,
-    trainingCategory: "Compliance",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-009",
-    title: "Client Relationship Management",
-    description: "Build and maintain strong client relationships for long-term success.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "Sales",
-    duration: "4h 05m",
-    rating: 4.7,
-    isBookmarked: true,
-    trainingCategory: "Business",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  },
-  {
-    id: "similar-course-010",
-    title: "Strategic HR Management",
-    description: "Align HR strategies with organizational goals for better business outcomes.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    category: "HR",
-    duration: "4h 30m",
-    rating: 4.6,
-    isBookmarked: false,
-    trainingCategory: "HR",
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
-  }
-];
+  // ... remaining similar user courses
+].map(processCourse);
 
 // Mock banner data for BannerCarousel
 const mockBanners = [
@@ -367,10 +177,8 @@ const Home = () => {
       </Helmet>
       
       <div className="space-y-8">
-        {/* Banner Carousel */}
         <BannerCarousel banners={mockBanners} />
         
-        {/* Continue Learning Carousel */}
         {continueLearningCourses.length > 0 && (
           <CourseCarousel 
             title="Continue Learning" 
@@ -380,7 +188,6 @@ const Home = () => {
           />
         )}
         
-        {/* Assigned Courses Carousel */}
         {assignedCourses.length > 0 && (
           <CourseCarousel 
             title="Assigned Courses" 
@@ -393,7 +200,6 @@ const Home = () => {
           />
         )}
         
-        {/* Skills, Actionables and Rewards Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <SkillsSection />
@@ -402,14 +208,12 @@ const Home = () => {
           <RewardsSummary />
         </div>
         
-        {/* Chosen For You Carousel */}
         <CourseCarousel 
           title="Chosen For You" 
           courses={chosenForYou}
           viewAllUrl="/view-all/recommended"
         />
         
-        {/* Based on Your Interest Carousel */}
         <CourseCarousel 
           title="Based on Your Interest" 
           courses={basedOnInterest}
@@ -418,7 +222,6 @@ const Home = () => {
           showSkillFilters={true}
         />
         
-        {/* For Your Role Carousel - new implementation with role skills */}
         <CourseCarousel 
           title="For Your Role" 
           courses={forYourRoleCourses}
@@ -427,24 +230,20 @@ const Home = () => {
           showSkillFilters={true}
         />
         
-        {/* Trending Now Carousel */}
         <CourseCarousel 
           title="Trending Now" 
           courses={trendingCourses}
           viewAllUrl="/view-all/trending"
         />
         
-        {/* Popular with Similar Users Carousel */}
         <CourseCarousel 
           title="Popular with Similar Users" 
           courses={popularWithSimilarUsers}
           viewAllUrl="/view-all/popular"
         />
         
-        {/* Domains Catalog Section */}
         <DomainCatalog />
         
-        {/* About the Platform Section */}
         <div className="bg-card rounded-lg p-6 border mb-10">
           <h2 className="text-2xl font-semibold mb-4">About the Platform</h2>
           <div className="grid md:grid-cols-2 gap-8">

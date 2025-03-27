@@ -1,63 +1,82 @@
 
+export interface Instructor {
+  name: string;
+  avatar: string;
+  title?: string;
+  bio?: string;
+}
+
 export interface Activity {
   id: string;
   title: string;
-  type: 'video' | 'quiz' | 'h5p';
+  type: 'video' | 'quiz' | 'assignment' | 'article' | 'discussion' | 'interactive';
   duration: string;
-  completed: boolean;
-}
-
-export interface Module {
-  id: string;
-  title: string;
-  activities: Activity[];
+  status?: 'not-started' | 'in-progress' | 'completed';
+  score?: number;
+  isCompleted?: boolean;
+  description?: string;
+  content?: string;
 }
 
 export interface Course {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
-  category: string;
+  thumbnail: string;
+  imageUrl?: string;
   duration: string;
+  instructor: Instructor | string;
+  level: string;
+  category: string;
+  progress?: number;
   rating: number;
   isBookmarked?: boolean;
-  trainingCategory?: string;
-  learningObjectives?: string[];
-  skills?: { name: string; proficiency: string }[];
-  certificates?: string[];
-  videoUrl?: string;
-  modules?: Module[];
-  isHot?: boolean;
+  isAssigned?: boolean;
+  isCompleted?: boolean;
   isNew?: boolean;
-  createdAt?: string;
-  status?: 'assigned' | 'in-progress' | 'completed' | 'saved';
-  sharedBy?: string;
-  previewUrl?: string; // Added for video previews
-  savedAt?: string; // Added for bookmarking timestamp
-  
-  // These fields from CourseCarousel interface
-  level?: string;
-  instructor?: {
-    name: string;
-    avatar: string;
-  };
+  isHot?: boolean;
+  status?: 'not-started' | 'in-progress' | 'completed' | 'assigned' | 'saved';
+  source?: 'Internal' | 'Coursera' | 'LinkedIn' | 'CourseEra' | 'WorkEra' | 'els' | 'Skillsoft';
+  type?: string;
+  trainingCategory?: string;
+  skill?: string;
+  videoUrl?: string;
+  activities?: Activity[];
+  author?: string;
+}
+
+// CourseProps for CourseCard component compatibility
+export interface CourseProps {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  imageUrl?: string;
+  duration: string;
+  instructor: Instructor | string;
+  level: string;
+  category: string;
   progress?: number;
-  enrollmentStatus?: 'Not Started' | 'In Progress' | 'Completed';
-  
-  // Additional fields for filtering
-  courseType?: 'Online Course' | 'Online Program' | 'Blended' | 'Classroom';
-  academy?: string;
-  subAcademy?: string;
-  language?: string;
-  source?: 'Internal' | 'LinkedIn' | 'CourseEra' | 'els' | 'WorkEra' | 'Skillsoft';
-  topic?: string;
-  skillLevel?: string;
-  proficiency?: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-  
-  // Rankings for trending courses
-  rank?: number;
-  
-  // User similarity score
-  similarityScore?: number;
+  rating: number;
+  isBookmarked?: boolean;
+  isAssigned?: boolean;
+  isCompleted?: boolean;
+  isNew?: boolean;
+  isHot?: boolean;
+  status?: 'not-started' | 'in-progress' | 'completed' | 'assigned' | 'saved';
+  source?: 'Internal' | 'Coursera' | 'LinkedIn' | 'CourseEra' | 'WorkEra' | 'els' | 'Skillsoft';
+  type?: string;
+  trainingCategory?: string;
+  skill?: string;
+  videoUrl?: string;
+}
+
+export interface CourseFilterOptions {
+  category?: string;
+  level?: string;
+  source?: string;
+  duration?: string;
+  rating?: number;
+  status?: string;
+  trainingCategory?: string;
 }
