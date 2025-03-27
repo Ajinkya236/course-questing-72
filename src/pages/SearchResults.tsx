@@ -1,392 +1,298 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Filter,
-  Grid,
-  LayoutGrid,
-  List,
-  Search,
-  SlidersHorizontal,
-  ChevronDown,
-  X,
-  Clock,
-  BookOpen,
-  Star,
-  Users,
-  Award,
-  BadgeCheck,
-  Trophy,
-  Calendar,
-  ArrowUpDown,
-} from 'lucide-react';
-import { Course } from '@/types/course';
-import CourseCard from '@/components/CourseCard';
-import { Badge } from '@/components/ui/badge';
-
-// Import coursesList
 import { coursesList } from '@/data/mockData';
+import CourseCard from '@/components/CourseCard';
+import { Button } from '@/components/ui/button';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import { BookOpen, GraduationCap, Users, Book } from 'lucide-react';
 
 const SearchResults = () => {
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('q') || '';
+  const [activeTab, setActiveTab] = useState('all');
   
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
-  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(query);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState('relevance');
-  
-  // Filter states
-  const [filters, setFilters] = useState({
-    courseType: 'all',
-    academy: 'all',
-    skillLevel: 'all',
-    duration: 'all',
-    rating: 'all',
-    language: 'all',
-    source: 'all',
-  });
-  
-  // Get courses for search results
-  useEffect(() => {
-    setSearchQuery(query);
+  // Prepare courses with the necessary properties for CourseCard
+  const preparedCourses = React.useMemo(() => {
+    return coursesList.map(course => ({
+      ...course,
+      // Add required fields for CourseCard
+      category: course.level || 'General',
+      rating: 4 + Math.random(),
+      instructor: course.author,
+      thumbnail: course.imageUrl,
+      type: 'Course',
+      source: 'Internal',
+      trainingCategory: ['Ready for Role', 'Mandatory', 'Leadership', 'Technical'][Math.floor(Math.random() * 4)]
+    }));
+  }, []);
+
+  // Filter courses based on the search query
+  const filteredCourses = React.useMemo(() => {
+    if (!query) return [];
     
-    // Simulating search results based on the query
-    const results = coursesList.filter(course => 
+    return preparedCourses.filter(course => 
       course.title.toLowerCase().includes(query.toLowerCase()) ||
       course.description.toLowerCase().includes(query.toLowerCase()) ||
-      course.category.toLowerCase().includes(query.toLowerCase())
+      course.category.toLowerCase().includes(query.toLowerCase()) ||
+      course.level.toLowerCase().includes(query.toLowerCase())
     );
-    
-    setFilteredCourses(results);
-  }, [query]);
+  }, [query, preparedCourses]);
+
+  // Additional mock results for other tabs
+  const courses = filteredCourses;
+  const skills = [
+    { id: 'skill1', name: 'React Development', popularity: 'High', courses: 24 },
+    { id: 'skill2', name: 'Leadership', popularity: 'Medium', courses: 15 },
+    { id: 'skill3', name: 'Data Analysis', popularity: 'High', courses: 32 },
+  ].filter(skill => skill.name.toLowerCase().includes(query.toLowerCase()));
   
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  const mentors = [
+    { id: 'mentor1', name: 'Jennifer Thompson', expertise: 'Frontend Development', rating: 4.9 },
+    { id: 'mentor2', name: 'Michael Clarke', expertise: 'Project Management', rating: 4.7 },
+    { id: 'mentor3', name: 'Sarah Wilson', expertise: 'Data Science', rating: 4.8 },
+  ].filter(mentor => 
+    mentor.name.toLowerCase().includes(query.toLowerCase()) ||
+    mentor.expertise.toLowerCase().includes(query.toLowerCase())
+  );
   
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-    
-    // Here you would apply the filters to the search results
-    // For now, we'll just keep the existing results
-  };
-  
-  const handleSortChange = (value: string) => {
-    setSortBy(value);
-    
-    // Here you would sort the search results
-    // For now, we'll just keep the existing results
-  };
-  
-  const clearFilters = () => {
-    setFilters({
-      courseType: 'all',
-      academy: 'all',
-      skillLevel: 'all',
-      duration: 'all',
-      rating: 'all',
-      language: 'all',
-      source: 'all',
-    });
-  };
-  
-  const handleCourseClick = (courseId: string) => {
+  const resources = [
+    { id: 'resource1', title: 'React Best Practices Guide', type: 'PDF', downloads: 1243 },
+    { id: 'resource2', title: 'Project Management Templates', type: 'ZIP', downloads: 987 },
+    { id: 'resource3', title: 'Data Visualization Cheatsheet', type: 'PDF', downloads: 1578 },
+  ].filter(resource => resource.title.toLowerCase().includes(query.toLowerCase()));
+
+  const handleCourseClick = (courseId) => {
     navigate(`/course/${courseId}`);
   };
-  
+
   return (
-    <>
+    <div className="container py-8">
       <Helmet>
-        <title>Search Results | Learning Management System</title>
+        <title>Search Results: {query} | Learning Management System</title>
       </Helmet>
-      <div className="container py-8 space-y-6">
-        <div className="flex flex-col space-y-4">
-          <h1 className="text-2xl md:text-3xl font-bold">Search Results for "{query}"</h1>
-          <form onSubmit={handleSearch} className="flex w-full max-w-lg space-x-2">
-            <Input
-              type="text"
-              placeholder="Search courses, skills, topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1"
-            />
-            <Button type="submit">
-              <Search className="mr-2 h-4 w-4" />
-              Search
-            </Button>
-          </form>
-          <div className="text-sm text-muted-foreground">
-            Found {filteredCourses.length} results
-          </div>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters Panel */}
-          <div className={`md:w-64 space-y-6 ${isFiltersVisible ? 'block' : 'hidden md:block'}`}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Filters</h2>
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear All
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h3 className="font-medium">Course Type</h3>
-                <Select
-                  value={filters.courseType}
-                  onValueChange={(value) => handleFilterChange('courseType', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="Online Course">Online Course</SelectItem>
-                    <SelectItem value="Online Program">Online Program</SelectItem>
-                    <SelectItem value="Blended">Blended</SelectItem>
-                    <SelectItem value="Classroom">Classroom</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Academy</h3>
-                <Select
-                  value={filters.academy}
-                  onValueChange={(value) => handleFilterChange('academy', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Academies" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Academies</SelectItem>
-                    <SelectItem value="Leadership Academy">Leadership Academy</SelectItem>
-                    <SelectItem value="Data Academy">Data Academy</SelectItem>
-                    <SelectItem value="Marketing Academy">Marketing Academy</SelectItem>
-                    <SelectItem value="PM Academy">PM Academy</SelectItem>
-                    <SelectItem value="Innovation Academy">Innovation Academy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Skill Level</h3>
-                <Select
-                  value={filters.skillLevel}
-                  onValueChange={(value) => handleFilterChange('skillLevel', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Levels" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                    <SelectItem value="Expert">Expert</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Duration</h3>
-                <Select
-                  value={filters.duration}
-                  onValueChange={(value) => handleFilterChange('duration', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any Duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Duration</SelectItem>
-                    <SelectItem value="short">Under 1 hour</SelectItem>
-                    <SelectItem value="medium">1-3 hours</SelectItem>
-                    <SelectItem value="long">3+ hours</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Rating</h3>
-                <Select
-                  value={filters.rating}
-                  onValueChange={(value) => handleFilterChange('rating', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any Rating" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Rating</SelectItem>
-                    <SelectItem value="4.5">4.5 & above</SelectItem>
-                    <SelectItem value="4.0">4.0 & above</SelectItem>
-                    <SelectItem value="3.5">3.5 & above</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Language</h3>
-                <Select
-                  value={filters.language}
-                  onValueChange={(value) => handleFilterChange('language', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Languages" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Languages</SelectItem>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="Spanish">Spanish</SelectItem>
-                    <SelectItem value="French">French</SelectItem>
-                    <SelectItem value="German">German</SelectItem>
-                    <SelectItem value="Chinese">Chinese</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium">Source</h3>
-                <Select
-                  value={filters.source}
-                  onValueChange={(value) => handleFilterChange('source', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Sources" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sources</SelectItem>
-                    <SelectItem value="Internal">Internal</SelectItem>
-                    <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                    <SelectItem value="CourseEra">CourseEra</SelectItem>
-                    <SelectItem value="els">els</SelectItem>
-                    <SelectItem value="WorkEra">WorkEra</SelectItem>
-                    <SelectItem value="Skillsoft">Skillsoft</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          
-          {/* Results */}
-          <div className="flex-1 space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex md:hidden">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsFiltersVisible(!isFiltersVisible)}
-                >
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filters
-                  {isFiltersVisible ? (
-                    <X className="ml-2 h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-2 ml-auto">
-                <Select value={sortBy} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by: Relevance" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="relevance">Relevance</SelectItem>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="popular">Most Popular</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="duration-asc">Duration (Shortest)</SelectItem>
-                    <SelectItem value="duration-desc">Duration (Longest)</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`${viewMode === 'grid' ? 'bg-secondary/50' : ''}`}
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Search Results</h1>
+        <p className="text-muted-foreground mt-1">
+          Showing results for: "<span className="font-medium">{query}</span>"
+        </p>
+      </div>
+
+      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-8">
+          <TabsTrigger value="all" className="flex items-center">
+            <BookOpen className="mr-2 h-4 w-4" />
+            All ({courses.length + skills.length + mentors.length + resources.length})
+          </TabsTrigger>
+          <TabsTrigger value="courses" className="flex items-center">
+            <Book className="mr-2 h-4 w-4" />
+            Courses ({courses.length})
+          </TabsTrigger>
+          <TabsTrigger value="skills" className="flex items-center">
+            <GraduationCap className="mr-2 h-4 w-4" />
+            Skills ({skills.length})
+          </TabsTrigger>
+          <TabsTrigger value="mentors" className="flex items-center">
+            <Users className="mr-2 h-4 w-4" />
+            Mentors ({mentors.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all">
+          {courses.length > 0 && (
+            <div className="mb-12">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Courses</h2>
+                {courses.length > 4 && (
+                  <Button variant="ghost" onClick={() => setActiveTab('courses')}>
+                    View all courses
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`${viewMode === 'list' ? 'bg-secondary/50' : ''}`}
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
+                )}
               </div>
-            </div>
-            
-            {filteredCourses.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium">No courses found</h3>
-                <p className="text-muted-foreground mt-2">
-                  Try adjusting your search or filter criteria
-                </p>
-              </div>
-            ) : (
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-                : "space-y-4"
-              }>
-                {filteredCourses.map((course) => (
-                  <div key={course.id} onClick={() => handleCourseClick(course.id)}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {courses.slice(0, 4).map((course) => (
+                  <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
                     <CourseCard 
                       id={course.id}
                       title={course.title}
                       description={course.description}
-                      imageUrl={course.imageUrl}
-                      category={course.category}
+                      thumbnail={course.imageUrl}
                       duration={course.duration}
-                      rating={course.rating}
+                      instructor={course.author}
+                      level={course.level}
+                      category={course.category}
+                      progress={course.progress || 0}
+                      rating={course.rating || 4.5}
+                      isAssigned={false}
+                      isCompleted={course.progress === 100}
+                      source="Internal"
+                      type="Course"
                       trainingCategory={course.trainingCategory}
-                      isBookmarked={course.isBookmarked}
-                      isHot={course.isHot}
-                      isNew={course.isNew}
                     />
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
+            </div>
+          )}
+
+          {skills.length > 0 && (
+            <div className="mb-12">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Skills</h2>
+                {skills.length > 4 && (
+                  <Button variant="ghost" onClick={() => setActiveTab('skills')}>
+                    View all skills
+                  </Button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {skills.slice(0, 4).map((skill) => (
+                  <div key={skill.id} className="p-4 rounded-lg bg-secondary/50">
+                    <h3 className="text-lg font-semibold">{skill.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Popularity: {skill.popularity}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Courses: {skill.courses}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {mentors.length > 0 && (
+            <div className="mb-12">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Mentors</h2>
+                {mentors.length > 4 && (
+                  <Button variant="ghost" onClick={() => setActiveTab('mentors')}>
+                    View all mentors
+                  </Button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {mentors.slice(0, 4).map((mentor) => (
+                  <div key={mentor.id} className="p-4 rounded-lg bg-secondary/50">
+                    <h3 className="text-lg font-semibold">{mentor.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Expertise: {mentor.expertise}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Rating: {mentor.rating}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {resources.length > 0 && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Resources</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {resources.slice(0, 4).map((resource) => (
+                  <div key={resource.id} className="p-4 rounded-lg bg-secondary/50">
+                    <h3 className="text-lg font-semibold">{resource.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Type: {resource.type}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Downloads: {resource.downloads}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="courses">
+          {courses.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {courses.map((course) => (
+                <div key={course.id} onClick={() => handleCourseClick(course.id)} className="cursor-pointer">
+                  <CourseCard 
+                    id={course.id}
+                    title={course.title}
+                    description={course.description}
+                    thumbnail={course.imageUrl}
+                    duration={course.duration}
+                    instructor={course.author}
+                    level={course.level}
+                    category={course.category}
+                    progress={course.progress || 0}
+                    rating={course.rating || 4.5}
+                    isAssigned={false}
+                    isCompleted={course.progress === 100}
+                    source="Internal"
+                    type="Course"
+                    trainingCategory={course.trainingCategory}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No courses match your search query. Try different keywords.</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="skills">
+          {skills.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {skills.map((skill) => (
+                <div key={skill.id} className="p-4 rounded-lg bg-secondary/50">
+                  <h3 className="text-lg font-semibold">{skill.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Popularity: {skill.popularity}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Courses: {skill.courses}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No skills match your search query. Try different keywords.</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="mentors">
+          {mentors.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {mentors.map((mentor) => (
+                <div key={mentor.id} className="p-4 rounded-lg bg-secondary/50">
+                  <h3 className="text-lg font-semibold">{mentor.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Expertise: {mentor.expertise}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Rating: {mentor.rating}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No mentors match your search query. Try different keywords.</p>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

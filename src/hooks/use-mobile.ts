@@ -38,11 +38,23 @@ export function useMediaQuery(query = '(max-width: 768px)') {
       setMatches(e.matches);
     };
     
-    // Add event listener
-    media.addEventListener('change', listener);
+    // Add event listener (with compatibility check for older browsers)
+    if (media.addEventListener) {
+      media.addEventListener('change', listener);
+    } else {
+      // @ts-ignore - For older browsers
+      media.addListener(listener);
+    }
     
     // Clean up
-    return () => media.removeEventListener('change', listener);
+    return () => {
+      if (media.removeEventListener) {
+        media.removeEventListener('change', listener);
+      } else {
+        // @ts-ignore - For older browsers
+        media.removeListener(listener);
+      }
+    };
   }, [query]);
 
   return matches;
