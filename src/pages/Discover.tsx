@@ -88,18 +88,19 @@ const Discover = () => {
   const [filteredCourses, setFilteredCourses] = useState([]);
 
   // Add a date field to courses for sorting - in a real app this would come from the API
-  const courses = coursesList.slice(0, 20).map(course => ({
-    ...course,
-    // Generate a random date within the last year for demo purposes
-    dateAdded: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString()
-  }));
+  const courses = React.useMemo(() => {
+    return coursesList.slice(0, 20).map(course => ({
+      ...course,
+      // Generate a random date within the last year for demo purposes
+      dateAdded: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString()
+    }));
+  }, []);
   
   // Apply filtering and sorting to courses
   useEffect(() => {
     let result = [...courses];
     
     // Filter logic would go here in a real application
-    // For now, we're just simulating filtering with a timeout
     
     // Sort logic
     switch(currentSort) {
@@ -161,7 +162,7 @@ const Discover = () => {
       [filterType]: value
     }));
     
-    // Show toast to indicate filter change (for demo purposes)
+    // Show toast to indicate filter change
     toast({
       title: "Filter Applied",
       description: `${filterType}: ${value}`,
@@ -223,12 +224,11 @@ const Discover = () => {
           </div>
         </div>
 
-        {/* Filter Section - with all required filter options */}
+        {/* Filter Section - simplified */}
         {showFilters && (
           <div className="mb-8 bg-secondary/20 p-4 rounded-lg">
             <h3 className="font-medium mb-4">Filter Courses</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {/* Type Filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
@@ -247,7 +247,6 @@ const Discover = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Academy Filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
@@ -266,106 +265,10 @@ const Discover = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Sub-Academy Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Building className="mr-2 h-4 w-4" />
-                    {selectedFilters.subAcademy}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Sub-Academy</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.subAcademy} onValueChange={(value) => handleFilterChange('subAcademy', value)}>
-                    {filterOptions.subAcademy.map((subAcademy) => (
-                      <DropdownMenuRadioItem key={subAcademy} value={subAcademy}>{subAcademy}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Language Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Globe className="mr-2 h-4 w-4" />
-                    {selectedFilters.language}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Language</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.language} onValueChange={(value) => handleFilterChange('language', value)}>
-                    {filterOptions.language.map((language) => (
-                      <DropdownMenuRadioItem key={language} value={language}>{language}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Source Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Database className="mr-2 h-4 w-4" />
-                    {selectedFilters.source}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Source</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.source} onValueChange={(value) => handleFilterChange('source', value)}>
-                    {filterOptions.source.map((source) => (
-                      <DropdownMenuRadioItem key={source} value={source}>{source}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Topic Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Lightbulb className="mr-2 h-4 w-4" />
-                    {selectedFilters.topic}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Topic</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.topic} onValueChange={(value) => handleFilterChange('topic', value)}>
-                    {filterOptions.topic.map((topic) => (
-                      <DropdownMenuRadioItem key={topic} value={topic}>{topic}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Skill Filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
                     <GraduationCap className="mr-2 h-4 w-4" />
-                    {selectedFilters.skill}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Skill</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup value={selectedFilters.skill} onValueChange={(value) => handleFilterChange('skill', value)}>
-                    {filterOptions.skill.map((skill) => (
-                      <DropdownMenuRadioItem key={skill} value={skill}>{skill}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Category Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Briefcase className="mr-2 h-4 w-4" />
                     {selectedFilters.category}
                   </Button>
                 </DropdownMenuTrigger>
@@ -380,7 +283,6 @@ const Discover = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Duration Filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
@@ -399,7 +301,6 @@ const Discover = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Proficiency Filter */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
@@ -419,7 +320,6 @@ const Discover = () => {
               </DropdownMenu>
             </div>
             
-            {/* Reset Filters Button */}
             <div className="flex justify-end mt-4">
               <Button 
                 variant="outline" 
@@ -443,7 +343,7 @@ const Discover = () => {
           </div>
         )}
 
-        {/* Category Chips - keeping this section */}
+        {/* Category Chips */}
         <div className="flex flex-wrap gap-2 mb-8">
           <Button variant="secondary" size="sm" className="rounded-full">
             <Code className="mr-1 h-4 w-4" /> Programming
@@ -462,7 +362,7 @@ const Discover = () => {
           </Button>
         </div>
 
-        {/* Courses Grid - now using filtered courses */}
+        {/* Courses Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
