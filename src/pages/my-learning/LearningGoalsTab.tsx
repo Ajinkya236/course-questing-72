@@ -160,23 +160,29 @@ const LearningGoalsTab: React.FC<LearningGoalsTabProps> = ({ teamMemberId }) => 
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
             {getActiveCourses().length > 0 ? (
-              getActiveCourses().map(course => (
-                <CourseCard
-                  key={course.id}
-                  id={course.id}
-                  title={course.title}
-                  description={course.description}
-                  imageUrl={course.imageUrl}
-                  category={course.category}
-                  duration={course.duration}
-                  rating={course.rating}
-                  trainingCategory={course.trainingCategory}
-                  isBookmarked={course.isBookmarked}
-                  previewUrl={course.imageUrl} // Use imageUrl as fallback since videoUrl might not exist
-                  isHot={course.isHot}
-                  isNew={course.isNew}
-                />
-              ))
+              getActiveCourses().map(course => {
+                // Transform the course object to match CourseCard props
+                const courseProps = {
+                  id: course.id,
+                  title: course.title,
+                  description: course.description,
+                  thumbnail: course.imageUrl || "", // Use imageUrl as thumbnail
+                  duration: course.duration,
+                  instructor: course.author || "",
+                  level: course.level || "Beginner",
+                  category: course.category,
+                  progress: course.progress || 0,
+                  rating: course.rating || 0,
+                  isAssigned: course.isAssigned || false,
+                  isCompleted: course.isCompleted || course.progress === 100,
+                  source: course.source || 'Internal',
+                  type: course.type || 'Course',
+                };
+
+                return (
+                  <CourseCard key={course.id} {...courseProps} />
+                );
+              })
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-10">
                 <Target className="h-12 w-12 text-muted mb-4" />

@@ -1,7 +1,6 @@
 
 import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Session, User } from '@supabase/supabase-js';
@@ -26,11 +25,16 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticating: false,
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Initialize session and user from Supabase
