@@ -1,254 +1,158 @@
 
-import React, { useState, useEffect } from 'react';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Search, ChevronRight, TrendingUp } from 'lucide-react';
-import { useSupabase } from '@/hooks/useSupabase';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from '@/hooks/use-toast';
+import PageLayout from "@/components/layout/PageLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { mockCourses } from '@/data/mockCoursesData';
+import { mockData } from '@/data/mockData';
 
-type Skill = {
-  id: string;
-  name: string;
-  domain_id?: string;
-  proficiency?: number | null;
-  category?: string;
-  trending?: boolean;
+// Mock skills data - in a real app, this would come from your API
+const mockSkills = [
+  { id: 1, name: "Leadership", proficiency: "Knowledge", category: "role" },
+  { id: 2, name: "Project Management", proficiency: "Skill", category: "role" },
+  { id: 3, name: "Data Analysis", proficiency: "Awareness", category: "role" },
+  { id: 4, name: "Machine Learning", proficiency: "Awareness", category: "recommended" },
+  { id: 5, name: "React Development", proficiency: "Knowledge", category: "recommended" },
+  { id: 6, name: "UX Design", proficiency: "Awareness", category: "recommended" },
+  { id: 7, name: "Cloud Computing", proficiency: "Skill", category: "trending" },
+  { id: 8, name: "Cybersecurity", proficiency: "Awareness", category: "trending" },
+  { id: 9, name: "DevOps", proficiency: "Knowledge", category: "trending" },
+  { id: 10, name: "Blockchain", proficiency: "Awareness", category: "trending" },
+];
+
+// Proficiency color mapping
+const proficiencyColors = {
+  "Awareness": "bg-blue-100 text-blue-800",
+  "Knowledge": "bg-purple-100 text-purple-800",
+  "Skill": "bg-green-100 text-green-800",
+  "Mastery": "bg-orange-100 text-orange-800",
 };
 
-type ProficiencyLevel = "awareness" | "knowledge" | "mastery";
-
-const SkillsPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProficiency, setSelectedProficiency] = useState<ProficiencyLevel | ''>('');
-  const [roleSkills, setRoleSkills] = useState<Skill[]>([]);
-  const [recommendedSkills, setRecommendedSkills] = useState<Skill[]>([]);
-  const [trendingSkills, setTrendingSkills] = useState<Skill[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const { getSkillProficiencies, getSkills, getSkillGaps } = useSupabase();
-
-  useEffect(() => {
-    const fetchSkillsData = async () => {
-      try {
-        setLoading(true);
+const Skills: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [proficiency, setProficiency] = useState("");
+  
+  // Filter skills based on search query and selected proficiency
+  const filteredSkills = mockSkills.filter(skill => {
+    const matchesSearch = skill.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesProficiency = proficiency ? skill.proficiency === proficiency : true;
+    return matchesSearch && matchesProficiency;
+  });
+  
+  const roleSkills = filteredSkills.filter(skill => skill.category === "role");
+  const recommendedSkills = filteredSkills.filter(skill => skill.category === "recommended");
+  const trendingSkills = filteredSkills.filter(skill => skill.category === "trending");
+  
+  return (
+    <PageLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-6">Skills Development Hub</h1>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-grow">
+              <Input
+                placeholder="Search for skills..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="w-full md:w-64">
+              <Select value={proficiency} onValueChange={setProficiency}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Proficiency level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Proficiency Levels</SelectItem>
+                  <SelectItem value="Awareness">Awareness</SelectItem>
+                  <SelectItem value="Knowledge">Knowledge</SelectItem>
+                  <SelectItem value="Skill">Skill</SelectItem>
+                  <SelectItem value="Mastery">Mastery</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
         
-        // Get user's current skills with proficiency
-        const proficienciesResponse = await getSkillProficiencies();
-        if (proficienciesResponse?.data) {
-          setRoleSkills(proficienciesResponse.data);
-        }
+        {/* Role-based Skills */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">Skills for Your Role</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {roleSkills.length > 0 ? (
+              roleSkills.map((skill) => (
+                <SkillBubble key={skill.id} skill={skill} />
+              ))
+            ) : (
+              <p className="text-gray-500">No role-based skills match your criteria.</p>
+            )}
+          </div>
+        </section>
         
-        // Get skill gaps as recommendations
-        const gapsResponse = await getSkillGaps();
-        if (gapsResponse?.data) {
-          setRecommendedSkills(gapsResponse.data);
-        }
+        {/* Recommended Skills */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">Recommended Skills</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {recommendedSkills.length > 0 ? (
+              recommendedSkills.map((skill) => (
+                <SkillBubble key={skill.id} skill={skill} />
+              ))
+            ) : (
+              <p className="text-gray-500">No recommended skills match your criteria.</p>
+            )}
+          </div>
+        </section>
         
-        // Get all skills and filter for trending ones
-        const allSkillsResponse = await getSkills();
-        if (allSkillsResponse) {
-          // For demo purposes, mark random skills as trending
-          const randomTrending = allSkillsResponse
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 6)
-            .map(skill => ({ ...skill, trending: true }));
-          
-          setTrendingSkills(randomTrending);
-        }
-      } catch (error) {
-        console.error('Error fetching skills data:', error);
-        toast({
-          title: "Error loading skills",
-          description: "There was a problem loading your skills data.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchSkillsData();
-  }, [getSkillProficiencies, getSkillGaps, getSkills]);
+        {/* Trending Skills */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">Trending Skills</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {trendingSkills.length > 0 ? (
+              trendingSkills.map((skill) => (
+                <SkillBubble key={skill.id} skill={skill} />
+              ))
+            ) : (
+              <p className="text-gray-500">No trending skills match your criteria.</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </PageLayout>
+  );
+};
 
-  const getProficiencyColor = (proficiency?: number | null): string => {
-    if (!proficiency) return "bg-gray-200 text-gray-700";
-    
-    if (proficiency < 30) return "bg-blue-100 text-blue-700 border-blue-300";
-    if (proficiency < 70) return "bg-yellow-100 text-yellow-700 border-yellow-300";
-    return "bg-green-100 text-green-700 border-green-300";
+interface SkillProps {
+  skill: {
+    id: number;
+    name: string;
+    proficiency: string;
+    category: string;
   };
+}
 
-  const getProficiencyText = (proficiency?: number | null): string => {
-    if (!proficiency) return "No proficiency";
-    
-    if (proficiency < 30) return "Awareness";
-    if (proficiency < 70) return "Knowledge";
-    return "Mastery";
-  };
-
-  const renderSkillBubble = (skill: Skill) => (
-    <Link 
-      to={`/skills/${skill.id}`} 
-      key={skill.id}
-      className="no-underline"
-    >
-      <Badge 
-        className={`mr-2 mb-2 py-2 px-3 cursor-pointer hover:opacity-90 transition ${getProficiencyColor(skill.proficiency)}`}
-        variant="outline"
-      >
-        {skill.name}
-        {skill.proficiency && <span className="ml-2 text-xs opacity-70">{getProficiencyText(skill.proficiency)}</span>}
-      </Badge>
+const SkillBubble: React.FC<SkillProps> = ({ skill }) => {
+  return (
+    <Link to={`/skills/${skill.id}`}>
+      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="p-4">
+          <div className="flex flex-col items-center text-center">
+            <h3 className="font-medium text-lg mb-2">{skill.name}</h3>
+            <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors]}`}>
+              {skill.proficiency}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
     </Link>
   );
-
-  return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-6">Skills Explorer</h1>
-      
-      {/* Search and Filter Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Find and Track Your Skills</h2>
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search for skills..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="w-full md:w-64">
-            <Select 
-              value={selectedProficiency} 
-              onValueChange={value => setSelectedProficiency(value as ProficiencyLevel | '')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select proficiency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All Proficiencies</SelectItem>
-                <SelectItem value="awareness">Awareness</SelectItem>
-                <SelectItem value="knowledge">Knowledge</SelectItem>
-                <SelectItem value="mastery">Mastery</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button className="shrink-0">
-            Search
-          </Button>
-        </div>
-      </div>
-      
-      {/* Role Skills Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Your Role Skills</h2>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/skills/role" className="flex items-center">
-              View All <ChevronRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : roleSkills.length > 0 ? (
-            <div>
-              {roleSkills.map(renderSkillBubble)}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No role skills found. Add skills to your profile to see them here.</p>
-          )}
-        </div>
-      </div>
-      
-      {/* Recommended Skills Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Recommended Skills</h2>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/skills/recommended" className="flex items-center">
-              View All <ChevronRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : recommendedSkills.length > 0 ? (
-            <div>
-              {recommendedSkills.map(skill => (
-                <Link to={`/skills/${skill.id}`} key={skill.id} className="no-underline">
-                  <Badge 
-                    className="mr-2 mb-2 py-2 px-3 cursor-pointer hover:opacity-90 transition bg-gray-100 text-gray-700 border-gray-300"
-                    variant="outline"
-                  >
-                    {skill.name}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No recommended skills found at this time.</p>
-          )}
-        </div>
-      </div>
-      
-      {/* Trending Skills Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold flex items-center">
-            <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-            Trending Skills
-          </h2>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/skills/trending" className="flex items-center">
-              View All <ChevronRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : trendingSkills.length > 0 ? (
-            <div>
-              {trendingSkills.map(skill => (
-                <Link to={`/skills/${skill.id}`} key={skill.id} className="no-underline">
-                  <Badge 
-                    className="mr-2 mb-2 py-2 px-3 cursor-pointer hover:opacity-90 transition bg-purple-100 text-purple-700 border-purple-300"
-                    variant="outline"
-                  >
-                    {skill.name}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No trending skills found at this time.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 };
 
-export default SkillsPage;
+export default Skills;

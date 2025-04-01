@@ -1,715 +1,458 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import PageLayout from "@/components/layout/PageLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
-  ArrowLeft, 
-  Send, 
-  Upload, 
-  Brain, 
-  FileText, 
-  Network, 
-  Headphones,
-  FileQuestion,
-  FileSpreadsheet,
-  Info,
-  Youtube,
-  File,
-  Globe,
-  Image as ImageIcon,
-  X
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { toast } from '@/hooks/use-toast';
-import { useSupabase } from '@/hooks/useSupabase';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { Sparkles, ChevronLeft, Upload, Bookmark, BookmarkCheck, FileText, Network, Headphones, FileQuestion, FileSpreadsheet, Info } from "lucide-react";
 import { useGemini } from '@/hooks/useGemini';
 
-type ProficiencyLevel = "awareness" | "knowledge" | "mastery";
+// Mock skill data - would come from API in a real app
+const mockSkillsDetailed = [
+  { 
+    id: 1, 
+    name: "Leadership", 
+    proficiency: "Knowledge",
+    description: "Leadership is the ability to influence, motivate, and enable others to contribute to organizational success. Effective leadership inspires vision, drives change, and empowers team members to achieve results beyond their individual capabilities.",
+    courses: [1, 4, 11]
+  },
+  { 
+    id: 2, 
+    name: "Project Management", 
+    proficiency: "Skill",
+    description: "Project management is the practice of initiating, planning, executing, controlling, and closing work to achieve specific goals and meet specific success criteria within a given timeframe. The key skills include planning, budgeting, scheduling, risk assessment, and team coordination.",
+    courses: [3, 4, 11]
+  },
+  { 
+    id: 3, 
+    name: "Data Analysis", 
+    proficiency: "Awareness",
+    description: "Data analysis involves inspecting, cleaning, transforming, and modeling data to discover useful information, inform conclusions, and support decision-making. It encompasses various techniques and approaches to extract insights from structured and unstructured data.",
+    courses: [2, 5, 19]
+  },
+  { 
+    id: 4, 
+    name: "Machine Learning", 
+    proficiency: "Awareness",
+    description: "Machine learning is a field of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It focuses on developing algorithms that can access data and use it to learn for themselves.",
+    courses: [5, 19]
+  },
+  { 
+    id: 5, 
+    name: "React Development", 
+    proficiency: "Knowledge",
+    description: "React development involves building user interfaces using the React JavaScript library. React's component-based architecture allows developers to create reusable UI components that manage their own state, resulting in efficient updates and rendering of the right components when data changes.",
+    courses: [6, 8]
+  },
+  { 
+    id: 6, 
+    name: "UX Design", 
+    proficiency: "Awareness",
+    description: "UX Design (User Experience Design) is the process of creating products that provide meaningful and relevant experiences to users. It involves the design of the entire process of acquiring and integrating the product, including aspects of branding, design, usability, and function.",
+    courses: [8, 16]
+  },
+  { 
+    id: 7, 
+    name: "Cloud Computing", 
+    proficiency: "Skill",
+    description: "Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ("the cloud") to offer faster innovation, flexible resources, and economies of scale.",
+    courses: [13, 22]
+  },
+  { 
+    id: 8, 
+    name: "Cybersecurity", 
+    proficiency: "Awareness",
+    description: "Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information; extorting money from users; or interrupting normal business processes.",
+    courses: [13]
+  },
+  { 
+    id: 9, 
+    name: "DevOps", 
+    proficiency: "Knowledge",
+    description: "DevOps is a set of practices that combines software development (Dev) and IT operations (Ops). It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.",
+    courses: [6, 11, 15]
+  },
+  { 
+    id: 10, 
+    name: "Blockchain", 
+    proficiency: "Awareness",
+    description: "Blockchain is a distributed, decentralized, public ledger technology that records transactions across many computers so that any involved record cannot be altered retroactively, without the alteration of all subsequent blocks.",
+    courses: [19, 22]
+  },
+];
 
-type SourceItem = {
-  id: string;
-  type: 'youtube' | 'website' | 'video' | 'image' | 'document' | 'text';
-  content: string;
-  label?: string;
-  file?: File;
-};
-
-type ChatMessage = {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-};
+const proficiencyLevels = ["Awareness", "Knowledge", "Skill", "Mastery"];
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [skill, setSkill] = useState<any>(null);
-  const [userProficiency, setUserProficiency] = useState<ProficiencyLevel | ''>('');
-  const [sources, setSources] = useState<SourceItem[]>([]);
-  const [sourceType, setSourceType] = useState<SourceItem['type']>('text');
-  const [sourceContent, setSourceContent] = useState('');
-  const [sourceLabel, setSourceLabel] = useState('');
-  const [userQuery, setUserQuery] = useState('');
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [generating, setGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const [selectedProficiency, setSelectedProficiency] = useState<string>("");
+  const [sources, setSources] = useState<string>("");
+  const [userQuery, setUserQuery] = useState<string>("");
+  const [chatMessages, setChatMessages] = useState<{role: string, content: string}[]>([
+    {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
+  ]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const { loading, generateResponse } = useGemini();
 
-  const { getSkill, updateSkillProficiency, getSkillWithCourses } = useSupabase();
-  const { generateResponse } = useGemini();
+  // Find the skill details based on skillId
+  const skill = mockSkillsDetailed.find(s => s.id === Number(skillId));
+  
+  useEffect(() => {
+    if (skill && !selectedProficiency) {
+      setSelectedProficiency(skill.proficiency);
+    }
+  }, [skill, selectedProficiency]);
 
   useEffect(() => {
-    const fetchSkillData = async () => {
-      if (!skillId) return;
-      
-      try {
-        setLoading(true);
-        
-        // Get skill details with related courses
-        const skillResponse = await getSkillWithCourses(skillId);
-        
-        if (skillResponse?.data) {
-          setSkill(skillResponse.data);
-          
-          // Set user proficiency if available
-          if (skillResponse.data.proficiency) {
-            const profLevel = getProficiencyLevelFromValue(skillResponse.data.proficiency);
-            setUserProficiency(profLevel);
-          }
-        } else {
-          toast({
-            title: "Skill not found",
-            description: "The requested skill could not be found.",
-            variant: "destructive",
-          });
-          navigate('/skills');
-        }
-      } catch (error) {
-        console.error('Error fetching skill data:', error);
-        toast({
-          title: "Error loading skill",
-          description: "There was a problem loading the skill details.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchSkillData();
-  }, [skillId, getSkill, getSkillWithCourses, navigate]);
+    // Scroll to bottom of chat when new messages appear
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
-  useEffect(() => {
-    // Scroll to bottom of chat when new messages are added
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const getProficiencyLevelFromValue = (value?: number): ProficiencyLevel => {
-    if (!value || value < 30) return "awareness";
-    if (value < 70) return "knowledge";
-    return "mastery";
+  const handleBack = () => {
+    navigate('/skills');
   };
 
-  const getProficiencyValue = (level: ProficiencyLevel): number => {
-    switch (level) {
-      case "awareness": return 25;
-      case "knowledge": return 60;
-      case "mastery": return 95;
-      default: return 0;
-    }
-  };
-
-  const handleProficiencyChange = async (level: ProficiencyLevel) => {
-    if (!skillId) return;
-    
-    try {
-      setUserProficiency(level);
-      const proficiencyValue = getProficiencyValue(level);
-      
-      await updateSkillProficiency(skillId, proficiencyValue);
-      
+  const handleSourcesSubmit = () => {
+    if (sources.trim()) {
       toast({
-        title: "Proficiency updated",
-        description: `Your proficiency for ${skill?.name} has been updated to ${level}.`,
+        title: "Sources added",
+        description: "Your sources have been added as context for the AI assistant.",
       });
-    } catch (error) {
-      console.error('Error updating proficiency:', error);
-      toast({
-        title: "Update failed",
-        description: "There was a problem updating your proficiency level.",
-        variant: "destructive",
-      });
+      
+      // Add a system message in the chat about sources being added
+      setChatMessages(prev => [
+        ...prev, 
+        {role: 'system', content: 'New context sources have been added. The AI will now use this information to provide more relevant responses.'}
+      ]);
     }
-  };
-
-  const addSource = () => {
-    if (!sourceContent.trim()) {
-      toast({
-        title: "Empty source",
-        description: "Please provide content for the source.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const newSource: SourceItem = {
-      id: Date.now().toString(),
-      type: sourceType,
-      content: sourceContent,
-      label: sourceLabel || `${sourceType} source`,
-    };
-    
-    setSources([...sources, newSource]);
-    setSourceContent('');
-    setSourceLabel('');
-    
-    toast({
-      title: "Source added",
-      description: `Your ${sourceType} source has been added.`,
-    });
-  };
-
-  const removeSource = (id: string) => {
-    setSources(sources.filter(source => source.id !== id));
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    
-    const file = files[0];
-    const fileSource: SourceItem = {
-      id: Date.now().toString(),
-      type: 'document',
-      content: file.name,
-      label: file.name,
-      file
-    };
-    
-    setSources([...sources, fileSource]);
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    
-    toast({
-      title: "File added",
-      description: `${file.name} has been added as a source.`,
-    });
   };
 
   const handleSendMessage = async () => {
     if (!userQuery.trim()) return;
     
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: userQuery,
-      timestamp: new Date()
-    };
+    // Add user message to chat
+    setChatMessages(prev => [...prev, {role: 'user', content: userQuery}]);
     
-    setMessages([...messages, userMessage]);
-    const currentQuery = userQuery;
-    setUserQuery('');
+    // Prepare context for the AI
+    let context = `Skill: ${skill?.name}\nProficiency Level: ${selectedProficiency}\nDescription: ${skill?.description}\n`;
+    if (sources) {
+      context += `Additional Context Sources: ${sources}\n`;
+    }
     
-    // Prepare sources context
-    const sourcesContext = sources.map(source => {
-      return `Source (${source.type}): ${source.content}`;
-    }).join('\n\n');
+    setIsLoading(true);
     
     try {
-      setGenerating(true);
-      
-      // Generate response with Gemini
-      const { generatedText } = await generateResponse({
-        prompt: currentQuery,
-        context: `Skill: ${skill?.name}\n\nSources:\n${sourcesContext}`,
+      // Get response from Gemini
+      const result = await generateResponse({
+        prompt: userQuery,
+        context: context
       });
       
-      const assistantMessage: ChatMessage = {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: generatedText,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, assistantMessage]);
+      // Add AI response to chat
+      setChatMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
     } catch (error) {
-      console.error('Error generating response:', error);
+      console.error("Error getting response:", error);
       toast({
-        title: "AI response failed",
-        description: "There was a problem generating the AI response.",
-        variant: "destructive",
+        title: "Error",
+        description: "Failed to get a response. Please try again.",
+        variant: "destructive"
       });
     } finally {
-      setGenerating(false);
+      setIsLoading(false);
+      setUserQuery("");
     }
   };
 
-  const generateContentWithActiveTool = async () => {
-    if (!activeTool || !skill) return;
-    
-    try {
-      setGenerating(true);
-      
-      // Prepare sources context
-      const sourcesContext = sources.map(source => {
-        return `Source (${source.type}): ${source.content}`;
-      }).join('\n\n');
-      
-      // Generate content based on the active tool
-      let prompt = '';
-      let title = '';
-      
-      switch (activeTool) {
-        case 'assess':
-          title = "Self Assessment";
-          prompt = `Create an interactive self-assessment quiz for the skill "${skill.name}" at the ${userProficiency || 'beginner'} level. Include 5-7 questions with a mix of multiple choice, true/false, and short answer questions. For each question, provide a correct answer and explanation.`;
-          break;
-        case 'notes':
-          title = "Study Notes";
-          prompt = `Create comprehensive, well-organized study notes for "${skill.name}" at the ${userProficiency || 'beginner'} level. Include key concepts, definitions, examples, and best practices. Structure the notes in a clear, readable format with headings, subheadings, and bullet points where appropriate.`;
-          break;
-        case 'mindmap':
-          title = "Mind Map";
-          prompt = `Create a detailed text-based mind map for learning "${skill.name}" at the ${userProficiency || 'beginner'} level. Start with the central concept and branch out to key topics, subtopics, and their relationships. Use indentation and symbols to show the hierarchy and connections between concepts.`;
-          break;
-        case 'podcast':
-          title = "Microlearning Podcast Script";
-          prompt = `Create a script for a 5-minute microlearning podcast between a male host (Alex) and female expert (Maya) explaining "${skill.name}" at the ${userProficiency || 'beginner'} level. The conversation should be engaging, informative, and cover key concepts in a conversational way. Structure it as a dialogue with speaker names.`;
-          break;
-        case 'questionnaire':
-          title = "Question Bank";
-          prompt = `Create a comprehensive question bank for "${skill.name}" at the ${userProficiency || 'beginner'} level. Include 15-20 questions of varying difficulty, with a mix of multiple choice, true/false, short answer, and scenario-based questions. Organize questions by topic and provide answer keys.`;
-          break;
-        case 'overview':
-          title = "Brief Overview";
-          prompt = `Provide a concise overview of "${skill.name}" suitable for someone at the ${userProficiency || 'beginner'} level. Cover the definition, importance, key concepts, applications, and career relevance in a clear, digestible format of 300-500 words.`;
-          break;
-      }
-      
-      // Generate response with Gemini
-      const { generatedText } = await generateResponse({
-        prompt,
-        context: `Skill: ${skill.name}\n\nSources:\n${sourcesContext}`,
-      });
-      
-      setGeneratedContent(generatedText);
-    } catch (error) {
-      console.error('Error generating content:', error);
-      toast({
-        title: "Content generation failed",
-        description: "There was a problem generating the content.",
-        variant: "destructive",
-      });
-    } finally {
-      setGenerating(false);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
-  if (loading) {
+  const handleToolClick = async (tool: string) => {
+    setIsLoading(true);
+    
+    // Prepare context information
+    let context = `Skill: ${skill?.name}\nProficiency Level: ${selectedProficiency}\nDescription: ${skill?.description}\n`;
+    if (sources) {
+      context += `Additional Context Sources: ${sources}\n`;
+    }
+    
+    let prompt = "";
+    let responseTitle = "";
+    
+    switch (tool) {
+      case 'assess':
+        prompt = `Create an adaptive assessment plan for the skill "${skill?.name}" at the "${selectedProficiency}" level. Include various assessment types like quizzes, interactive activities, and project evaluations. Format this as a comprehensive assessment plan with clear sections.`;
+        responseTitle = "Skill Assessment Plan";
+        break;
+      case 'notes':
+        prompt = `Create comprehensive study notes for the skill "${skill?.name}" at the "${selectedProficiency}" level. Make these notes concise, well-organized, and easy to understand. Format them with clear headings, bullet points, and examples.`;
+        responseTitle = "Study Notes";
+        break;
+      case 'mindmap':
+        prompt = `Create a detailed concept map or mind map for the skill "${skill?.name}" at the "${selectedProficiency}" level. Describe the key concepts, their relationships, and how they connect together in a hierarchical structure.`;
+        responseTitle = "Concept Map";
+        break;
+      case 'podcast':
+        prompt = `Create a script for a microlearning podcast between a male and female host explaining the key concepts of "${skill?.name}" at the "${selectedProficiency}" level. Make it conversational, engaging, and cover the most important aspects in a concise manner.`;
+        responseTitle = "Microlearning Podcast Script";
+        break;
+      case 'questionnaire':
+        prompt = `Create a comprehensive question bank for the skill "${skill?.name}" at the "${selectedProficiency}" level. Include a variety of question types (multiple choice, true/false, short answer, etc.) and organize them by topic or difficulty level.`;
+        responseTitle = "Question Bank";
+        break;
+      case 'overview':
+        prompt = `Provide a brief but comprehensive overview of the skill "${skill?.name}" at the "${selectedProficiency}" level. Include key concepts, importance, applications, and learning resources.`;
+        responseTitle = "Skill Overview";
+        break;
+      default:
+        prompt = `Tell me more about the skill "${skill?.name}" at the "${selectedProficiency}" level.`;
+        responseTitle = "Skill Information";
+    }
+    
+    try {
+      // Add user tool request to chat
+      setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
+      
+      // Get response from Gemini
+      const result = await generateResponse({
+        prompt: prompt,
+        context: context
+      });
+      
+      // Add AI response to chat
+      setChatMessages(prev => [...prev, {role: 'assistant', content: `## ${responseTitle}\n\n${result.generatedText}`}]);
+    } catch (error) {
+      console.error("Error getting response:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate content. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!skill) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <PageLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Skill not found</h1>
+            <Button onClick={handleBack}>Back to Skills</Button>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      {/* Header with back button and skill info */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div className="flex items-center mb-4 md:mb-0">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/skills')} 
-            className="mr-2"
-          >
-            <ArrowLeft className="h-5 w-5" />
+    <PageLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 flex items-center">
+          <Button variant="ghost" onClick={handleBack} className="mr-2">
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Back
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{skill?.name}</h1>
-            {skill?.category && (
-              <p className="text-muted-foreground">{skill.category}</p>
-            )}
-          </div>
+          <h1 className="text-3xl font-bold">{skill.name}</h1>
         </div>
-        <div className="flex items-center space-x-3">
-          <span className="text-sm text-muted-foreground mr-2">Your proficiency:</span>
-          <Select
-            value={userProficiency}
-            onValueChange={(value) => handleProficiencyChange(value as ProficiencyLevel)}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Set proficiency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="awareness">Awareness</SelectItem>
-              <SelectItem value="knowledge">Knowledge</SelectItem>
-              <SelectItem value="mastery">Mastery</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Source materials section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Learning Sources</CardTitle>
-          <CardDescription>
-            Add sources to help the AI provide more relevant and accurate information.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col space-y-4">
-            {/* Source type selection */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <Select
-                value={sourceType}
-                onValueChange={(value) => setSourceType(value as SourceItem['type'])}
-              >
-                <SelectTrigger className="w-full md:w-[150px]">
-                  <SelectValue placeholder="Source type" />
+        
+        <div className="mb-6">
+          <p className="text-gray-600 mb-4">{skill.description}</p>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="flex items-center">
+              <span className="text-sm font-medium mr-2">Proficiency Level:</span>
+              <Select value={selectedProficiency} onValueChange={setSelectedProficiency}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="youtube">YouTube</SelectItem>
-                  <SelectItem value="website">Website</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="image">Image</SelectItem>
-                  <SelectItem value="document">Document</SelectItem>
-                  <SelectItem value="text">Text</SelectItem>
+                  {proficiencyLevels.map(level => (
+                    <SelectItem key={level} value={level}>{level}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-
-              {sourceType === 'document' ? (
-                <div className="flex-grow">
-                  <Input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    accept=".pdf,.doc,.docx,.txt,.ppt,.pptx"
-                  />
-                </div>
-              ) : (
-                <div className="flex-grow flex flex-col md:flex-row gap-2">
-                  <Input
-                    placeholder={`Enter ${sourceType} content...`}
-                    value={sourceContent}
-                    onChange={(e) => setSourceContent(e.target.value)}
-                    className="flex-grow"
-                  />
-                  <Input
-                    placeholder="Label (optional)"
-                    value={sourceLabel}
-                    onChange={(e) => setSourceLabel(e.target.value)}
-                    className="md:w-40"
-                  />
-                </div>
-              )}
-              
-              {sourceType !== 'document' && (
-                <Button onClick={addSource} className="whitespace-nowrap">
-                  Add Source
-                </Button>
-              )}
             </div>
-
-            {/* List of added sources */}
-            {sources.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Added Sources:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {sources.map((source) => (
-                    <Badge 
-                      key={source.id} 
-                      variant="secondary" 
-                      className="flex items-center gap-1 py-1.5 px-3"
-                    >
-                      {source.type === 'youtube' && <Youtube className="h-3 w-3" />}
-                      {source.type === 'website' && <Globe className="h-3 w-3" />}
-                      {source.type === 'video' && <Youtube className="h-3 w-3" />}
-                      {source.type === 'image' && <ImageIcon className="h-3 w-3" />}
-                      {source.type === 'document' && <File className="h-3 w-3" />}
-                      {source.type === 'text' && <FileText className="h-3 w-3" />}
-                      <span className="max-w-[200px] truncate">{source.label || source.content}</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-4 w-4 p-0 ml-1"
-                        onClick={() => removeSource(source.id)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Main content area - split into chatbot and tools */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left side - Chatbot */}
-        <div className="md:col-span-2">
-          <Card className="h-full flex flex-col">
-            <CardHeader>
-              <CardTitle>AI Assistant</CardTitle>
-              <CardDescription>
-                Ask questions about {skill?.name} to get personalized learning assistance.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow overflow-hidden">
-              <div 
-                ref={chatContainerRef}
-                className="h-[400px] overflow-y-auto border rounded-md p-4 mb-4"
-              >
-                {messages.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-10">
-                    <p>Ask a question to get started</p>
-                    <div className="mt-4 text-sm">
-                      <p className="font-medium mb-2">Sample prompts:</p>
-                      <p className="mb-1 cursor-pointer hover:text-primary" onClick={() => setUserQuery(`What is ${skill?.name}?`)}>
-                        What is {skill?.name}?
-                      </p>
-                      <p className="mb-1 cursor-pointer hover:text-primary" onClick={() => setUserQuery(`How can I learn ${skill?.name} as a beginner?`)}>
-                        How can I learn {skill?.name} as a beginner?
-                      </p>
-                      <p className="mb-1 cursor-pointer hover:text-primary" onClick={() => setUserQuery(`What are the key components of ${skill?.name}?`)}>
-                        What are the key components of {skill?.name}?
-                      </p>
-                      <p className="cursor-pointer hover:text-primary" onClick={() => setUserQuery(`How is ${skill?.name} applied in real-world scenarios?`)}>
-                        How is {skill?.name} applied in real-world scenarios?
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {messages.map((message) => (
-                      <div 
-                        key={message.id} 
-                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div 
-                          className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                            message.role === 'user' 
-                              ? 'bg-primary text-primary-foreground' 
-                              : 'bg-muted'
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap">{message.content}</p>
-                          <p className="text-xs opacity-70 mt-1">
-                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {generating && (
-                      <div className="flex justify-start">
-                        <div className="max-w-[80%] rounded-lg px-4 py-2 bg-muted">
-                          <div className="flex space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce"></div>
-                            <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                            <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Textarea
-                  placeholder="Ask about this skill..."
-                  value={userQuery}
-                  onChange={(e) => setUserQuery(e.target.value)}
-                  className="resize-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                />
-                <Button onClick={handleSendMessage} disabled={!userQuery.trim() || generating}>
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
-
-        {/* Right side - Tools */}
-        <div className="md:col-span-1">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Learning Tools</CardTitle>
-              <CardDescription>
-                Generate personalized learning resources for {skill?.name}.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left column - Sources input */}
+          <div className="lg:col-span-3 mb-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add Learning Sources</CardTitle>
+                <CardDescription>
+                  Add sources like videos, websites, documents, or any other learning materials to enhance the AI's context
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea 
+                  placeholder="Add YouTube links, website URLs, or text resources here..." 
+                  className="min-h-[100px]"
+                  value={sources}
+                  onChange={(e) => setSources(e.target.value)}
+                />
+              </CardContent>
+              <CardFooter>
+                <Button onClick={handleSourcesSubmit} className="ml-auto">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Add Sources
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+          
+          {/* Middle column - Chat */}
+          <div className="lg:col-span-2">
+            <Card className="h-full flex flex-col">
+              <CardHeader>
+                <CardTitle>AI Skill Assistant</CardTitle>
+                <CardDescription>
+                  Chat with AI to learn more about {skill.name}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow overflow-y-auto max-h-[400px]">
+                <div className="space-y-4">
+                  {chatMessages.map((msg, index) => (
+                    <div 
+                      key={index} 
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} ${msg.role === 'system' ? 'justify-center' : ''}`}
+                    >
+                      <div 
+                        className={`
+                          max-w-[80%] rounded-lg p-3 
+                          ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : ''} 
+                          ${msg.role === 'assistant' ? 'bg-muted' : ''}
+                          ${msg.role === 'system' ? 'bg-amber-100 text-amber-800 text-sm italic' : ''}
+                        `}
+                      >
+                        <div className="whitespace-pre-wrap">
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+              </CardContent>
+              <CardFooter className="border-t p-4">
+                <div className="flex w-full gap-2">
+                  <Textarea
+                    placeholder="Ask about this skill..."
+                    value={userQuery}
+                    onChange={(e) => setUserQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="flex-grow resize-none"
+                    rows={1}
+                    disabled={isLoading}
+                  />
+                  <Button onClick={handleSendMessage} disabled={isLoading || !userQuery.trim()}>
+                    {isLoading ? "Sending..." : "Send"}
+                  </Button>
+                </div>
+                <div className="w-full mt-2 text-xs text-gray-500">
+                  <p>Sample prompts:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    <li>What are the key concepts of {skill.name}?</li>
+                    <li>How can I apply {skill.name} in my current role?</li>
+                    <li>What resources would you recommend for learning {skill.name}?</li>
+                  </ul>
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+          
+          {/* Right column - Tools */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Learning Tools</CardTitle>
+                <CardDescription>Explore this skill with AI-powered tools</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('assess');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  className="w-full justify-start" 
+                  onClick={() => handleToolClick('assess')}
+                  disabled={isLoading}
                 >
-                  <Brain className="h-4 w-4 mr-2" />
+                  <Sparkles className="h-4 w-4 mr-2" />
                   Assess Yourself
                 </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('notes');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  onClick={() => handleToolClick('notes')}
+                  disabled={isLoading}
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Create Study Notes
                 </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('mindmap');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  onClick={() => handleToolClick('mindmap')}
+                  disabled={isLoading}
                 >
                   <Network className="h-4 w-4 mr-2" />
                   Create Mindmap
                 </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('podcast');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  onClick={() => handleToolClick('podcast')}
+                  disabled={isLoading}
                 >
                   <Headphones className="h-4 w-4 mr-2" />
                   Create Microlearning Podcast
                 </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('questionnaire');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  onClick={() => handleToolClick('questionnaire')}
+                  disabled={isLoading}
                 >
-                  <FileQuestion className="h-4 w-4 mr-2" />
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
                   Create Questionnaire
                 </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
-                  onClick={() => {
-                    setActiveTool('overview');
-                    setGeneratedContent(null);
-                    generateContentWithActiveTool();
-                  }}
-                  disabled={generating}
+                  onClick={() => handleToolClick('overview')}
+                  disabled={isLoading}
                 >
                   <Info className="h-4 w-4 mr-2" />
                   Create Brief Overview
                 </Button>
-              </div>
-
-              {generating && (
-                <div className="mt-6 text-center py-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-4">Generating content...</p>
-                </div>
-              )}
-
-              {generatedContent && (
-                <div className="mt-6">
-                  <h3 className="font-medium mb-2">
-                    {activeTool === 'assess' && "Self Assessment"}
-                    {activeTool === 'notes' && "Study Notes"}
-                    {activeTool === 'mindmap' && "Mind Map"}
-                    {activeTool === 'podcast' && "Microlearning Podcast Script"}
-                    {activeTool === 'questionnaire' && "Question Bank"}
-                    {activeTool === 'overview' && "Brief Overview"}
-                  </h3>
-                  <div className="border rounded-md p-4 bg-muted/50 mt-2 max-h-[400px] overflow-y-auto">
-                    <pre className="whitespace-pre-wrap font-sans text-sm">{generatedContent}</pre>
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        const blob = new Blob([generatedContent], { type: 'text/plain' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `${skill?.name}-${activeTool}.txt`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                        
-                        toast({
-                          title: "Content downloaded",
-                          description: "Your generated content has been downloaded.",
-                        });
-                      }}
-                    >
-                      Download
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 
