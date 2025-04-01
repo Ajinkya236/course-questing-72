@@ -9,7 +9,11 @@ interface CourseCarouselHeaderProps {
   onViewAllClick?: () => void;
   viewAllUrl?: string;
   carouselId: string;
-  description?: string; // Make description optional
+  description?: string; // Add description property
+  showLeftButton?: boolean;
+  showRightButton?: boolean;
+  onScrollLeft?: () => void;
+  onScrollRight?: () => void;
 }
 
 const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
@@ -17,7 +21,11 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   onViewAllClick,
   viewAllUrl = '/view-all',
   carouselId,
-  description
+  description,
+  showLeftButton = true,
+  showRightButton = true,
+  onScrollLeft,
+  onScrollRight
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -31,18 +39,26 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   };
 
   const triggerCarouselPrev = () => {
-    const carousel = document.getElementById(carouselId);
-    if (carousel) {
-      const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
-      if (prevButton) prevButton.click();
+    if (onScrollLeft) {
+      onScrollLeft();
+    } else {
+      const carousel = document.getElementById(carouselId);
+      if (carousel) {
+        const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
+        if (prevButton) prevButton.click();
+      }
     }
   };
 
   const triggerCarouselNext = () => {
-    const carousel = document.getElementById(carouselId);
-    if (carousel) {
-      const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
-      if (nextButton) nextButton.click();
+    if (onScrollRight) {
+      onScrollRight();
+    } else {
+      const carousel = document.getElementById(carouselId);
+      if (carousel) {
+        const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
+        if (nextButton) nextButton.click();
+      }
     }
   };
 
@@ -75,22 +91,26 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
       
       {/* Navigation controls for carousel - displayed next to title */}
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselPrev}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselNext}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        {showLeftButton && (
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 rounded-full"
+            onClick={triggerCarouselPrev}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        )}
+        {showRightButton && (
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 rounded-full"
+            onClick={triggerCarouselNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

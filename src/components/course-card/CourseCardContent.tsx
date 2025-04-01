@@ -27,11 +27,11 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
   handleAssignClick
 }) => {
   return (
-    <div className="p-3 space-y-2 flex flex-col h-[180px]">
+    <div className="p-3 space-y-2">
       <h3 className="font-medium text-sm leading-tight line-clamp-1">{title}</h3>
       <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground pt-0.5">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{duration}</span>
@@ -42,38 +42,44 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      <div className="pt-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex gap-1 mb-1">
+      {/* Action buttons with improved visibility */}
+      <div className="flex flex-col gap-2 mt-3">
+        <div className="flex items-center gap-2">
           <Button 
             variant="default" 
-            className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-7 text-xs"
+            className="flex-1 py-1 h-8 bg-primary hover:bg-primary/90 text-white"
             onClick={handleWatchClick}
+            size="sm"
           >
             <Play className="h-3 w-3 mr-1" /> Watch
           </Button>
+          
           <Button 
             variant="outline" 
             size="icon"
             onClick={handleShareClick}
             aria-label="Share"
-            className="h-7 w-7"
+            className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary"
           >
-            <Share2 className="h-3 w-3" />
+            <Share2 className="h-4 w-4" />
           </Button>
+          
           <Button 
             variant="outline" 
             size="icon"
             onClick={handleBookmarkToggle}
             aria-label="Bookmark"
-            className={`h-7 w-7 ${isBookmarked ? "border-primary text-primary" : ""}`}
+            className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-primary`}
           >
-            <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
           </Button>
         </div>
+        
         <Button 
           variant="outline" 
-          className="w-full h-7 text-xs"
+          className="w-full h-8 text-xs border-muted-foreground/30 hover:bg-muted hover:text-primary"
           onClick={handleAssignClick}
+          size="sm"
         >
           <UserPlus className="h-3 w-3 mr-1" /> Assign
         </Button>

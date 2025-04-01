@@ -13,15 +13,15 @@ import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
-// Filter courses for different categories
+// Filter courses and add video URLs and properly formatted images
 const continueLearningCourses = mockCourses
   .filter(course => course.status === 'in-progress')
   .slice(0, 12)
   .map(course => ({
     ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Sample video
-    progress: Math.floor(Math.random() * 80) + 10 // Random progress between 10-90%
+    imageUrl: `https://source.unsplash.com/random/800x450/?coding,tech,${Math.random()}`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    progress: Math.floor(Math.random() * 80) + 10
   }));
 
 const assignedCourses = mockCourses
@@ -29,24 +29,24 @@ const assignedCourses = mockCourses
   .slice(0, 12)
   .map(course => ({
     ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' // Sample video
+    imageUrl: `https://source.unsplash.com/random/800x450/?business,office,${Math.random()}`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
   }));
 
 const chosenForYou = mockCourses
   .filter((_, idx) => idx < 12)
   .map(course => ({
     ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' // Sample video
+    imageUrl: `https://source.unsplash.com/random/800x450/?learning,education,${Math.random()}`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
   }));
 
 const basedOnInterest = mockCourses
   .filter((_, idx) => idx >= 12 && idx < 24)
   .map(course => ({
     ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' // Sample video
+    imageUrl: `https://source.unsplash.com/random/800x450/?study,library,${Math.random()}`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
   }));
 
 // New skills for your role courses - with job role specific skills
@@ -62,7 +62,7 @@ const forYourRoleCourses = [
     id: "role-course-001",
     title: "Leadership Masterclass: Advanced Techniques",
     description: "Master the art of leadership with practical techniques used by top executives.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?leadership,${Math.random()}`,
     category: "Leadership",
     duration: "4h 30m",
     rating: 4.9,
@@ -75,7 +75,7 @@ const forYourRoleCourses = [
     id: "role-course-002",
     title: "Effective Communication for Managers",
     description: "Learn how to communicate with clarity, purpose and impact in managerial roles.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?communication,${Math.random()}`,
     category: "Communication",
     duration: "3h 45m",
     rating: 4.8,
@@ -88,7 +88,7 @@ const forYourRoleCourses = [
     id: "role-course-003",
     title: "Project Management Professional",
     description: "A comprehensive guide to managing projects efficiently using modern methodologies.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?project,management,${Math.random()}`,
     category: "Project Management",
     duration: "8h 15m",
     rating: 4.7,
@@ -101,7 +101,7 @@ const forYourRoleCourses = [
     id: "role-course-004",
     title: "Critical Decision Making",
     description: "Learn frameworks and techniques for making better decisions under pressure.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?decision,making,${Math.random()}`,
     category: "Decision Making",
     duration: "3h 10m",
     rating: 4.6,
@@ -114,7 +114,7 @@ const forYourRoleCourses = [
     id: "role-course-005",
     title: "Strategic Planning and Execution",
     description: "Develop and execute strategies that align with organizational goals.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?strategic,planning,${Math.random()}`,
     category: "Strategic Planning",
     duration: "5h 30m",
     rating: 4.8,
@@ -127,7 +127,7 @@ const forYourRoleCourses = [
     id: "role-course-006",
     title: "Conflict Resolution in Teams",
     description: "Practical approaches to managing and resolving conflicts in professional settings.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?conflict,resolution,${Math.random()}`,
     category: "Conflict Resolution",
     duration: "2h 55m",
     rating: 4.7,
@@ -140,7 +140,7 @@ const forYourRoleCourses = [
     id: "role-course-007",
     title: "Building High-Performance Teams",
     description: "Strategies for creating, leading and maintaining high-performing teams.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?team,building,${Math.random()}`,
     category: "Team Building",
     duration: "4h 20m",
     rating: 4.9,
@@ -153,7 +153,7 @@ const forYourRoleCourses = [
     id: "role-course-008",
     title: "Problem Solving for Managers",
     description: "Analytical techniques to approach and solve complex business problems.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?problem,solving,${Math.random()}`,
     category: "Problem Solving",
     duration: "3h 40m",
     rating: 4.7,
@@ -166,7 +166,7 @@ const forYourRoleCourses = [
     id: "role-course-009",
     title: "Time Management and Productivity",
     description: "Maximize productivity and efficiency with proven time management techniques.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?time,management,${Math.random()}`,
     category: "Time Management",
     duration: "2h 30m",
     rating: 4.8,
@@ -179,7 +179,7 @@ const forYourRoleCourses = [
     id: "role-course-010",
     title: "Effective Delegation Skills",
     description: "Learn when and how to delegate tasks to maximize team productivity.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?delegation,${Math.random()}`,
     category: "Delegation",
     duration: "2h 15m",
     rating: 4.6,
@@ -195,9 +195,9 @@ const trendingCourses = [...mockCourses]
   .slice(0, 12)
   .map((course, idx) => ({
     ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
-    title: `${idx + 1}. ${course.title}` // Add ranking to title
+    imageUrl: `https://source.unsplash.com/random/800x450/?trending,popular,${Math.random()}`,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    title: `${idx + 1}. ${course.title}`
   }));
 
 // New popular with similar users courses with realistic data
@@ -206,7 +206,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-001",
     title: "Big Data Analytics for Managers",
     description: "Learn how to leverage big data to make better business decisions.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?data,analytics,${Math.random()}`,
     category: "Data Analysis",
     duration: "5h 45m",
     rating: 4.7,
@@ -218,7 +218,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-002",
     title: "Emotional Intelligence at Work",
     description: "Develop emotional intelligence skills to enhance professional relationships.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?emotional,intelligence,${Math.random()}`,
     category: "Soft Skills",
     duration: "3h 20m",
     rating: 4.9,
@@ -230,7 +230,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-003",
     title: "Digital Marketing Essentials",
     description: "Master the fundamentals of digital marketing in today's business landscape.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?digital,marketing,${Math.random()}`,
     category: "Marketing",
     duration: "4h 15m",
     rating: 4.6,
@@ -242,7 +242,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-004",
     title: "Advanced Excel for Business Analytics",
     description: "Take your Excel skills to the next level for better business analysis.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?excel,analytics,${Math.random()}`,
     category: "Data Analysis",
     duration: "6h 30m",
     rating: 4.8,
@@ -254,7 +254,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-005",
     title: "Leading Through Change",
     description: "Effective strategies for leading teams through organizational change.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?leading,change,${Math.random()}`,
     category: "Leadership",
     duration: "3h 50m",
     rating: 4.7,
@@ -266,7 +266,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-006",
     title: "Negotiation Techniques that Work",
     description: "Practical negotiation strategies for business professionals.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?negotiation,techniques,${Math.random()}`,
     category: "Communication",
     duration: "4h 10m",
     rating: 4.9,
@@ -278,7 +278,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-007",
     title: "Financial Planning for Managers",
     description: "Essential financial knowledge for non-financial managers.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?financial,planning,${Math.random()}`,
     category: "Finance",
     duration: "5h 20m",
     rating: 4.6,
@@ -290,7 +290,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-008",
     title: "Business Ethics and Compliance",
     description: "Navigate ethical dilemmas and compliance issues in business.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?business,ethics,${Math.random()}`,
     category: "Compliance",
     duration: "3h 15m",
     rating: 4.8,
@@ -302,7 +302,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-009",
     title: "Client Relationship Management",
     description: "Build and maintain strong client relationships for long-term success.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?client,relationship,${Math.random()}`,
     category: "Sales",
     duration: "4h 05m",
     rating: 4.7,
@@ -314,7 +314,7 @@ const popularWithSimilarUsers = [
     id: "similar-course-010",
     title: "Strategic HR Management",
     description: "Align HR strategies with organizational goals for better business outcomes.",
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+    imageUrl: `https://source.unsplash.com/random/800x450/?strategic,hr,${Math.random()}`,
     category: "HR",
     duration: "4h 30m",
     rating: 4.6,
@@ -324,21 +324,30 @@ const popularWithSimilarUsers = [
   }
 ];
 
-// Mock banner data for BannerCarousel
+// Mock banner data for BannerCarousel including video banner
 const mockBanners = [
   {
     id: 1,
     title: "New Leadership Course Available",
     description: "Enhance your leadership skills with our new comprehensive course",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://source.unsplash.com/random/1200x600/?leadership,team",
     link: "/discover"
   },
   {
     id: 2,
     title: "Technical Certification Paths",
     description: "Advance your career with industry recognized certifications",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://source.unsplash.com/random/1200x600/?certificate,education",
     link: "/discover"
+  },
+  {
+    id: 3,
+    title: "Introduction to Project Management",
+    description: "Watch this quick intro to our most popular course on project management",
+    imageUrl: "https://source.unsplash.com/random/1200x600/?project,management",
+    videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    isVideo: true,
+    link: "/course/project-management-101"
   }
 ];
 

@@ -1,9 +1,11 @@
+
 import React, { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
+// Import Home directly instead of lazy loading it
 import Home from './pages/Home';
 
 const SignIn = lazy(() => import('./pages/SignIn'));
