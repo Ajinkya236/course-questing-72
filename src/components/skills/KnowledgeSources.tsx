@@ -221,9 +221,9 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
                   <Textarea
                     id="source-content"
                     placeholder={
-                      newSourceType === "link" 
-                        ? "https://example.com/resource" 
-                        : "Enter your source content here..."
+                      newSourceType === "text" 
+                        ? "Enter your source content here..." 
+                        : "https://example.com/resource"
                     }
                     value={newSourceContent}
                     onChange={(e) => setNewSourceContent(e.target.value)}
