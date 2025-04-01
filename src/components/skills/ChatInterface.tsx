@@ -11,7 +11,7 @@ interface ChatInterfaceProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  sources: string;
+  sources: string[];
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   onToolResponse?: (role: string, content: string) => void;
@@ -50,8 +50,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     // Prepare context for the AI
     let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
-    if (sources) {
-      context += `Additional Context Sources: ${sources}\n`;
+    if (sources && sources.length > 0) {
+      context += `Additional Context Sources: ${sources.join(", ")}\n`;
     }
     
     setIsLoading(true);

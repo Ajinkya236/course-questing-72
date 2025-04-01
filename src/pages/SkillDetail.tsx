@@ -8,6 +8,7 @@ import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterfa
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
+import SkillSearch from '@/components/skills/SkillSearch';
 
 // Mock skill data - would come from API in a real app
 const mockSkillsDetailed: Skill[] = [
@@ -88,7 +89,7 @@ const SkillDetail: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedProficiency, setSelectedProficiency] = useState<string>("");
-  const [sources, setSources] = useState<string>("");
+  const [sources, setSources] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
@@ -108,7 +109,7 @@ const SkillDetail: React.FC = () => {
   };
 
   const handleSourcesSubmit = () => {
-    if (sources.trim()) {
+    if (sources.length > 0) {
       toast({
         title: "Sources added",
         description: "Your sources have been added as context for the AI assistant.",

@@ -10,7 +10,7 @@ const corsHeaders = {
 
 // Gemini API configuration
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
+const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -25,12 +25,16 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { prompt, context = '' } = await req.json();
+    const { prompt, context = '', model = 'gemini-1.5-pro' } = await req.json();
 
     // Validate request parameters
     if (!prompt) {
       throw new Error("Prompt is required");
     }
+
+    // Validate the model
+    const validModels = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+    const selectedModel = validModels.includes(model) ? model : 'gemini-1.5-pro';
 
     // Prepare prompt with context
     let fullPrompt = prompt;
@@ -39,7 +43,9 @@ serve(async (req) => {
     }
 
     // Create the request to Gemini API
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${selectedModel}:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const response = await fetch(GEMINI_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

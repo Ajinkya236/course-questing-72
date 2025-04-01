@@ -14,7 +14,6 @@ import {
   LogOut,
   Settings,
   HelpCircle,
-  Rss,
   MessageSquare,
   Users,
   ChevronDown,
@@ -39,6 +38,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 import { useMediaQuery } from '@/hooks/use-mobile';
 import ThemeToggle from '@/components/ThemeToggle';
+import SkillSearch from '../skills/SkillSearch';
 
 // Correct import for NotificationsPanel
 import NotificationsPanel from '@/components/NotificationsPanel';
@@ -49,6 +49,7 @@ const NavbarEnhanced = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useMediaQuery();
+  const isSkillsPage = location.pathname.includes('/skills');
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -95,6 +96,13 @@ const NavbarEnhanced = () => {
               My Learning
             </Link>
             <Link 
+              to="/skills" 
+              className={`flex items-center px-4 py-1.5 text-sm font-medium ${location.pathname.includes('/skills') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
+            >
+              <BrainCircuit className="mr-1 h-4 w-4" />
+              Skills
+            </Link>
+            <Link 
               to="/mentoring" 
               className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/mentoring') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
             >
@@ -106,13 +114,19 @@ const NavbarEnhanced = () => {
         
         <div className="flex items-center gap-2">
           <div className="relative hidden md:block w-48 lg:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              className="w-full rounded-lg pl-8 bg-background"
-              onFocus={() => navigate('/search')}
-            />
+            {isSkillsPage ? (
+              <SkillSearch />
+            ) : (
+              <>
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full rounded-lg pl-8 bg-background"
+                  onFocus={() => navigate('/search')}
+                />
+              </>
+            )}
           </div>
           
           <div className="flex items-center gap-1">
@@ -243,6 +257,16 @@ const NavbarEnhanced = () => {
               My Learning
             </Link>
             <Link
+              to="/skills"
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+                location.pathname.includes('/skills') ? 'bg-secondary' : 'hover:bg-secondary/50'
+              }`}
+              onClick={() => setShowMobileMenu(false)}
+            >
+              <BrainCircuit className="h-4 w-4" />
+              Skills
+            </Link>
+            <Link
               to="/mentoring"
               className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
                 isActive('/mentoring') ? 'bg-secondary' : 'hover:bg-secondary/50'
@@ -253,16 +277,22 @@ const NavbarEnhanced = () => {
               Mentoring
             </Link>
             <div className="relative w-full mt-2">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full pl-9"
-                onFocus={() => {
-                  navigate('/search');
-                  setShowMobileMenu(false);
-                }}
-              />
+              {isSkillsPage ? (
+                <SkillSearch />
+              ) : (
+                <>
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full pl-9"
+                    onFocus={() => {
+                      navigate('/search');
+                      setShowMobileMenu(false);
+                    }}
+                  />
+                </>
+              )}
             </div>
           </nav>
         </div>
