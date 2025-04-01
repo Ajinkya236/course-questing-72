@@ -219,7 +219,7 @@ const SkillBubble: React.FC<SkillProps> = ({ skill }) => {
             <div className="bg-primary/10 p-3 rounded-full mb-3">
               <IconComponent className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="font-sans text-lg mb-2 font-medium">{skill.name}</h3>
+            <h3 className="skill-title text-lg mb-2">{skill.name}</h3>
             <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors]}`}>
               {skill.proficiency}
             </span>

@@ -60,7 +60,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
             
             {/* Skill Info */}
             <div className="flex-grow">
-              <h1 className="text-2xl font-heading text-gray-800 mb-2">{displayName}</h1>
+              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2">{displayName}</h1>
               <div className="flex flex-wrap gap-3 mb-3">
                 <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
                   {displayProficiency}
