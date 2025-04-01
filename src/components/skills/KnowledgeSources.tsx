@@ -1,38 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle, Edit, Trash, X } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { PlusCircle } from "lucide-react";
+import { KnowledgeSourcesProps, Source, SourceType } from './knowledge/types';
+import SourceList from './knowledge/SourceList';
+import SourceFormDialog from './knowledge/SourceFormDialog';
 
-interface KnowledgeSourcesProps {
-  sources: string[];
-  setSources: React.Dispatch<React.SetStateAction<string[]>>;
-  onSubmit: () => void;
-}
-
-type SourceType = 'link' | 'text' | 'file';
-
-interface Source {
-  id: string;
-  type: SourceType;
-  content: string;
-  description?: string;
-}
-
-const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources, onSubmit }) => {
+const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ 
+  sources, 
+  setSources, 
+  onSubmit 
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newSourceContent, setNewSourceContent] = useState("");
   const [newSourceDescription, setNewSourceDescription] = useState("");
@@ -41,7 +20,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
   const [managedSources, setManagedSources] = useState<Source[]>([]);
 
   // Convert string sources to managed sources when component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     if (sources.length > 0 && managedSources.length === 0) {
       const initialSources = sources.map((source, index) => ({
         id: `source-${index}`,
@@ -77,7 +56,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
     }
 
     // Update parent source array
-    const updatedSources = [...managedSources].map(source => source.content);
+    const updatedSources = managedSources.map(source => source.content);
     setSources(updatedSources);
     
     // Reset form
@@ -111,15 +90,12 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
     onSubmit();
   };
 
-  // Helper function to get the appropriate placeholder based on source type
-  const getPlaceholder = (type: SourceType): string => {
-    if (type === "text") {
-      return "Enter your source content here...";
-    } else if (type === "link") {
-      return "https://example.com/resource";
-    } else {
-      return "Select file...";
-    }
+  const openNewSourceDialog = () => {
+    setEditSourceId(null);
+    setNewSourceContent("");
+    setNewSourceDescription("");
+    setNewSourceType("link");
+    setIsOpen(true);
   };
 
   return (
@@ -130,145 +106,34 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {managedSources.length > 0 ? (
-            <div className="space-y-2">
-              {managedSources.map((source) => (
-                <div key={source.id} className="flex items-start justify-between p-3 bg-muted rounded-md">
-                  <div className="flex-1 mr-2">
-                    <p className="text-sm break-words">{source.content}</p>
-                    {source.description && (
-                      <p className="text-xs text-muted-foreground mt-1">{source.description}</p>
-                    )}
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-7 w-7" 
-                      onClick={() => handleEditSource(source)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-7 w-7 text-destructive" 
-                      onClick={() => handleDeleteSource(source.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              No sources added yet. Add sources to improve AI responses.
-            </div>
-          )}
+          <SourceList 
+            sources={managedSources} 
+            onEditSource={handleEditSource} 
+            onDeleteSource={handleDeleteSource}
+          />
         </div>
 
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="w-full mt-4"
-              onClick={() => {
-                setEditSourceId(null);
-                setNewSourceContent("");
-                setNewSourceDescription("");
-                setNewSourceType("link");
-              }}
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add New Source
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editSourceId ? "Edit Source" : "Add Knowledge Source"}</DialogTitle>
-              <DialogDescription>
-                Add links to documentation, research papers, or other resources related to this skill.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="source-type">Source Type</Label>
-                <div className="flex space-x-2">
-                  <Button 
-                    type="button" 
-                    variant={newSourceType === "link" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setNewSourceType("link")}
-                  >
-                    Link
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant={newSourceType === "text" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setNewSourceType("text")}
-                  >
-                    Text
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant={newSourceType === "file" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setNewSourceType("file")}
-                    disabled
-                  >
-                    File (Coming Soon)
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="source-content">
-                  {newSourceType === "link" ? "URL" : newSourceType === "text" ? "Content" : "File"}
-                </Label>
-                {newSourceType === "text" ? (
-                  <Textarea
-                    id="source-content"
-                    placeholder={getPlaceholder(newSourceType)}
-                    value={newSourceContent}
-                    onChange={(e) => setNewSourceContent(e.target.value)}
-                    className="min-h-[100px]"
-                  />
-                ) : (
-                  <Input
-                    id="source-content"
-                    placeholder={getPlaceholder(newSourceType)}
-                    type={newSourceType === "file" ? "file" : "text"}
-                    value={newSourceContent}
-                    onChange={(e) => setNewSourceContent(e.target.value)}
-                    disabled={newSourceType === "file"}
-                  />
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="source-description">Description (optional)</Label>
-                <Input
-                  id="source-description"
-                  placeholder="Brief description of this source"
-                  value={newSourceDescription}
-                  onChange={(e) => setNewSourceDescription(e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button type="button" onClick={handleAddSource} disabled={!newSourceContent.trim()}>
-                {editSourceId ? "Update Source" : "Add Source"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <SourceFormDialog
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          sourceContent={newSourceContent}
+          setSourceContent={setNewSourceContent}
+          sourceDescription={newSourceDescription}
+          setSourceDescription={setNewSourceDescription}
+          sourceType={newSourceType}
+          setSourceType={setNewSourceType}
+          onAddOrUpdateSource={handleAddSource}
+          isEditing={!!editSourceId}
+        />
+
+        <Button 
+          variant="outline" 
+          className="w-full mt-4"
+          onClick={openNewSourceDialog}
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add New Source
+        </Button>
       </CardContent>
       
       <CardFooter>
