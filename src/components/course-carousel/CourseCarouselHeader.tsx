@@ -70,7 +70,7 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
     >
       <div className="flex flex-col">
         <div className="flex items-center">
-          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+          <h2 className="text-xl font-heading tracking-tight">{title}</h2>
           <ChevronRight 
             className="h-4 w-4 cursor-pointer ml-1" 
             onClick={handleViewAllClick}
