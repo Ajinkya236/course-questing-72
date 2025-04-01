@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from 'react';
+
+import React, { useState, useCallback, memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -45,14 +46,29 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
-  
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isCarouselHovered, setIsCarouselHovered] = useState(false);
+  const [api, setApi] = useState<any>(null);
+  
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { toggleBookmark } = useCourseBookmarks();
   
   const { normalizedCourses } = useCourseData(courses);
   const carouselId = `${title.replace(/\s+/g, '-')}-carousel`;
+
+  // Enable scroll controls when the API is available
+  useEffect(() => {
+    if (!api) return;
+    
+    // Setup listeners or initial state if needed
+    api.on('select', () => {
+      setCurrentIndex(api.selectedScrollSnap());
+    });
+    
+    // Initial index
+    setCurrentIndex(api.selectedScrollSnap());
+  }, [api]);
 
   const handleCardClick = useCallback((courseId: string) => {
     const originalId = courseId.split('-clone-')[0];
@@ -115,24 +131,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [...new Set(subFilterOptions[selectedFilter])] : 
     [];
 
-  // Calculate number of visible cards based on screen size
-  const getCardsToShow = () => {
-    if (isMobile) return 1;
-    // For desktop, we'll show 4 cards plus 20% of the fifth
-    return 4.2;
-  };
-  
   // Calculate card width as a percentage to show partial cards
   const getCardPercentage = () => {
-    if (isMobile) return 100; // Full width on mobile
-    
-    // On desktop, we want to show 4 full cards and 20% of the next
-    // If we're showing 4.2 cards, each card should take up 100/4.2 = ~23.8% of the width
-    return (100 / getCardsToShow());
+    if (isMobile) return 95; // Almost full width on mobile with a peek
+    return 23; // Show ~4 cards on desktop with a peek
   };
 
   return (
-    <div className="space-y-4 overflow-hidden">
+    <div className="space-y-4 overflow-visible">
       <CourseCarouselHeader 
         title={title}
         onViewAllClick={onViewAllClick}
@@ -171,48 +177,61 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           opts={{
             align: "start",
             loop: true,
-            dragFree: true, // Allow free dragging for smoother experience
+            dragFree: true, 
+            containScroll: "trimSnaps"
           }}
           className="w-full relative overflow-visible"
           id={carouselId}
+          setApi={setApi}
         >
           <CarouselContent className="-ml-4">
-            {normalizedCourses.map((course) => (
-              <CarouselItem 
-                key={course.id} 
-                className="pl-4"
-                style={{ 
-                  flex: `0 0 ${getCardPercentage()}%`, 
-                  maxWidth: `${getCardPercentage()}%`
-                }}
-              >
-                <div 
-                  className="cursor-pointer"
-                  onMouseEnter={() => handleMouseEnter(course.id)}
-                  onMouseLeave={handleMouseLeave}
+            {normalizedCourses.length > 0 ? (
+              normalizedCourses.map((course) => (
+                <CarouselItem 
+                  key={course.id} 
+                  className="pl-4"
+                  style={{ 
+                    flex: `0 0 ${getCardPercentage()}%`, 
+                    maxWidth: `${getCardPercentage()}%`
+                  }}
                 >
-                  <CourseCard 
-                    {...course}
-                    trainingCategory={course.trainingCategory}
-                    isBookmarked={course.isBookmarked}
-                    previewUrl={course.videoUrl}
-                    isHot={course.isHot}
-                    isNew={course.isNew}
-                  />
+                  <div 
+                    className="cursor-pointer"
+                    onMouseEnter={() => handleMouseEnter(course.id)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <CourseCard 
+                      {...course}
+                      imageUrl={course.imageUrl || "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"}
+                      trainingCategory={course.trainingCategory}
+                      isBookmarked={course.isBookmarked}
+                      previewUrl={course.videoUrl}
+                      isHot={course.isHot}
+                      isNew={course.isNew}
+                    />
+                  </div>
+                </CarouselItem>
+              ))
+            ) : (
+              <CarouselItem className="pl-4 flex-1">
+                <div className="h-[300px] flex items-center justify-center bg-secondary/20 rounded-lg border border-dashed border-muted-foreground/20">
+                  <p className="text-muted-foreground">No courses available</p>
                 </div>
               </CarouselItem>
-            ))}
+            )}
           </CarouselContent>
           
-          <div className={`absolute inset-y-0 left-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="absolute -left-4 inset-y-0 flex items-center z-10">
             <CarouselPrevious 
-              className="course-carousel-nav-button course-carousel-nav-prev h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+              className={`h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all
+                ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}
             />
           </div>
           
-          <div className={`absolute inset-y-0 right-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="absolute -right-4 inset-y-0 flex items-center z-10">
             <CarouselNext 
-              className="course-carousel-nav-button course-carousel-nav-next h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+              className={`h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all
+                ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}
             />
           </div>
         </Carousel>

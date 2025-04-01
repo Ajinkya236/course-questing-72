@@ -1,5 +1,5 @@
 
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
@@ -57,12 +57,26 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
 
   // Process image URL to ensure proper loading
   const processImageUrl = (url: string) => {
-    if (!url) return "/placeholder.svg";
+    if (!url) return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
     
     if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
       // Add optimizations for Unsplash images
       return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
+    
+    if (url.includes("source.unsplash.com")) {
+      // Replace dynamic random URLs with specific images for better caching
+      const unsplashImages = [
+        "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"
+      ];
+      // Use hash of the URL to select a consistent image
+      const index = Math.abs(url.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % unsplashImages.length;
+      return unsplashImages[index];
+    }
+    
     return url;
   };
 
@@ -147,4 +161,4 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   );
 };
 
-export default memo(CourseCardMedia);
+export default React.memo(CourseCardMedia);

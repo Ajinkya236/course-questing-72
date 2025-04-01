@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo, useRef } from 'react';
 import { Card } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { useVideoPreview } from '@/hooks/useVideoPreview';
@@ -44,6 +44,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const navigate = useNavigate();
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   
   const { isBookmarked: checkIsBookmarked, toggleBookmark } = useCourseBookmarks();
   const [currentBookmarked, setCurrentBookmarked] = useState(isBookmarked || checkIsBookmarked(id));
@@ -53,7 +54,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const {
     isHovered,
     isMuted,
-    videoRef,
     handleMouseEnter,
     handleMouseLeave,
     toggleMute
@@ -138,6 +138,14 @@ const CourseCard: React.FC<CourseCardProps> = ({
     target.onerror = null;
   };
 
+  // Process the image URL
+  const processedImageUrl = React.useMemo(() => {
+    if (!imageUrl || imageUrl === "/placeholder.svg") {
+      return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
+    }
+    return imageUrl;
+  }, [imageUrl]);
+
   return (
     <>
       <Card 
@@ -148,7 +156,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
       >
         <CourseCardMedia
           title={title}
-          imageUrl={imageUrl || "/placeholder.svg"} // Provide fallback
+          imageUrl={processedImageUrl}
           category={category}
           trainingCategory={trainingCategory}
           isHot={isHot}
