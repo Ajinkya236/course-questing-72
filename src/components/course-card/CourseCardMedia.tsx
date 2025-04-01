@@ -35,7 +35,6 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   onImageError
 }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
-  const [hasImageError, setHasImageError] = useState(false);
   
   // Handle image loading state
   const handleImageLoad = () => {
@@ -45,32 +44,20 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   // Default image error handler if none provided
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setIsImageLoading(false);
-    setHasImageError(true);
-    
     if (onImageError) {
       onImageError(e);
     } else {
       // Default fallback behavior
       const target = e.target as HTMLImageElement;
-      target.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
+      target.src = "/placeholder.svg";
       // Prevent infinite loading attempts if placeholder also fails
       target.onerror = null;
     }
   };
 
-  // Fallback images for when image loading fails
-  const fallbackImages = [
-    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"
-  ];
-
   // Process image URL to ensure proper loading
   const processImageUrl = (url: string) => {
-    if (!url || url === "/placeholder.svg") {
-      return fallbackImages[0];
-    }
+    if (!url) return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
     
     if (url.includes("unsplash.com/photo-") && !url.includes("?")) {
       // Add optimizations for Unsplash images
@@ -79,14 +66,19 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
     
     if (url.includes("source.unsplash.com")) {
       // Replace dynamic random URLs with specific images for better caching
-      const index = Math.abs(url.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % fallbackImages.length;
-      return fallbackImages[index];
+      const unsplashImages = [
+        "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80"
+      ];
+      // Use hash of the URL to select a consistent image
+      const index = Math.abs(url.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % unsplashImages.length;
+      return unsplashImages[index];
     }
     
     return url;
   };
-
-  const finalImageUrl = processImageUrl(imageUrl);
 
   // Load video on hover if available
   React.useEffect(() => {
@@ -101,7 +93,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   return (
     <div className="relative overflow-hidden rounded-t-md h-[170px]">
       {/* Loading indicator */}
-      {isImageLoading && !hasImageError && (
+      {isImageLoading && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
         </div>
@@ -129,7 +121,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
           </>
         ) : (
           <img
-            src={finalImageUrl}
+            src={processImageUrl(imageUrl)}
             alt={title}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
             loading="lazy"
