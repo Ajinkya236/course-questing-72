@@ -27,40 +27,57 @@
 
 /* Specific styling for the mentor carousel items to show 5 items with the last one partially visible */
 .mentor-carousel-item {
-  flex: 0 0 calc(20% - 0.8rem) !important; /* Show 5 items per view with spacing */
+  flex: 0 0 calc(20% - 1rem) !important; /* Show 5 items per view with spacing */
   min-width: 0;
   position: relative;
+  padding: 0 0.5rem;
+  transition: transform 0.3s ease;
 }
 
 /* Show 20% of the 5th card when using the mentors carousel */
 .mentor-carousel-item:nth-child(5n) {
-  margin-right: -5rem; /* This creates the effect of showing just 20% of the 5th card */
+  margin-right: -3rem; /* This creates the effect of showing just 20% of the 5th card */
 }
 
 /* Add responsive design for mentor carousel */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .mentor-carousel-item {
-    flex: 0 0 calc(25% - 0.8rem) !important; /* 4 items per row */
+    flex: 0 0 calc(25% - 1rem) !important; /* 4 items per row */
   }
   
   .mentor-carousel-item:nth-child(4n) {
-    margin-right: -5rem; /* Show 20% of the 4th card on medium screens */
+    margin-right: -3rem; /* Show partial 4th card on large screens */
+  }
+}
+
+@media (max-width: 1024px) {
+  .mentor-carousel-item {
+    flex: 0 0 calc(33.333% - 1rem) !important; /* 3 items per row */
+  }
+  
+  .mentor-carousel-item:nth-child(3n) {
+    margin-right: -3rem; /* Show partial 3rd card on medium screens */
   }
 }
 
 @media (max-width: 768px) {
   .mentor-carousel-item {
-    flex: 0 0 calc(33.333% - 0.8rem) !important; /* 3 items per row */
+    flex: 0 0 calc(50% - 1rem) !important; /* 2 items per row */
   }
   
-  .mentor-carousel-item:nth-child(3n) {
-    margin-right: -5rem; /* Show 20% of the 3rd card on smaller screens */
+  .mentor-carousel-item:nth-child(2n) {
+    margin-right: -3rem; /* Show partial 2nd card on smaller screens */
   }
 }
 
 @media (max-width: 480px) {
   .mentor-carousel-item {
-    flex: 0 0 calc(80% - 0.8rem) !important; /* 1 item per row with peek */
+    flex: 0 0 calc(85% - 1rem) !important; /* 1 item per row with peek */
+    margin-right: 0;
+  }
+  
+  .mentor-carousel-item:nth-child(n) {
+    margin-right: -3rem; /* Show partial next card on mobile */
   }
 }
 
@@ -279,4 +296,50 @@
   .course-carousel-nav-next {
     right: 5px; /* More inset on mobile for better touch targets */
   }
+}
+
+/* Make the carousel pages section more visually appealing */
+.embla__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.embla__dot {
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  margin: 0 4px;
+  padding: 0;
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+}
+
+.embla__dot:after {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  content: '';
+  transition: background-color 0.2s ease;
+}
+
+.embla__dot--selected:after {
+  background-color: var(--primary);
+}
+
+/* Enhanced mentor card styles */
+.mentor-card-gradient {
+  background: linear-gradient(135deg, var(--primary-50, #f0f9ff) 0%, var(--primary-100, #e0f2fe) 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+/* Animate mentor card on hover */
+.mentor-carousel-item:hover {
+  transform: translateY(-4px);
 }

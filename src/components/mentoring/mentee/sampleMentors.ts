@@ -67,5 +67,44 @@ export const sampleMentors: Mentor[] = [
     experience: "12+ years in marketing across B2B and B2C sectors.",
     availability: "Monthly sessions with email support in between",
     expectations: "Prefer mentees who are currently working in marketing roles."
+  },
+  {
+    id: 6,
+    name: "Thomas Wright",
+    title: "Finance Specialist",
+    image: "https://randomuser.me/api/portraits/men/52.jpg",
+    rating: 4.9,
+    reviews: 36,
+    topics: ["Financial Planning", "Investment Strategy", "Business Analytics"],
+    bio: "Finance professional helping others navigate complex financial decisions and planning.",
+    experience: "18 years in corporate finance and investment management",
+    availability: "Available for biweekly sessions",
+    expectations: "Looking for mentees interested in finance and investment careers."
+  },
+  {
+    id: 7,
+    name: "Sophia Kim",
+    title: "UX Research Director",
+    image: "https://randomuser.me/api/portraits/women/39.jpg",
+    rating: 4.8,
+    reviews: 29,
+    topics: ["User Research", "Design Thinking", "Usability Testing"],
+    bio: "UX researcher passionate about creating user-centered digital experiences.",
+    experience: "10+ years in UX research and digital product design",
+    availability: "Weekly hour-long sessions",
+    expectations: "Prefer mentees with basic understanding of UX principles."
+  },
+  {
+    id: 8,
+    name: "David Nguyen",
+    title: "AI Engineer",
+    image: "https://randomuser.me/api/portraits/men/64.jpg",
+    rating: 4.9,
+    reviews: 33,
+    topics: ["Artificial Intelligence", "Machine Learning", "Neural Networks"],
+    bio: "AI specialist helping the next generation of engineers build ethical, effective AI systems.",
+    experience: "12+ years working with machine learning and AI systems",
+    availability: "Monthly deep dive sessions",
+    expectations: "Looking for mentees with programming experience and passion for AI."
   }
 ];
