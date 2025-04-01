@@ -1,7 +1,8 @@
 
 import React, { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider as ShadcnThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
@@ -55,56 +56,58 @@ const ProtectedRoute = () => {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<PageLayout><Home /></PageLayout>} />
-                <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
-                <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
-                <Route path="/my-learning/:tab" element={<PageLayout><MyLearning /></PageLayout>} />
-                <Route path="/course/:courseId" element={<PageLayout><CoursePlayer /></PageLayout>} />
-                <Route path="/notifications" element={<PageLayout><Notifications /></PageLayout>} />
-                <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
-                <Route path="/view-all/:category" element={<PageLayout><ViewAllPage /></PageLayout>} />
-                <Route path="/search" element={<PageLayout><SearchResults /></PageLayout>} />
-                <Route path="/actionables" element={<PageLayout><Actionables /></PageLayout>} />
-                <Route path="/milestones" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
-                <Route path="/mentoring" element={<PageLayout><Mentoring /></PageLayout>} />
-                <Route path="/my-team" element={<PageLayout><MyTeam /></PageLayout>} />
-                <Route path="/my-team/member/:memberId" element={<PageLayout><Profile /></PageLayout>} />
-                <Route path="/my-team/member/:memberId/learning" element={<PageLayout><MyLearning /></PageLayout>} />
-                <Route path="/my-team/member/:memberId/goals" element={<PageLayout><MyLearning /></PageLayout>} />
-                <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
-                <Route path="/view-all/domains" element={<PageLayout><ViewAllDomainsPage /></PageLayout>} />
-                <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
-                <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
-                <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+      <ThemeProvider>
+        <AuthProvider>
+          <ShadcnThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 
-                <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
-                <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
-                <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />
-                <Route path="/admin/activities" element={<PageLayout><AdminActivities /></PageLayout>} />
-                <Route path="/admin/courses/create" element={<PageLayout><CourseCreation /></PageLayout>} />
-              </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-          <Toaster />
-        </ThemeProvider>
-      </AuthProvider>
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+                  <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
+                  <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
+                  <Route path="/my-learning/:tab" element={<PageLayout><MyLearning /></PageLayout>} />
+                  <Route path="/course/:courseId" element={<PageLayout><CoursePlayer /></PageLayout>} />
+                  <Route path="/notifications" element={<PageLayout><Notifications /></PageLayout>} />
+                  <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
+                  <Route path="/view-all/:category" element={<PageLayout><ViewAllPage /></PageLayout>} />
+                  <Route path="/search" element={<PageLayout><SearchResults /></PageLayout>} />
+                  <Route path="/actionables" element={<PageLayout><Actionables /></PageLayout>} />
+                  <Route path="/milestones" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                  <Route path="/mentoring" element={<PageLayout><Mentoring /></PageLayout>} />
+                  <Route path="/my-team" element={<PageLayout><MyTeam /></PageLayout>} />
+                  <Route path="/my-team/member/:memberId" element={<PageLayout><Profile /></PageLayout>} />
+                  <Route path="/my-team/member/:memberId/learning" element={<PageLayout><MyLearning /></PageLayout>} />
+                  <Route path="/my-team/member/:memberId/goals" element={<PageLayout><MyLearning /></PageLayout>} />
+                  <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
+                  <Route path="/view-all/domains" element={<PageLayout><ViewAllDomainsPage /></PageLayout>} />
+                  <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
+                  <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
+                  <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                  
+                  <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
+                  <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
+                  <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />
+                  <Route path="/admin/activities" element={<PageLayout><AdminActivities /></PageLayout>} />
+                  <Route path="/admin/courses/create" element={<PageLayout><CourseCreation /></PageLayout>} />
+                </Route>
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+            <Toaster />
+          </ShadcnThemeProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }
