@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, BookOpen, BrainCircuit, Trophy, Users, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import SkillSearch from '../skills/SkillSearch';
+import { mockSkills } from '@/data/skillsData';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -83,7 +83,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         </Link>
         <div className="relative w-full mt-2">
           {isSkillsPage ? (
-            <SkillSearch />
+            <SkillSearch skills={mockSkills} onSearch={() => {}} />
           ) : (
             <>
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />

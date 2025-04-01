@@ -10,7 +10,7 @@ interface SkillsGridProps {
 }
 
 const SkillsGrid: React.FC<SkillsGridProps> = ({ skills, onSkillClick }) => {
-  if (skills.length === 0) {
+  if (!skills || skills.length === 0) {
     return <EmptySkillsState />;
   }
 
