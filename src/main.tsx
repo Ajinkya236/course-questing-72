@@ -1,6 +1,6 @@
 
 import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import App from './App';
 import './index.css';
 
 // Add event listener to render the app only after the page has fully loaded
