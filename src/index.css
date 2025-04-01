@@ -286,3 +286,18 @@
     @apply animate-pulse bg-gray-200 dark:bg-gray-700;
   }
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Title style for Archivo Black font */
+.font-archivo-black {
+  font-family: 'Archivo Black', sans-serif;
+}
+
+/* Modern sans-serif font for course titles */
+.course-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: #333333;
+}

@@ -30,16 +30,16 @@ const SkillSearch: React.FC = () => {
       const filtered = mockSkills.filter(skill => 
         skill.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setSearchResults(filtered);
+      setSearchResults(filtered.slice(0, 10)); // Limit to 10 results for better UX
       setIsOpen(true);
     } else {
       setSearchResults([]);
+      setIsOpen(false);
     }
   }, [searchQuery]);
 
   const handleSelectSkill = (skillId: number) => {
     setIsOpen(false);
-    setSearchQuery('');
     navigate(`/skills/${skillId}`);
   };
 
@@ -49,7 +49,7 @@ const SkillSearch: React.FC = () => {
     }
   };
 
-  const handleInputBlur = (e: React.FocusEvent) => {
+  const handleInputBlur = () => {
     // Delay closing the popover to allow for clicking on results
     setTimeout(() => {
       if (document.activeElement !== inputRef.current) {

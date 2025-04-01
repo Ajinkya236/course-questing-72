@@ -8,101 +8,7 @@ import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterfa
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
-import SkillSearch from '@/components/skills/SkillSearch';
-
-// Mock skill data - would come from API in a real app
-const mockSkillsDetailed: Skill[] = [
-  { 
-    id: 1, 
-    name: "Leadership", 
-    proficiency: "Knowledge",
-    description: "Leadership is the ability to influence, motivate, and enable others to contribute to organizational success. Effective leadership inspires vision, drives change, and empowers team members to achieve results beyond their individual capabilities.",
-    icon: "Award", // Add icon property
-    category: "role", // Add category property
-    courses: [1, 4, 11]
-  },
-  { 
-    id: 2, 
-    name: "Project Management", 
-    proficiency: "Skill",
-    description: "Project management is the practice of initiating, planning, executing, controlling, and closing work to achieve specific goals and meet specific success criteria within a given timeframe. The key skills include planning, budgeting, scheduling, risk assessment, and team coordination.",
-    icon: "BrainCircuit",
-    category: "role",
-    courses: [3, 4, 11]
-  },
-  { 
-    id: 3, 
-    name: "Data Analysis", 
-    proficiency: "Awareness",
-    description: "Data analysis involves inspecting, cleaning, transforming, and modeling data to discover useful information, inform conclusions, and support decision-making. It encompasses various techniques and approaches to extract insights from structured and unstructured data.",
-    icon: "Database",
-    category: "recommended",
-    courses: [2, 5, 19]
-  },
-  { 
-    id: 4, 
-    name: "Machine Learning", 
-    proficiency: "Awareness",
-    description: "Machine learning is a field of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It focuses on developing algorithms that can access data and use it to learn for themselves.",
-    icon: "BrainCircuit",
-    category: "trending",
-    courses: [5, 19]
-  },
-  { 
-    id: 5, 
-    name: "React Development", 
-    proficiency: "Knowledge",
-    description: "React development involves building user interfaces using the React JavaScript library. React's component-based architecture allows developers to create reusable UI components that manage their own state, resulting in efficient updates and rendering of the right components when data changes.",
-    icon: "Code",
-    category: "recommended",
-    courses: [6, 8]
-  },
-  { 
-    id: 6, 
-    name: "UX Design", 
-    proficiency: "Awareness",
-    description: "UX Design (User Experience Design) is the process of creating products that provide meaningful and relevant experiences to users. It involves the design of the entire process of acquiring and integrating the product, including aspects of branding, design, usability, and function.",
-    icon: "Lightbulb",
-    category: "role",
-    courses: [8, 16]
-  },
-  { 
-    id: 7, 
-    name: "Cloud Computing", 
-    proficiency: "Skill",
-    description: 'Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ("the cloud") to offer faster innovation, flexible resources, and economies of scale.',
-    icon: "Cloud",
-    category: "trending",
-    courses: [13, 22]
-  },
-  { 
-    id: 8, 
-    name: "Cybersecurity", 
-    proficiency: "Awareness",
-    description: "Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information; extorting money from users; or interrupting normal business processes.",
-    icon: "Shield",
-    category: "trending",
-    courses: [13]
-  },
-  { 
-    id: 9, 
-    name: "DevOps", 
-    proficiency: "Knowledge",
-    description: "DevOps is a set of practices that combines software development (Dev) and IT operations (Ops). It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.",
-    icon: "Code",
-    category: "trending",
-    courses: [6, 11, 15]
-  },
-  { 
-    id: 10, 
-    name: "Blockchain", 
-    proficiency: "Awareness",
-    description: "Blockchain is a distributed, decentralized, public ledger technology that records transactions across many computers so that any involved record cannot be altered retroactively, without the alteration of all subsequent blocks.",
-    icon: "Database",
-    category: "trending",
-    courses: [19, 22]
-  },
-];
+import { mockSkills } from '@/data/skillsData';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -115,8 +21,8 @@ const SkillDetail: React.FC = () => {
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
 
-  // Find the skill details based on skillId
-  const skill = mockSkillsDetailed.find(s => s.id === Number(skillId));
+  // Find the skill details based on skillId from the expanded mockSkills
+  const skill = mockSkills.find(s => s.id === Number(skillId));
   
   useEffect(() => {
     if (skill && !selectedProficiency) {
@@ -147,8 +53,16 @@ const SkillDetail: React.FC = () => {
     return (
       <PageLayout>
         <div className="container mx-auto px-4 py-8">
+          <Button 
+            variant="ghost" 
+            onClick={handleBack} 
+            className="mb-4 flex items-center gap-1"
+            size="sm"
+          >
+            <ChevronLeft className="h-4 w-4" /> Back to Skills
+          </Button>
           <div className="flex items-center gap-2 mb-4">
-            <h1 className="text-2xl font-bold">Skill Not Found</h1>
+            <h1 className="text-2xl font-bold font-archivo-black text-gray-700">Skill Not Found</h1>
           </div>
           <p className="text-muted-foreground">The skill you are looking for does not exist or has been removed.</p>
         </div>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket } from 'lucide-react';
+import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, ChevronLeft } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Skill } from './types';
 import { proficiencyColors } from '@/data/skillsData';
@@ -50,6 +50,17 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
 
   return (
     <div className="mb-8">
+      {onBack && (
+        <Button 
+          variant="ghost" 
+          onClick={onBack} 
+          className="mb-4 flex items-center gap-1"
+          size="sm"
+        >
+          <ChevronLeft className="h-4 w-4" /> Back to Skills
+        </Button>
+      )}
+      
       <Card className="border-0 shadow-sm bg-white dark:bg-gray-800">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -60,7 +71,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
             
             {/* Skill Info */}
             <div className="flex-grow">
-              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2">{displayName}</h1>
+              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
               <div className="flex flex-wrap gap-3 mb-3">
                 <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
                   {displayProficiency}
@@ -80,10 +91,13 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
               )}
             </div>
             
-            {/* Action Button - Only show the Start Learning button */}
+            {/* Action Button - Changed to "Earn Skill" */}
             <div>
-              <Button className="w-full md:w-auto">
-                Start Learning
+              <Button 
+                onClick={() => window.location.href = `/skills/${skill?.id}/assessment`} 
+                className="w-full md:w-auto"
+              >
+                Earn Skill
               </Button>
             </div>
           </div>
