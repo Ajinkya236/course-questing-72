@@ -88,6 +88,7 @@ serve(async (req) => {
       context = '', 
       sources = [], 
       mediaFiles = [],
+      structuredFormat = false, // New parameter for structured response
       model = 'gemini-1.5-pro' 
     } = await req.json();
 
@@ -137,6 +138,11 @@ If sources contain URLs, consider their content type (YouTube videos, PDFs, imag
 `;
     }
 
+    // Add formatting instructions if structured format is requested
+    if (structuredFormat) {
+      fullPrompt += `\n\nPlease format your response with clear headings, bullet points, and paragraphs for better readability. Use markdown formatting where appropriate.`;
+    }
+
     console.log("Sending to Gemini API with prompt:", fullPrompt.substring(0, 100) + "...");
 
     // Create the request to Gemini API
@@ -158,7 +164,7 @@ If sources contain URLs, consider their content type (YouTube videos, PDFs, imag
           }
         ],
         generationConfig: {
-          temperature: 0.7,
+          temperature: structuredFormat ? 0.4 : 0.7, // Lower temperature for structured responses
           topK: 40,
           topP: 0.95,
           maxOutputTokens: 8192,

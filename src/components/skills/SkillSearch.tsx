@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -68,7 +69,7 @@ const SkillSearch: React.FC = () => {
     }
   };
 
-  // Handle clicks outside to close dropdown but not on input focus
+  // Fix: Only show results, but don't shift focus to dropdown
   const handleInputFocus = () => {
     // Only show results if there are any and query is valid
     if (searchResults.length > 0 && searchQuery.trim().length >= 2) {
@@ -76,7 +77,7 @@ const SkillSearch: React.FC = () => {
     }
   };
   
-  // Keep focus in the input, don't auto-select dropdown items
+  // Fix: Handle keyboard navigation without shifting focus
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       handleClearSearch();
@@ -86,7 +87,6 @@ const SkillSearch: React.FC = () => {
         handleSelectSkill(searchResults[0].id);
       }
     }
-    // Deliberately NOT handling arrow keys to avoid shifting focus to dropdown
   };
 
   return (

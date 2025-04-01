@@ -17,13 +17,13 @@ const NavbarEnhanced = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Improved detection of skills pages using regex
+  // Fix: Improved detection of skills pages and handling of search bar display
   const isSkillsListPage = location.pathname === '/skills';
   const isSkillDetailPage = /^\/skills\/\d+$/.test(location.pathname);
   const isSkillAssessmentPage = /^\/skills\/\d+\/assessment$/.test(location.pathname);
   
   // Only show skills search on the main skills list page or skill detail page, not on assessment page
-  const showSkillsSearch = (isSkillsListPage || isSkillDetailPage) && !isSkillAssessmentPage;
+  const showSkillsSearch = isSkillsListPage || (isSkillDetailPage && !isSkillAssessmentPage);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,7 +40,12 @@ const NavbarEnhanced = () => {
         <div className="flex items-center gap-2">
           <SearchBar 
             isSkillsPage={showSkillsSearch} 
-            onFocus={() => navigate('/search')} 
+            onFocus={() => {
+              // Only navigate to search if not already on a skills page 
+              if (!isSkillsListPage && !isSkillDetailPage) {
+                navigate('/search');
+              }
+            }} 
           />
           
           <div className="flex items-center gap-1">
@@ -80,7 +85,12 @@ const NavbarEnhanced = () => {
         isOpen={showMobileMenu}
         isSkillsPage={showSkillsSearch}
         onClose={() => setShowMobileMenu(false)}
-        navigateToSearch={() => navigate('/search')}
+        navigateToSearch={() => {
+          // Only navigate to search if not already on a skills page
+          if (!isSkillsListPage && !isSkillDetailPage) {
+            navigate('/search');
+          }
+        }}
       />
       
       {showNotifications && (

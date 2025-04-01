@@ -3,6 +3,7 @@ import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { QuestionType, Question } from './types';
@@ -90,6 +91,19 @@ const AssessmentQuestion: React.FC<AssessmentQuestionProps> = ({
           />
         )}
         
+        {question.type === 'fillInBlanks' && (
+          <div className="space-y-4">
+            <p className="text-muted-foreground text-sm mb-2">Fill in the blank:</p>
+            <Input
+              type="text"
+              placeholder="Your answer here..."
+              value={question.userAnswer as string || ''}
+              onChange={(e) => onAnswerChange(e.target.value)}
+              className="max-w-md"
+            />
+          </div>
+        )}
+        
         {question.type === 'videoResponse' && (
           <div className="space-y-4">
             {question.videoUrl && (
@@ -132,6 +146,8 @@ const AssessmentQuestion: React.FC<AssessmentQuestionProps> = ({
             />
           </div>
         )}
+        
+        {/* Add support for other question types like matchTheFollowing, dragSequence, findHotspot */}
       </div>
     </div>
   );

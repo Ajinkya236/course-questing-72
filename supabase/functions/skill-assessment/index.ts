@@ -183,11 +183,18 @@ Format as JSON with this structure:
       "correctAnswer": "Expected answer or key points",
       "explanation": "Explanation of what makes a good answer"
     },
+    {
+      "id": 4,
+      "type": "fillInBlanks",
+      "text": "Fill in the blank: _____",
+      "correctAnswer": "Expected answer",
+      "explanation": "Explanation of the correct answer"
+    },
     ...and so on for other question types
   ]
 }
 
-Make sure all questions are directly relevant to testing proficiency in ${skill} at the ${proficiency} level.`;
+Make sure all questions are directly relevant to testing proficiency in ${skill} at the ${proficiency} level. BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED.`;
     } else if (action === 'evaluate_assessment') {
       prompt = `Evaluate this skill assessment for "${skill}" at the "${proficiency}" level.
       
@@ -199,11 +206,9 @@ ${contextInfo ? `Additional context and sources that may be relevant for evaluat
 Provide:
 1. A score from 0-100 (the passing rate is 80%)
 2. Brief feedback on each answer, explaining what was correct or incorrect
-3. Overall assessment summary
-4. Specific areas for improvement
-5. Next steps for the learner to improve their proficiency
+3. Overall assessment summary with specific areas for improvement and next steps
 
-Format as JSON:
+Format as JSON using this exact structure:
 {
   "score": 85,
   "feedback": [
@@ -224,7 +229,8 @@ Format as JSON:
   "nextSteps": ["Specific action 1", "Specific action 2", ...]
 }
 
-Be thorough but fair in your evaluation. Provide helpful and constructive feedback.`;
+BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED. The structure MUST follow the exact format shown above.
+Be thorough but fair in your evaluation. Provide structured, helpful, and constructive feedback.`;
     } else {
       throw new Error("Invalid action. Supported actions are 'generate_questions' and 'evaluate_assessment'");
     }
@@ -250,10 +256,11 @@ Be thorough but fair in your evaluation. Provide helpful and constructive feedba
           }
         ],
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.2, // Lower temperature for more structured responses
           topK: 40,
           topP: 0.95,
           maxOutputTokens: 8192,
+          responseFormat: { type: "JSON" } // Request JSON response format
         },
         safetySettings: [
           {

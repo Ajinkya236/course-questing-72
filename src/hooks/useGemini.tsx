@@ -6,14 +6,20 @@ import { supabase } from '@/integrations/supabase/client';
 type GenerateResponseParams = {
   prompt: string;
   context?: string;
-  model?: string;  // Added model parameter
+  model?: string;
+  structuredFormat?: boolean; // Added parameter for structured format
 };
 
 export function useGemini() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const generateResponse = async ({ prompt, context = '', model = 'gemini-1.5-pro' }: GenerateResponseParams) => {
+  const generateResponse = async ({ 
+    prompt, 
+    context = '', 
+    model = 'gemini-1.5-pro',
+    structuredFormat = true // Default to structured format
+  }: GenerateResponseParams) => {
     setLoading(true);
     setError(null);
 
@@ -23,7 +29,8 @@ export function useGemini() {
         body: {
           prompt,
           context,
-          model, // Pass the model parameter
+          model,
+          structuredFormat, // Pass the structured format parameter
         },
       });
 
