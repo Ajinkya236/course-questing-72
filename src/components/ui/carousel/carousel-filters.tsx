@@ -95,7 +95,7 @@ export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
       {/* Filter tabs with scroll container */}
       <div 
         ref={scrollContainerRef}
-        className="overflow-x-auto no-scrollbar"
+        className="overflow-x-auto scrollbar-hide no-scrollbar"
         onScroll={handleScroll}
       >
         <Tabs

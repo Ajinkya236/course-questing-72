@@ -23,6 +23,9 @@ const buttonVariants = cva(
         "jio-outline": "border border-jio text-jio hover:bg-jio hover:text-jio-foreground",
         "jio-ghost": "text-jio hover:bg-jio-muted",
         "jio-gradient": "jio-gradient text-white hover:opacity-90",
+        "pro-blue": "bg-jio-dark text-white hover:bg-jio-light",
+        "modern-light": "bg-jio text-white hover:bg-jio/90",
+        "focused-dark": "bg-jio-light text-white hover:bg-jio/90",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -9,7 +9,7 @@ interface CourseCarouselHeaderProps {
   onViewAllClick?: () => void;
   viewAllUrl?: string;
   carouselId: string;
-  description?: string; // Add description property
+  description?: string;
   showLeftButton?: boolean;
   showRightButton?: boolean;
   onScrollLeft?: () => void;
@@ -42,10 +42,14 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
     if (onScrollLeft) {
       onScrollLeft();
     } else {
+      // Find the carousel component by ID
       const carousel = document.getElementById(carouselId);
       if (carousel) {
-        const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
-        if (prevButton) prevButton.click();
+        // Find the previous button with the correct data attribute
+        const prevButton = carousel.querySelector('[data-carousel-prev], [data-embla-prev]') as HTMLElement;
+        if (prevButton) {
+          prevButton.click();
+        }
       }
     }
   };
@@ -54,10 +58,14 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
     if (onScrollRight) {
       onScrollRight();
     } else {
+      // Find the carousel component by ID
       const carousel = document.getElementById(carouselId);
       if (carousel) {
-        const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
-        if (nextButton) nextButton.click();
+        // Find the next button with the correct data attribute
+        const nextButton = carousel.querySelector('[data-carousel-next], [data-embla-next]') as HTMLElement;
+        if (nextButton) {
+          nextButton.click();
+        }
       }
     }
   };

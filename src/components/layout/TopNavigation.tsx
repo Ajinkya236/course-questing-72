@@ -1,6 +1,5 @@
-
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -21,7 +20,7 @@ import {
   LayoutDashboard,
   LogOut
 } from "lucide-react";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import ThemeSelector from "@/components/ThemeSelector";
 import { AuthContext } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
@@ -194,6 +193,8 @@ const TopNavigation: React.FC = () => {
             </Link>
           </Button>
           
+          <ThemeSelector />
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
@@ -222,8 +223,6 @@ const TopNavigation: React.FC = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <ModeToggle />
         </div>
       </div>
     </div>

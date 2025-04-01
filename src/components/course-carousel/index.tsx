@@ -70,6 +70,18 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     setCurrentIndex(api.selectedScrollSnap());
   }, [api]);
 
+  const handleScrollLeft = useCallback(() => {
+    if (api) {
+      api.scrollPrev();
+    }
+  }, [api]);
+
+  const handleScrollRight = useCallback(() => {
+    if (api) {
+      api.scrollNext();
+    }
+  }, [api]);
+
   const handleCardClick = useCallback((courseId: string) => {
     const originalId = courseId.split('-clone-')[0];
     if (onCourseClick) {
@@ -144,6 +156,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         onViewAllClick={onViewAllClick}
         viewAllUrl={viewAllUrl}
         carouselId={carouselId}
+        onScrollLeft={handleScrollLeft}
+        onScrollRight={handleScrollRight}
       />
       
       {showSkillFilters && uniqueFilterOptions.length > 0 && (
@@ -152,7 +166,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             filters={uniqueFilterOptions}
             selectedFilter={selectedFilter}
             onFilterSelect={handleFilterSelect}
-            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
+            className="justify-start relative no-scrollbar overflow-x-auto pb-1"
           />
         </div>
       )}
@@ -163,7 +177,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             filters={availableSubFilters}
             selectedFilter={selectedSubFilter}
             onFilterSelect={handleSubFilterClick}
-            className="justify-start relative scrollbar-hide overflow-x-auto pb-1"
+            className="justify-start relative no-scrollbar overflow-x-auto pb-1"
           />
         </div>
       )}
@@ -225,6 +239,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             <CarouselPrevious 
               className={`h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all
                 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}
+              data-carousel-prev="true"
             />
           </div>
           
@@ -232,6 +247,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             <CarouselNext 
               className={`h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all
                 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}
+              data-carousel-next="true"
             />
           </div>
         </Carousel>
