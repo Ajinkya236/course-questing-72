@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -79,14 +80,14 @@ const TopNavigation: React.FC = () => {
   };
 
   return (
-    <div className="w-full border-b sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div className="top-navigation px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg">Jio Learning</h1>
+          <h1 className="font-bold text-lg text-white">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
             {!isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/" className="flex items-center gap-1">
                     <HomeIcon className="h-4 w-4" />
                     <span>Home</span>
@@ -98,7 +99,7 @@ const TopNavigation: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="flex items-center gap-1"
+                      className="nav-item flex items-center gap-1"
                       onMouseEnter={() => setIsDiscoverHovered(true)}
                       onMouseLeave={() => setIsDiscoverHovered(false)}
                       asChild
@@ -130,19 +131,19 @@ const TopNavigation: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/my-learning" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>My Learning</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/my-team" className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>My Team</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/mentoring" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Mentoring</span>
@@ -153,25 +154,25 @@ const TopNavigation: React.FC = () => {
             
             {isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/admin/dashboard" className="flex items-center gap-1">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/admin/courses" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>Courses</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/admin/modules" className="flex items-center gap-1">
                     <Compass className="h-4 w-4" />
                     <span>Modules</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="nav-item">
                   <Link to="/admin/activities" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Activities</span>
@@ -182,12 +183,12 @@ const TopNavigation: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-white">
             <Link to="/notifications">
               <Bell className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-white">
             <Link to="/faq">
               <HelpCircle className="h-5 w-5" />
             </Link>

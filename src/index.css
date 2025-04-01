@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +33,7 @@
     --jio: 214 100% 33%;
     --jio-foreground: 0 0% 100%;
     --jio-light: 214 100% 45%;
-    --jio-dark: 240 100% 12%; /* Updated to dark navy blue from the screenshot */
+    --jio-dark: 240 100% 12%; /* Dark navy blue */
     --jio-muted: 214 30% 85%;
 
     --border: 220 14% 90%;
@@ -40,91 +41,16 @@
     --ring: 214 100% 33%;
 
     --radius: 0.5rem;
+    
+    /* Navigation specific colors */
+    --nav-bg: 214 100% 33%; /* Bright navy blue */
+    --nav-text-light: 220 13% 28%; /* Dark grey for light mode */
+    --nav-text-dark: 0 0% 100%; /* White for dark mode */
   }
 
-  /* Professional Blue theme - navbar */
-  .professional-blue .app-header,
-  .professional-blue nav,
-  .professional-blue header {
-    /* Removing the background color styling to use the default theme background */
-    --text-navbar: 0 0% 100%;
-    --accent-navbar: 214 100% 45%;
-    color: hsl(var(--text-navbar));
-  }
-
-  /* Modern Light theme - body */
-  .modern-light {
-    --background: 210 50% 96%;
-    --foreground: 222 47% 11%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    --primary: 214 100% 33%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-
-    --muted: 210 40% 93%;
-    --muted-foreground: 215 20% 45%;
-
-    --accent: 214 100% 45%;
-    --accent-foreground: 0 0% 100%;
-
-    --jio: 214 100% 33%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 240 100% 12%; /* Updated to dark navy blue from the screenshot */
-    --jio-muted: 214 30% 90%;
-
-    --border: 214 30% 90%;
-    --input: 214 30% 90%;
-    --ring: 214 100% 33%;
-  }
-
-  /* Focused Dark theme - body */
-  .focused-dark.dark {
-    --background: 240 30% 6%; /* Updated to match the "Quicklinks" section color */
-    --foreground: 210 40% 98%;
-
-    --card: 240 30% 10%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 240 30% 10%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 214 100% 50%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 30% 12%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 240 30% 12%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 214 100% 45%;
-    --accent-foreground: 210 40% 98%;
-
-    --jio: 214 100% 45%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 60%;
-    --jio-dark: 214 100% 35%;
-    --jio-muted: 214 30% 25%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 240 30% 12%;
-    --input: 240 30% 12%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-
+  /* Dark theme */
   .dark {
-    --background: 240 30% 6%; /* Updated to match the "Quicklinks" section color */
+    --background: 240 30% 6%; /* Dark background for body */
     --foreground: 210 40% 98%;
 
     --card: 240 30% 10%;
@@ -195,6 +121,16 @@
 @layer components {
   .app-header {
     @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
+  }
+  
+  /* Navigation specific styles */
+  .top-navigation {
+    @apply w-full sticky top-0 z-10;
+    background-color: hsl(var(--nav-bg));
+  }
+  
+  .nav-item {
+    @apply text-[hsl(var(--nav-text-light))] dark:text-[hsl(var(--nav-text-dark))];
   }
 
   .glass-effect {
