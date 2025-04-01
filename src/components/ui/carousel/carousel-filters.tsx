@@ -1,36 +1,40 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 interface CarouselFiltersProps {
   filters: string[];
   selectedFilter: string;
   onFilterSelect: (filter: string) => void;
-  className?: string;
 }
 
 export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
   filters,
   selectedFilter,
   onFilterSelect,
-  className,
 }) => {
-  if (!filters || filters.length === 0) return null;
+  if (!filters || filters.length === 0) {
+    return null;
+  }
 
   return (
-    <div className={cn("flex overflow-x-auto gap-2 pb-2 scrollbar-hide", className)}>
+    <div className="flex flex-wrap gap-2 mb-3">
       {filters.map((filter) => (
-        <Button
+        <button
           key={filter}
-          variant={selectedFilter === filter ? "default" : "outline"}
-          size="sm"
-          className="whitespace-nowrap"
           onClick={() => onFilterSelect(filter)}
+          className={cn(
+            "px-3 py-1 text-sm rounded-full transition-colors",
+            selectedFilter === filter
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+          )}
         >
           {filter}
-        </Button>
+        </button>
       ))}
     </div>
   );
 };
+
+export default CarouselFilters;

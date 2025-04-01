@@ -1,3 +1,4 @@
+import { Course } from '@/types/course';
 
 export const mockCourses = [
   {
@@ -203,7 +204,7 @@ export const mockCourses = [
     status: "completed" as 'completed',
     skills: ["Agile", "Scrum", "Kanban", "Project Management"]
   }
-];
+] as Course[];
 
 // Add this line to alias mockCourses to mockCoursesData for backward compatibility
 export const mockCoursesData = mockCourses;

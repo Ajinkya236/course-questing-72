@@ -52,7 +52,7 @@ export const useCourseData = (
       // Add video preview URL if missing
       const videoUrl = course.videoUrl || course.previewUrl || sampleVideoUrls[index % sampleVideoUrls.length];
       
-      // Convert skills from string[] to proper format if needed
+      // Normalize skills to ensure they're in the correct format
       const normalizedSkills = Array.isArray(course.skills) 
         ? course.skills.map(skill => {
             if (typeof skill === 'string') {
@@ -60,7 +60,7 @@ export const useCourseData = (
             }
             return skill;
           })
-        : course.skills || [];
+        : [];
       
       return {
         ...course,
@@ -89,7 +89,24 @@ export const useCourseData = (
       allCourses = [...apiCourses];
     } else if (!isLoading) {
       // No API data available, use mock data
-      allCourses = [...mockCourses];
+      // Need to transform the mock data to ensure skills are in the correct format
+      const normalizedMockCourses = mockCourses.map(course => {
+        const skills = Array.isArray(course.skills) 
+          ? course.skills.map(skill => {
+              if (typeof skill === 'string') {
+                return { name: skill, proficiency: 'Intermediate' };
+              }
+              return skill;
+            })
+          : [];
+        
+        return {
+          ...course,
+          skills
+        } as Course;
+      });
+      
+      allCourses = [...normalizedMockCourses];
     }
     
     // Include local courses if specified
@@ -99,7 +116,24 @@ export const useCourseData = (
     
     // Ensure we have at least some courses for display
     if (allCourses.length === 0 && !isLoading) {
-      allCourses = [...mockCourses.slice(0, limit)];
+      // Need to transform the mock data to ensure skills are in the correct format
+      const normalizedMockCourses = mockCourses.slice(0, limit).map(course => {
+        const skills = Array.isArray(course.skills) 
+          ? course.skills.map(skill => {
+              if (typeof skill === 'string') {
+                return { name: skill, proficiency: 'Intermediate' };
+              }
+              return skill;
+            })
+          : [];
+        
+        return {
+          ...course,
+          skills
+        } as Course;
+      });
+      
+      allCourses = [...normalizedMockCourses];
     }
     
     setCombinedCourses(allCourses);
