@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
@@ -66,7 +65,7 @@ const mockSkillsDetailed = [
     id: 7, 
     name: "Cloud Computing", 
     proficiency: "Skill",
-    description: "Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ("the cloud") to offer faster innovation, flexible resources, and economies of scale.",
+    description: "Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ('the cloud') to offer faster innovation, flexible resources, and economies of scale.",
     courses: [13, 22]
   },
   { 
