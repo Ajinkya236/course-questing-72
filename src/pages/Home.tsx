@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/course-carousel';
-import { Button } from '@/components/ui/button';
-import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
+import { Course } from '@/types/course';
 
 // Import new components
 import SkillsSection from '@/components/homepage/SkillsSection';
@@ -14,11 +13,20 @@ import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
 // Helper function to convert string skills to proper skill objects
-const convertToSkillObjects = (skills: string[]) => {
-  return skills.map(skill => ({
-    name: skill,
-    proficiency: 'Intermediate'
-  }));
+const convertToSkillObjects = (skills: string[] | { name: string, proficiency: string }[]) => {
+  if (Array.isArray(skills) && skills.length > 0) {
+    // If it's already in the correct format, return it
+    if (typeof skills[0] === 'object' && 'name' in skills[0] && 'proficiency' in skills[0]) {
+      return skills as { name: string, proficiency: string }[];
+    }
+    // Otherwise convert the strings to objects
+    return (skills as string[]).map(skill => ({
+      name: skill,
+      proficiency: 'Intermediate'
+    }));
+  }
+  // Default skills if none provided
+  return [{ name: 'Learning', proficiency: 'Intermediate' }];
 };
 
 // Filter courses for different categories
@@ -30,8 +38,8 @@ const continueLearningCourses = mockCourses
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Sample video
     progress: Math.floor(Math.random() * 80) + 10, // Random progress between 10-90%
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Learning', 'Development'])
-  }));
+    skills: convertToSkillObjects(course.skills || ['Learning', 'Development'])
+  })) as Course[];
 
 const assignedCourses = mockCourses
   .filter(course => course.status === 'assigned')
@@ -40,8 +48,8 @@ const assignedCourses = mockCourses
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', // Sample video
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Management', 'Leadership'])
-  }));
+    skills: convertToSkillObjects(course.skills || ['Management', 'Leadership'])
+  })) as Course[];
 
 const chosenForYou = mockCourses
   .filter((_, idx) => idx < 12)
@@ -49,8 +57,8 @@ const chosenForYou = mockCourses
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', // Sample video
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Technical', 'Professional'])
-  }));
+    skills: convertToSkillObjects(course.skills || ['Technical', 'Professional'])
+  })) as Course[];
 
 const basedOnInterest = mockCourses
   .filter((_, idx) => idx >= 12 && idx < 24)
@@ -58,8 +66,8 @@ const basedOnInterest = mockCourses
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', // Sample video
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Innovation', 'Creativity'])
-  }));
+    skills: convertToSkillObjects(course.skills || ['Innovation', 'Creativity'])
+  })) as Course[];
 
 // New skills for your role courses - with job role specific skills
 const forYourRoleSkills = [
@@ -69,7 +77,7 @@ const forYourRoleSkills = [
 ];
 
 // Generate course data specifically for "For Your Role" section with skills
-const forYourRoleCourses = [
+const forYourRoleCourses: Course[] = [
   {
     id: "role-course-001",
     title: "Leadership Masterclass: Advanced Techniques",
@@ -213,11 +221,11 @@ const trendingCourses = [...mockCourses]
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
     title: `${idx + 1}. ${course.title}`, // Add ranking to title
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Trending', 'Popular'])
-  }));
+    skills: convertToSkillObjects(course.skills || ['Trending', 'Popular'])
+  })) as Course[];
 
 // New popular with similar users courses with realistic data
-const popularWithSimilarUsers = [
+const popularWithSimilarUsers: Course[] = [
   {
     id: "similar-course-001",
     title: "Big Data Analytics for Managers",
