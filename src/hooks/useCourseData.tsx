@@ -29,18 +29,44 @@ export const useCourseData = (
   
   // Process courses to ensure they have all required fields and fallback images
   const normalizedCourses = useMemo(() => {
-    return combinedCourses.map((course, index) => ({
-      ...course,
-      id: course.id || `local-course-${index}`,
-      title: course.title || 'Untitled Course',
-      description: course.description || 'No description available',
-      imageUrl: course.imageUrl || course.thumbnail || getDefaultImage(index),
-      category: course.category || 'General',
-      duration: course.duration || '1h',
-      rating: course.rating || 4.0,
-      // Clone courses for carousel display to ensure unique IDs
-      cloneId: `${course.id}-clone-${index}`
-    }));
+    // High-quality Unsplash image URLs for courses without images
+    const sampleImageUrls = [
+      'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80'
+    ];
+    
+    // Sample video URLs for previews
+    const sampleVideoUrls = [
+      'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    ];
+    
+    return combinedCourses.map((course, index) => {
+      // Ensure each course has a valid image URL
+      const imageUrl = course.imageUrl || course.thumbnail || sampleImageUrls[index % sampleImageUrls.length];
+      
+      // Add video preview URL if missing
+      const videoUrl = course.videoUrl || course.previewUrl || sampleVideoUrls[index % sampleVideoUrls.length];
+      
+      return {
+        ...course,
+        id: course.id || `local-course-${index}`,
+        title: course.title || 'Untitled Course',
+        description: course.description || 'No description available',
+        imageUrl: imageUrl,
+        category: course.category || 'General',
+        duration: course.duration || '1h',
+        rating: course.rating || 4.0,
+        videoUrl: videoUrl,
+        previewUrl: videoUrl,
+        // Clone courses for carousel display to ensure unique IDs
+        cloneId: `${course.id}-clone-${index}`
+      };
+    });
   }, [combinedCourses]);
   
   // Combine API and local courses
@@ -69,24 +95,12 @@ export const useCourseData = (
   }, [apiCourses, localCourses, isLoading, includeLocal, limit]);
   
   return {
-    courses: combinedCourses,
+    courses: normalizedCourses,
     normalizedCourses,
     isLoading,
     error,
     refetch
   };
-};
-
-// Helper to get diverse default images
-const getDefaultImage = (index: number): string => {
-  const defaultImages = [
-    "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-  ];
-  
-  return defaultImages[index % defaultImages.length];
 };
 
 export default useCourseData;

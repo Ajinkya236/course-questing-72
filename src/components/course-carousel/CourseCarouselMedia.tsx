@@ -31,6 +31,7 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   showTrainingCategory = false
 }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -44,8 +45,9 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    setImageError(true);
     const target = e.target as HTMLImageElement;
-    target.src = "/placeholder.svg";
+    target.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
     target.onerror = null;
   };
   
@@ -53,19 +55,42 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
     setIsImageLoaded(true);
   };
 
+  // Get deterministic fallback image to use if no image is provided
+  const getFallbackImage = (courseId: string): string => {
+    const fallbackImages = [
+      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
+    ];
+    
+    // Use the course ID to determine which image to use
+    const sum = courseId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return fallbackImages[sum % fallbackImages.length];
+  };
+
   // Process image URL to ensure proper loading
-  const processImageUrl = (url: string) => {
-    if (!url) return "/placeholder.svg";
+  const getImageUrl = (url: string, courseId: string): string => {
+    if (!url || url === "/placeholder.svg") {
+      return getFallbackImage(courseId);
+    }
     
     if (url && url.includes("unsplash.com/photo-") && !url.includes("?")) {
       return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
-    return url || "/placeholder.svg";
+    
+    if (url.includes("source.unsplash.com")) {
+      return getFallbackImage(courseId);
+    }
+    
+    return url;
   };
+
+  const imageUrl = getImageUrl(course.imageUrl, course.id);
 
   return (
     <div className="relative overflow-hidden">
-      {!isImageLoaded && (
+      {!isImageLoaded && !imageError && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
         </div>
@@ -82,7 +107,7 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
           />
         ) : (
           <img
-            src={processImageUrl(course.imageUrl)}
+            src={imageUrl}
             alt={course.title}
             className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-500"
             loading="lazy" 
