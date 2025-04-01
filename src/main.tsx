@@ -11,7 +11,7 @@ if (rootElement) {
   // Create a root
   const root = createRoot(rootElement);
   
-  // Render the app immediately without any dynamic imports
+  // Render the app
   root.render(
     <React.StrictMode>
       <App />
