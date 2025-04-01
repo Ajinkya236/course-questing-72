@@ -13,6 +13,13 @@ import {
   DialogTitle,
   DialogClose
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SourceType } from './types';
 
 interface SourceFormDialogProps {

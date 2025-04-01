@@ -12,6 +12,13 @@ import {
 } from '@/components/ui/dialog';
 import { X, Plus, Search, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FollowSkillsProps {
   title?: string;

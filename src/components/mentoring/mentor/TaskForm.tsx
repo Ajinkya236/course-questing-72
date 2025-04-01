@@ -11,6 +11,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TaskFormProps {
   open: boolean;
@@ -145,6 +152,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                   selected={dueDate}
                   onSelect={setDueDate}
                   initialFocus
+                  className={cn("p-3 pointer-events-auto")}
                 />
               </PopoverContent>
             </Popover>
