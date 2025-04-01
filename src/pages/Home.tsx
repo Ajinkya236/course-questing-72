@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/course-carousel';
-import { Button } from '@/components/ui/button';
-import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 
@@ -51,7 +50,7 @@ const basedOnInterest = mockCourses
 
 // New skills for your role courses - with job role specific skills
 const forYourRoleSkills = [
-  'Leadership', 'Communication', 'Project Management', 'Decision Making', 
+  'All Skills', 'Leadership', 'Communication', 'Project Management', 'Decision Making', 
   'Strategic Planning', 'Conflict Resolution', 'Team Building', 'Problem Solving',
   'Time Management', 'Delegation'
 ];
@@ -356,9 +355,6 @@ const skillFilters = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const [trainingFilter, setTrainingFilter] = useState('All Categories');
-  const [skillFilter, setSkillFilter] = useState('All Skills');
-  const [roleSkillFilter, setRoleSkillFilter] = useState('All Skills');
   
   return (
     <>
@@ -388,7 +384,6 @@ const Home = () => {
             viewAllUrl="/my-learning?tab=courses&status=assigned"
             onViewAllClick={() => navigate('/my-learning?tab=courses&status=assigned')}
             filterOptions={trainingCategories}
-            showSkillFilters={true}
             showTrainingCategory={true}
           />
         )}
@@ -415,7 +410,6 @@ const Home = () => {
           courses={basedOnInterest}
           viewAllUrl="/view-all/interest"
           filterOptions={skillFilters}
-          showSkillFilters={true}
         />
         
         {/* For Your Role Carousel - new implementation with role skills */}
@@ -424,7 +418,6 @@ const Home = () => {
           courses={forYourRoleCourses}
           viewAllUrl="/view-all/role"
           filterOptions={forYourRoleSkills}
-          showSkillFilters={true}
         />
         
         {/* Trending Now Carousel */}
