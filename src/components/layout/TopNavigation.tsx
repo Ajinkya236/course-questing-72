@@ -80,14 +80,14 @@ const TopNavigation: React.FC = () => {
   };
 
   return (
-    <div className="top-navigation px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-      <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between">
+    <div className="top-navigation w-full">
+      <div className="container max-w-full mx-auto flex h-14 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         <div className="flex items-center space-x-4">
           <h1 className="font-bold text-lg text-white">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
             {!isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/" className="flex items-center gap-1">
                     <HomeIcon className="h-4 w-4" />
                     <span>Home</span>
@@ -99,7 +99,7 @@ const TopNavigation: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="nav-item flex items-center gap-1"
+                      className="nav-item text-white flex items-center gap-1"
                       onMouseEnter={() => setIsDiscoverHovered(true)}
                       onMouseLeave={() => setIsDiscoverHovered(false)}
                       asChild
@@ -131,19 +131,19 @@ const TopNavigation: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/my-learning" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>My Learning</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/my-team" className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>My Team</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/mentoring" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Mentoring</span>
@@ -154,25 +154,25 @@ const TopNavigation: React.FC = () => {
             
             {isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/admin/dashboard" className="flex items-center gap-1">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/admin/courses" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>Courses</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/admin/modules" className="flex items-center gap-1">
                     <Compass className="h-4 w-4" />
                     <span>Modules</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item">
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
                   <Link to="/admin/activities" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Activities</span>
