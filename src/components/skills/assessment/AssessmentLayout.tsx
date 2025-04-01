@@ -1,9 +1,10 @@
 
 import React, { ReactNode } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
 import { SkillBadge } from './types';
+import { proficiencyColors } from '@/data/skillsData';
 
 interface AssessmentLayoutProps {
   handleBack: () => void;
@@ -38,7 +39,21 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
         {/* Main Content - Left Column */}
         <div className="lg:col-span-2">
           <Card>
-            <CardContent className="pt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center font-archivo-black text-gray-700">
+                {skillName && (
+                  <>
+                    <span>{skillName} Assessment</span>
+                    {proficiency && (
+                      <span className={`ml-3 text-xs px-3 py-1 rounded-full ${proficiencyColors[proficiency as keyof typeof proficiencyColors]}`}>
+                        {proficiency}
+                      </span>
+                    )}
+                  </>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {children}
             </CardContent>
           </Card>
