@@ -1,6 +1,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { Course } from '@/types/course';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Custom hook for efficient course data handling
@@ -10,48 +11,45 @@ export function useCourseData(courses: Course[]) {
   const normalizedCourses = useMemo(() => {
     if (!courses || courses.length === 0) return [];
     
-    // High-quality Unsplash image URLs for courses without images
-    const sampleImageIds = [
-      'photo-1649972904349-6e44c42644a7',
-      'photo-1488590528505-98d2b5aba04b',
-      'photo-1518770660439-4636190af475',
-      'photo-1461749280684-dccba630e2f6',
-      'photo-1486312338219-ce68d2c6f44d',
-      'photo-1581091226825-a6a2a5aee158',
-      'photo-1531297484001-80022131f5a1',
-      'photo-1487058792275-0ad4aaf24ca7',
-      'photo-1498050108023-c5249f4df085'
-    ];
-    
-    // Sample video URLs for previews
-    const sampleVideoUrls = [
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
-    ];
-    
     return courses.map(course => {
-      // Ensure each course has a high-quality image
-      let imageUrl = course.imageUrl;
+      // Use existing image URL or generate a placeholder with Unsplash
+      let imageUrl = course.imageUrl || course.thumbnail;
       if (!imageUrl || imageUrl === '/placeholder.svg') {
-        const randomId = sampleImageIds[Math.floor(Math.random() * sampleImageIds.length)];
-        imageUrl = `https://images.unsplash.com/${randomId}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
+        const placeholderImages = [
+          'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+          'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+          'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+          'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+        ];
+        const randomIndex = Math.floor(Math.random() * placeholderImages.length);
+        imageUrl = placeholderImages[randomIndex];
       }
       
-      // Add video preview if missing
+      // Sample video URLs for previews if needed
       let videoUrl = course.videoUrl || course.previewUrl;
       if (!videoUrl) {
-        videoUrl = sampleVideoUrls[Math.floor(Math.random() * sampleVideoUrls.length)];
+        const sampleVideoUrls = [
+          'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+          'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        ];
+        const randomIndex = Math.floor(Math.random() * sampleVideoUrls.length);
+        videoUrl = sampleVideoUrls[randomIndex];
       }
       
+      // Ensure each course has required properties
       return {
         ...course,
+        id: course.id || `course-${Math.random().toString(36).substring(2, 9)}`,
+        title: course.title || 'Untitled Course',
+        description: course.description || 'No description available',
         imageUrl,
         videoUrl,
         previewUrl: videoUrl,
         level: course.level || course.skillLevel || 'All Levels',
+        category: course.category || course.trainingCategory || 'General',
+        duration: course.duration || '1h',
+        rating: course.rating || 4.0,
         instructor: course.instructor || {
           name: 'Instructor',
           avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
@@ -65,8 +63,29 @@ export function useCourseData(courses: Course[]) {
     return normalizedCourses.find(course => course.id === courseId);
   }, [normalizedCourses]);
 
+  // Function to check bookmark status for a course
+  const checkBookmarkStatus = useCallback(async (courseId: string): Promise<boolean> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return false;
+      
+      const { data, error } = await supabase
+        .from('bookmarks')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('course_id', courseId)
+        .single();
+        
+      return !!data;
+    } catch (error) {
+      console.error('Error checking bookmark status:', error);
+      return false;
+    }
+  }, []);
+
   return {
     normalizedCourses,
-    getCourseById
+    getCourseById,
+    checkBookmarkStatus
   };
 }

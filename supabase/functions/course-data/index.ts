@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { mockCourses } from "./mockData.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,259 +24,197 @@ serve(async (req) => {
       }
     );
 
-    const bodyText = await req.text();
-    let requestParams = {};
+    // Parse request parameters
+    const { courseId, domain, skill, search, limit = 20, status } = await req.json();
     
-    if (bodyText) {
-      try {
-        requestParams = JSON.parse(bodyText);
-      } catch (e) {
-        console.error("Failed to parse request body as JSON:", e);
-      }
-    }
+    // Get the current user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     
-    // Extract parameters from the body
-    const { 
-      courseId, 
-      domain, 
-      skill, 
-      search, 
-      limit = 20,
-      status
-    } = requestParams;
-    
+    // Handle specific course request
     if (courseId) {
-      // Fetch a single course by ID
+      console.log(`Fetching course with ID: ${courseId}`);
+      
       const { data: courseData, error: courseError } = await supabaseClient
         .from('courses')
         .select('*')
         .eq('id', courseId)
         .single();
-        
+      
       if (courseError) {
-        console.error("Database error fetching course:", courseError);
-        
-        // Fallback to mock data if course not found in database
-        const mockCourse = mockCourses.find(c => c.id === courseId);
-        if (mockCourse) {
-          console.log("Course not found in database, using mock data");
-          return new Response(
-            JSON.stringify({ course: mockCourse }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        
-        return new Response(
-          JSON.stringify({ error: "Course not found" }),
-          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        console.error('Error fetching course:', courseError);
+        throw new Error(`Failed to fetch course: ${courseError.message}`);
       }
       
-      // Try to get the bookmark status if user is logged in
-      const { data: authUser } = await supabaseClient.auth.getUser();
-      let isBookmarked = false;
-      
-      if (authUser?.user) {
-        const { data: bookmarkData } = await supabaseClient
-          .from('bookmarks')
-          .select('*')
-          .eq('user_id', authUser.user.id)
-          .eq('course_id', courseId)
-          .single();
-          
-        isBookmarked = !!bookmarkData;
-      }
-      
-      // Check for course progress if user is logged in
-      let progress = 0;
-      if (authUser?.user) {
-        const { data: progressData } = await supabaseClient
+      // Check if the user is authenticated to get progress data
+      let progressData = null;
+      if (user) {
+        const { data: progress, error: progressError } = await supabaseClient
           .from('course_progress')
-          .select('progress')
-          .eq('user_id', authUser.user.id)
+          .select('*')
+          .eq('user_id', user.id)
           .eq('course_id', courseId)
           .single();
-          
-        if (progressData) {
-          progress = progressData.progress;
+        
+        if (!progressError && progress) {
+          progressData = progress;
         }
       }
       
-      // Add the bookmark status and progress to the course
-      const courseWithUserData = {
-        ...courseData,
-        isBookmarked,
-        progress
+      // Format the course for the frontend
+      const formattedCourse = {
+        id: courseData.id,
+        title: courseData.title,
+        description: courseData.description,
+        imageUrl: courseData.imageurl,
+        videoUrl: courseData.videourl,
+        category: courseData.trainingcategory || courseData.domain,
+        duration: courseData.duration || '1h',
+        rating: 4.5, // Default rating
+        level: courseData.level || 'All Levels',
+        skills: courseData.skills,
+        progress: progressData?.progress || 0,
+        isCompleted: progressData?.completed_at ? true : false,
+        instructor: courseData.author || {
+          name: 'Instructor',
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&w=256&h=256&q=80'
+        }
       };
       
       return new Response(
-        JSON.stringify({ course: courseWithUserData }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else {
-      // Fetch multiple courses with optional filters
-      let query = supabaseClient.from('courses').select('*');
-      
-      if (domain) {
-        query = query.eq('domain', domain);
-      }
-      
-      if (skill) {
-        query = query.contains('skills', [skill]);
-      }
-      
-      if (search) {
-        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
-      }
-      
-      // Handle status filter for My Learning page
-      let statusFilteredCourses: any[] = [];
-      const { data: authUser } = await supabaseClient.auth.getUser();
-      
-      if (status && authUser?.user) {
-        // Get courses with progress for status filtering
-        const { data: coursesWithProgress } = await supabaseClient
-          .from('course_progress')
-          .select('course_id, progress, completed_at')
-          .eq('user_id', authUser.user.id);
-          
-        if (coursesWithProgress) {
-          const courseIds = coursesWithProgress.map(cp => {
-            // Categorize by status
-            let courseStatus = 'not_started';
-            if (cp.completed_at) courseStatus = 'completed';
-            else if (cp.progress > 0) courseStatus = 'in_progress';
-            
-            return {
-              id: cp.course_id,
-              status: courseStatus,
-              progress: cp.progress
-            };
-          }).filter(c => {
-            if (status === 'in-progress') return c.status === 'in_progress';
-            if (status === 'completed') return c.status === 'completed';
-            return true;
-          }).map(c => c.id);
-          
-          if (courseIds.length > 0) {
-            query = query.in('id', courseIds);
-          } else {
-            // If no courses match the status, return empty array
-            return new Response(
-              JSON.stringify({ courses: [] }),
-              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-        }
-      }
-      
-      // If status is 'saved' and user is logged in, get bookmarked courses
-      if (status === 'saved' && authUser?.user) {
-        const { data: bookmarks } = await supabaseClient
-          .from('bookmarks')
-          .select('course_id')
-          .eq('user_id', authUser.user.id);
-          
-        if (bookmarks && bookmarks.length > 0) {
-          const bookmarkedCourseIds = bookmarks.map(b => b.course_id);
-          query = query.in('id', bookmarkedCourseIds);
-        } else {
-          // If no bookmarked courses, return empty array
-          return new Response(
-            JSON.stringify({ courses: [] }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-      }
-      
-      // Apply limit if provided
-      if (limit) {
-        query = query.limit(parseInt(limit.toString()));
-      }
-      
-      const { data: courses, error: coursesError } = await query;
-      
-      if (coursesError) {
-        console.error("Database error fetching courses:", coursesError);
-        
-        // Fallback to mock data on error
-        console.log("Error fetching courses from database, using mock data");
-        
-        let filteredMockCourses = [...mockCourses];
-        
-        // Apply mock filtering
-        if (domain) {
-          filteredMockCourses = filteredMockCourses.filter(c => 
-            c.domain?.toLowerCase() === domain.toLowerCase());
-        }
-        
-        if (skill) {
-          filteredMockCourses = filteredMockCourses.filter(c => 
-            c.skills?.some(s => s.toLowerCase().includes(skill.toLowerCase())));
-        }
-        
-        if (search) {
-          filteredMockCourses = filteredMockCourses.filter(c => 
-            c.title.toLowerCase().includes(search.toLowerCase()) || 
-            c.description.toLowerCase().includes(search.toLowerCase()));
-        }
-        
-        if (status) {
-          filteredMockCourses = filteredMockCourses.filter(c => c.status === status);
-        }
-        
-        // Limit results
-        filteredMockCourses = filteredMockCourses.slice(0, parseInt(limit.toString()));
-        
-        return new Response(
-          JSON.stringify({ courses: filteredMockCourses }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      // Try to get bookmarks if user is logged in
-      let bookmarks: Record<string, boolean> = {};
-      let progress: Record<string, number> = {};
-      
-      if (authUser?.user) {
-        const { data: bookmarkData } = await supabaseClient
-          .from('bookmarks')
-          .select('course_id')
-          .eq('user_id', authUser.user.id);
-          
-        if (bookmarkData) {
-          bookmarks = bookmarkData.reduce((acc: Record<string, boolean>, bookmark) => {
-            acc[bookmark.course_id] = true;
-            return acc;
-          }, {});
-        }
-        
-        // Get progress for all courses
-        const { data: progressData } = await supabaseClient
-          .from('course_progress')
-          .select('course_id, progress')
-          .eq('user_id', authUser.user.id);
-          
-        if (progressData) {
-          progress = progressData.reduce((acc: Record<string, number>, item) => {
-            acc[item.course_id] = item.progress;
-            return acc;
-          }, {});
-        }
-      }
-      
-      // Add the bookmark status and progress to each course
-      const coursesWithUserData = courses?.map(course => ({
-        ...course,
-        isBookmarked: !!bookmarks[course.id],
-        progress: progress[course.id] || 0
-      })) || [];
-      
-      return new Response(
-        JSON.stringify({ courses: coursesWithUserData }),
+        JSON.stringify({ course: formattedCourse }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    // Handle multiple courses request
+    console.log('Fetching courses with filters:', { domain, skill, search, limit, status });
+    
+    let query = supabaseClient.from('courses').select('*');
+    
+    // Apply filters
+    if (domain) {
+      query = query.eq('domain', domain);
+    }
+    
+    if (skill && Array.isArray(skill)) {
+      query = query.contains('skills', skill);
+    } else if (skill) {
+      query = query.contains('skills', [skill]);
+    }
+    
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+    
+    // Limit the number of results
+    query = query.limit(limit);
+    
+    const { data: coursesData, error: coursesError } = await query;
+    
+    if (coursesError) {
+      console.error('Error fetching courses:', coursesError);
+      throw new Error(`Failed to fetch courses: ${coursesError.message}`);
+    }
+    
+    let courses = coursesData || [];
+    
+    // Get user progress data if authenticated
+    if (user && courses.length > 0) {
+      const { data: progressData, error: progressError } = await supabaseClient
+        .from('course_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('course_id', courses.map(course => course.id));
+        
+      if (!progressError && progressData) {
+        // Create a map for quick lookup
+        const progressMap = progressData.reduce((acc, item) => {
+          acc[item.course_id] = item;
+          return acc;
+        }, {});
+        
+        // Filter courses by status if specified
+        if (status) {
+          courses = courses.filter(course => {
+            const progress = progressMap[course.id];
+            
+            switch(status) {
+              case 'completed':
+                return progress && progress.completed_at;
+              case 'in-progress':
+                return progress && progress.progress > 0 && !progress.completed_at;
+              case 'saved':
+                // Check bookmarks table
+                return false; // We'll handle bookmarks in a separate query
+              case 'assigned':
+                // This would require an assignments table
+                return false;
+              default:
+                return true;
+            }
+          });
+        }
+        
+        // Attach progress data to courses
+        courses = courses.map(course => {
+          const progress = progressMap[course.id];
+          return {
+            ...course,
+            progress: progress?.progress || 0,
+            isCompleted: progress?.completed_at ? true : false
+          };
+        });
+      }
+      
+      // If status is 'saved', fetch bookmarks
+      if (status === 'saved') {
+        const { data: bookmarkData, error: bookmarkError } = await supabaseClient
+          .from('bookmarks')
+          .select('course_id')
+          .eq('user_id', user.id);
+          
+        if (!bookmarkError && bookmarkData) {
+          const bookmarkedIds = bookmarkData.map(b => b.course_id);
+          
+          // Fetch bookmarked courses
+          const { data: bookmarkedCourses, error: bookmarkedCoursesError } = await supabaseClient
+            .from('courses')
+            .select('*')
+            .in('id', bookmarkedIds);
+            
+          if (!bookmarkedCoursesError && bookmarkedCourses) {
+            courses = bookmarkedCourses;
+          }
+        }
+      }
+    }
+    
+    // Format courses for the frontend
+    const formattedCourses = courses.map(course => ({
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      imageUrl: course.imageurl,
+      videoUrl: course.videourl,
+      category: course.trainingcategory || course.domain,
+      duration: course.duration || '1h',
+      rating: 4.5, // Default rating
+      level: course.level || 'All Levels',
+      skills: course.skills,
+      progress: course.progress || 0,
+      isCompleted: course.isCompleted || false,
+      instructor: course.author || {
+        name: 'Instructor',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&w=256&h=256&q=80'
+      },
+      isBookmarked: status === 'saved' // If we're showing saved courses, they're bookmarked
+    }));
+    
+    return new Response(
+      JSON.stringify({ courses: formattedCourses }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+    
   } catch (error) {
     console.error("Server error:", error.message);
     return new Response(
