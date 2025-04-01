@@ -1,6 +1,15 @@
 import { Course } from '@/types/course';
 
-export const mockCourses = [
+// Helper function to convert string[] skills to proper format
+const formatSkills = (skills: string[]) => {
+  return skills.map(skill => ({
+    name: skill,
+    proficiency: 'Intermediate'
+  }));
+};
+
+// Create a properly typed courses array
+const rawCourses = [
   {
     id: "course-001",
     title: "Introduction to Leadership",
@@ -204,7 +213,13 @@ export const mockCourses = [
     status: "completed" as 'completed',
     skills: ["Agile", "Scrum", "Kanban", "Project Management"]
   }
-] as Course[];
+];
+
+// Convert the raw courses to properly typed Course objects
+export const mockCourses: Course[] = rawCourses.map(course => ({
+  ...course,
+  skills: formatSkills(course.skills as string[])
+}));
 
 // Add this line to alias mockCourses to mockCoursesData for backward compatibility
 export const mockCoursesData = mockCourses;

@@ -12,6 +12,18 @@ interface UseCourseDataProps {
   includeLocal?: boolean;
 }
 
+// Helper function to normalize skills
+const normalizeSkills = (skills: any[]): { name: string; proficiency: string }[] => {
+  if (!skills || !Array.isArray(skills)) return [];
+  
+  return skills.map(skill => {
+    if (typeof skill === 'string') {
+      return { name: skill, proficiency: 'Intermediate' };
+    }
+    return skill;
+  });
+};
+
 export const useCourseData = (
   localCourses: Course[] = [],
   options: UseCourseDataProps = {}
@@ -53,14 +65,7 @@ export const useCourseData = (
       const videoUrl = course.videoUrl || course.previewUrl || sampleVideoUrls[index % sampleVideoUrls.length];
       
       // Normalize skills to ensure they're in the correct format
-      const normalizedSkills = Array.isArray(course.skills) 
-        ? course.skills.map(skill => {
-            if (typeof skill === 'string') {
-              return { name: skill, proficiency: 'Intermediate' };
-            }
-            return skill;
-          })
-        : [];
+      const normalizedSkills = normalizeSkills(course.skills || []);
       
       return {
         ...course,
@@ -89,24 +94,7 @@ export const useCourseData = (
       allCourses = [...apiCourses];
     } else if (!isLoading) {
       // No API data available, use mock data
-      // Need to transform the mock data to ensure skills are in the correct format
-      const normalizedMockCourses = mockCourses.map(course => {
-        const skills = Array.isArray(course.skills) 
-          ? course.skills.map(skill => {
-              if (typeof skill === 'string') {
-                return { name: skill, proficiency: 'Intermediate' };
-              }
-              return skill;
-            })
-          : [];
-        
-        return {
-          ...course,
-          skills
-        } as Course;
-      });
-      
-      allCourses = [...normalizedMockCourses];
+      allCourses = [...mockCourses];
     }
     
     // Include local courses if specified
@@ -116,24 +104,7 @@ export const useCourseData = (
     
     // Ensure we have at least some courses for display
     if (allCourses.length === 0 && !isLoading) {
-      // Need to transform the mock data to ensure skills are in the correct format
-      const normalizedMockCourses = mockCourses.slice(0, limit).map(course => {
-        const skills = Array.isArray(course.skills) 
-          ? course.skills.map(skill => {
-              if (typeof skill === 'string') {
-                return { name: skill, proficiency: 'Intermediate' };
-              }
-              return skill;
-            })
-          : [];
-        
-        return {
-          ...course,
-          skills
-        } as Course;
-      });
-      
-      allCourses = [...normalizedMockCourses];
+      allCourses = [...mockCourses.slice(0, limit)];
     }
     
     setCombinedCourses(allCourses);

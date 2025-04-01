@@ -33,52 +33,26 @@ const Home = () => {
   const navigate = useNavigate();
   const [trainingFilter, setTrainingFilter] = useState('All Categories');
   
-  // Process and normalize continued learning courses
+  // Process continued learning courses
   const continueLearningCourses: Course[] = mockCourses
     .filter(course => course.status === 'in-progress')
     .slice(0, 8)
-    .map(course => {
-      // Create a typed skills array from the course's skills
-      const normalizedSkills = Array.isArray(course.skills) 
-        ? course.skills.map(skill => {
-            if (typeof skill === 'string') {
-              return { name: skill, proficiency: 'Intermediate' };
-            }
-            return skill;
-          })
-        : [];
-      
-      return {
-        ...course,
-        imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-        videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
-        progress: Math.floor(Math.random() * 80) + 10,
-        skills: normalizedSkills
-      };
-    });
+    .map(course => ({
+      ...course,
+      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
+      progress: Math.floor(Math.random() * 80) + 10,
+    }));
 
-  // Process and normalize assigned courses
+  // Process assigned courses
   const assignedCourses: Course[] = mockCourses
     .filter(course => course.status === 'assigned')
     .slice(0, 8)
-    .map(course => {
-      // Create a typed skills array from the course's skills
-      const normalizedSkills = Array.isArray(course.skills) 
-        ? course.skills.map(skill => {
-            if (typeof skill === 'string') {
-              return { name: skill, proficiency: 'Intermediate' };
-            }
-            return skill;
-          })
-        : [];
-      
-      return {
-        ...course,
-        imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-        videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-        skills: normalizedSkills
-      };
-    });
+    .map(course => ({
+      ...course,
+      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    }));
 
   // Training categories
   const trainingCategories = [

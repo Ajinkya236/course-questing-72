@@ -2,23 +2,25 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface CarouselFiltersProps {
+export interface CarouselFiltersProps {
   filters: string[];
   selectedFilter: string;
   onFilterSelect: (filter: string) => void;
+  className?: string; // Added className prop
 }
 
 export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
   filters,
   selectedFilter,
   onFilterSelect,
+  className,
 }) => {
   if (!filters || filters.length === 0) {
     return null;
   }
 
   return (
-    <div className="flex flex-wrap gap-2 mb-3">
+    <div className={cn("flex flex-wrap gap-2 mb-3", className)}>
       {filters.map((filter) => (
         <button
           key={filter}
