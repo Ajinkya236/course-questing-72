@@ -4,6 +4,8 @@ export interface Skill {
   name: string;
   proficiency: string;
   description: string;
+  category?: string;
+  icon?: string;
   courses: number[];
 }
 

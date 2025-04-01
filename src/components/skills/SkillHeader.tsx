@@ -10,6 +10,11 @@ import { proficiencyColors } from '@/data/skillsData';
 interface SkillHeaderProps {
   skill: Skill;
   progress?: number;
+  skillName?: string;
+  skillDescription?: string;
+  proficiency?: string;
+  onProficiencyChange?: (value: string) => void;
+  onBack?: () => void;
 }
 
 // Helper function to get the appropriate icon
@@ -26,7 +31,23 @@ const getSkillIcon = (icon?: string) => {
   }
 };
 
-const SkillHeader: React.FC<SkillHeaderProps> = ({ skill, progress = 0 }) => {
+const SkillHeader: React.FC<SkillHeaderProps> = ({ 
+  skill, 
+  progress = 0,
+  skillName,
+  skillDescription,
+  proficiency,
+  onProficiencyChange,
+  onBack
+}) => {
+  // Handle both direct skill prop and individual props
+  const displayName = skillName || (skill?.name || '');
+  const displayDescription = skillDescription || (skill?.description || '');
+  const displayProficiency = proficiency || (skill?.proficiency || '');
+  
+  // Safely check if skill and skill.icon exist before using them
+  const iconToRender = skill?.icon || 'BrainCircuit';
+
   return (
     <div className="mb-8">
       <Card className="border-0 shadow-sm bg-white dark:bg-gray-800">
@@ -34,18 +55,18 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({ skill, progress = 0 }) => {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* Skill Icon */}
             <div className="bg-primary/10 p-4 rounded-full">
-              {getSkillIcon(skill.icon)}
+              {getSkillIcon(iconToRender)}
             </div>
             
             {/* Skill Info */}
             <div className="flex-grow">
-              <h1 className="text-2xl font-heading text-gray-800 mb-2">{skill.name}</h1>
+              <h1 className="text-2xl font-heading text-gray-800 mb-2">{displayName}</h1>
               <div className="flex flex-wrap gap-3 mb-3">
-                <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
-                  {skill.proficiency}
+                <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
+                  {displayProficiency}
                 </span>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">{skill.description}</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
               
               {/* Progress bar only if there's progress */}
               {progress > 0 && (
