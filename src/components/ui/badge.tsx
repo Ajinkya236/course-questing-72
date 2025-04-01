@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-caption font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -19,6 +19,10 @@ const badgeVariants = cva(
         jio: "border-transparent bg-jio text-jio-foreground hover:bg-jio/80",
         "jio-outline": "border-jio text-jio",
         "jio-gradient": "border-transparent jio-gradient text-white",
+        "jio-red": "border-transparent bg-jio-red text-white",
+        "jio-yellow": "border-transparent bg-jio-yellow text-black",
+        "jio-green": "border-transparent bg-jio-green text-white",
+        "jio-pink": "border-transparent bg-jio-pink text-white",
       },
     },
     defaultVariants: {

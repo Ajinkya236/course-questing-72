@@ -80,14 +80,14 @@ const TopNavigation: React.FC = () => {
   };
 
   return (
-    <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div className="w-full border-b bg-primary text-primary-foreground sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg">Jio Learning</h1>
+          <h1 className="font-bold text-h4 text-white">Jio Learning</h1>
           <nav className="flex items-center space-x-2">
             {!isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/" className="flex items-center gap-1">
                     <HomeIcon className="h-4 w-4" />
                     <span>Home</span>
@@ -99,7 +99,7 @@ const TopNavigation: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 text-white hover:bg-primary-foreground/10"
                       onMouseEnter={() => setIsDiscoverHovered(true)}
                       onMouseLeave={() => setIsDiscoverHovered(false)}
                       asChild
@@ -113,7 +113,7 @@ const TopNavigation: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="start" 
-                    className="w-56"
+                    className="w-56 bg-white text-foreground"
                     onMouseEnter={() => setIsDiscoverHovered(true)}
                     onMouseLeave={() => setIsDiscoverHovered(false)}
                   >
@@ -131,19 +131,19 @@ const TopNavigation: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/my-learning" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>My Learning</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/my-team" className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>My Team</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/mentoring" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Mentoring</span>
@@ -154,25 +154,25 @@ const TopNavigation: React.FC = () => {
             
             {isAdmin && (
               <>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/admin/dashboard" className="flex items-center gap-1">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/admin/courses" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>Courses</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/admin/modules" className="flex items-center gap-1">
                     <Compass className="h-4 w-4" />
                     <span>Modules</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="text-white hover:bg-primary-foreground/10">
                   <Link to="/admin/activities" className="flex items-center gap-1">
                     <Headphones className="h-4 w-4" />
                     <span>Activities</span>
@@ -183,12 +183,12 @@ const TopNavigation: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-white hover:bg-primary-foreground/10">
             <Link to="/notifications">
               <Bell className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="text-white hover:bg-primary-foreground/10">
             <Link to="/faq">
               <HelpCircle className="h-5 w-5" />
             </Link>
@@ -196,7 +196,7 @@ const TopNavigation: React.FC = () => {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
+              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden hover:bg-primary-foreground/10">
                 <img 
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80" 
                   alt="Profile" 
@@ -204,7 +204,7 @@ const TopNavigation: React.FC = () => {
                 />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="bg-white text-foreground">
               <DropdownMenuItem asChild>
                 <Link to="/profile">View Profile</Link>
               </DropdownMenuItem>
@@ -216,7 +216,7 @@ const TopNavigation: React.FC = () => {
                 {isAdmin ? "Switch to Learner Mode" : "Switch to Admin Mode"}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+              <DropdownMenuItem onClick={handleLogout} className="text-jio-red">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </DropdownMenuItem>

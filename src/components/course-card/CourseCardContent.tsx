@@ -28,16 +28,16 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
 }) => {
   return (
     <div className="p-3 space-y-2">
-      <h3 className="font-medium text-sm leading-tight line-clamp-1">{title}</h3>
-      <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
+      <h3 className="text-body font-medium leading-tight line-clamp-1">{title}</h3>
+      <p className="text-body-sm text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-caption text-muted-foreground">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{duration}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+          <Star className="h-3 w-3 text-jio-yellow fill-jio-yellow" />
           <span>{rating.toFixed(1)}</span>
         </div>
       </div>
@@ -46,8 +46,8 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
       <div className="flex flex-col gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="flex items-center gap-2">
           <Button 
-            variant="default" 
-            className="flex-1 py-1 h-8 bg-primary hover:bg-primary/90 text-white"
+            variant="jio" 
+            className="flex-1 py-1 h-8 text-white"
             onClick={handleWatchClick}
             size="sm"
           >
@@ -59,7 +59,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleShareClick}
             aria-label="Share"
-            className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary"
+            className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-jio"
           >
             <Share2 className="h-4 w-4" />
           </Button>
@@ -69,15 +69,15 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
             size="icon"
             onClick={handleBookmarkToggle}
             aria-label="Bookmark"
-            className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-primary`}
+            className={`h-8 w-8 ${isBookmarked ? "border-jio bg-jio/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-jio`}
           >
-            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-jio text-jio" : ""}`} />
           </Button>
         </div>
         
         <Button 
           variant="outline" 
-          className="w-full h-8 text-xs border-muted-foreground/30 hover:bg-muted hover:text-primary"
+          className="w-full h-8 text-caption border-muted-foreground/30 hover:bg-muted hover:text-jio"
           onClick={handleAssignClick}
           size="sm"
         >

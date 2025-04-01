@@ -70,23 +70,23 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
     >
       <div className="flex flex-col">
         <div className="flex items-center">
-          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+          <h2 className="text-h4 font-semibold tracking-tight">{title}</h2>
           <ChevronRight 
-            className="h-4 w-4 cursor-pointer ml-1" 
+            className="h-4 w-4 cursor-pointer ml-1 text-secondary" 
             onClick={handleViewAllClick}
           />
           {isHovered && (
             <Button 
               variant="ghost" 
               size="sm" 
-              className="ml-1 p-0" 
+              className="ml-1 p-0 text-secondary hover:text-secondary/80" 
               onClick={handleViewAllClick}
             >
               View All
             </Button>
           )}
         </div>
-        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        {description && <p className="text-body-sm text-muted-foreground mt-1">{description}</p>}
       </div>
       
       {/* Navigation controls for carousel - displayed next to title */}
@@ -95,7 +95,7 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
           <Button 
             variant="outline" 
             size="icon" 
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full border-secondary text-secondary hover:bg-secondary hover:text-white"
             onClick={triggerCarouselPrev}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -105,7 +105,7 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
           <Button 
             variant="outline" 
             size="icon" 
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full border-secondary text-secondary hover:bg-secondary hover:text-white"
             onClick={triggerCarouselNext}
           >
             <ChevronRight className="h-4 w-4" />

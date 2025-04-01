@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -69,7 +68,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'jio-red': '#E53935',
+				'jio-yellow': '#FFB300',
+				'jio-green': '#4CAF50',
+				'jio-pink': '#EC407A'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -154,6 +157,21 @@ export default {
 				float: 'float 3s ease-in-out infinite',
 				spotlight: 'spotlight 2s ease .75s 1 forwards',
 				shimmer: 'shimmer 2s linear infinite'
+			},
+			fontFamily: {
+				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+			},
+			fontSize: {
+				'display': ['48px', { lineHeight: '1.1', fontWeight: '700' }],
+				'h1': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
+				'h2': ['30px', { lineHeight: '1.2', fontWeight: '700' }],
+				'h3': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+				'h4': ['20px', { lineHeight: '1.3', fontWeight: '600' }],
+				'body-lg': ['18px', { lineHeight: '1.5', fontWeight: '400' }],
+				'body': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
+				'body-sm': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+				'caption': ['12px', { lineHeight: '1.5', fontWeight: '400' }],
+				'button': ['16px', { lineHeight: '1.4', fontWeight: '500' }],
 			}
 		}
 	},
