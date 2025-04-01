@@ -1,4 +1,12 @@
 
-// Re-export all carousel components for easier imports
-export * from "./carousel-components";
-export * from "./carousel-filters";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "./carousel-components";
+import { CarouselFilters } from "./carousel-filters";
+
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  CarouselFilters
+};
