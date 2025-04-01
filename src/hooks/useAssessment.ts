@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { mockSkills } from '@/data/skillsData';
-import { Question, AssessmentAttempt } from '@/components/skills/assessment/types';
+import { Question, AssessmentAttempt, SkillBadge } from '@/components/skills/assessment/types';
+import { useGamification } from './useGamification';
 
 export const useAssessment = (skillId: string | undefined) => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -12,7 +13,11 @@ export const useAssessment = (skillId: string | undefined) => {
   const [selectedSkill, setSelectedSkill] = useState<any>(null);
   const [assessmentScore, setAssessmentScore] = useState<number | null>(null);
   const [previousAttempts, setPreviousAttempts] = useState<AssessmentAttempt[]>([]);
+  const [earnedBadges, setEarnedBadges] = useState<SkillBadge[]>([]);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [latestBadge, setLatestBadge] = useState<SkillBadge | null>(null);
   const { toast } = useToast();
+  const { awardPoints } = useGamification();
   
   // Define pass rate as 80%
   const PASS_RATE = 80;
@@ -26,6 +31,8 @@ export const useAssessment = (skillId: string | undefined) => {
       setSelectedSkill(skill);
       // Load previous attempts from localStorage
       loadPreviousAttempts(skill.id);
+      // Load earned badges
+      loadEarnedBadges();
       // Generate questions based on the skill
       generateQuestionsForSkill(skill);
     } else {
@@ -50,6 +57,53 @@ export const useAssessment = (skillId: string | undefined) => {
     }
   };
 
+  const loadEarnedBadges = () => {
+    try {
+      const savedBadgesString = localStorage.getItem('earned_skill_badges');
+      if (savedBadgesString) {
+        const savedBadges = JSON.parse(savedBadgesString) as SkillBadge[];
+        setEarnedBadges(savedBadges);
+      }
+    } catch (error) {
+      console.error("Error loading earned badges:", error);
+    }
+  };
+
+  const awardBadge = (skillId: number, skillName: string, proficiency: string) => {
+    try {
+      // Check if badge already exists
+      const badgeExists = earnedBadges.some(
+        badge => badge.skillId === skillId && badge.proficiency === proficiency
+      );
+      
+      if (badgeExists) return null;
+      
+      // Create new badge
+      const newBadge: SkillBadge = {
+        id: `badge-${Date.now()}`,
+        skillId,
+        skillName,
+        proficiency,
+        dateEarned: new Date().toISOString(),
+      };
+      
+      // Add to earned badges
+      const updatedBadges = [...earnedBadges, newBadge];
+      setEarnedBadges(updatedBadges);
+      
+      // Save to localStorage
+      localStorage.setItem('earned_skill_badges', JSON.stringify(updatedBadges));
+      
+      // Award points for earning a badge (50 points)
+      awardPoints(50, `Earned ${proficiency} badge for ${skillName}`, 'skill_badge', String(skillId));
+      
+      return newBadge;
+    } catch (error) {
+      console.error("Error awarding badge:", error);
+      return null;
+    }
+  };
+
   const saveAttempt = (attempt: AssessmentAttempt) => {
     try {
       // Add to previous attempts
@@ -58,6 +112,18 @@ export const useAssessment = (skillId: string | undefined) => {
       
       // In a real app, this would be saved to a database
       localStorage.setItem(`assessment_attempts_${attempt.skillId}`, JSON.stringify(updatedAttempts));
+      
+      // If passed, award a badge
+      if (attempt.passed && selectedSkill) {
+        const newBadge = awardBadge(selectedSkill.id, selectedSkill.name, selectedSkill.proficiency);
+        if (newBadge) {
+          setLatestBadge(newBadge);
+          setShowBadgeModal(true);
+          
+          // Update the attempt to show badge was awarded
+          attempt.badgeAwarded = true;
+        }
+      }
     } catch (error) {
       console.error("Error saving attempt:", error);
     }
@@ -119,6 +185,16 @@ export const useAssessment = (skillId: string | undefined) => {
           text: `Explain how ${skill.name} can be applied in your current role.`,
           correctAnswer: 'Sample answer focusing on practical application',
           explanation: 'A good answer would demonstrate practical application in a workplace context.'
+        },
+        {
+          id: 4,
+          type: 'codeSandbox',
+          text: `Create a simple function that demonstrates a basic ${skill.name} application.`,
+          initialCode: `// Write a function that demonstrates ${skill.name}\nfunction demonstrate() {\n  // Your code here\n}`,
+          expectedOutput: "A working demonstration of the concept",
+          testCases: ["Should handle basic input", "Should produce correct output"],
+          correctAnswer: "Sample solution code",
+          explanation: "The solution demonstrates understanding of key concepts."
         }
       ]);
     } finally {
@@ -236,6 +312,11 @@ export const useAssessment = (skillId: string | undefined) => {
     }
   };
 
+  const closeBadgeModal = () => {
+    setShowBadgeModal(false);
+    setLatestBadge(null);
+  };
+
   return {
     questions,
     setQuestions,
@@ -245,6 +326,10 @@ export const useAssessment = (skillId: string | undefined) => {
     assessmentScore,
     setAssessmentScore,
     previousAttempts,
+    earnedBadges,
+    showBadgeModal,
+    latestBadge,
+    closeBadgeModal,
     PASS_RATE,
     generateQuestionsForSkill,
     submitAssessment,

@@ -143,17 +143,22 @@ The assessment should include a variety of question types including:
 - 1-2 match the following questions
 - 1-2 drag the sequence questions
 - 1-2 find the hotspot questions (if appropriate)
+- 1-2 code sandbox questions that test application of skills with a coding exercise (if appropriate)
 
 ${contextInfo ? `Use this context information to create relevant questions that test true understanding:\n${contextInfo}\n` : ''}
 
 For each question, provide:
 1. A unique numerical id
 2. The question text that's clear and specific
-3. The question type (multipleChoice, trueFalse, shortAnswer, videoResponse, documentAnalysis, fillInBlanks, matchTheFollowing, dragSequence, findHotspot)
+3. The question type (multipleChoice, trueFalse, shortAnswer, videoResponse, documentAnalysis, fillInBlanks, matchTheFollowing, dragSequence, findHotspot, codeSandbox)
 4. For multiple choice: exactly 4 options labeled A, B, C, D
 5. The correct answer
 6. A brief explanation of why the answer is correct
 7. For document or video questions, include a URL or reference to relevant materials
+8. For code sandbox questions, include:
+   - Initial code template 
+   - Expected output or functionality
+   - Test cases to validate the solution
 
 The questions should test different cognitive levels: knowledge recall, comprehension, application, analysis, evaluation, and creation where appropriate.
 
@@ -189,6 +194,16 @@ Format as JSON with this structure:
       "text": "Fill in the blank: _____",
       "correctAnswer": "Expected answer",
       "explanation": "Explanation of the correct answer"
+    },
+    {
+      "id": 5,
+      "type": "codeSandbox",
+      "text": "Write a function that...",
+      "initialCode": "// Your code here\nfunction example() {\n  // Complete this function\n}",
+      "expectedOutput": "Expected result or behavior",
+      "testCases": ["Test case 1", "Test case 2"],
+      "correctAnswer": "Example solution code",
+      "explanation": "Explanation of the correct approach"
     },
     ...and so on for other question types
   ]
@@ -226,7 +241,8 @@ Format as JSON using this exact structure:
   ],
   "summary": "Overall assessment summary...",
   "improvements": ["Area 1", "Area 2", ...],
-  "nextSteps": ["Specific action 1", "Specific action 2", ...]
+  "nextSteps": ["Specific action 1", "Specific action 2", ...],
+  "passed": true
 }
 
 BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED. The structure MUST follow the exact format shown above.
@@ -259,8 +275,7 @@ Be thorough but fair in your evaluation. Provide structured, helpful, and constr
           temperature: 0.2, // Lower temperature for more structured responses
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 8192,
-          responseFormat: { type: "JSON" } // Request JSON response format
+          maxOutputTokens: 8192
         },
         safetySettings: [
           {

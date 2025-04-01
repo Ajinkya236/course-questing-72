@@ -14,6 +14,7 @@ import AssessmentQuestion from '@/components/skills/assessment/AssessmentQuestio
 import AssessmentResults from '@/components/skills/assessment/AssessmentResults';
 import AssessmentHistory from '@/components/skills/assessment/AssessmentHistory';
 import AssessmentSidebar from '@/components/skills/assessment/AssessmentSidebar';
+import BadgeAwardModal from '@/components/skills/assessment/BadgeAwardModal';
 import { Question } from '@/components/skills/assessment/types';
 
 const SkillAssessment: React.FC = () => {
@@ -30,6 +31,9 @@ const SkillAssessment: React.FC = () => {
     assessmentScore,
     setAssessmentScore,
     previousAttempts,
+    showBadgeModal,
+    latestBadge,
+    closeBadgeModal,
     PASS_RATE,
     submitAssessment,
     resetAssessment
@@ -197,6 +201,13 @@ const SkillAssessment: React.FC = () => {
             )}
           </div>
         </div>
+        
+        {/* Badge Award Modal */}
+        <BadgeAwardModal 
+          isOpen={showBadgeModal} 
+          onClose={closeBadgeModal} 
+          badge={latestBadge} 
+        />
       </div>
     </PageLayout>
   );

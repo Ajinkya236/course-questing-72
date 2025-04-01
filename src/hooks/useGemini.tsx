@@ -7,7 +7,7 @@ type GenerateResponseParams = {
   prompt: string;
   context?: string;
   model?: string;
-  structuredFormat?: boolean; // Added parameter for structured format
+  structuredFormat?: boolean;
 };
 
 export function useGemini() {
@@ -18,7 +18,7 @@ export function useGemini() {
     prompt, 
     context = '', 
     model = 'gemini-1.5-pro',
-    structuredFormat = true // Default to structured format
+    structuredFormat = true
   }: GenerateResponseParams) => {
     setLoading(true);
     setError(null);
@@ -30,7 +30,7 @@ export function useGemini() {
           prompt,
           context,
           model,
-          structuredFormat, // Pass the structured format parameter
+          structuredFormat,
         },
       });
 
