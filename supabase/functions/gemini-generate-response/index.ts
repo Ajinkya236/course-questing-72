@@ -25,7 +25,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { prompt, context = '', model = 'gemini-1.5-pro' } = await req.json();
+    const { prompt, context = '', sources = [], model = 'gemini-1.5-pro' } = await req.json();
 
     // Validate request parameters
     if (!prompt) {
@@ -36,10 +36,20 @@ serve(async (req) => {
     const validModels = ['gemini-1.5-flash', 'gemini-1.5-pro'];
     const selectedModel = validModels.includes(model) ? model : 'gemini-1.5-pro';
 
+    // Process sources to create better context
+    let sourceContext = '';
+    if (sources && sources.length > 0) {
+      sourceContext = `Additional context from provided sources:\n`;
+      sources.forEach((source: string, index: number) => {
+        sourceContext += `Source ${index + 1}: ${source}\n`;
+      });
+    }
+
     // Prepare prompt with context
     let fullPrompt = prompt;
-    if (context && context.trim() !== '') {
-      fullPrompt = `Context information:\n${context}\n\nUser query: ${prompt}`;
+    
+    if ((context && context.trim() !== '') || sourceContext !== '') {
+      fullPrompt = `${sourceContext}\n${context ? `Context information:\n${context}\n\n` : ''}User query: ${prompt}`;
     }
 
     // Create the request to Gemini API

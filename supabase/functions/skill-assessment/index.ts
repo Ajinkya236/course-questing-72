@@ -31,6 +31,7 @@ serve(async (req) => {
       proficiency, 
       userAnswers = [],
       sources = [], 
+      mediaFiles = [], // New parameter for handling media files
       model = 'gemini-1.5-pro' 
     } = await req.json();
 
@@ -43,22 +44,48 @@ serve(async (req) => {
     const validModels = ['gemini-1.5-flash', 'gemini-1.5-pro'];
     const selectedModel = validModels.includes(model) ? model : 'gemini-1.5-pro';
 
+    // Process sources and media files to create better context
+    let contextInfo = '';
+    
+    if (sources && sources.length > 0) {
+      contextInfo += `Additional context from provided sources:\n`;
+      sources.forEach((source: string, index: number) => {
+        contextInfo += `Source ${index + 1}: ${source}\n`;
+      });
+      contextInfo += '\n';
+    }
+    
+    if (mediaFiles && mediaFiles.length > 0) {
+      contextInfo += `Media files included:\n`;
+      mediaFiles.forEach((file: any, index: number) => {
+        const fileType = file.type || 'Unknown type';
+        const fileName = file.name || `File ${index + 1}`;
+        contextInfo += `File ${index + 1}: ${fileName} (${fileType})\n`;
+      });
+      contextInfo += '\n';
+    }
+
     let prompt = '';
     
     // Prepare prompt based on action
     if (action === 'generate_questions') {
       prompt = `Create an assessment for the skill "${skill}" at the "${proficiency}" level. 
       The assessment should include:
-      - 5 multiple choice questions
-      - 3 true/false questions 
-      - 2 short answer questions
+      - 10 multiple choice questions
+      - 5 true/false questions 
+      - 5 short answer questions
+      - 5 document analysis questions 
+      - 5 video response questions
+
+      ${contextInfo ? `Use this context information to create relevant questions:\n${contextInfo}\n` : ''}
       
       For each question, provide:
       1. The question text
-      2. The question type (multipleChoice, trueFalse, shortAnswer)
+      2. The question type (multipleChoice, trueFalse, shortAnswer, documentAnalysis, videoResponse)
       3. For multiple choice: 4 options (labeled A, B, C, D)
       4. The correct answer
-      
+      5. For document or video questions, include a URL or reference to relevant materials
+
       Format as JSON with this structure:
       {
         "questions": [
@@ -78,13 +105,13 @@ serve(async (req) => {
       User answers:
       ${JSON.stringify(userAnswers, null, 2)}
       
-      Additional context from sources:
-      ${sources.join('\n')}
+      ${contextInfo ? `Additional context:\n${contextInfo}\n` : ''}
       
       Provide:
       1. A score from 0-100
       2. Brief feedback on each answer
       3. Overall assessment summary
+      4. Areas for improvement
       
       Format as JSON:
       {
@@ -93,7 +120,8 @@ serve(async (req) => {
           { "questionId": 1, "comment": "Correct answer with good reasoning" },
           ...
         ],
-        "summary": "Overall assessment summary..."
+        "summary": "Overall assessment summary...",
+        "improvements": ["Area 1", "Area 2", ...]
       }`;
     } else {
       throw new Error("Invalid action. Supported actions are 'generate_questions' and 'evaluate_assessment'");

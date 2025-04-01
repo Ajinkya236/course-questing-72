@@ -20,6 +20,10 @@ const NavbarEnhanced = () => {
   // We'll check if it's the skills detail page (matches '/skills/[id]')
   const isSkillsPage = location.pathname === '/skills';
   const isSkillDetailPage = Boolean(location.pathname.match(/^\/skills\/\d+$/));
+  const isSkillAssessmentPage = Boolean(location.pathname.match(/^\/skills\/\d+\/assessment$/));
+  
+  // Don't show skills search on assessment page
+  const showSkillsSearch = (isSkillsPage || isSkillDetailPage) && !isSkillAssessmentPage;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,7 +39,7 @@ const NavbarEnhanced = () => {
         
         <div className="flex items-center gap-2">
           <SearchBar 
-            isSkillsPage={isSkillsPage || isSkillDetailPage} 
+            isSkillsPage={showSkillsSearch} 
             onFocus={() => navigate('/search')} 
           />
           
@@ -74,7 +78,7 @@ const NavbarEnhanced = () => {
       
       <MobileMenu 
         isOpen={showMobileMenu}
-        isSkillsPage={isSkillsPage || isSkillDetailPage}
+        isSkillsPage={showSkillsSearch}
         onClose={() => setShowMobileMenu(false)}
         navigateToSearch={() => navigate('/search')}
       />

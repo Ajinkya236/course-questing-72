@@ -6,6 +6,7 @@ import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, Che
 import { Button } from '../ui/button';
 import { Skill } from './types';
 import { proficiencyColors } from '@/data/skillsData';
+import { Link } from 'react-router-dom';
 
 interface SkillHeaderProps {
   skill: Skill;
@@ -94,10 +95,12 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
             {/* Action Button - Changed to "Earn Skill" */}
             <div>
               <Button 
-                onClick={() => window.location.href = `/skills/${skill?.id}/assessment`} 
+                asChild
                 className="w-full md:w-auto"
               >
-                Earn Skill
+                <Link to={`/skills/${skill?.id}/assessment`}>
+                  Earn Skill
+                </Link>
               </Button>
             </div>
           </div>
