@@ -16,9 +16,10 @@ const NavbarEnhanced = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  
   // We'll check if it's the skills detail page (matches '/skills/[id]')
   const isSkillsPage = location.pathname === '/skills';
-  const isSkillDetailPage = location.pathname.match(/^\/skills\/\d+$/);
+  const isSkillDetailPage = Boolean(location.pathname.match(/^\/skills\/\d+$/));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
