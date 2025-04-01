@@ -6,16 +6,26 @@ import { useNavigate } from 'react-router-dom';
 
 interface CourseCarouselHeaderProps {
   title: string;
+  description?: string; // Added description prop as optional
   onViewAllClick?: () => void;
   viewAllUrl?: string;
-  carouselId: string;
+  carouselId?: string; // Made carouselId optional
+  showLeftButton?: boolean; // Added new props
+  showRightButton?: boolean;
+  onScrollLeft?: () => void;
+  onScrollRight?: () => void;
 }
 
 const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   title,
+  description,
   onViewAllClick,
   viewAllUrl = '/view-all',
-  carouselId
+  carouselId,
+  showLeftButton,
+  showRightButton,
+  onScrollLeft,
+  onScrollRight
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -23,12 +33,30 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   const handleViewAllClick = () => {
     if (onViewAllClick) {
       onViewAllClick();
-    } else {
+    } else if (viewAllUrl) {
       navigate(viewAllUrl);
     }
   };
 
+  // If we have direct scroll handlers, use those
+  const handleScrollLeft = () => {
+    if (onScrollLeft) {
+      onScrollLeft();
+    } else {
+      triggerCarouselPrev();
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (onScrollRight) {
+      onScrollRight();
+    } else {
+      triggerCarouselNext();
+    }
+  };
+
   const triggerCarouselPrev = () => {
+    if (!carouselId) return;
     const carousel = document.getElementById(carouselId);
     if (carousel) {
       const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
@@ -37,6 +65,7 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   };
 
   const triggerCarouselNext = () => {
+    if (!carouselId) return;
     const carousel = document.getElementById(carouselId);
     if (carousel) {
       const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
@@ -50,31 +79,35 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center">
+      <div className="flex flex-col">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <ChevronRight 
-          className="h-4 w-4 cursor-pointer ml-1" 
-          onClick={handleViewAllClick}
-        />
-        {isHovered && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="ml-1 p-0" 
+        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        <div className="flex items-center mt-1">
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer" 
             onClick={handleViewAllClick}
-          >
-            View All
-          </Button>
-        )}
+          />
+          {isHovered && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-0 ml-1" 
+              onClick={handleViewAllClick}
+            >
+              View All
+            </Button>
+          )}
+        </div>
       </div>
       
-      {/* Navigation controls for carousel - displayed next to title */}
+      {/* Navigation controls for carousel */}
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <Button 
           variant="outline" 
           size="icon" 
           className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselPrev}
+          onClick={handleScrollLeft}
+          disabled={!showLeftButton}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -82,7 +115,8 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
           variant="outline" 
           size="icon" 
           className="h-8 w-8 rounded-full"
-          onClick={triggerCarouselNext}
+          onClick={handleScrollRight}
+          disabled={!showRightButton}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
