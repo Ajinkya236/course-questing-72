@@ -19,7 +19,6 @@ const badgeVariants = cva(
         jio: "border-transparent bg-jio text-jio-foreground hover:bg-jio/80",
         "jio-outline": "border-jio text-jio",
         "jio-gradient": "border-transparent jio-gradient text-white",
-        accent: "border-transparent bg-accent text-accent-foreground hover:bg-accent/80",
       },
     },
     defaultVariants: {
