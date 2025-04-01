@@ -254,10 +254,13 @@ const SkillDetail: React.FC = () => {
     return (
       <PageLayout>
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Skill not found</h1>
-            <Button onClick={handleBack}>Back to Skills</Button>
+          <div className="flex items-center gap-2 mb-4">
+            <Button variant="ghost" size="icon" onClick={handleBack}>
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold">Skill Not Found</h1>
           </div>
+          <p className="text-muted-foreground">The skill you are looking for does not exist or has been removed.</p>
         </div>
       </PageLayout>
     );
@@ -266,188 +269,163 @@ const SkillDetail: React.FC = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex items-center">
-          <Button variant="ghost" onClick={handleBack} className="mr-2">
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
+        <div className="flex items-center gap-2 mb-4">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ChevronLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-3xl font-bold">{skill.name}</h1>
-        </div>
-        
-        <div className="mb-6">
-          <p className="text-gray-600 mb-4">{skill.description}</p>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex items-center">
-              <span className="text-sm font-medium mr-2">Proficiency Level:</span>
-              <Select value={selectedProficiency} onValueChange={setSelectedProficiency}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {proficiencyLevels.map(level => (
-                    <SelectItem key={level} value={level}>{level}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold">{skill.name}</h1>
+          <span className={`px-3 py-1 rounded-full text-xs bg-${skill.proficiency === 'Awareness' ? 'blue-100 text-blue-800' : 
+                              skill.proficiency === 'Knowledge' ? 'purple-100 text-purple-800' : 
+                              skill.proficiency === 'Skill' ? 'green-100 text-green-800' : 
+                              'orange-100 text-orange-800'}`}>
+            {skill.proficiency}
+          </span>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left column - Sources input */}
-          <div className="lg:col-span-3 mb-4">
+          {/* Main Content - Left Column (2/3 on desktop) */}
+          <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Add Learning Sources</CardTitle>
-                <CardDescription>
-                  Add sources like videos, websites, documents, or any other learning materials to enhance the AI's context
-                </CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Info className="h-5 w-5 text-primary" />
+                  About this Skill
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <Textarea 
-                  placeholder="Add YouTube links, website URLs, or text resources here..." 
-                  className="min-h-[100px]"
-                  value={sources}
-                  onChange={(e) => setSources(e.target.value)}
-                />
+                <p className="text-sm text-muted-foreground mb-4">{skill.description}</p>
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="w-full sm:w-auto">
+                    <p className="text-sm font-medium mb-1">Current Proficiency</p>
+                    <Select value={selectedProficiency} onValueChange={setSelectedProficiency}>
+                      <SelectTrigger className="w-full sm:w-[200px]">
+                        <SelectValue placeholder="Select proficiency level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Awareness">Awareness</SelectItem>
+                        <SelectItem value="Knowledge">Knowledge</SelectItem>
+                        <SelectItem value="Skill">Skill</SelectItem>
+                        <SelectItem value="Mastery">Mastery</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="text-xs gap-1">
+                      <Bookmark className="h-3.5 w-3.5" />
+                      Save
+                    </Button>
+                    <Button variant="outline" className="text-xs gap-1">
+                      <Upload className="h-3.5 w-3.5" />
+                      Share
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
-              <CardFooter>
-                <Button onClick={handleSourcesSubmit} className="ml-auto">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Add Sources
-                </Button>
-              </CardFooter>
             </Card>
-          </div>
-          
-          {/* Middle column - Chat */}
-          <div className="lg:col-span-2">
-            <Card className="h-full flex flex-col">
-              <CardHeader>
-                <CardTitle>AI Skill Assistant</CardTitle>
+            
+            {/* Chat Interface */}
+            <Card className="h-[500px] flex flex-col">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  AI Skill Assistant
+                </CardTitle>
                 <CardDescription>
-                  Chat with AI to learn more about {skill.name}
+                  Ask questions about this skill or how to improve it
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow overflow-y-auto max-h-[400px]">
-                <div className="space-y-4">
-                  {chatMessages.map((msg, index) => (
-                    <div 
-                      key={index} 
-                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} ${msg.role === 'system' ? 'justify-center' : ''}`}
-                    >
-                      <div 
-                        className={`
-                          max-w-[80%] rounded-lg p-3 
-                          ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : ''} 
-                          ${msg.role === 'assistant' ? 'bg-muted' : ''}
-                          ${msg.role === 'system' ? 'bg-amber-100 text-amber-800 text-sm italic' : ''}
-                        `}
-                      >
-                        <div className="whitespace-pre-wrap">
-                          {msg.content}
-                        </div>
+              <CardContent className="flex-1 overflow-hidden flex flex-col h-full">
+                <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                  {chatMessages.map((message, index) => (
+                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] p-3 rounded-lg ${
+                        message.role === 'user' 
+                          ? 'bg-primary text-primary-foreground' 
+                          : message.role === 'system'
+                          ? 'bg-muted text-muted-foreground text-sm italic'
+                          : 'bg-muted'
+                      }`}>
+                        {message.content}
                       </div>
                     </div>
                   ))}
                   <div ref={chatEndRef} />
                 </div>
-              </CardContent>
-              <CardFooter className="border-t p-4">
-                <div className="flex w-full gap-2">
-                  <Textarea
-                    placeholder="Ask about this skill..."
+                
+                <div className="flex gap-2">
+                  <Textarea 
                     value={userQuery}
                     onChange={(e) => setUserQuery(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-grow resize-none"
-                    rows={1}
+                    placeholder="Ask a question about this skill..."
+                    className="min-h-[60px] resize-none"
                     disabled={isLoading}
                   />
-                  <Button onClick={handleSendMessage} disabled={isLoading || !userQuery.trim()}>
-                    {isLoading ? "Sending..." : "Send"}
+                  <Button 
+                    onClick={handleSendMessage} 
+                    disabled={!userQuery.trim() || isLoading}
+                    className="self-end"
+                  >
+                    Send
                   </Button>
                 </div>
-                <div className="w-full mt-2 text-xs text-gray-500">
-                  <p>Sample prompts:</p>
-                  <ul className="list-disc pl-5 mt-1">
-                    <li>What are the key concepts of {skill.name}?</li>
-                    <li>How can I apply {skill.name} in my current role?</li>
-                    <li>What resources would you recommend for learning {skill.name}?</li>
-                  </ul>
-                </div>
-              </CardFooter>
+              </CardContent>
             </Card>
           </div>
           
-          {/* Right column - Tools */}
-          <div className="space-y-4">
+          {/* Sidebar - Right Column (1/3 on desktop) */}
+          <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Learning Tools</CardTitle>
-                <CardDescription>Explore this skill with AI-powered tools</CardDescription>
+                <CardDescription>Generate personalized learning resources</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start" 
-                  onClick={() => handleToolClick('assess')}
-                  disabled={isLoading}
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Assess Yourself
+              <CardContent className="grid grid-cols-2 gap-3">
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('assess')}>
+                  <FileQuestion className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Assessment Plan</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => handleToolClick('notes')}
-                  disabled={isLoading}
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Create Study Notes
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('notes')}>
+                  <FileText className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Study Notes</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => handleToolClick('mindmap')}
-                  disabled={isLoading}
-                >
-                  <Network className="h-4 w-4 mr-2" />
-                  Create Mindmap
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('mindmap')}>
+                  <Network className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Concept Map</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => handleToolClick('podcast')}
-                  disabled={isLoading}
-                >
-                  <Headphones className="h-4 w-4 mr-2" />
-                  Create Microlearning Podcast
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('podcast')}>
+                  <Headphones className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Podcast Script</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => handleToolClick('questionnaire')}
-                  disabled={isLoading}
-                >
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                  Create Questionnaire
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('questionnaire')}>
+                  <FileSpreadsheet className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Question Bank</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => handleToolClick('overview')}
-                  disabled={isLoading}
-                >
-                  <Info className="h-4 w-4 mr-2" />
-                  Create Brief Overview
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" onClick={() => handleToolClick('overview')}>
+                  <Info className="h-6 w-6 text-primary" />
+                  <span className="text-xs">Skill Overview</span>
                 </Button>
               </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Add Knowledge Sources</CardTitle>
+                <CardDescription>Improve AI responses with more context</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea 
+                  placeholder="Add links to documentation, research papers, or other resources related to this skill..."
+                  value={sources}
+                  onChange={(e) => setSources(e.target.value)}
+                  className="h-32 resize-none"
+                />
+              </CardContent>
+              <CardFooter>
+                <Button onClick={handleSourcesSubmit} disabled={!sources.trim()} className="w-full">Add Sources</Button>
+              </CardFooter>
             </Card>
           </div>
         </div>
