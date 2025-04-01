@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
 import CourseCarousel from '@/components/course-carousel';
+import { Button } from '@/components/ui/button';
+import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
-import { Course } from '@/types/course';
 
 // Import new components
 import SkillsSection from '@/components/homepage/SkillsSection';
@@ -12,16 +13,16 @@ import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
-// Helper function to format skills array to correct type
-const formatSkills = (skills: string[]): { name: string; proficiency: string }[] => {
+// Helper function to convert string skills to proper skill objects
+const convertToSkillObjects = (skills: string[]) => {
   return skills.map(skill => ({
     name: skill,
-    proficiency: ['Beginner', 'Intermediate', 'Advanced'][Math.floor(Math.random() * 3)]
+    proficiency: 'Intermediate'
   }));
 };
 
 // Filter courses for different categories
-const continueLearningCourses: Course[] = mockCourses
+const continueLearningCourses = mockCourses
   .filter(course => course.status === 'in-progress')
   .slice(0, 12)
   .map(course => ({
@@ -29,46 +30,46 @@ const continueLearningCourses: Course[] = mockCourses
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Sample video
     progress: Math.floor(Math.random() * 80) + 10, // Random progress between 10-90%
-    skills: formatSkills(course.skills as string[] || [])
+    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Learning', 'Development'])
   }));
 
-const assignedCourses: Course[] = mockCourses
+const assignedCourses = mockCourses
   .filter(course => course.status === 'assigned')
   .slice(0, 12)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', // Sample video
-    skills: formatSkills(course.skills as string[] || [])
+    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Management', 'Leadership'])
   }));
 
-const chosenForYou: Course[] = mockCourses
+const chosenForYou = mockCourses
   .filter((_, idx) => idx < 12)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', // Sample video
-    skills: formatSkills(course.skills as string[] || [])
+    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Technical', 'Professional'])
   }));
 
-const basedOnInterest: Course[] = mockCourses
+const basedOnInterest = mockCourses
   .filter((_, idx) => idx >= 12 && idx < 24)
   .map(course => ({
     ...course,
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', // Sample video
-    skills: formatSkills(course.skills as string[] || [])
+    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Innovation', 'Creativity'])
   }));
 
 // New skills for your role courses - with job role specific skills
 const forYourRoleSkills = [
-  'All Skills', 'Leadership', 'Communication', 'Project Management', 'Decision Making', 
+  'Leadership', 'Communication', 'Project Management', 'Decision Making', 
   'Strategic Planning', 'Conflict Resolution', 'Team Building', 'Problem Solving',
   'Time Management', 'Delegation'
 ];
 
 // Generate course data specifically for "For Your Role" section with skills
-const forYourRoleCourses: Course[] = [
+const forYourRoleCourses = [
   {
     id: "role-course-001",
     title: "Leadership Masterclass: Advanced Techniques",
@@ -105,7 +106,7 @@ const forYourRoleCourses: Course[] = [
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Management",
-    skills: [{ name: "Project Management", proficiency: "Advanced" }],
+    skills: [{ name: "Project Management", proficiency: "Intermediate" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -131,7 +132,7 @@ const forYourRoleCourses: Course[] = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Management",
-    skills: [{ name: "Strategic Planning", proficiency: "Advanced" }],
+    skills: [{ name: "Strategic Planning", proficiency: "Intermediate" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -157,7 +158,7 @@ const forYourRoleCourses: Course[] = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Leadership",
-    skills: [{ name: "Team Building", proficiency: "Advanced" }],
+    skills: [{ name: "Team Building", proficiency: "Intermediate" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -183,7 +184,7 @@ const forYourRoleCourses: Course[] = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    skills: [{ name: "Time Management", proficiency: "Beginner" }],
+    skills: [{ name: "Time Management", proficiency: "Intermediate" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -199,9 +200,12 @@ const forYourRoleCourses: Course[] = [
     skills: [{ name: "Delegation", proficiency: "Intermediate" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   }
-];
+].map(course => ({
+  ...course,
+  skills: course.skills || [{ name: course.category, proficiency: "Intermediate" }]
+}));
 
-const trendingCourses: Course[] = [...mockCourses]
+const trendingCourses = [...mockCourses]
   .sort((a, b) => (b.rating || 0) - (a.rating || 0))
   .slice(0, 12)
   .map((course, idx) => ({
@@ -209,11 +213,11 @@ const trendingCourses: Course[] = [...mockCourses]
     imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', // Sample video
     title: `${idx + 1}. ${course.title}`, // Add ranking to title
-    skills: formatSkills(course.skills as string[] || [])
+    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Trending', 'Popular'])
   }));
 
 // New popular with similar users courses with realistic data
-const popularWithSimilarUsers: Course[] = [
+const popularWithSimilarUsers = [
   {
     id: "similar-course-001",
     title: "Big Data Analytics for Managers",
@@ -224,8 +228,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Technical",
-    skills: [{ name: "Data Analysis", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Data Analysis", proficiency: "Intermediate" }, { name: "Management", proficiency: "Advanced" }]
   },
   {
     id: "similar-course-002",
@@ -237,8 +241,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    skills: [{ name: "Emotional Intelligence", proficiency: "Beginner" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Soft Skills", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-003",
@@ -250,8 +254,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Marketing",
-    skills: [{ name: "Digital Marketing", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Marketing", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-004",
@@ -263,8 +267,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Technical",
-    skills: [{ name: "Excel", proficiency: "Advanced" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Data Analysis", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-005",
@@ -276,8 +280,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Leadership",
-    skills: [{ name: "Leadership", proficiency: "Advanced" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Leadership", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-006",
@@ -289,8 +293,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    skills: [{ name: "Negotiation", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Communication", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-007",
@@ -302,8 +306,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Finance",
-    skills: [{ name: "Finance", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Finance", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-008",
@@ -315,8 +319,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Compliance",
-    skills: [{ name: "Compliance", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Compliance", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-009",
@@ -328,8 +332,8 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Business",
-    skills: [{ name: "Sales", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "Sales", proficiency: "Intermediate" }]
   },
   {
     id: "similar-course-010",
@@ -341,10 +345,13 @@ const popularWithSimilarUsers: Course[] = [
     rating: 4.6,
     isBookmarked: false,
     trainingCategory: "HR",
-    skills: [{ name: "HR", proficiency: "Intermediate" }],
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    skills: [{ name: "HR", proficiency: "Intermediate" }]
   }
-];
+].map(course => ({
+  ...course,
+  skills: course.skills || [{ name: course.category, proficiency: "Intermediate" }]
+}));
 
 // Mock banner data for BannerCarousel
 const mockBanners = [
@@ -378,6 +385,9 @@ const skillFilters = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const [trainingFilter, setTrainingFilter] = useState('All Categories');
+  const [skillFilter, setSkillFilter] = useState('All Skills');
+  const [roleSkillFilter, setRoleSkillFilter] = useState('All Skills');
   
   return (
     <>
@@ -407,6 +417,7 @@ const Home = () => {
             viewAllUrl="/my-learning?tab=courses&status=assigned"
             onViewAllClick={() => navigate('/my-learning?tab=courses&status=assigned')}
             filterOptions={trainingCategories}
+            showSkillFilters={true}
             showTrainingCategory={true}
           />
         )}
@@ -433,6 +444,7 @@ const Home = () => {
           courses={basedOnInterest}
           viewAllUrl="/view-all/interest"
           filterOptions={skillFilters}
+          showSkillFilters={true}
         />
         
         {/* For Your Role Carousel - new implementation with role skills */}
@@ -441,6 +453,7 @@ const Home = () => {
           courses={forYourRoleCourses}
           viewAllUrl="/view-all/role"
           filterOptions={forYourRoleSkills}
+          showSkillFilters={true}
         />
         
         {/* Trending Now Carousel */}

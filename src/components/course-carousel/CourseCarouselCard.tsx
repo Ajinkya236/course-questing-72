@@ -69,9 +69,6 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
     }
   };
 
-  // Ensure imageUrl is available even if it's optional in the Course type
-  const imageUrl = course.imageUrl || course.thumbnail || '/placeholder.svg';
-
   return (
     <Card
       className="overflow-hidden h-full max-h-[300px] cursor-pointer hover:border-primary/50 transition-all duration-300 group mb-3 hover:shadow-md hover:scale-105 carousel-card"
@@ -80,10 +77,7 @@ const CourseCarouselCard: React.FC<CourseCarouselCardProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       <CourseCarouselMedia
-        course={{
-          ...course,
-          imageUrl // Ensure imageUrl is passed to CourseCarouselMedia
-        }}
+        course={course}
         isHovered={isHovered}
         isMuted={isMuted}
         isVideoPlaying={isVideoPlaying}
