@@ -1,11 +1,13 @@
 
-import React, { lazy, Suspense, useContext } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
+import { useContext } from 'react';
 
+// Lazy-loaded pages
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
@@ -27,6 +29,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
+const Index = lazy(() => import('./pages/Index'));
 
 // Admin pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -72,6 +75,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 {/* Learner Routes */}
                 <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+                <Route path="/index" element={<Index />} />
                 <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
                 <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
                 <Route path="/my-learning/:tab" element={<PageLayout><MyLearning /></PageLayout>} />
