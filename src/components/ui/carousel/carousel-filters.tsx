@@ -1,7 +1,7 @@
 
-import React from "react";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface CarouselFiltersProps {
   filters: string[];
@@ -19,24 +19,18 @@ export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
   if (!filters || filters.length === 0) return null;
 
   return (
-    <div className={cn("w-full overflow-x-auto no-scrollbar", className)}>
-      <Tabs
-        value={selectedFilter}
-        onValueChange={onFilterSelect}
-        className="w-full"
-      >
-        <TabsList className="flex flex-nowrap">
-          {filters.map((filter) => (
-            <TabsTrigger
-              key={filter}
-              value={filter}
-              className="px-4 py-1.5 whitespace-nowrap"
-            >
-              {filter}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+    <div className={cn("flex overflow-x-auto gap-2 pb-2 scrollbar-hide", className)}>
+      {filters.map((filter) => (
+        <Button
+          key={filter}
+          variant={selectedFilter === filter ? "default" : "outline"}
+          size="sm"
+          className="whitespace-nowrap"
+          onClick={() => onFilterSelect(filter)}
+        >
+          {filter}
+        </Button>
+      ))}
     </div>
   );
 };

@@ -11,7 +11,7 @@ import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
-// Simplified CourseCarousel import to avoid circular dependencies
+// Use the original CourseCarousel to avoid circular imports
 import CourseCarousel from '@/components/CourseCarousel';
 
 // Helper function to convert string skills to proper skill objects

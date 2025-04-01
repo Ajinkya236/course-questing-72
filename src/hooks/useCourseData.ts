@@ -1,74 +1,106 @@
 
-import { useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Course } from '@/types/course';
+import { useCourseDataAPI } from '@/hooks/useCourseDataAPI';
+import { mockCourses } from '@/data/mockCoursesData';
 
-/**
- * Custom hook for efficient course data handling
- */
-export function useCourseData(courses: Course[]) {
-  // Memoize the normalized courses to prevent unnecessary re-calculations
+interface UseCourseDataProps {
+  domain?: string;
+  skill?: string;
+  search?: string;
+  limit?: number;
+  includeLocal?: boolean;
+}
+
+export const useCourseData = (
+  localCourses: Course[] = [],
+  options: UseCourseDataProps = {}
+) => {
+  const { domain, skill, search, limit = 20, includeLocal = true } = options;
+  const [combinedCourses, setCombinedCourses] = useState<Course[]>([]);
+  
+  // Fetch from API (or mock data)
+  const { courses: apiCourses, isLoading, error, refetch } = useCourseDataAPI({
+    domain,
+    skill,
+    search,
+    limit
+  });
+  
+  // Process courses to ensure they have all required fields and fallback images
   const normalizedCourses = useMemo(() => {
-    if (!courses || courses.length === 0) return [];
-    
     // High-quality Unsplash image URLs for courses without images
-    const sampleImageIds = [
-      'photo-1649972904349-6e44c42644a7',
-      'photo-1488590528505-98d2b5aba04b',
-      'photo-1518770660439-4636190af475',
-      'photo-1461749280684-dccba630e2f6',
-      'photo-1486312338219-ce68d2c6f44d',
-      'photo-1581091226825-a6a2a5aee158',
-      'photo-1531297484001-80022131f5a1',
-      'photo-1487058792275-0ad4aaf24ca7',
-      'photo-1498050108023-c5249f4df085'
+    const sampleImageUrls = [
+      'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80'
     ];
     
     // Sample video URLs for previews
     const sampleVideoUrls = [
       'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
+      'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
     ];
     
-    return courses.map(course => {
-      // Ensure each course has a high-quality image
-      let imageUrl = course.imageUrl;
-      if (!imageUrl || imageUrl === '/placeholder.svg') {
-        const randomId = sampleImageIds[Math.floor(Math.random() * sampleImageIds.length)];
-        imageUrl = `https://images.unsplash.com/${randomId}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
-      }
+    return combinedCourses.map((course, index) => {
+      // Ensure each course has a valid image URL
+      const imageUrl = course.imageUrl || course.thumbnail || sampleImageUrls[index % sampleImageUrls.length];
       
-      // Add video preview if missing
-      let videoUrl = course.videoUrl || course.previewUrl;
-      if (!videoUrl) {
-        videoUrl = sampleVideoUrls[Math.floor(Math.random() * sampleVideoUrls.length)];
-      }
+      // Add video preview URL if missing
+      const videoUrl = course.videoUrl || course.previewUrl || sampleVideoUrls[index % sampleVideoUrls.length];
       
       return {
         ...course,
-        imageUrl,
-        videoUrl,
+        id: course.id || `local-course-${index}`,
+        title: course.title || 'Untitled Course',
+        description: course.description || 'No description available',
+        imageUrl: imageUrl,
+        category: course.category || 'General',
+        duration: course.duration || '1h',
+        rating: course.rating || 4.0,
+        videoUrl: videoUrl,
         previewUrl: videoUrl,
-        level: course.level || course.skillLevel || 'All Levels',
-        instructor: course.instructor || {
-          name: 'Instructor',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-        }
+        // Clone courses for carousel display to ensure unique IDs
+        cloneId: `${course.id}-clone-${index}`
       };
     });
-  }, [courses]);
-
-  // Memoized function to get a course by ID
-  const getCourseById = useCallback((courseId: string) => {
-    return normalizedCourses.find(course => course.id === courseId);
-  }, [normalizedCourses]);
-
+  }, [combinedCourses]);
+  
+  // Combine API and local courses
+  useEffect(() => {
+    let allCourses: Course[] = [];
+    
+    // Add courses from the API (or mockCourses if we're in development/no data)
+    if (apiCourses && apiCourses.length > 0) {
+      allCourses = [...apiCourses];
+    } else if (!isLoading) {
+      // No API data available, use mock data
+      allCourses = [...mockCourses];
+    }
+    
+    // Include local courses if specified
+    if (includeLocal && localCourses && localCourses.length > 0) {
+      allCourses = [...allCourses, ...localCourses];
+    }
+    
+    // Ensure we have at least some courses for display
+    if (allCourses.length === 0 && !isLoading) {
+      allCourses = [...mockCourses.slice(0, limit)];
+    }
+    
+    setCombinedCourses(allCourses);
+  }, [apiCourses, localCourses, isLoading, includeLocal, limit]);
+  
   return {
+    courses: normalizedCourses,
     normalizedCourses,
-    getCourseById
+    isLoading,
+    error,
+    refetch
   };
-}
+};
 
 export default useCourseData;
