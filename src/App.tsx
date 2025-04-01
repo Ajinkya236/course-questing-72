@@ -5,7 +5,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
-import Home from './pages/Home';
+import Home from './pages/Home'; // Direct import to avoid lazy loading issues
 
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));

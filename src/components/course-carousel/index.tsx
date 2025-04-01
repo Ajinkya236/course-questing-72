@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -5,32 +6,14 @@ import useEmblaCarousel from 'embla-carousel-react';
 import CourseCarouselCard from './CourseCarouselCard';
 import CourseCarouselHeader from './CourseCarouselHeader';
 import { CarouselFilters } from '@/components/ui/carousel';
+import { Course } from '@/types/course';
 
 // Default options for the carousel
 const defaultOptions = {
-  align: 'start',
+  align: 'start' as const, // Cast to literal type to match AlignmentOptionType
   containScroll: 'trimSnaps' as const,
   dragFree: true,
 };
-
-// Define interfaces
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl?: string;
-  thumbnail?: string;
-  duration: string;
-  progress?: number;
-  videoUrl?: string;
-  category?: string;
-  trainingCategory?: string;
-  level?: string;
-  rating?: number;
-  instructor?: string;
-  skill?: string;
-  [key: string]: any;
-}
 
 interface CourseCarouselProps {
   title: string;
@@ -57,7 +40,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0] || 'All');
   const carouselId = `carousel-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
-  // Initialize embla carousel
+  // Initialize embla carousel with correct type for align option
   const [emblaRef, emblaApi] = useEmblaCarousel({
     ...defaultOptions,
     breakpoints: {
@@ -87,6 +70,32 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   if (!courses || courses.length === 0) {
     return null;
   }
+
+  // Handle card click
+  const handleCardClick = (courseId: string) => {
+    navigate(`/course/${courseId}`);
+  };
+
+  // Handle share click
+  const handleShareClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    console.log('Share clicked for', courseId);
+    // Share functionality here
+  };
+
+  // Handle bookmark toggle
+  const handleBookmarkToggle = (e: React.MouseEvent, courseId: string, title: string, isBookmarked: boolean) => {
+    e.stopPropagation();
+    console.log('Bookmark toggled for', courseId, title, isBookmarked);
+    // Bookmark toggle functionality here
+  };
+
+  // Handle assign click
+  const handleAssignClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    console.log('Assign clicked for', courseId);
+    // Assign functionality here
+  };
 
   return (
     <div className="w-full py-6 space-y-4" id={carouselId}>
@@ -119,8 +128,13 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                   className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
                 >
                   <CourseCarouselCard 
-                    course={course} 
-                    onClick={() => navigate(`/course/${course.id}`)}
+                    course={course}
+                    hoveredCourseId={null}
+                    handleCardClick={handleCardClick}
+                    handleShareClick={handleShareClick}
+                    handleBookmarkToggle={handleBookmarkToggle}
+                    handleAssignClick={handleAssignClick}
+                    showTrainingCategory={showTrainingCategory}
                   />
                 </CarouselItem>
               ))}

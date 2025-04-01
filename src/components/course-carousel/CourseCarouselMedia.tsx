@@ -8,7 +8,7 @@ interface CourseCarouselMediaProps {
   course: {
     id: string;
     title: string;
-    imageUrl: string;
+    imageUrl: string; // This needs to be required for the component
     videoUrl?: string;
     enrollmentStatus?: string;
     trainingCategory?: string;
