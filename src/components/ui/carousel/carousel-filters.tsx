@@ -1,12 +1,13 @@
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export interface CarouselFiltersProps {
+interface CarouselFiltersProps {
   filters: string[];
   selectedFilter: string;
   onFilterSelect: (filter: string) => void;
-  className?: string; // Added className prop
+  className?: string;
 }
 
 export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
@@ -15,28 +16,29 @@ export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
   onFilterSelect,
   className,
 }) => {
-  if (!filters || filters.length === 0) {
-    return null;
-  }
+  if (!filters || filters.length === 0) return null;
 
   return (
-    <div className={cn("flex flex-wrap gap-2 mb-3", className)}>
-      {filters.map((filter) => (
-        <button
-          key={filter}
-          onClick={() => onFilterSelect(filter)}
-          className={cn(
-            "px-3 py-1 text-sm rounded-full transition-colors",
-            selectedFilter === filter
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-          )}
-        >
-          {filter}
-        </button>
-      ))}
+    <div className={cn("w-full overflow-x-auto no-scrollbar", className)}>
+      <Tabs
+        value={selectedFilter}
+        onValueChange={onFilterSelect}
+        className="w-full"
+      >
+        <TabsList className="flex flex-nowrap">
+          {filters.map((filter) => (
+            <TabsTrigger
+              key={filter}
+              value={filter}
+              className="px-4 py-1.5 whitespace-nowrap"
+            >
+              {filter}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
     </div>
   );
 };
 
-export default CarouselFilters;
+// Removed duplicate export here
