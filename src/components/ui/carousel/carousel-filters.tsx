@@ -41,4 +41,4 @@ export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
   );
 };
 
-export { CarouselFilters };
+// Removed duplicate export here
