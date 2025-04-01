@@ -6,8 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-  CarouselFilters
-} from "./carousel"
+} from "@/components/ui/carousel/carousel-components"
 
 export {
   Carousel,
@@ -15,7 +14,6 @@ export {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  CarouselFilters
 }
 
 export type { CarouselApi }

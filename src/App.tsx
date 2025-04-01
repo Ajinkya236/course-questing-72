@@ -1,5 +1,5 @@
 
-import React, { lazy, Suspense, useContext } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -43,7 +43,8 @@ const PageLoader = () => (
 );
 
 const ProtectedRoute = () => {
-  const { user, session } = useContext(AuthContext);
+  // We need to use React.useContext here since we can't import useContext directly inside a component
+  const { user, session } = React.useContext(AuthContext);
 
   if (!user || !session) {
     return <Navigate to="/sign-in" />;
@@ -54,14 +55,14 @@ const ProtectedRoute = () => {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <Router>
+        <AuthProvider>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/sign-in" element={<SignIn />} />
@@ -105,9 +106,9 @@ function App() {
             </Routes>
           </Suspense>
           <Toaster />
-        </ThemeProvider>
-      </AuthProvider>
-    </Router>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 
