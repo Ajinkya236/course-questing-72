@@ -1,18 +1,12 @@
 
-import React, { useState } from 'react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import CourseCarouselVideo from './CourseCarouselVideo';
+import { Button } from '@/components/ui/button';
+import { Volume2, VolumeX, Play } from 'lucide-react';
+import { Course } from '@/types/course';
 
 interface CourseCarouselMediaProps {
-  course: {
-    id: string;
-    title: string;
-    imageUrl: string;
-    videoUrl?: string;
-    enrollmentStatus?: string;
-    trainingCategory?: string;
-  };
+  course: Course;
   isHovered: boolean;
   isMuted: boolean;
   isVideoPlaying: boolean;
@@ -30,105 +24,87 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   toggleMute,
   showTrainingCategory = false
 }) => {
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  // Use a placeholder if image is missing or broken
+  const placeholderImage = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
   
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-500';
-      case 'In Progress':
-        return 'bg-blue-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
+  // Function to handle image load errors
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    setImageError(true);
-    const target = e.target as HTMLImageElement;
-    target.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
-    target.onerror = null;
+    e.currentTarget.src = placeholderImage;
   };
-  
-  const handleImageLoad = () => {
-    setIsImageLoaded(true);
-  };
-
-  // Get deterministic fallback image to use if no image is provided
-  const getFallbackImage = (courseId: string): string => {
-    const fallbackImages = [
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80",
-    ];
-    
-    // Use the course ID to determine which image to use
-    const sum = courseId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return fallbackImages[sum % fallbackImages.length];
-  };
-
-  // Process image URL to ensure proper loading
-  const getImageUrl = (url: string, courseId: string): string => {
-    if (!url || url === "/placeholder.svg") {
-      return getFallbackImage(courseId);
-    }
-    
-    if (url && url.includes("unsplash.com/photo-") && !url.includes("?")) {
-      return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
-    }
-    
-    if (url.includes("source.unsplash.com")) {
-      return getFallbackImage(courseId);
-    }
-    
-    return url;
-  };
-
-  const imageUrl = getImageUrl(course.imageUrl, course.id);
 
   return (
-    <div className="relative overflow-hidden">
-      {!isImageLoaded && !imageError && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-        </div>
+    <div className="relative w-full h-[150px] overflow-hidden rounded-t-lg bg-muted/20">
+      {/* Video preview (shown on hover if available) */}
+      {course.videoUrl && (
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+            isHovered && isVideoPlaying ? 'opacity-100' : 'opacity-0'
+          }`}
+          muted={isMuted}
+          playsInline
+          preload="none"
+        />
       )}
       
-      <AspectRatio ratio={16/9}>
-        {isHovered && course.videoUrl ? (
-          <CourseCarouselVideo
-            videoRef={videoRef}
-            videoUrl={course.videoUrl}
-            isMuted={isMuted}
-            isVideoPlaying={isVideoPlaying}
-            toggleMute={toggleMute}
-          />
-        ) : (
-          <img
-            src={imageUrl}
-            alt={course.title}
-            className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-500"
-            loading="lazy" 
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-            style={{ opacity: isImageLoaded ? 1 : 0 }}
-          />
-        )}
-      </AspectRatio>
+      {/* Static image (shown by default or if no video) */}
+      <img
+        src={course.imageUrl || placeholderImage}
+        alt={course.title}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          isHovered && isVideoPlaying ? 'opacity-0' : 'opacity-100'
+        }`}
+        onError={handleImageError}
+      />
       
-      {course.enrollmentStatus && (
-        <div className="absolute top-2 right-2">
-          <Badge className={getStatusColor(course.enrollmentStatus)} variant="secondary">
-            {course.enrollmentStatus}
-          </Badge>
-        </div>
-      )}
+      {/* Category badge */}
       {showTrainingCategory && course.trainingCategory && (
-        <div className="absolute bottom-2 left-2">
-          <Badge variant="outline" className="bg-black/60 text-white border-none">
-            {course.trainingCategory}
+        <Badge 
+          className="absolute top-2 left-2 z-10 bg-primary/80 hover:bg-primary text-white"
+          variant="default"
+        >
+          {course.trainingCategory}
+        </Badge>
+      )}
+      
+      {/* Video controls */}
+      {course.videoUrl && isHovered && (
+        <div className="absolute bottom-2 right-2 z-10 flex items-center gap-2">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-7 w-7 bg-black/50 hover:bg-black/70 text-white rounded-full"
+            onClick={toggleMute}
+          >
+            {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+          </Button>
+        </div>
+      )}
+      
+      {/* Play button overlay (when not playing) */}
+      {course.videoUrl && isHovered && !isVideoPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-5">
+          <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm">
+            <Play className="h-8 w-8 text-white" fill="white" />
+          </div>
+        </div>
+      )}
+      
+      {/* Progress indicator (if in progress) */}
+      {course.progress !== undefined && course.progress > 0 && course.progress < 100 && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted z-10">
+          <div 
+            className="h-full bg-primary" 
+            style={{ width: `${course.progress}%` }}
+          />
+        </div>
+      )}
+      
+      {/* Completed indicator */}
+      {course.progress === 100 && (
+        <div className="absolute top-2 right-2 bg-emerald-500 text-white rounded-full p-1 z-10">
+          <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-white border-0">
+            Completed
           </Badge>
         </div>
       )}
