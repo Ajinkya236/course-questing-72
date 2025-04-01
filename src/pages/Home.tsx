@@ -10,14 +10,6 @@ import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 import { mockCourses } from '@/data/mockCoursesData';
 
-// Helper function to convert string skills to proper skill objects
-const convertToSkillObjects = (skills: string[]) => {
-  return skills.map(skill => ({
-    name: skill,
-    proficiency: 'Intermediate'
-  }));
-};
-
 // Mock banner data
 const mockBanners = [
   {
@@ -36,6 +28,14 @@ const mockBanners = [
   }
 ];
 
+// Helper function to convert string skills to proper skill objects
+const convertToSkillObjects = (skills: string[]) => {
+  return skills.map(skill => ({
+    name: skill,
+    proficiency: 'Intermediate'
+  }));
+};
+
 const Home = () => {
   const navigate = useNavigate();
   const [trainingFilter, setTrainingFilter] = useState('All Categories');
@@ -46,10 +46,14 @@ const Home = () => {
     .slice(0, 8)
     .map(course => ({
       ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
+      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
       progress: Math.floor(Math.random() * 80) + 10, 
-      skills: convertToSkillObjects(Array.isArray(course.skills) ? course.skills as string[] : ['Learning', 'Development'])
+      skills: Array.isArray(course.skills) 
+        ? course.skills.map(skill => typeof skill === 'string' 
+            ? { name: skill, proficiency: 'Intermediate' } 
+            : skill)
+        : []
     }));
 
   const assignedCourses = mockCourses
@@ -57,9 +61,13 @@ const Home = () => {
     .slice(0, 8)
     .map(course => ({
       ...course,
-      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      skills: convertToSkillObjects(Array.isArray(course.skills) ? course.skills as string[] : ['Management', 'Leadership'])
+      imageUrl: course.imageUrl || `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: course.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      skills: Array.isArray(course.skills) 
+        ? course.skills.map(skill => typeof skill === 'string' 
+            ? { name: skill, proficiency: 'Intermediate' } 
+            : skill)
+        : []
     }));
 
   // Training categories
