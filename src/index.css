@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -100,7 +101,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight;
+    @apply font-heading tracking-tight text-gray-800;
     font-weight: 400; /* Archivo Black only comes in 400 weight */
   }
   
@@ -114,6 +115,10 @@
   
   h3 {
     @apply text-xl md:text-2xl;
+  }
+
+  .skill-title, .course-title {
+    @apply font-sans font-medium;
   }
 }
 

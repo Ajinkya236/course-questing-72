@@ -111,10 +111,21 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
     onSubmit();
   };
 
+  // Helper function to get the appropriate placeholder based on source type
+  const getPlaceholder = (type: SourceType): string => {
+    if (type === "text") {
+      return "Enter your source content here...";
+    } else if (type === "link") {
+      return "https://example.com/resource";
+    } else {
+      return "Select file...";
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Knowledge Sources</CardTitle>
+        <CardTitle className="text-lg font-heading text-gray-700">Knowledge Sources</CardTitle>
         <CardDescription>Add multiple sources to improve AI responses</CardDescription>
       </CardHeader>
       <CardContent>
@@ -220,11 +231,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
                 {newSourceType === "text" ? (
                   <Textarea
                     id="source-content"
-                    placeholder={
-                      newSourceType === "text" 
-                        ? "Enter your source content here..." 
-                        : "https://example.com/resource"
-                    }
+                    placeholder={getPlaceholder(newSourceType)}
                     value={newSourceContent}
                     onChange={(e) => setNewSourceContent(e.target.value)}
                     className="min-h-[100px]"
@@ -232,11 +239,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({ sources, setSources
                 ) : (
                   <Input
                     id="source-content"
-                    placeholder={
-                      newSourceType === "link" 
-                        ? "https://example.com/resource" 
-                        : "Select file..."
-                    }
+                    placeholder={getPlaceholder(newSourceType)}
                     type={newSourceType === "file" ? "file" : "text"}
                     value={newSourceContent}
                     onChange={(e) => setNewSourceContent(e.target.value)}

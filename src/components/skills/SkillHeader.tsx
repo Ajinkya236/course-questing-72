@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Info, Bookmark, Upload, ChevronLeft } from "lucide-react";
+import { Info, ChevronLeft } from "lucide-react";
 
 interface SkillHeaderProps {
   skillName: string;
@@ -34,7 +34,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">{skillName}</h1>
+        <h1 className="text-2xl font-heading text-gray-700">{skillName}</h1>
         <span className={`px-3 py-1 rounded-full text-xs bg-${
           proficiency === 'Awareness' ? 'blue-100 text-blue-800' : 
           proficiency === 'Knowledge' ? 'purple-100 text-purple-800' : 
@@ -46,7 +46,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 font-heading text-xl text-gray-700">
             <Info className="h-5 w-5 text-primary" />
             About this Skill
           </CardTitle>
@@ -54,31 +54,18 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">{skillDescription}</p>
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="w-full sm:w-auto">
-              <p className="text-sm font-medium mb-1">Current Proficiency</p>
-              <Select value={proficiency} onValueChange={onProficiencyChange}>
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <SelectValue placeholder="Select proficiency level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {proficiencyLevels.map(level => (
-                    <SelectItem key={level} value={level}>{level}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button variant="outline" className="text-xs gap-1">
-                <Bookmark className="h-3.5 w-3.5" />
-                Save
-              </Button>
-              <Button variant="outline" className="text-xs gap-1">
-                <Upload className="h-3.5 w-3.5" />
-                Share
-              </Button>
-            </div>
+          <div className="w-full sm:w-auto">
+            <p className="text-sm font-medium mb-1">Current Proficiency</p>
+            <Select value={proficiency} onValueChange={onProficiencyChange}>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Select proficiency level" />
+              </SelectTrigger>
+              <SelectContent>
+                {proficiencyLevels.map(level => (
+                  <SelectItem key={level} value={level}>{level}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
