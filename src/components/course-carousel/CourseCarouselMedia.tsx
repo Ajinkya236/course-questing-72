@@ -8,8 +8,7 @@ interface CourseCarouselMediaProps {
   course: {
     id: string;
     title: string;
-    imageUrl?: string;
-    thumbnail?: string;
+    imageUrl: string;
     videoUrl?: string;
     enrollmentStatus?: string;
     trainingCategory?: string;
@@ -55,15 +54,13 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
   };
 
   // Process image URL to ensure proper loading
-  const getImageUrl = () => {
-    // Use imageUrl or thumbnail, fallback to placeholder
-    const url = course.imageUrl || course.thumbnail || "/placeholder.svg";
+  const processImageUrl = (url: string) => {
+    if (!url) return "/placeholder.svg";
     
     if (url && url.includes("unsplash.com/photo-") && !url.includes("?")) {
       return `${url}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`;
     }
-    
-    return url;
+    return url || "/placeholder.svg";
   };
 
   return (
@@ -85,7 +82,7 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
           />
         ) : (
           <img
-            src={getImageUrl()}
+            src={processImageUrl(course.imageUrl)}
             alt={course.title}
             className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-500"
             loading="lazy" 

@@ -28,8 +28,8 @@ const MentorCard: React.FC<MentorCardProps> = ({
       onMouseLeave={onMouseLeave}
     >
       <CardContent className="p-4 flex flex-col h-full">
-        <div className="flex flex-col items-center text-center flex-1">
-          <div className="w-24 h-24 rounded-full overflow-hidden mb-4 mt-4">
+        <div className="flex flex-col items-center text-center mb-auto">
+          <div className="w-20 h-20 rounded-full overflow-hidden mb-3 mt-3">
             <img 
               src={mentor.image} 
               alt={mentor.name} 
@@ -42,34 +42,42 @@ const MentorCard: React.FC<MentorCardProps> = ({
               }}
             />
           </div>
-          <h3 className="text-2xl font-medium">{mentor.name}</h3>
-          <p className="text-muted-foreground text-lg mb-4">{mentor.title}</p>
+          <h3 className="text-lg font-medium">{mentor.name}</h3>
+          <p className="text-muted-foreground text-sm mb-2">{mentor.title}</p>
           
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-            <span className="text-lg font-medium">{mentor.rating}</span>
-            <span className="text-sm text-muted-foreground">({mentor.reviews})</span>
+          <div className="flex items-center justify-center gap-1 mb-2">
+            <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+            <span className="text-sm font-medium">{mentor.rating}</span>
+            <span className="text-xs text-muted-foreground">({mentor.reviews})</span>
           </div>
           
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
-            {mentor.topics.map(topic => (
+          <div className="flex flex-wrap gap-1 justify-center mb-4">
+            {mentor.topics.slice(0, 2).map(topic => (
               <Badge 
                 key={topic} 
                 variant="secondary" 
-                className="text-sm px-4 py-1 rounded-full"
+                className="text-xs px-2 py-0.5 rounded-full"
               >
                 {topic}
               </Badge>
             ))}
+            {mentor.topics.length > 2 && (
+              <Badge 
+                variant="outline" 
+                className="text-xs px-2 py-0.5 rounded-full"
+              >
+                +{mentor.topics.length - 2} more
+              </Badge>
+            )}
           </div>
         </div>
         
         <Button 
-          size="lg" 
+          size="sm" 
           onClick={() => onSelectMentor(mentor)}
-          className="w-full transition-all duration-300 flex items-center justify-center gap-2 mb-2"
+          className="w-full transition-all duration-300 flex items-center justify-center gap-1 mt-2"
         >
-          <SendIcon className="h-4 w-4" /> 
+          <SendIcon className="h-3 w-3" /> 
           Request Mentoring
         </Button>
       </CardContent>

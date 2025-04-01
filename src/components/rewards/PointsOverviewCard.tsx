@@ -108,7 +108,7 @@ const PointsOverviewCard: React.FC<PointsOverviewCardProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="font-medium text-primary">Current Streak:</span>
-                <span className="font-medium">{rewardsData.streak.current} days</span>
+                <span className="font-medium">{rewardsData.streak} days</span>
               </div>
             </div>
           </TabsContent>

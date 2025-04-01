@@ -100,40 +100,14 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ teamMemberId }) => {
         ) : normalizedCourses.length > 0 ? (
           <div className="overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {normalizedCourses.map((course) => {
-                // Get instructor as string
-                const instructorStr = typeof course.instructor === 'string' 
-                  ? course.instructor 
-                  : course.instructor?.name || course.author || 'Expert Instructor';
-                
-                return (
-                  <div 
-                    key={course.id}
-                    className="transition-transform duration-300 hover:scale-[1.03]"
-                  >
-                    <CourseCard 
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      thumbnail={course.imageUrl || course.thumbnail}
-                      imageUrl={course.imageUrl}
-                      duration={course.duration}
-                      instructor={instructorStr}
-                      level={course.level || 'Intermediate'}
-                      category={course.category}
-                      progress={course.progress || 0}
-                      rating={course.rating || 0}
-                      isBookmarked={course.isBookmarked}
-                      isAssigned={course.isAssigned}
-                      isCompleted={course.isCompleted}
-                      status={course.status}
-                      source={course.source}
-                      type={course.type}
-                      trainingCategory={course.trainingCategory}
-                    />
-                  </div>
-                );
-              })}
+              {normalizedCourses.map((course) => (
+                <div 
+                  key={course.id}
+                  className="transition-transform duration-300 hover:scale-[1.03]"
+                >
+                  <CourseCard {...course} />
+                </div>
+              ))}
             </div>
           </div>
         ) : (

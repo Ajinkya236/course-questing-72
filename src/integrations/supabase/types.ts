@@ -205,56 +205,6 @@ export type Database = {
         }
         Relationships: []
       }
-      skills: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
-      user_achievements: {
-        Row: {
-          achieved_at: string
-          id: string
-          proficiency: string
-          skill_id: string
-          user_id: string
-        }
-        Insert: {
-          achieved_at?: string
-          id?: string
-          proficiency: string
-          skill_id: string
-          user_id: string
-        }
-        Update: {
-          achieved_at?: string
-          id?: string
-          proficiency?: string
-          skill_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_achievements_skill_id_fkey"
-            columns: ["skill_id"]
-            isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never

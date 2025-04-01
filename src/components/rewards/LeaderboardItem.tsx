@@ -134,7 +134,7 @@ export const UserLeaderboardItem: React.FC<UserLeaderboardItemProps> = ({
       </div>
       
       {/* User Stats */}
-      {showDetails && !user.date && user.details && (
+      {showDetails && !user.date && (
         <div className="hidden md:flex gap-2 text-xs">
           <div className="bg-secondary/20 rounded-full px-2 py-1 flex items-center">
             <span className="text-secondary-foreground">Assessment: {user.details.assessmentScore}%</span>
