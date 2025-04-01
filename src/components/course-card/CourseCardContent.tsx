@@ -42,8 +42,8 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      {/* Action buttons with improved visibility */}
-      <div className="flex flex-col gap-2 mt-3">
+      {/* Action buttons with hover visibility */}
+      <div className="flex flex-col gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="flex items-center gap-2">
           <Button 
             variant="default" 

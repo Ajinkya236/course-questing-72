@@ -34,14 +34,14 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
     }
   }, [tab, searchParams]);
 
-  // Default to 'in-progress' status for courses if no status is specified
+  // Only add the status parameter for the courses tab
   useEffect(() => {
     if (activeTab === 'courses' && !searchParams.get('status')) {
-      if (memberId) {
-        navigate(`/my-team/member/${memberId}/learning?tab=courses&status=in-progress`, { replace: true });
-      } else {
-        navigate('/my-learning?tab=courses&status=in-progress', { replace: true });
-      }
+      const basePath = memberId 
+        ? `/my-team/member/${memberId}/learning` 
+        : '/my-learning';
+      
+      navigate(`${basePath}?tab=courses&status=in-progress`, { replace: true });
     }
   }, [activeTab, searchParams, navigate, memberId]);
   
