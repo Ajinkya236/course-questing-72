@@ -1,5 +1,4 @@
-
-import { Award, BrainCircuit, Lightbulb, TrendingUp, Rocket, Code, Database, Shield, Network, Cloud, BookOpen, PenTool, Zap, Users, Globe, BarChart, Calculator, CreditCard, Clock, Heart, MessageSquare, ShoppingCart, FileText, PackageCheck, Target, LineChart, Coffee, DollarSign, Mail, MonitorSmartphone, Palette, Power, Radio, Smartphone, Monitor, GitBranch, Lock, SearchCheck, Settings, Share2, Truck, Video, Wifi, Tool, Headphones } from 'lucide-react';
+import { Award, BrainCircuit, Lightbulb, TrendingUp, Rocket, Code, Database, Shield, Network, Cloud, BookOpen, PenTool, Zap, Users, Globe, BarChart, Calculator, CreditCard, Clock, Heart, MessageSquare, ShoppingCart, FileText, PackageCheck, Target, LineChart, Coffee, DollarSign, Mail, MonitorSmartphone, Palette, Power, Radio, Smartphone, Monitor, GitBranch, Lock, SearchCheck, Settings, Share2, Truck, Video, Wifi, Tool, Headphones, Wrench } from 'lucide-react';
 import { Skill } from '@/components/skills/types';
 
 // Expanded mock skills data with more entries and categories (250 skills)
@@ -15,7 +14,7 @@ export const mockSkills: Skill[] = [
   { id: 8, name: "Business Analytics", proficiency: "Awareness", category: "role", icon: "TrendingUp", description: "Using data to drive business decisions", courses: [] },
   { id: 9, name: "Communication", proficiency: "Skill", category: "role", icon: "MessageSquare", description: "Effective verbal and written communication", courses: [] },
   { id: 10, name: "Critical Thinking", proficiency: "Knowledge", category: "role", icon: "BrainCircuit", description: "Analyzing information objectively to make decisions", courses: [] },
-  { id: 11, name: "Problem Solving", proficiency: "Skill", category: "role", icon: "Tool", description: "Identifying and resolving complex problems", courses: [] },
+  { id: 11, name: "Problem Solving", proficiency: "Skill", category: "role", icon: "Wrench", description: "Identifying and resolving complex problems", courses: [] },
   { id: 12, name: "Negotiation", proficiency: "Awareness", category: "role", icon: "Users", description: "Reaching agreements through discussion", courses: [] },
   { id: 13, name: "Time Management", proficiency: "Knowledge", category: "role", icon: "Clock", description: "Efficiently organizing and prioritizing tasks", courses: [] },
   { id: 14, name: "Delegation", proficiency: "Skill", category: "role", icon: "Award", description: "Assigning tasks and responsibilities effectively", courses: [] },
@@ -315,6 +314,7 @@ export const getIconByName = (iconName: string) => {
     case 'Wifi': return Wifi;
     case 'Tool': return Tool;
     case 'Headphones': return Headphones;
+    case 'Wrench': return Wrench;
     default: return BrainCircuit;
   }
 };
@@ -326,4 +326,3 @@ export const proficiencyColors = {
   "Skill": "bg-green-100 text-green-800",
   "Mastery": "bg-orange-100 text-orange-800",
 };
-

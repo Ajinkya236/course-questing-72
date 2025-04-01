@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
@@ -9,6 +8,8 @@ import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
 import { mockSkills } from '@/data/skillsData';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -21,7 +22,6 @@ const SkillDetail: React.FC = () => {
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
 
-  // Find the skill details based on skillId from the expanded mockSkills
   const skill = mockSkills.find(s => s.id === Number(skillId));
   
   useEffect(() => {
@@ -41,7 +41,6 @@ const SkillDetail: React.FC = () => {
         description: "Your sources have been added as context for the AI assistant.",
       });
       
-      // Add a system message in the chat about sources being added
       setChatMessages(prev => [
         ...prev, 
         {role: 'system', content: 'New context sources have been added. The AI will now use this information to provide more relevant responses.'}
@@ -73,7 +72,6 @@ const SkillDetail: React.FC = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-8">
-        {/* Pass the skill object directly to SkillHeader */}
         <SkillHeader 
           skill={skill}
           proficiency={selectedProficiency}
@@ -82,7 +80,6 @@ const SkillDetail: React.FC = () => {
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          {/* Main Content - Left Column (2/3 on desktop) */}
           <div className="lg:col-span-2 space-y-6">
             <ChatInterface 
               skillName={skill.name}
@@ -94,7 +91,6 @@ const SkillDetail: React.FC = () => {
             />
           </div>
           
-          {/* Sidebar - Right Column (1/3 on desktop) */}
           <div className="space-y-6">
             <LearningTools 
               skillName={skill.name}
