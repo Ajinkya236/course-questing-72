@@ -56,7 +56,11 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
       ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
       : '/my-learning';
       
-    navigate(`${basePath}?tab=${value}${value === 'courses' ? '&status=in-progress' : ''}`);
+    if (value === 'courses') {
+      navigate(`${basePath}?tab=courses&status=in-progress`);
+    } else {
+      navigate(`${basePath}?tab=${value}`);
+    }
   };
 
   // Handle back button for team member view
@@ -84,7 +88,7 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex items-center gap-2 border-neutral-300 dark:border-neutral-800" 
+              className="flex items-center gap-2" 
               onClick={handleBack}
             >
               <ArrowLeft className="h-4 w-4" />
@@ -93,12 +97,12 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
             
             {teamMemberData && (
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border border-neutral-300 dark:border-neutral-800">
+                <Avatar className="h-10 w-10">
                   <img src={teamMemberData.avatar} alt={teamMemberData.name} />
                 </Avatar>
                 <div>
-                  <h3 className="font-medium text-neutral-900 dark:text-neutral-0">{teamMemberData.name}</h3>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-300">{teamMemberData.role}</p>
+                  <h3 className="font-medium">{teamMemberData.name}</h3>
+                  <p className="text-sm text-muted-foreground">{teamMemberData.role}</p>
                 </div>
               </div>
             )}
@@ -106,10 +110,10 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         )}
         
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-0">
+          <h1 className="text-3xl font-bold tracking-tight">
             {memberId ? "Team Member's Learning" : "My Learning"}
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-300">
+          <p className="text-muted-foreground">
             {memberId 
               ? "View and manage this team member's learning journey" 
               : "Track your progress and manage your learning journey"}
@@ -122,31 +126,11 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
           onValueChange={handleTabChange}
           className="space-y-4"
         >
-          <TabsList className="bg-neutral-100 dark:bg-neutral-900/60 border border-neutral-300 dark:border-neutral-800">
-            <TabsTrigger 
-              value="courses"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Courses
-            </TabsTrigger>
-            <TabsTrigger 
-              value="goals"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Learning Goals
-            </TabsTrigger>
-            <TabsTrigger 
-              value="badges"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Badges & Certifications
-            </TabsTrigger>
-            <TabsTrigger 
-              value="rewards"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Rewards
-            </TabsTrigger>
+          <TabsList>
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="goals">Learning Goals</TabsTrigger>
+            <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
+            <TabsTrigger value="rewards">Rewards</TabsTrigger>
           </TabsList>
           
           <TabsContent value="courses" className="space-y-4">
