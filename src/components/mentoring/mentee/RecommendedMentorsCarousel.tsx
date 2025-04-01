@@ -151,7 +151,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
   ];
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-semibold">Recommended Mentors</h2>
@@ -160,13 +160,18 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
             Top rated
           </div>
         </div>
-        <Button variant="link" size="sm" className="gap-1" onClick={handleViewAll}>
+        <Button 
+          variant="link" 
+          size="sm" 
+          className="gap-1 h-8" 
+          onClick={handleViewAll}
+        >
           <Search className="h-4 w-4" />
           View All
         </Button>
       </div>
       
-      <div className="mb-4 relative">
+      <div className="mb-3">
         <CarouselFilters
           filters={filterTopics}
           selectedFilter={activeFilter}
@@ -189,12 +194,12 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           }}
           setApi={setCarouselApi}
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-4">
             {filteredMentors.length > 0 ? (
               filteredMentors.map(mentor => (
                 <CarouselItem 
                   key={mentor.id} 
-                  className="mentor-carousel-item"
+                  className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                 >
                   <MentorCard
                     mentor={mentor}
@@ -207,7 +212,7 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
               ))
             ) : (
               <CarouselItem className="w-full">
-                <Card className="p-6 text-center">
+                <Card className="p-6 text-center h-[320px] flex items-center justify-center">
                   <p className="text-muted-foreground">No mentors found for this topic.</p>
                 </Card>
               </CarouselItem>
@@ -215,11 +220,11 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           </CarouselContent>
           
           <div className={`absolute inset-y-0 left-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <CarouselPrevious className="z-10 h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all -ml-5" />
+            <CarouselPrevious className="z-10 h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all -ml-4" />
           </div>
           
           <div className={`absolute inset-y-0 right-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <CarouselNext className="z-10 h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all -mr-5" />
+            <CarouselNext className="z-10 h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all -mr-4" />
           </div>
         </Carousel>
       </div>

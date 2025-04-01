@@ -23,7 +23,7 @@ const MentorCard: React.FC<MentorCardProps> = ({
 }) => {
   return (
     <Card 
-      className="overflow-hidden h-[360px] group transition-all duration-300 cursor-pointer hover:border-primary hover:shadow-lg relative"
+      className="overflow-hidden h-[320px] group transition-all duration-300 cursor-pointer hover:border-primary hover:shadow-lg relative"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -32,13 +32,13 @@ const MentorCard: React.FC<MentorCardProps> = ({
         <span className="text-xs font-medium">{mentor.rating}</span>
       </div>
       
-      <div className="h-24 bg-gradient-to-r from-primary/20 to-primary/5">
+      <div className="h-20 bg-gradient-to-r from-primary/20 to-primary/5">
         {/* Background gradient banner */}
       </div>
       
-      <CardContent className="p-4 pt-0 flex flex-col h-[calc(100%-6rem)] -mt-10">
+      <CardContent className="p-4 pt-0 flex flex-col h-[calc(100%-5rem)] -mt-10">
         <div className="flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full overflow-hidden mb-3 border-4 border-background shadow-md">
+          <div className="w-16 h-16 rounded-full overflow-hidden mb-2 border-4 border-background shadow-md">
             <img 
               src={mentor.image} 
               alt={mentor.name} 
@@ -51,8 +51,8 @@ const MentorCard: React.FC<MentorCardProps> = ({
               }}
             />
           </div>
-          <h3 className="text-lg font-medium line-clamp-1">{mentor.name}</h3>
-          <p className="text-muted-foreground text-sm mb-2 line-clamp-1">{mentor.title}</p>
+          <h3 className="text-base font-medium line-clamp-1">{mentor.name}</h3>
+          <p className="text-muted-foreground text-xs mb-1 line-clamp-1">{mentor.title}</p>
           
           <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
             <MessageCircle className="h-3 w-3" />
@@ -85,10 +85,11 @@ const MentorCard: React.FC<MentorCardProps> = ({
         
         <div className="mt-auto w-full">
           <Button 
-            className="w-full transition-all duration-300 gap-2 group-hover:bg-primary group-hover:text-white"
+            className="w-full h-9 transition-all duration-300 gap-1 group-hover:bg-primary group-hover:text-white text-sm"
             onClick={() => onSelectMentor(mentor)}
+            size="default"
           >
-            <SendHorizontal className="h-4 w-4" /> 
+            <SendHorizontal className="h-3.5 w-3.5" /> 
             Request Mentorship
           </Button>
         </div>
