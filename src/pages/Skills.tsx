@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
   Select,
   SelectContent,
@@ -12,34 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { mockCourses } from '@/data/mockCoursesData';
-import { ChevronLeft, ChevronRight, BrainCircuit, Lightbulb, TrendingUp, Award, Rocket } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SkillSearch from '@/components/skills/SkillSearch';
-
-// Mock skills data - in a real app, this would come from your API
-const mockSkills = [
-  { id: 1, name: "Leadership", proficiency: "Knowledge", category: "role", icon: "Award" },
-  { id: 2, name: "Project Management", proficiency: "Skill", category: "role", icon: "BrainCircuit" },
-  { id: 3, name: "Data Analysis", proficiency: "Awareness", category: "role", icon: "Lightbulb" },
-  { id: 4, name: "Machine Learning", proficiency: "Awareness", category: "recommended", icon: "BrainCircuit" },
-  { id: 5, name: "React Development", proficiency: "Knowledge", category: "recommended", icon: "Rocket" },
-  { id: 6, name: "UX Design", proficiency: "Awareness", category: "recommended", icon: "Lightbulb" },
-  { id: 7, name: "Cloud Computing", proficiency: "Skill", category: "trending", icon: "TrendingUp" },
-  { id: 8, name: "Cybersecurity", proficiency: "Awareness", category: "trending", icon: "BrainCircuit" },
-  { id: 9, name: "DevOps", proficiency: "Knowledge", category: "trending", icon: "Rocket" },
-  { id: 10, name: "Blockchain", proficiency: "Awareness", category: "trending", icon: "TrendingUp" },
-];
-
-// Proficiency color mapping
-const proficiencyColors = {
-  "Awareness": "bg-blue-100 text-blue-800",
-  "Knowledge": "bg-purple-100 text-purple-800",
-  "Skill": "bg-green-100 text-green-800",
-  "Mastery": "bg-orange-100 text-orange-800",
-};
+import { mockSkills, proficiencyColors, getIconByName } from '@/data/skillsData';
 
 const Skills: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [proficiency, setProficiency] = useState("");
   
   // Refs for carousel scrolling
@@ -65,23 +41,11 @@ const Skills: React.FC = () => {
     }
   };
 
-  // Function to get the right icon component
-  const getIconComponent = (iconName: string) => {
-    switch(iconName) {
-      case 'Award': return <Award className="h-8 w-8 text-primary mb-2" />;
-      case 'BrainCircuit': return <BrainCircuit className="h-8 w-8 text-primary mb-2" />;
-      case 'Lightbulb': return <Lightbulb className="h-8 w-8 text-primary mb-2" />;
-      case 'Rocket': return <Rocket className="h-8 w-8 text-primary mb-2" />;
-      case 'TrendingUp': return <TrendingUp className="h-8 w-8 text-primary mb-2" />;
-      default: return <BrainCircuit className="h-8 w-8 text-primary mb-2" />;
-    }
-  };
-  
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-heading text-gray-800 mb-6">Skills Development Hub</h1>
+          <h1 className="text-2xl font-heading text-gray-800 mb-6">Skills Development Hub</h1>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-grow">
               <SkillSearch />
@@ -106,7 +70,7 @@ const Skills: React.FC = () => {
         {/* Role-based Skills */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-heading text-gray-700">Skills for Your Role</h2>
+            <h2 className="text-xl font-heading text-gray-700">Skills for Your Role</h2>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -137,7 +101,6 @@ const Skills: React.FC = () => {
                 <SkillBubble 
                   key={skill.id} 
                   skill={skill} 
-                  iconComponent={getIconComponent(skill.icon)}
                 />
               ))
             ) : (
@@ -149,7 +112,7 @@ const Skills: React.FC = () => {
         {/* Recommended Skills */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-heading text-gray-700">Recommended Skills</h2>
+            <h2 className="text-xl font-heading text-gray-700">Recommended Skills</h2>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -180,7 +143,6 @@ const Skills: React.FC = () => {
                 <SkillBubble 
                   key={skill.id} 
                   skill={skill} 
-                  iconComponent={getIconComponent(skill.icon)}
                 />
               ))
             ) : (
@@ -192,7 +154,7 @@ const Skills: React.FC = () => {
         {/* Trending Skills */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-heading text-gray-700">Trending Skills</h2>
+            <h2 className="text-xl font-heading text-gray-700">Trending Skills</h2>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -223,7 +185,6 @@ const Skills: React.FC = () => {
                 <SkillBubble 
                   key={skill.id} 
                   skill={skill} 
-                  iconComponent={getIconComponent(skill.icon)}
                 />
               ))
             ) : (
@@ -243,18 +204,22 @@ interface SkillProps {
     proficiency: string;
     category: string;
     icon: string;
+    description?: string;
   };
-  iconComponent: React.ReactNode;
 }
 
-const SkillBubble: React.FC<SkillProps> = ({ skill, iconComponent }) => {
+const SkillBubble: React.FC<SkillProps> = ({ skill }) => {
+  const IconComponent = getIconByName(skill.icon);
+  
   return (
     <Link to={`/skills/${skill.id}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer min-w-[210px] max-w-[300px]">
+      <Card className="hover:shadow-md transition-shadow cursor-pointer min-w-[210px] max-w-[300px] bg-white dark:bg-gray-800 overflow-hidden">
         <CardContent className="p-4">
           <div className="flex flex-col items-center text-center py-2">
-            {iconComponent}
-            <h3 className="font-sans text-lg mb-2">{skill.name}</h3>
+            <div className="bg-primary/10 p-3 rounded-full mb-3">
+              <IconComponent className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="font-sans text-lg mb-2 font-medium">{skill.name}</h3>
             <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors]}`}>
               {skill.proficiency}
             </span>

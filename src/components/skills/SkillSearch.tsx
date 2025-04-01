@@ -10,20 +10,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Skill } from './types';
-
-// Sample skills data - in a real app, this would come from an API
-const mockSkills: Skill[] = [
-  { id: 1, name: "Leadership", proficiency: "Knowledge", description: "Leadership skills", courses: [] },
-  { id: 2, name: "Project Management", proficiency: "Skill", description: "Project management skills", courses: [] },
-  { id: 3, name: "Data Analysis", proficiency: "Awareness", description: "Data analysis skills", courses: [] },
-  { id: 4, name: "Machine Learning", proficiency: "Awareness", description: "Machine learning skills", courses: [] },
-  { id: 5, name: "React Development", proficiency: "Knowledge", description: "React development skills", courses: [] },
-  { id: 6, name: "UX Design", proficiency: "Awareness", description: "UX design skills", courses: [] },
-  { id: 7, name: "Cloud Computing", proficiency: "Skill", description: "Cloud computing skills", courses: [] },
-  { id: 8, name: "Cybersecurity", proficiency: "Awareness", description: "Cybersecurity skills", courses: [] },
-  { id: 9, name: "DevOps", proficiency: "Knowledge", description: "DevOps skills", courses: [] },
-  { id: 10, name: "Blockchain", proficiency: "Awareness", description: "Blockchain skills", courses: [] },
-];
+import { mockSkills } from '@/data/skillsData';
 
 const SkillSearch: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
