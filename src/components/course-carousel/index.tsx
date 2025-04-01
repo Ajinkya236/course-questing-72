@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -59,8 +58,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           return course.trainingCategory === selectedFilter;
         }
         // Check skill if showSkillFilters is true
-        if (showSkillFilters && course.skill) {
-          return course.skill === selectedFilter;
+        if (showSkillFilters && course.skills) {
+          // Check if any skill names match the selected filter
+          return course.skills.some(skill => 
+            typeof skill === 'object' && skill.name === selectedFilter
+          );
         }
         // Otherwise check category
         return course.category === selectedFilter;
