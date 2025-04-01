@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCourses } from '@/data/mockCoursesData';
-import { mockData } from '@/data/mockData';
 
 // Mock skills data - in a real app, this would come from your API
 const mockSkills = [
