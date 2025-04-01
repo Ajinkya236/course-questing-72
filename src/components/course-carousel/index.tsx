@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, memo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, memo, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
