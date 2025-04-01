@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -80,7 +79,7 @@ const TopNavigation: React.FC = () => {
   };
 
   return (
-    <div className="w-full border-b bg-background sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div className="w-full border-b sticky top-0 z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       <div className="container max-w-7xl mx-auto flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
           <h1 className="font-bold text-lg">Jio Learning</h1>

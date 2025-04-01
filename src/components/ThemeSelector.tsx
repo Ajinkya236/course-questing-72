@@ -31,13 +31,13 @@ const ThemeSelector = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setColorTheme('professional-blue')} className={colorTheme === 'professional-blue' ? 'bg-primary/10' : ''}>
-          Professional Blue
+          Jio Blue
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setColorTheme('modern-light')} className={colorTheme === 'modern-light' ? 'bg-primary/10' : ''}>
           Modern Light
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setColorTheme('focused-dark')} className={colorTheme === 'focused-dark' ? 'bg-primary/10' : ''}>
-          Focused Dark
+          Dark Theme
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={toggleColorTheme}>
