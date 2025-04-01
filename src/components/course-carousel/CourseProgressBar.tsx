@@ -1,21 +1,31 @@
 
 import React from 'react';
-import { Progress } from '@/components/ui/progress';
 
 interface CourseProgressBarProps {
   progress?: number;
 }
 
 const CourseProgressBar: React.FC<CourseProgressBarProps> = ({ progress }) => {
-  if (progress === undefined) return null;
+  // If no progress is provided, don't render the progress bar
+  if (progress === undefined || progress === null) {
+    return null;
+  }
+
+  // Ensure progress is between 0 and 100
+  const safeProgress = Math.min(100, Math.max(0, progress));
   
   return (
-    <div className="mt-2">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs text-muted-foreground">Progress</span>
-        <span className="text-xs font-medium">{progress}%</span>
+    <div className="mt-2 space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="text-muted-foreground">Progress</span>
+        <span className="font-medium">{safeProgress}%</span>
       </div>
-      <Progress value={progress} className="h-1 w-full" />
+      <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-primary rounded-full transition-all duration-300"
+          style={{ width: `${safeProgress}%` }}
+        />
+      </div>
     </div>
   );
 };

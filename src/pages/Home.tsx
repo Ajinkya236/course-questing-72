@@ -11,8 +11,8 @@ import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
-// Use the original CourseCarousel to avoid circular imports
-import CourseCarousel from '@/components/CourseCarousel';
+// Import the CourseCarousel (this was previously causing circular imports)
+import CourseCarousel from '@/components/course-carousel';
 
 // Helper function to convert string skills to proper skill objects
 const convertToSkillObjects = (skills: string[]) => {

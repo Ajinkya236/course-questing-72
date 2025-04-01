@@ -52,6 +52,16 @@ export const useCourseData = (
       // Add video preview URL if missing
       const videoUrl = course.videoUrl || course.previewUrl || sampleVideoUrls[index % sampleVideoUrls.length];
       
+      // Convert skills from string[] to proper format if needed
+      const normalizedSkills = Array.isArray(course.skills) 
+        ? course.skills.map(skill => {
+            if (typeof skill === 'string') {
+              return { name: skill, proficiency: 'Intermediate' };
+            }
+            return skill;
+          })
+        : course.skills || [];
+      
       return {
         ...course,
         id: course.id || `local-course-${index}`,
@@ -63,6 +73,7 @@ export const useCourseData = (
         rating: course.rating || 4.0,
         videoUrl: videoUrl,
         previewUrl: videoUrl,
+        skills: normalizedSkills,
         // Clone courses for carousel display to ensure unique IDs
         cloneId: `${course.id}-clone-${index}`
       };

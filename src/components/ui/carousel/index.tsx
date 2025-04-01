@@ -10,3 +10,5 @@ export {
   type CarouselOptions
 } from './carousel-components';
 
+// Export the CarouselFilters component
+export { CarouselFilters } from './carousel-filters';
