@@ -1,4 +1,4 @@
-import { Award, BrainCircuit, Lightbulb, TrendingUp, Rocket, Code, Database, Shield, Network, Cloud, BookOpen, PenTool, Zap, Users, Globe, BarChart, Calculator, CreditCard, Clock, Heart, MessageSquare, ShoppingCart, FileText, PackageCheck, Target, LineChart, Coffee, DollarSign, Mail, MonitorSmartphone, Palette, Power, Radio, Smartphone, Monitor, GitBranch, Lock, SearchCheck, Settings, Share2, Truck, Video, Wifi, Tool, Headphones, Wrench } from 'lucide-react';
+import { Award, BrainCircuit, Lightbulb, TrendingUp, Rocket, Code, Database, Shield, Network, Cloud, BookOpen, PenTool, Zap, Users, Globe, BarChart, Calculator, CreditCard, Clock, Heart, MessageSquare, ShoppingCart, FileText, PackageCheck, Target, LineChart, Coffee, DollarSign, Mail, MonitorSmartphone, Palette, Power, Radio, Smartphone, Monitor, GitBranch, Lock, SearchCheck, Settings, Share2, Truck, Video, Wifi, Headphones, Wrench } from 'lucide-react';
 import { Skill } from '@/components/skills/types';
 
 // Expanded mock skills data with more entries and categories (250 skills)
@@ -174,7 +174,7 @@ export const mockSkills: Skill[] = [
   { id: 158, name: "Explainable AI", proficiency: "Knowledge", category: "trending", icon: "BrainCircuit", description: "Creating AI systems that explain their decisions", courses: [] },
   { id: 159, name: "Continuous Integration", proficiency: "Skill", category: "trending", icon: "GitBranch", description: "Automating code integration into shared repositories", courses: [] },
   { id: 160, name: "Elixir", proficiency: "Awareness", category: "trending", icon: "Code", description: "Programming with the Elixir language", courses: [] },
-  { id: 161, name: "Predictive Maintenance", proficiency: "Knowledge", category: "trending", icon: "Tool", description: "Using data to predict equipment failures", courses: [] },
+  { id: 161, name: "Predictive Maintenance", proficiency: "Knowledge", category: "trending", icon: "Wrench", description: "Using data to predict equipment failures", courses: [] },
   { id: 162, name: "API Security", proficiency: "Skill", category: "trending", icon: "Shield", description: "Securing application programming interfaces", courses: [] },
   { id: 163, name: "Julia Programming", proficiency: "Awareness", category: "trending", icon: "Code", description: "Programming with the Julia language", courses: [] },
   { id: 164, name: "Sentiment Analysis", proficiency: "Knowledge", category: "trending", icon: "Heart", description: "Analyzing emotions in text data", courses: [] },
@@ -312,7 +312,6 @@ export const getIconByName = (iconName: string) => {
     case 'Truck': return Truck;
     case 'Video': return Video;
     case 'Wifi': return Wifi;
-    case 'Tool': return Tool;
     case 'Headphones': return Headphones;
     case 'Wrench': return Wrench;
     default: return BrainCircuit;
