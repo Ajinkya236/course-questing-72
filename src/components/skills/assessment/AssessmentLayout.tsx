@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
 import { SkillBadge } from './types';

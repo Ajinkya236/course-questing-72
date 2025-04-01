@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import PageLayout from "@/components/layout/PageLayout";
 import { useToast } from "@/hooks/use-toast";
 import SkillHeader from '@/components/skills/SkillHeader';
