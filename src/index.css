@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,10 +46,9 @@
   .professional-blue .app-header,
   .professional-blue nav,
   .professional-blue header {
-    --bg-navbar: 240 100% 12%; /* Updated to dark navy blue from the screenshot */
+    /* Removing the background color styling to use the default theme background */
     --text-navbar: 0 0% 100%;
     --accent-navbar: 214 100% 45%;
-    background-color: hsl(var(--bg-navbar));
     color: hsl(var(--text-navbar));
   }
 
@@ -195,8 +193,6 @@
 }
 
 @layer components {
-  /* ... keep existing code (app-layout, app-sidebar, app-main related classes) */
-
   .app-header {
     @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
   }
@@ -209,7 +205,27 @@
     @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300;
   }
   
-  /* ... keep existing code (page-transition classes) */
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms, transform 200ms;
+  }
+  
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 200ms, transform 200ms;
+  }
 
   .spotlight {
     @apply pointer-events-none absolute inset-0 z-[-1] bg-primary/5 opacity-0;
@@ -219,14 +235,50 @@
       transparent 40%
     );
   }
-
-  /* ... keep existing code (hover-scale, badge-glow classes) */
+  
+  .hover-scale {
+    @apply transition-transform duration-200 ease-in-out;
+  }
+  
+  .hover-scale:hover {
+    @apply scale-105;
+  }
+  
+  .badge-glow {
+    @apply shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-primary/50;
+  }
   
   .shimmer {
     @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
   }
-
-  /* ... keep existing code (card-container, carousel related classes) */
+  
+  .card-container {
+    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+  
+  .carousel-container {
+    @apply relative overflow-hidden;
+  }
+  
+  .carousel-track {
+    @apply flex transition-transform duration-300 ease-out;
+  }
+  
+  .carousel-item {
+    @apply flex-shrink-0 w-full;
+  }
+  
+  .carousel-button {
+    @apply absolute top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full bg-opacity-50 hover:bg-opacity-75 transition-colors duration-200;
+  }
+  
+  .carousel-button.prev {
+    @apply left-2;
+  }
+  
+  .carousel-button.next {
+    @apply right-2;
+  }
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
@@ -245,8 +297,6 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
-  
-  /* ... keep existing code (remaining animation and class definitions) */
 }
 
 @layer utilities {
@@ -262,5 +312,34 @@
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light bg-clip-text text-transparent;
   }
   
-  /* ... keep existing code (progress-circle, card-partial-visible, focus-visible-ring, image-loading) */
+  .progress-circle {
+    @apply relative inline-flex items-center justify-center;
+  }
+  
+  .progress-circle-label {
+    @apply absolute text-sm font-bold text-gray-700 dark:text-gray-300;
+  }
+  
+  .card-partial-visible {
+    @apply relative overflow-hidden;
+  }
+  
+  .card-partial-visible::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 80%, white 100%);
+    pointer-events: none;
+  }
+  
+  .focus-visible-ring {
+    @apply ring-2 ring-offset-2 ring-primary focus-visible:outline-none focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400;
+  }
+  
+  .image-loading {
+    @apply animate-pulse bg-gray-200 dark:bg-gray-700;
+  }
 }
