@@ -4,8 +4,8 @@ export interface Skill {
   name: string;
   proficiency: string;
   description: string;
-  category?: string;
-  icon?: string;
+  category: string; // Changed from optional to required
+  icon: string; // Changed from optional to required
   courses: number[];
 }
 
