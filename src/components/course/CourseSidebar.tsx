@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { 
   CheckCircle2, Circle, X, BookOpen, HelpCircle, 
-  Play, FileQuestion, LayoutGrid 
+  Play, FileQuestion, LayoutGrid, FileText, MessageSquare, Zap
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
@@ -25,22 +25,22 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({
   currentActivityId 
 }) => {
   // Calculate course progress
-  const totalActivities = course.modules.reduce(
+  const totalActivities = course.modules?.reduce(
     (total, module) => total + module.activities.length, 0
-  );
+  ) || 0;
   
-  const completedActivities = course.modules.reduce(
+  const completedActivities = course.modules?.reduce(
     (total, module) => 
       total + module.activities.filter(activity => activity.completed).length, 
     0
-  );
+  ) || 0;
   
   const progressPercentage = totalActivities > 0 
     ? Math.round((completedActivities / totalActivities) * 100) 
     : 0;
 
   // Function to get the appropriate icon based on activity type
-  const getActivityIcon = (type: 'video' | 'quiz' | 'h5p') => {
+  const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
       case 'video':
         return <Play className="h-4 w-4" />;
@@ -48,6 +48,14 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({
         return <FileQuestion className="h-4 w-4" />;
       case 'h5p':
         return <LayoutGrid className="h-4 w-4" />;
+      case 'assignment':
+        return <FileText className="h-4 w-4" />;
+      case 'article':
+        return <BookOpen className="h-4 w-4" />;
+      case 'discussion':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'interactive':
+        return <Zap className="h-4 w-4" />;
       default:
         return <HelpCircle className="h-4 w-4" />;
     }
@@ -92,7 +100,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({
         
         <ScrollArea className="h-[calc(100vh-144px)]">
           <div className="p-4 space-y-4">
-            {course.modules.map((module) => (
+            {course.modules?.map((module) => (
               <div key={module.id} className="space-y-2">
                 <h3 className="font-medium">{module.title}</h3>
                 <div className="space-y-1 pl-4">
