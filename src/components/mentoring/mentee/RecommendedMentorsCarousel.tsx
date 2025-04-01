@@ -1,13 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselFilters } from "@/components/ui/carousel";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Search, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
-import { CarouselFilters } from '@/components/ui/carousel/carousel-filters';
 import MentorCard from './MentorCard';
 import MentorDetailsDialog from './MentorDetailsDialog';
 import { sampleMentors } from './sampleMentors';
@@ -57,12 +55,10 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
           }));
           setLoadedMentors([...mentorsData, ...extendedMentors]);
         } else {
-          // If no mentors in database, use our extended sample list
           setLoadedMentors([...sampleMentors, ...extendedMentors]);
         }
       } catch (error) {
         console.error('Error:', error);
-        // Fallback to extended samples if error
         setLoadedMentors([...sampleMentors, ...extendedMentors]);
       }
     };
@@ -107,7 +103,6 @@ const RecommendedMentorsCarousel: React.FC<RecommendedMentorsCarouselProps> = ({
     }
   };
   
-  // Extended mentors data to add more variety to the carousel
   const extendedMentors: Mentor[] = [
     {
       id: 101,
