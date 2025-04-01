@@ -92,7 +92,7 @@ const Skills: React.FC = () => {
                   <SelectValue placeholder="Proficiency level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Proficiency Levels</SelectItem>
+                  <SelectItem value="all-levels">All Proficiency Levels</SelectItem>
                   <SelectItem value="Awareness">Awareness</SelectItem>
                   <SelectItem value="Knowledge">Knowledge</SelectItem>
                   <SelectItem value="Skill">Skill</SelectItem>
