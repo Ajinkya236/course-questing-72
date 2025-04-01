@@ -9,7 +9,7 @@ interface CourseCarouselHeaderProps {
   onViewAllClick?: () => void;
   viewAllUrl?: string;
   carouselId: string;
-  description?: string;
+  description?: string; // Add description property
   showLeftButton?: boolean;
   showRightButton?: boolean;
   onScrollLeft?: () => void;
@@ -70,23 +70,23 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
     >
       <div className="flex flex-col">
         <div className="flex items-center">
-          <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-0">{title}</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
           <ChevronRight 
-            className="h-4 w-4 cursor-pointer ml-1 text-primary" 
+            className="h-4 w-4 cursor-pointer ml-1" 
             onClick={handleViewAllClick}
           />
           {isHovered && (
             <Button 
               variant="ghost" 
               size="sm" 
-              className="ml-1 p-0 text-primary" 
+              className="ml-1 p-0" 
               onClick={handleViewAllClick}
             >
               View All
             </Button>
           )}
         </div>
-        {description && <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">{description}</p>}
+        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
       </div>
       
       {/* Navigation controls for carousel - displayed next to title */}
@@ -94,9 +94,8 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
         {showLeftButton && (
           <Button 
             variant="outline" 
-            size="icon-sm" 
-            rounded="full"
-            className="h-8 w-8 border-neutral-300 hover:bg-neutral-100 hover:text-primary dark:border-neutral-800 dark:hover:bg-neutral-800"
+            size="icon" 
+            className="h-8 w-8 rounded-full"
             onClick={triggerCarouselPrev}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -105,9 +104,8 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
         {showRightButton && (
           <Button 
             variant="outline" 
-            size="icon-sm" 
-            rounded="full"
-            className="h-8 w-8 border-neutral-300 hover:bg-neutral-100 hover:text-primary dark:border-neutral-800 dark:hover:bg-neutral-800"
+            size="icon" 
+            className="h-8 w-8 rounded-full"
             onClick={triggerCarouselNext}
           >
             <ChevronRight className="h-4 w-4" />
