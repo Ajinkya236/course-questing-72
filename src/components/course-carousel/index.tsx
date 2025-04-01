@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -46,6 +45,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+  
   const [isCarouselHovered, setIsCarouselHovered] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();

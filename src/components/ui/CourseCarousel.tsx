@@ -114,11 +114,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       </div>
 
       <div 
-        className="course-carousel-container relative overflow-hidden rounded-xl"
+        className="course-carousel-container relative overflow-visible"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Left navigation button */}
+        {/* Left navigation button - positioned to overlap the edge of the screen */}
         <button
           className={`course-carousel-nav-button course-carousel-nav-prev ${
             isHovered && showLeftButton ? 'opacity-100' : 'opacity-0'
@@ -130,7 +130,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <ChevronLeft className="h-5 w-5" />
         </button>
 
-        {/* Right navigation button */}
+        {/* Right navigation button - positioned to overlap the edge of the screen */}
         <button
           className={`course-carousel-nav-button course-carousel-nav-next ${
             isHovered && showRightButton ? 'opacity-100' : 'opacity-0'
