@@ -14,6 +14,6 @@ export interface Mentor {
 }
 
 export interface RecommendedMentorsCarouselProps {
-  mentors: Mentor[];
+  mentors?: Mentor[];
   selectedTopics?: string[];
 }
