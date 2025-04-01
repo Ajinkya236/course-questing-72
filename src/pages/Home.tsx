@@ -1,18 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import BannerCarousel from '@/components/BannerCarousel';
 import { useNavigate } from 'react-router-dom';
-import { mockCourses } from '@/data/mockCoursesData';
-
-// Import components
+import BannerCarousel from '@/components/BannerCarousel';
+import CourseCarousel from '@/components/course-carousel';
 import SkillsSection from '@/components/homepage/SkillsSection';
 import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
-
-// Import the CourseCarousel (this was previously causing circular imports)
-import CourseCarousel from '@/components/course-carousel';
+import { mockCourses } from '@/data/mockCoursesData';
 
 // Helper function to convert string skills to proper skill objects
 const convertToSkillObjects = (skills: string[]) => {
@@ -22,7 +18,7 @@ const convertToSkillObjects = (skills: string[]) => {
   }));
 };
 
-// Mock banner data for BannerCarousel
+// Mock banner data
 const mockBanners = [
   {
     id: 1,
@@ -40,37 +36,37 @@ const mockBanners = [
   }
 ];
 
-// Filter courses for different categories
-const continueLearningCourses = mockCourses
-  .filter(course => course.status === 'in-progress')
-  .slice(0, 8)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
-    progress: Math.floor(Math.random() * 80) + 10, 
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Learning', 'Development'])
-  }));
-
-const assignedCourses = mockCourses
-  .filter(course => course.status === 'assigned')
-  .slice(0, 8)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    skills: convertToSkillObjects(course.skills as unknown as string[] || ['Management', 'Leadership'])
-  }));
-
-// Mock training categories for filter
-const trainingCategories = [
-  'All Categories', 'Technical', 'Soft Skills', 'Leadership', 'Compliance', 
-  'Product', 'Onboarding', 'Business', 'Management'
-];
-
 const Home = () => {
   const navigate = useNavigate();
-  const [trainingFilter, setTrainingFilter] = React.useState('All Categories');
+  const [trainingFilter, setTrainingFilter] = useState('All Categories');
+  
+  // Filter and process courses
+  const continueLearningCourses = mockCourses
+    .filter(course => course.status === 'in-progress')
+    .slice(0, 8)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 
+      progress: Math.floor(Math.random() * 80) + 10, 
+      skills: convertToSkillObjects(Array.isArray(course.skills) ? course.skills as string[] : ['Learning', 'Development'])
+    }));
+
+  const assignedCourses = mockCourses
+    .filter(course => course.status === 'assigned')
+    .slice(0, 8)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://images.unsplash.com/photo-${1550000000000 + Math.floor(Math.random() * 9999999)}?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      skills: convertToSkillObjects(Array.isArray(course.skills) ? course.skills as string[] : ['Management', 'Leadership'])
+    }));
+
+  // Training categories
+  const trainingCategories = [
+    'All Categories', 'Technical', 'Soft Skills', 'Leadership', 'Compliance', 
+    'Product', 'Onboarding', 'Business', 'Management'
+  ];
   
   return (
     <>
@@ -83,27 +79,26 @@ const Home = () => {
         <BannerCarousel banners={mockBanners} />
         
         {/* Continue Learning Carousel */}
-        {continueLearningCourses.length > 0 && (
-          <CourseCarousel 
-            title="Continue Learning" 
-            courses={continueLearningCourses}
-            viewAllUrl="/my-learning?tab=courses&status=in-progress"
-            onViewAllClick={() => navigate('/my-learning?tab=courses&status=in-progress')}
-          />
-        )}
+        <CourseCarousel 
+          title="Continue Learning" 
+          description="Pick up where you left off with these courses"
+          courses={continueLearningCourses}
+          viewAllUrl="/my-learning?tab=courses&status=in-progress"
+          onViewAllClick={() => navigate('/my-learning?tab=courses&status=in-progress')}
+        />
         
         {/* Assigned Courses Carousel */}
-        {assignedCourses.length > 0 && (
-          <CourseCarousel 
-            title="Assigned Courses" 
-            courses={assignedCourses}
-            viewAllUrl="/my-learning?tab=courses&status=assigned"
-            onViewAllClick={() => navigate('/my-learning?tab=courses&status=assigned')}
-            filterOptions={trainingCategories}
-            showSkillFilters={true}
-            showTrainingCategory={true}
-          />
-        )}
+        <CourseCarousel 
+          title="Assigned Courses" 
+          description="Courses assigned to you by your manager"
+          courses={assignedCourses}
+          viewAllUrl="/my-learning?tab=courses&status=assigned"
+          onViewAllClick={() => navigate('/my-learning?tab=courses&status=assigned')}
+          filterOptions={trainingCategories}
+          selectedFilter={trainingFilter}
+          onFilterChange={setTrainingFilter}
+          showTrainingCategory={true}
+        />
         
         {/* Skills, Actionables and Rewards Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

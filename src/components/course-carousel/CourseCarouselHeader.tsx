@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface CourseCarouselHeaderProps {
   title: string;
+  description?: string;
   onViewAllClick?: () => void;
   viewAllUrl?: string;
   carouselId: string;
@@ -13,6 +14,7 @@ interface CourseCarouselHeaderProps {
 
 const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   title,
+  description,
   onViewAllClick,
   viewAllUrl = '/view-all',
   carouselId
@@ -50,22 +52,25 @@ const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center">
+      <div className="flex flex-col">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <ChevronRight 
-          className="h-4 w-4 cursor-pointer ml-1" 
-          onClick={handleViewAllClick}
-        />
-        {isHovered && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="ml-1 p-0" 
+        {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        <div className="flex items-center mt-1">
+          <ChevronRight 
+            className="h-4 w-4 cursor-pointer" 
             onClick={handleViewAllClick}
-          >
-            View All
-          </Button>
-        )}
+          />
+          {isHovered && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="ml-1 p-0" 
+              onClick={handleViewAllClick}
+            >
+              View All
+            </Button>
+          )}
+        </div>
       </div>
       
       {/* Navigation controls for carousel - displayed next to title */}

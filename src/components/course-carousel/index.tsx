@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -36,6 +36,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   showTrainingCategory = false,
 }) => {
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+  const carouselId = useId();
 
   // Event handlers
   const handleCardClick = (courseId: string) => {
@@ -76,7 +77,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           title={title} 
           description={description} 
           viewAllUrl={viewAllUrl} 
-          onViewAllClick={onViewAllClick} 
+          onViewAllClick={onViewAllClick}
+          carouselId={carouselId}
         />
         <div className="flex items-center justify-center h-40 bg-secondary/30 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
           <p className="text-muted-foreground">{emptyMessage}</p>
@@ -91,7 +93,8 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         title={title} 
         description={description} 
         viewAllUrl={viewAllUrl} 
-        onViewAllClick={onViewAllClick} 
+        onViewAllClick={onViewAllClick}
+        carouselId={carouselId}
       />
       
       {filterOptions && filterOptions.length > 0 && (
@@ -104,7 +107,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       )}
 
-      <Carousel className="w-full">
+      <Carousel className="w-full" id={carouselId}>
         <CarouselContent className="-ml-4">
           {courses.map((course) => (
             <CarouselItem key={course.id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
