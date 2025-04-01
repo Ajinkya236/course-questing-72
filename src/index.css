@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,8 +14,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 214 100% 33%;
-    --primary-foreground: 0 0% 100%;
+    /* Professional Blue Theme */
+    --primary: 214 100% 23%; /* Deep corporate blue */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
 
     --secondary: 223 14% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -22,21 +24,21 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 8% 46%;
 
-    --accent: 240 98% 58%;
+    --accent: 214 100% 50%; /* Bright blue for accents */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --jio: 214 100% 33%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 214 100% 25%;
+    --jio: 214 100% 23%; /* Deep corporate blue */
+    --jio-foreground: 0 0% 100%; /* White text */
+    --jio-light: 214 100% 50%; /* Bright blue */
+    --jio-dark: 217 71% 15%; /* Darker variant of corporate blue */
     --jio-muted: 214 30% 85%;
 
     --border: 220 14% 90%;
     --input: 220 14% 90%;
-    --ring: 214 100% 33%;
+    --ring: 214 100% 50%; /* Bright blue ring */
 
     --radius: 0.5rem;
   }
@@ -45,14 +47,14 @@
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 11%;
+    --card: 217 33% 17%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 214 100% 33%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 214 100% 23%; /* Deep corporate blue */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
 
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
@@ -60,13 +62,13 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 240 98% 58%;
+    --accent: 214 100% 50%; /* Bright blue for accents */
     --accent-foreground: 210 40% 98%;
 
-    --jio: 214 100% 33%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 214 100% 25%;
+    --jio: 214 100% 23%; /* Deep corporate blue */
+    --jio-foreground: 0 0% 100%; /* White text */
+    --jio-light: 214 100% 50%; /* Bright blue */
+    --jio-dark: 217 71% 15%; /* Darker variant of corporate blue */
     --jio-muted: 214 30% 25%;
 
     --destructive: 0 62.8% 30.6%;
@@ -75,6 +77,41 @@
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 212.7 26.8% 83.9%;
+  }
+
+  /* Modern Light Theme Class */
+  .theme-modern-light {
+    --background: 210 50% 95%; /* Light blue-gray */
+    --foreground: 222 47% 11%; /* Dark gray text */
+    
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 222 47% 11%; /* Dark text on cards */
+    
+    --primary: 214 100% 50%; /* Bright blue */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    --accent: 214 100% 50%; /* Bright blue */
+    --accent-foreground: 0 0% 100%;
+  }
+
+  /* Professional Blue Theme Class (Default) */
+  .theme-professional-blue {
+    /* Already defined in :root */
+  }
+
+  /* Focused Dark Theme Class */
+  .theme-focused-dark {
+    --background: 222 47% 11%; /* Near-black */
+    --foreground: 0 0% 100%; /* White text */
+    
+    --card: 217 33% 17%; /* Dark gray cards */
+    --card-foreground: 0 0% 100%; /* White text on cards */
+    
+    --primary: 214 100% 50%; /* Bright blue */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    --accent: 214 100% 50%; /* Bright blue */
+    --accent-foreground: 0 0% 100%;
   }
 }
 
