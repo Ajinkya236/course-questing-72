@@ -17,13 +17,13 @@ const NavbarEnhanced = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // We'll check if it's the skills detail page (matches '/skills/[id]')
-  const isSkillsPage = location.pathname === '/skills';
-  const isSkillDetailPage = Boolean(location.pathname.match(/^\/skills\/\d+$/));
-  const isSkillAssessmentPage = Boolean(location.pathname.match(/^\/skills\/\d+\/assessment$/));
+  // Improved detection of skills pages using regex
+  const isSkillsListPage = location.pathname === '/skills';
+  const isSkillDetailPage = /^\/skills\/\d+$/.test(location.pathname);
+  const isSkillAssessmentPage = /^\/skills\/\d+\/assessment$/.test(location.pathname);
   
-  // Don't show skills search on assessment page
-  const showSkillsSearch = (isSkillsPage || isSkillDetailPage) && !isSkillAssessmentPage;
+  // Only show skills search on the main skills list page or skill detail page, not on assessment page
+  const showSkillsSearch = (isSkillsListPage || isSkillDetailPage) && !isSkillAssessmentPage;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

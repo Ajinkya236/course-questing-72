@@ -2,22 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, Flag, Loader2, Check, X, Upload, FileText, FileImage, YoutubeIcon, Link } from 'lucide-react';
+import { ChevronLeft, Flag, Loader2, Check, X, Clock, Award, FileText } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { mockSkills } from '@/data/skillsData';
 import { useGemini } from '@/hooks/useGemini';
 import { proficiencyColors } from '@/data/skillsData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { supabase } from '@/integrations/supabase/client';
 
-type QuestionType = 'multipleChoice' | 'trueFalse' | 'shortAnswer' | 'videoResponse' | 'documentAnalysis';
+type QuestionType = 'multipleChoice' | 'trueFalse' | 'shortAnswer' | 'videoResponse' | 'documentAnalysis' | 'fillInBlanks' | 'matchTheFollowing' | 'dragSequence' | 'findHotspot';
 
 interface Question {
   id: number;
@@ -26,8 +27,19 @@ interface Question {
   options?: string[];
   correctAnswer?: string | string[];
   userAnswer?: string | string[];
+  explanation?: string;
   videoUrl?: string;
   documentUrl?: string;
+}
+
+interface AssessmentAttempt {
+  id: string;
+  date: string;
+  score: number;
+  skillId: number;
+  skillName: string;
+  questions: Question[];
+  passed: boolean;
 }
 
 const SkillAssessment: React.FC = () => {
@@ -40,16 +52,23 @@ const SkillAssessment: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<any>(null);
   const [sources, setSources] = useState<string[]>([]);
-  const [fileUploads, setFileUploads] = useState<File[]>([]);
-  const [urls, setUrls] = useState<string[]>([]);
   const [assessmentScore, setAssessmentScore] = useState<number | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("assessment");
+  const [previousAttempts, setPreviousAttempts] = useState<AssessmentAttempt[]>([]);
+  const [selectedAttempt, setSelectedAttempt] = useState<AssessmentAttempt | null>(null);
   const { generateResponse, loading } = useGemini();
+  
+  // Define pass rate as 80%
+  const PASS_RATE = 80;
 
   useEffect(() => {
     // Find the skill from mockSkills
     const skill = mockSkills.find(s => s.id === Number(skillId));
     if (skill) {
       setSelectedSkill(skill);
+      // Load previous attempts from localStorage
+      loadPreviousAttempts(skill.id);
       // Generate questions based on the skill using Gemini
       generateQuestionsForSkill(skill);
     } else {
@@ -62,55 +81,55 @@ const SkillAssessment: React.FC = () => {
     }
   }, [skillId, navigate]);
 
+  const loadPreviousAttempts = (skillId: number) => {
+    try {
+      // In a real app, this would come from a database
+      const savedAttemptsString = localStorage.getItem(`assessment_attempts_${skillId}`);
+      if (savedAttemptsString) {
+        const savedAttempts = JSON.parse(savedAttemptsString) as AssessmentAttempt[];
+        setPreviousAttempts(savedAttempts);
+      }
+    } catch (error) {
+      console.error("Error loading previous attempts:", error);
+    }
+  };
+
+  const saveAttempt = (attempt: AssessmentAttempt) => {
+    try {
+      // Add to previous attempts
+      const updatedAttempts = [attempt, ...previousAttempts];
+      setPreviousAttempts(updatedAttempts);
+      
+      // In a real app, this would be saved to a database
+      localStorage.setItem(`assessment_attempts_${attempt.skillId}`, JSON.stringify(updatedAttempts));
+    } catch (error) {
+      console.error("Error saving attempt:", error);
+    }
+  };
+
   const generateQuestionsForSkill = async (skill: any) => {
     setIsLoading(true);
     
     try {
-      const prompt = `Create an assessment for the skill "${skill.name}" at the "${skill.proficiency}" level. 
-      The assessment should include:
-      - 5 multiple choice questions
-      - 3 true/false questions 
-      - 2 short answer questions
-      
-      For each question, provide:
-      1. The question text
-      2. The question type (multipleChoice, trueFalse, shortAnswer)
-      3. For multiple choice: 4 options (labeled A, B, C, D)
-      4. The correct answer
-      
-      Format as JSON with this structure:
-      {
-        "questions": [
-          {
-            "id": 1,
-            "type": "multipleChoice",
-            "text": "Question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correctAnswer": "Option A"
-          },
-          ...
-        ]
-      }`;
-
-      const response = await generateResponse({
-        prompt,
-        model: 'gemini-1.5-pro'
+      // Call the skill-assessment edge function to generate questions
+      const { data, error } = await supabase.functions.invoke('skill-assessment', {
+        body: {
+          action: 'generate_questions',
+          skill: skill.name,
+          proficiency: skill.proficiency,
+          sources: sources,
+          model: 'gemini-1.5-pro'
+        },
       });
-
-      // Parse the JSON from the response
-      const responseText = response.generatedText;
-      // Extract JSON from the response (in case there's other text)
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       
-      if (jsonMatch) {
-        const parsedData = JSON.parse(jsonMatch[0]);
-        if (parsedData.questions && Array.isArray(parsedData.questions)) {
-          setQuestions(parsedData.questions);
-        } else {
-          throw new Error("Invalid question format");
-        }
+      if (error) {
+        throw new Error(`Error calling skill-assessment: ${error.message}`);
+      }
+      
+      if (data && data.questions && Array.isArray(data.questions)) {
+        setQuestions(data.questions);
       } else {
-        throw new Error("Could not extract questions from response");
+        throw new Error("Invalid response format from assessment generator");
       }
     } catch (error) {
       console.error("Error generating questions:", error);
@@ -119,26 +138,31 @@ const SkillAssessment: React.FC = () => {
         description: "Failed to generate assessment questions. Please try again.",
         variant: "destructive",
       });
-      // Fallback to some default questions
+      
+      // Fallback to some default questions for demo purposes
       setQuestions([
         {
           id: 1,
           type: 'multipleChoice',
           text: `What is the primary focus of ${skill.name}?`,
           options: ['Option A', 'Option B', 'Option C', 'Option D'],
-          correctAnswer: 'Option A'
+          correctAnswer: 'Option A',
+          explanation: 'Option A is correct because it most accurately describes the primary focus.'
         },
         {
           id: 2,
           type: 'trueFalse',
           text: `${skill.name} is essential for professional growth.`,
           options: ['True', 'False'],
-          correctAnswer: 'True'
+          correctAnswer: 'True',
+          explanation: 'This statement is true because the skill is fundamental to career advancement.'
         },
         {
           id: 3,
           type: 'shortAnswer',
-          text: `Explain how ${skill.name} can be applied in your current role.`
+          text: `Explain how ${skill.name} can be applied in your current role.`,
+          correctAnswer: 'Sample answer focusing on practical application',
+          explanation: 'A good answer would demonstrate practical application in a workplace context.'
         }
       ]);
     } finally {
@@ -156,17 +180,10 @@ const SkillAssessment: React.FC = () => {
     setQuestions(updatedQuestions);
   };
 
-  const handleSourcesSubmit = () => {
-    // Add sources for context
-    toast({
-      title: "Sources added",
-      description: "Your sources will be used to evaluate your answers.",
-    });
-  };
-
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setShowExplanation(false);
     } else {
       // Last question, submit assessment
       handleSubmitAssessment();
@@ -176,6 +193,7 @@ const SkillAssessment: React.FC = () => {
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setShowExplanation(false);
     }
   };
 
@@ -185,7 +203,8 @@ const SkillAssessment: React.FC = () => {
     try {
       // Prepare the assessment data for evaluation
       const assessmentData = {
-        skill: selectedSkill,
+        skill: selectedSkill.name,
+        proficiency: selectedSkill.proficiency,
         questions: questions.map(q => ({
           id: q.id,
           type: q.type,
@@ -193,57 +212,66 @@ const SkillAssessment: React.FC = () => {
           userAnswer: q.userAnswer || '',
           correctAnswer: q.correctAnswer || ''
         })),
-        sources: [...sources, ...urls]
+        sources: sources
       };
       
-      // Send to Gemini for evaluation
-      const prompt = `Evaluate this skill assessment for "${selectedSkill.name}" at the "${selectedSkill.proficiency}" level.
-      
-      Assessment data:
-      ${JSON.stringify(assessmentData, null, 2)}
-      
-      Provide:
-      1. A score from 0-100
-      2. Brief feedback on each answer
-      3. Overall assessment summary
-      
-      Format as JSON:
-      {
-        "score": 85,
-        "feedback": [
-          { "questionId": 1, "comment": "Correct answer with good reasoning" },
-          ...
-        ],
-        "summary": "Overall assessment summary..."
-      }`;
-
-      const response = await generateResponse({
-        prompt,
-        model: 'gemini-1.5-pro'
+      // Call the skill-assessment edge function to evaluate the assessment
+      const { data, error } = await supabase.functions.invoke('skill-assessment', {
+        body: {
+          action: 'evaluate_assessment',
+          skill: selectedSkill.name,
+          proficiency: selectedSkill.proficiency,
+          userAnswers: assessmentData.questions,
+          sources: sources,
+          model: 'gemini-1.5-pro'
+        },
       });
-
-      // Parse the evaluation results
-      const responseText = response.generatedText;
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       
-      if (jsonMatch) {
-        const evaluation = JSON.parse(jsonMatch[0]);
-        setAssessmentScore(evaluation.score);
-        
-        toast({
-          title: "Assessment Completed",
-          description: `Your score: ${evaluation.score}%`,
-        });
-      } else {
-        // If JSON parsing fails, just set a random score between 60-95
-        const randomScore = Math.floor(Math.random() * 36) + 60;
-        setAssessmentScore(randomScore);
-        
-        toast({
-          title: "Assessment Completed",
-          description: `Your score: ${randomScore}%`,
-        });
+      if (error) {
+        throw new Error(`Error evaluating assessment: ${error.message}`);
       }
+      
+      let score = 0;
+      let feedback: any[] = [];
+      
+      if (data) {
+        score = data.score || 0;
+        feedback = data.feedback || [];
+
+        // Add explanations to questions
+        const questionsWithExplanations = questions.map(q => {
+          const feedbackItem = feedback.find(f => f.questionId === q.id);
+          return {
+            ...q,
+            explanation: feedbackItem?.comment || "No explanation provided."
+          };
+        });
+
+        setQuestions(questionsWithExplanations);
+      } else {
+        // If data parsing fails, just set a random score between 60-95
+        score = Math.floor(Math.random() * 36) + 60;
+      }
+      
+      setAssessmentScore(score);
+      
+      // Save the attempt
+      const attempt: AssessmentAttempt = {
+        id: `attempt-${Date.now()}`,
+        date: new Date().toISOString(),
+        score: score,
+        skillId: selectedSkill.id,
+        skillName: selectedSkill.name,
+        questions: questions,
+        passed: score >= PASS_RATE
+      };
+      
+      saveAttempt(attempt);
+      
+      toast({
+        title: "Assessment Completed",
+        description: `Your score: ${score}% (${score >= PASS_RATE ? 'Passed' : 'Failed'})`,
+      });
     } catch (error) {
       console.error("Error evaluating assessment:", error);
       toast({
@@ -253,23 +281,54 @@ const SkillAssessment: React.FC = () => {
       });
       
       // Fallback to a default score
-      setAssessmentScore(75);
+      const defaultScore = 75;
+      setAssessmentScore(defaultScore);
+      
+      // Save the attempt even with the error
+      const attempt: AssessmentAttempt = {
+        id: `attempt-${Date.now()}`,
+        date: new Date().toISOString(),
+        score: defaultScore,
+        skillId: selectedSkill.id,
+        skillName: selectedSkill.name,
+        questions: questions,
+        passed: defaultScore >= PASS_RATE
+      };
+      
+      saveAttempt(attempt);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleAddUrl = (url: string) => {
-    if (url && !urls.includes(url)) {
-      setUrls([...urls, url]);
+  const formatQuestionTypeLabel = (type: QuestionType): string => {
+    switch (type) {
+      case 'multipleChoice': return 'Multiple Choice';
+      case 'trueFalse': return 'True/False';
+      case 'shortAnswer': return 'Short Answer';
+      case 'videoResponse': return 'Video Analysis';
+      case 'documentAnalysis': return 'Document Analysis';
+      case 'fillInBlanks': return 'Fill in the Blanks';
+      case 'matchTheFollowing': return 'Match the Following';
+      case 'dragSequence': return 'Sequence Order';
+      case 'findHotspot': return 'Find the Hotspot';
+      default: return type;
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setFileUploads([...fileUploads, ...newFiles]);
-    }
+  const handleViewAttempt = (attempt: AssessmentAttempt) => {
+    setSelectedAttempt(attempt);
+  };
+
+  const formatDate = (dateString: string): string => {
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const renderQuestion = () => {
@@ -285,21 +344,25 @@ const SkillAssessment: React.FC = () => {
     if (assessmentScore !== null) {
       return (
         <div className="flex flex-col items-center justify-center p-8">
-          <div className="w-32 h-32 rounded-full border-8 border-primary flex items-center justify-center mb-6">
+          <div className={`w-32 h-32 rounded-full border-8 ${assessmentScore >= PASS_RATE ? 'border-green-500' : 'border-amber-500'} flex items-center justify-center mb-6`}>
             <span className="text-3xl font-bold">{assessmentScore}%</span>
           </div>
           
           <h2 className="text-2xl font-bold mb-2 text-center font-archivo-black text-gray-700">Assessment Complete</h2>
           
-          {assessmentScore >= 70 ? (
+          {assessmentScore >= PASS_RATE ? (
             <div className="text-center mb-6">
               <p className="text-green-600 font-medium text-lg mb-2">Congratulations!</p>
               <p>You have successfully demonstrated proficiency in this skill.</p>
+              <div className="mt-4 flex items-center justify-center">
+                <Award className="h-6 w-6 text-green-500 mr-2" />
+                <span className="font-medium">Skill Badge Earned</span>
+              </div>
             </div>
           ) : (
             <div className="text-center mb-6">
               <p className="text-amber-600 font-medium text-lg mb-2">Keep Learning</p>
-              <p>You're on your way to mastering this skill. Review the materials and try again.</p>
+              <p>You need 80% to pass. Review the materials and try again.</p>
             </div>
           )}
           
@@ -307,9 +370,63 @@ const SkillAssessment: React.FC = () => {
             <Button onClick={handleBack} variant="outline">
               Return to Skill
             </Button>
-            <Button onClick={() => window.location.reload()}>
+            <Button onClick={() => {
+              setAssessmentScore(null);
+              setCurrentQuestionIndex(0);
+              setActiveTab("assessment");
+              // Generate new questions
+              if (selectedSkill) {
+                generateQuestionsForSkill(selectedSkill);
+              }
+            }}>
               Retry Assessment
             </Button>
+          </div>
+          
+          <div className="w-full mt-8">
+            <Separator className="my-4" />
+            <h3 className="text-lg font-semibold mb-4">Review Your Answers</h3>
+            
+            <Accordion type="single" collapsible className="w-full">
+              {questions.map((question, index) => (
+                <AccordionItem key={question.id} value={`question-${question.id}`}>
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center justify-between w-full pr-4">
+                      <span>Question {index + 1}</span>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        question.userAnswer === question.correctAnswer 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {question.userAnswer === question.correctAnswer ? 'Correct' : 'Incorrect'}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 border-t">
+                    <div className="space-y-3">
+                      <p className="font-medium">{question.text}</p>
+                      
+                      <div className="bg-muted/30 p-3 rounded-md">
+                        <p className="text-sm font-medium mb-1">Your answer:</p>
+                        <p className="text-sm">{question.userAnswer || "No answer provided"}</p>
+                      </div>
+                      
+                      <div className="bg-green-50 p-3 rounded-md">
+                        <p className="text-sm font-medium mb-1 text-green-700">Correct answer:</p>
+                        <p className="text-sm">{question.correctAnswer || "Not specified"}</p>
+                      </div>
+                      
+                      {question.explanation && (
+                        <div className="bg-blue-50 p-3 rounded-md">
+                          <p className="text-sm font-medium mb-1 text-blue-700">Explanation:</p>
+                          <p className="text-sm">{question.explanation}</p>
+                        </div>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       );
@@ -334,10 +451,7 @@ const SkillAssessment: React.FC = () => {
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium">Question {currentQuestionIndex + 1} of {questions.length}</span>
             <span className="text-xs px-2 py-1 rounded bg-gray-100">
-              {currentQuestion.type === 'multipleChoice' ? 'Multiple Choice' :
-               currentQuestion.type === 'trueFalse' ? 'True/False' :
-               currentQuestion.type === 'shortAnswer' ? 'Short Answer' :
-               currentQuestion.type === 'videoResponse' ? 'Video Response' : 'Document Analysis'}
+              {formatQuestionTypeLabel(currentQuestion.type)}
             </span>
           </div>
           <Progress value={(currentQuestionIndex + 1) * 100 / questions.length} className="h-2" />
@@ -416,7 +530,7 @@ const SkillAssessment: React.FC = () => {
                     <p className="font-medium">Document for Analysis</p>
                     <p className="text-sm text-muted-foreground">Review this document to answer the question</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="ml-auto">
+                  <Button variant="ghost" size="sm" className="ml-auto" onClick={() => window.open(currentQuestion.documentUrl, '_blank')}>
                     View
                   </Button>
                 </div>
@@ -445,6 +559,116 @@ const SkillAssessment: React.FC = () => {
           >
             {currentQuestionIndex < questions.length - 1 ? 'Next' : 'Submit Assessment'}
           </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderAttemptHistory = () => {
+    if (previousAttempts.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No previous attempts found.</p>
+          <p className="text-sm mt-2">Complete an assessment to see your history.</p>
+        </div>
+      );
+    }
+
+    if (selectedAttempt) {
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <Button variant="ghost" onClick={() => setSelectedAttempt(null)} className="mb-4">
+              <ChevronLeft className="h-4 w-4 mr-1" /> Back to attempts
+            </Button>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Score:</span>
+              <span className={`px-3 py-1 rounded-full ${selectedAttempt.score >= PASS_RATE ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {selectedAttempt.score}% {selectedAttempt.passed ? '(Passed)' : '(Failed)'}
+              </span>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-muted/30 p-4 rounded-md">
+              <p className="text-sm">
+                <span className="font-medium">Attempt date:</span> {formatDate(selectedAttempt.date)}
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">Skill:</span> {selectedAttempt.skillName}
+              </p>
+            </div>
+            
+            <Accordion type="single" collapsible className="w-full">
+              {selectedAttempt.questions.map((question, index) => (
+                <AccordionItem key={`history-${question.id}`} value={`history-question-${question.id}`}>
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center justify-between w-full pr-4">
+                      <span>Question {index + 1}</span>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        question.userAnswer === question.correctAnswer 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {question.userAnswer === question.correctAnswer ? 'Correct' : 'Incorrect'}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="p-4 border-t">
+                    <div className="space-y-3">
+                      <p className="font-medium">{question.text}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{formatQuestionTypeLabel(question.type)}</p>
+                      
+                      <div className="bg-muted/30 p-3 rounded-md">
+                        <p className="text-sm font-medium mb-1">Your answer:</p>
+                        <p className="text-sm">{question.userAnswer || "No answer provided"}</p>
+                      </div>
+                      
+                      <div className="bg-green-50 p-3 rounded-md">
+                        <p className="text-sm font-medium mb-1 text-green-700">Correct answer:</p>
+                        <p className="text-sm">{question.correctAnswer || "Not specified"}</p>
+                      </div>
+                      
+                      {question.explanation && (
+                        <div className="bg-blue-50 p-3 rounded-md">
+                          <p className="text-sm font-medium mb-1 text-blue-700">Explanation:</p>
+                          <p className="text-sm">{question.explanation}</p>
+                        </div>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Your Previous Attempts</h3>
+        
+        <div className="space-y-4">
+          {previousAttempts.map((attempt) => (
+            <div 
+              key={attempt.id}
+              className="border rounded-lg p-4 hover:bg-muted/20 transition-colors cursor-pointer"
+              onClick={() => handleViewAttempt(attempt)}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-medium">{formatDate(attempt.date)}</p>
+                <div className={`px-3 py-1 text-sm rounded-full ${
+                  attempt.score >= PASS_RATE ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {attempt.score}% {attempt.passed ? '(Passed)' : '(Failed)'}
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {attempt.questions.length} questions • Click to view details
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -481,125 +705,24 @@ const SkillAssessment: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {renderQuestion()}
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="assessment">Assessment</TabsTrigger>
+                    <TabsTrigger value="history">Attempt History</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="assessment" className="mt-4">
+                    {renderQuestion()}
+                  </TabsContent>
+                  <TabsContent value="history" className="mt-4">
+                    {renderAttemptHistory()}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
           
           {/* Sidebar - Right Column */}
           <div className="space-y-6">
-            {/* Resources Panel */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-archivo-black text-gray-700">Add Learning Resources</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">Add URL</h3>
-                    <div className="flex gap-2">
-                      <Input 
-                        placeholder="https://..." 
-                        id="url-input"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            const input = e.currentTarget as HTMLInputElement;
-                            handleAddUrl(input.value);
-                            input.value = '';
-                          }
-                        }}
-                      />
-                      <Button 
-                        variant="outline"
-                        size="icon"
-                        onClick={() => {
-                          const input = document.getElementById('url-input') as HTMLInputElement;
-                          handleAddUrl(input.value);
-                          input.value = '';
-                        }}
-                      >
-                        <Link className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">Upload Files</h3>
-                    <div className="grid gap-2">
-                      <Label 
-                        htmlFor="file-upload" 
-                        className="border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
-                      >
-                        <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                        <span className="text-sm font-medium text-center">Click to upload</span>
-                        <span className="text-xs text-muted-foreground text-center">PDF, DOCX, PPT, images, etc.</span>
-                      </Label>
-                      <Input 
-                        id="file-upload" 
-                        type="file" 
-                        className="hidden" 
-                        multiple 
-                        onChange={handleFileUpload}
-                      />
-                    </div>
-                  </div>
-                  
-                  {(urls.length > 0 || fileUploads.length > 0) && (
-                    <>
-                      <Separator />
-                      
-                      <div>
-                        <h3 className="text-sm font-medium mb-2">Added Resources</h3>
-                        <div className="space-y-2">
-                          {urls.map((url, index) => (
-                            <div key={`url-${index}`} className="flex items-center gap-2 text-sm py-1">
-                              <Link className="h-4 w-4 flex-shrink-0 text-blue-500" />
-                              <span className="truncate flex-grow">{url}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => setUrls(urls.filter((_, i) => i !== index))}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                          
-                          {fileUploads.map((file, index) => (
-                            <div key={`file-${index}`} className="flex items-center gap-2 text-sm py-1">
-                              {file.type.includes('image') ? (
-                                <FileImage className="h-4 w-4 flex-shrink-0 text-purple-500" />
-                              ) : (
-                                <FileText className="h-4 w-4 flex-shrink-0 text-orange-500" />
-                              )}
-                              <span className="truncate flex-grow">{file.name}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => setFileUploads(fileUploads.filter((_, i) => i !== index))}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={handleSourcesSubmit}
-                      >
-                        Use Resources
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            
             {/* Assessment Info */}
             <Card>
               <CardHeader>
@@ -621,12 +744,38 @@ const SkillAssessment: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between mb-1">
                       <span>Passing Score</span>
-                      <span>70%</span>
+                      <span className="font-medium text-green-600">{PASS_RATE}%</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Attempts</span>
                       <span>Unlimited</span>
                     </div>
+                  </div>
+                  
+                  <div className="pt-3 border-t">
+                    <h4 className="font-medium mb-2">Question Types</h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                        <span>Multiple Choice</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                        <span>True/False</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-amber-500"></div>
+                        <span>Short Answer</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                        <span>Document Analysis</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                        <span>Video Response</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </CardContent>

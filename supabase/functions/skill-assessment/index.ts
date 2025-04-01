@@ -12,6 +12,64 @@ const corsHeaders = {
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
 
+/**
+ * Extracts the content from a source based on its type
+ * @param source - The source to process
+ * @returns Processed source content
+ */
+const processSource = (source: string): string => {
+  // Check if it's a URL
+  if (source.startsWith('http://') || source.startsWith('https://')) {
+    // YouTube URL detection
+    if (
+      source.includes('youtube.com') || 
+      source.includes('youtu.be')
+    ) {
+      return `YouTube Video: ${source}`;
+    }
+    
+    // PDF detection
+    if (source.endsWith('.pdf')) {
+      return `PDF Document: ${source}`;
+    }
+    
+    // Document detection
+    if (
+      source.endsWith('.doc') || 
+      source.endsWith('.docx') || 
+      source.endsWith('.ppt') || 
+      source.endsWith('.pptx')
+    ) {
+      return `Office Document: ${source}`;
+    }
+    
+    // Image detection
+    if (
+      source.endsWith('.jpg') || 
+      source.endsWith('.jpeg') || 
+      source.endsWith('.png') || 
+      source.endsWith('.gif')
+    ) {
+      return `Image: ${source}`;
+    }
+    
+    // Video detection
+    if (
+      source.endsWith('.mp4') || 
+      source.endsWith('.mov') || 
+      source.endsWith('.avi')
+    ) {
+      return `Video File: ${source}`;
+    }
+    
+    // Default URL
+    return `Web Resource: ${source}`;
+  }
+  
+  // Plain text
+  return `Text content: ${source}`;
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -31,7 +89,7 @@ serve(async (req) => {
       proficiency, 
       userAnswers = [],
       sources = [], 
-      mediaFiles = [], // New parameter for handling media files
+      mediaFiles = [], 
       model = 'gemini-1.5-pro' 
     } = await req.json();
 
@@ -48,84 +106,130 @@ serve(async (req) => {
     let contextInfo = '';
     
     if (sources && sources.length > 0) {
-      contextInfo += `Additional context from provided sources:\n`;
+      contextInfo += `Additional context from provided sources:\n\n`;
       sources.forEach((source: string, index: number) => {
-        contextInfo += `Source ${index + 1}: ${source}\n`;
+        const processedSource = processSource(source);
+        contextInfo += `Source ${index + 1}: ${processedSource}\n\n`;
       });
-      contextInfo += '\n';
     }
     
     if (mediaFiles && mediaFiles.length > 0) {
-      contextInfo += `Media files included:\n`;
+      contextInfo += `Media files information:\n\n`;
       mediaFiles.forEach((file: any, index: number) => {
         const fileType = file.type || 'Unknown type';
         const fileName = file.name || `File ${index + 1}`;
-        contextInfo += `File ${index + 1}: ${fileName} (${fileType})\n`;
+        const fileUrl = file.url || '';
+        
+        contextInfo += `Media ${index + 1}: ${fileName} (${fileType})`;
+        if (fileUrl) contextInfo += ` - ${fileUrl}`;
+        contextInfo += `\n`;
       });
-      contextInfo += '\n';
+      contextInfo += `\n`;
     }
 
     let prompt = '';
     
     // Prepare prompt based on action
     if (action === 'generate_questions') {
-      prompt = `Create an assessment for the skill "${skill}" at the "${proficiency}" level. 
-      The assessment should include:
-      - 10 multiple choice questions
-      - 5 true/false questions 
-      - 5 short answer questions
-      - 5 document analysis questions 
-      - 5 video response questions
-
-      ${contextInfo ? `Use this context information to create relevant questions:\n${contextInfo}\n` : ''}
+      prompt = `Create a comprehensive assessment for the skill "${skill}" at the "${proficiency}" level. 
       
-      For each question, provide:
-      1. The question text
-      2. The question type (multipleChoice, trueFalse, shortAnswer, documentAnalysis, videoResponse)
-      3. For multiple choice: 4 options (labeled A, B, C, D)
-      4. The correct answer
-      5. For document or video questions, include a URL or reference to relevant materials
+The assessment should include a variety of question types including:
+- 5-7 multiple choice questions
+- 3-5 true/false questions 
+- 2-4 short answer questions
+- 1-2 video response questions (if appropriate)
+- 1-2 document analysis questions (if appropriate)
+- 1-2 fill in the blanks questions
+- 1-2 match the following questions
+- 1-2 drag the sequence questions
+- 1-2 find the hotspot questions (if appropriate)
 
-      Format as JSON with this structure:
-      {
-        "questions": [
-          {
-            "id": 1,
-            "type": "multipleChoice",
-            "text": "Question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correctAnswer": "Option A"
-          },
-          ...
-        ]
-      }`;
+${contextInfo ? `Use this context information to create relevant questions that test true understanding:\n${contextInfo}\n` : ''}
+
+For each question, provide:
+1. A unique numerical id
+2. The question text that's clear and specific
+3. The question type (multipleChoice, trueFalse, shortAnswer, videoResponse, documentAnalysis, fillInBlanks, matchTheFollowing, dragSequence, findHotspot)
+4. For multiple choice: exactly 4 options labeled A, B, C, D
+5. The correct answer
+6. A brief explanation of why the answer is correct
+7. For document or video questions, include a URL or reference to relevant materials
+
+The questions should test different cognitive levels: knowledge recall, comprehension, application, analysis, evaluation, and creation where appropriate.
+
+Format as JSON with this structure:
+{
+  "questions": [
+    {
+      "id": 1,
+      "type": "multipleChoice",
+      "text": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "Option A",
+      "explanation": "Brief explanation why Option A is correct"
+    },
+    {
+      "id": 2,
+      "type": "trueFalse",
+      "text": "Statement to evaluate as true or false",
+      "options": ["True", "False"],
+      "correctAnswer": "True",
+      "explanation": "Brief explanation why this is true"
+    },
+    {
+      "id": 3,
+      "type": "shortAnswer",
+      "text": "Question requiring a short answer",
+      "correctAnswer": "Expected answer or key points",
+      "explanation": "Explanation of what makes a good answer"
+    },
+    ...and so on for other question types
+  ]
+}
+
+Make sure all questions are directly relevant to testing proficiency in ${skill} at the ${proficiency} level.`;
     } else if (action === 'evaluate_assessment') {
       prompt = `Evaluate this skill assessment for "${skill}" at the "${proficiency}" level.
       
-      User answers:
-      ${JSON.stringify(userAnswers, null, 2)}
-      
-      ${contextInfo ? `Additional context:\n${contextInfo}\n` : ''}
-      
-      Provide:
-      1. A score from 0-100
-      2. Brief feedback on each answer
-      3. Overall assessment summary
-      4. Areas for improvement
-      
-      Format as JSON:
-      {
-        "score": 85,
-        "feedback": [
-          { "questionId": 1, "comment": "Correct answer with good reasoning" },
-          ...
-        ],
-        "summary": "Overall assessment summary...",
-        "improvements": ["Area 1", "Area 2", ...]
-      }`;
+User answers:
+${JSON.stringify(userAnswers, null, 2)}
+
+${contextInfo ? `Additional context and sources that may be relevant for evaluation:\n${contextInfo}\n` : ''}
+
+Provide:
+1. A score from 0-100 (the passing rate is 80%)
+2. Brief feedback on each answer, explaining what was correct or incorrect
+3. Overall assessment summary
+4. Specific areas for improvement
+5. Next steps for the learner to improve their proficiency
+
+Format as JSON:
+{
+  "score": 85,
+  "feedback": [
+    { 
+      "questionId": 1, 
+      "correct": true,
+      "comment": "Correct answer with good reasoning" 
+    },
+    { 
+      "questionId": 2, 
+      "correct": false,
+      "comment": "Incorrect. The correct answer is X because..." 
+    },
+    ...
+  ],
+  "summary": "Overall assessment summary...",
+  "improvements": ["Area 1", "Area 2", ...],
+  "nextSteps": ["Specific action 1", "Specific action 2", ...]
+}
+
+Be thorough but fair in your evaluation. Provide helpful and constructive feedback.`;
     } else {
       throw new Error("Invalid action. Supported actions are 'generate_questions' and 'evaluate_assessment'");
     }
+
+    console.log(`Sending ${action} request to Gemini API for skill ${skill}`);
 
     // Create the request to Gemini API
     const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${selectedModel}:generateContent?key=${GEMINI_API_KEY}`;
@@ -151,6 +255,24 @@ serve(async (req) => {
           topP: 0.95,
           maxOutputTokens: 8192,
         },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       }),
     });
 
@@ -166,6 +288,8 @@ serve(async (req) => {
     // Extract the generated text
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
       "Sorry, I couldn't generate a response.";
+
+    console.log("Gemini API response received successfully");
 
     // Try to extract JSON from the response
     let result;

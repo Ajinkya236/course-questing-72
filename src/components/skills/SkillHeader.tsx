@@ -99,6 +99,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
                 className="w-full md:w-auto"
               >
                 <Link to={`/skills/${skill?.id}/assessment`}>
+                  <Award className="h-4 w-4 mr-2" />
                   Earn Skill
                 </Link>
               </Button>
