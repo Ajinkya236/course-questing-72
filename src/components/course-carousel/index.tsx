@@ -1,5 +1,7 @@
+
 import React, { useState, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Course } from '@/types/course';
 import { useCourseData } from '@/hooks/useCourseData';
@@ -44,6 +46,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [selectedFilter, setSelectedFilter] = useState(uniqueFilterOptions[0] || 'All Categories');
   const [selectedSubFilter, setSelectedSubFilter] = useState('All Sub-Academies');
   const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+  const [isCarouselHovered, setIsCarouselHovered] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { toggleBookmark } = useCourseBookmarks();
@@ -159,7 +162,11 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
         </div>
       )}
 
-      <div className="relative group/carousel carousel-container">
+      <div 
+        className="course-carousel-container relative group/carousel"
+        onMouseEnter={() => setIsCarouselHovered(true)}
+        onMouseLeave={() => setIsCarouselHovered(false)}
+      >
         <Carousel
           opts={{
             align: "start",
@@ -197,14 +204,17 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
             ))}
           </CarouselContent>
           
-          <CarouselPrevious 
-            className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
-            data-embla-prev 
-          />
-          <CarouselNext 
-            className="opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
-            data-embla-next 
-          />
+          <div className={`absolute inset-y-0 left-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
+            <CarouselPrevious 
+              className="course-carousel-nav-button course-carousel-nav-prev h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+            />
+          </div>
+          
+          <div className={`absolute inset-y-0 right-0 flex items-center transition-opacity duration-300 ${isCarouselHovered ? 'opacity-100' : 'opacity-0'}`}>
+            <CarouselNext 
+              className="course-carousel-nav-button course-carousel-nav-next h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+            />
+          </div>
         </Carousel>
       </div>
     </div>

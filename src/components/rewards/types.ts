@@ -63,6 +63,13 @@ export interface RewardsData {
       participation: number;
     };
   }>;
+  
+  // Added these fields for compatibility with RewardsTab component
+  points?: number;
+  rank?: number;
+  badges?: number;
+  streakDays?: number;
+  completedCourses?: number;
 }
 
 export interface RewardsTabProps {

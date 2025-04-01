@@ -22,6 +22,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
   const [maxScroll, setMaxScroll] = useState(0);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -113,18 +114,34 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       </div>
 
       <div 
-        className="relative overflow-hidden rounded-xl"
-        onMouseEnter={() => {
-          if (showLeftButton) setShowLeftButton(true);
-          if (showRightButton) setShowRightButton(true);
-        }}
-        onMouseLeave={() => {
-          if (!isMobile) {
-            setShowLeftButton(false);
-            setShowRightButton(false);
-          }
-        }}
+        className="course-carousel-container relative overflow-hidden rounded-xl"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Left navigation button */}
+        <button
+          className={`course-carousel-nav-button course-carousel-nav-prev ${
+            isHovered && showLeftButton ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => scroll('left')}
+          disabled={!showLeftButton}
+          aria-label="Previous courses"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+
+        {/* Right navigation button */}
+        <button
+          className={`course-carousel-nav-button course-carousel-nav-next ${
+            isHovered && showRightButton ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => scroll('right')}
+          disabled={!showRightButton}
+          aria-label="Next courses"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+
         {courses.length > 0 ? (
           <div
             ref={carouselRef}

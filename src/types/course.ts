@@ -2,7 +2,7 @@
 export interface Activity {
   id: string;
   title: string;
-  type: 'video' | 'quiz' | 'h5p';
+  type: 'video' | 'quiz' | 'h5p' | 'assignment' | 'article' | 'discussion' | 'interactive';
   duration: string;
   completed: boolean;
 }
@@ -13,14 +13,22 @@ export interface Module {
   activities: Activity[];
 }
 
+export interface Instructor {
+  name: string;
+  avatar: string;
+}
+
 export interface Course {
   id: string;
   title: string;
   description: string;
   imageUrl: string;
+  thumbnail?: string;
   category: string;
   duration: string;
   rating: number;
+  instructor?: Instructor | string;
+  level?: string;
   isBookmarked?: boolean;
   trainingCategory?: string;
   learningObjectives?: string[];
@@ -37,27 +45,32 @@ export interface Course {
   savedAt?: string; // Added for bookmarking timestamp
   
   // These fields from CourseCarousel interface
-  level?: string;
-  instructor?: {
-    name: string;
-    avatar: string;
-  };
   progress?: number;
   enrollmentStatus?: 'Not Started' | 'In Progress' | 'Completed';
+  author?: string; // For backward compatibility with some components
   
   // Additional fields for filtering
   courseType?: 'Online Course' | 'Online Program' | 'Blended' | 'Classroom';
   academy?: string;
   subAcademy?: string;
   language?: string;
-  source?: 'Internal' | 'LinkedIn' | 'CourseEra' | 'els' | 'WorkEra' | 'Skillsoft';
+  source?: 'Internal' | 'LinkedIn' | 'Coursera' | 'els' | 'Skillsoft' | 'WorkEra';
   topic?: string;
   skillLevel?: string;
   proficiency?: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+  type?: 'Course' | 'Program' | 'Blended' | 'Classroom';
   
   // Rankings for trending courses
   rank?: number;
   
   // User similarity score
   similarityScore?: number;
+  
+  // Additional flags
+  isAssigned?: boolean;
+  isCompleted?: boolean;
+}
+
+export interface CourseProps extends Course {
+  // CourseProps is now an extension of Course to ensure compatibility
 }

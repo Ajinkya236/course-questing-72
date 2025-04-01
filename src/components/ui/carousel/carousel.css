@@ -203,6 +203,7 @@
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .carousel-container:hover .carousel-nav-button {
@@ -215,4 +216,66 @@
 
 .carousel-nav-next {
   right: 10px;
+}
+
+/* Add these improved hover navigation styles for the course carousel */
+.course-carousel-container {
+  position: relative;
+  overflow: visible;
+}
+
+.course-carousel-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.course-carousel-container:hover .course-carousel-nav-button {
+  opacity: 1;
+}
+
+.course-carousel-nav-button:hover {
+  transform: translateY(-50%) scale(1.1);
+  background-color: var(--primary);
+  color: white;
+}
+
+.course-carousel-nav-button:disabled {
+  opacity: 0 !important;
+  cursor: default;
+}
+
+.course-carousel-nav-prev {
+  left: -20px;
+}
+
+.course-carousel-nav-next {
+  right: -20px;
+}
+
+@media (max-width: 768px) {
+  .course-carousel-nav-button {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .course-carousel-nav-prev {
+    left: 5px;
+  }
+  
+  .course-carousel-nav-next {
+    right: 5px;
+  }
 }
