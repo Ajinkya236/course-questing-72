@@ -1,16 +1,15 @@
-
 import React, { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
+import Home from './pages/Home';
 
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const Home = lazy(() => import('./pages/Home'));
 const Discover = lazy(() => import('./pages/Discover'));
 const MyLearning = lazy(() => import('./pages/MyLearning'));
 const CoursePlayer = lazy(() => import('./pages/CoursePlayer'));
@@ -28,7 +27,6 @@ const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
-// Admin pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminCourses = lazy(() => import('./pages/admin/Courses'));
 const AdminModules = lazy(() => import('./pages/admin/Modules'));
@@ -70,7 +68,6 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               
               <Route element={<ProtectedRoute />}>
-                {/* Learner Routes */}
                 <Route path="/" element={<PageLayout><Home /></PageLayout>} />
                 <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
                 <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
@@ -93,7 +90,6 @@ function App() {
                 <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
                 <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
                 
-                {/* Admin Routes */}
                 <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
                 <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
                 <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />

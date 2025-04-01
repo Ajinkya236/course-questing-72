@@ -40,5 +40,3 @@ export const CarouselFilters: React.FC<CarouselFiltersProps> = ({
     </div>
   );
 };
-
-export { CarouselFilters };
