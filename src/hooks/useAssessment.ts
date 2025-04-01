@@ -156,13 +156,14 @@ export const useAssessment = (skillId: string | undefined) => {
       
       let score = 0;
       let feedback: any[] = [];
+      let updatedQuestions = [...assessmentQuestions];
       
       if (data) {
         score = data.score || 0;
         feedback = data.feedback || [];
 
         // Add explanations to questions
-        const questionsWithExplanations = assessmentQuestions.map(q => {
+        updatedQuestions = assessmentQuestions.map(q => {
           const feedbackItem = feedback.find(f => f.questionId === q.id);
           return {
             ...q,
@@ -170,7 +171,7 @@ export const useAssessment = (skillId: string | undefined) => {
           };
         });
 
-        setQuestions(questionsWithExplanations);
+        setQuestions(updatedQuestions);
       } else {
         // If data parsing fails, just set a random score between 60-95
         score = Math.floor(Math.random() * 36) + 60;
@@ -185,7 +186,7 @@ export const useAssessment = (skillId: string | undefined) => {
         score: score,
         skillId: selectedSkill.id,
         skillName: selectedSkill.name,
-        questions: assessmentQuestions,
+        questions: updatedQuestions,
         passed: score >= PASS_RATE
       };
       
@@ -196,7 +197,7 @@ export const useAssessment = (skillId: string | undefined) => {
         description: `Your score: ${score}% (${score >= PASS_RATE ? 'Passed' : 'Failed'})`,
       });
 
-      return { score, questions: questionsWithExplanations };
+      return { score, questions: updatedQuestions };
     } catch (error) {
       console.error("Error evaluating assessment:", error);
       toast({

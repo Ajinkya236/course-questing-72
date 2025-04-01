@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Award, Button } from 'lucide-react';
-import { Button as UIButton } from "@/components/ui/button";
+import { Award } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Question } from './types';
@@ -48,12 +48,12 @@ const AssessmentResults: React.FC<AssessmentResultsProps> = ({
       )}
       
       <div className="flex gap-4 mt-4">
-        <UIButton onClick={onBack} variant="outline">
+        <Button onClick={onBack} variant="outline">
           Return to Skill
-        </UIButton>
-        <UIButton onClick={onRetry}>
+        </Button>
+        <Button onClick={onRetry}>
           Retry Assessment
-        </UIButton>
+        </Button>
       </div>
       
       <div className="w-full mt-8">
