@@ -27,17 +27,17 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
   handleAssignClick
 }) => {
   return (
-    <div className="p-3 space-y-2">
-      <h3 className="font-medium text-sm leading-tight line-clamp-1">{title}</h3>
-      <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{description}</p>
+    <div className="p-3 space-y-2 bg-neutral-0 dark:bg-neutral-900">
+      <h3 className="font-semibold text-sm leading-tight line-clamp-1 text-neutral-900 dark:text-neutral-0">{title}</h3>
+      <p className="text-xs text-neutral-600 dark:text-neutral-300 line-clamp-2 min-h-[2rem]">{description}</p>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-300">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{duration}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+          <Star className="h-3 w-3 text-warning fill-warning" />
           <span>{rating.toFixed(1)}</span>
         </div>
       </div>
@@ -47,7 +47,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         <div className="flex items-center gap-2">
           <Button 
             variant="default" 
-            className="flex-1 py-1 h-8 bg-primary hover:bg-primary/90 text-white"
+            className="flex-1 py-1 h-8 text-white"
             onClick={handleWatchClick}
             size="sm"
           >
@@ -56,20 +56,20 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
           
           <Button 
             variant="outline" 
-            size="icon"
+            size="icon-sm"
             onClick={handleShareClick}
             aria-label="Share"
-            className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary"
+            className="h-8 w-8 border-neutral-300 hover:bg-neutral-100 hover:text-primary dark:border-neutral-800 dark:hover:bg-neutral-800"
           >
             <Share2 className="h-4 w-4" />
           </Button>
           
           <Button 
             variant="outline" 
-            size="icon"
+            size="icon-sm"
             onClick={handleBookmarkToggle}
             aria-label="Bookmark"
-            className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-primary`}
+            className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary-100 dark:bg-primary/10" : "border-neutral-300 dark:border-neutral-800"} hover:bg-neutral-100 hover:text-primary dark:hover:bg-neutral-800`}
           >
             <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
           </Button>
@@ -77,7 +77,7 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         
         <Button 
           variant="outline" 
-          className="w-full h-8 text-xs border-muted-foreground/30 hover:bg-muted hover:text-primary"
+          className="w-full h-8 text-xs border-neutral-300 hover:bg-neutral-100 hover:text-primary dark:border-neutral-800 dark:hover:bg-neutral-800"
           onClick={handleAssignClick}
           size="sm"
         >

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Figtree', 'Inter', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -27,7 +29,9 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					100: 'hsl(var(--primary-100))',
+					700: 'hsl(var(--primary-700))',
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -43,7 +47,11 @@ export default {
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					foreground: 'hsl(var(--accent-foreground))',
+					green: 'hsl(var(--accent-green))',
+					magenta: 'hsl(var(--accent-magenta))',
+					teal: 'hsl(var(--accent-teal))',
+					skyblue: 'hsl(var(--accent-skyblue))',
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -52,6 +60,26 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))',
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))',
+				},
+				danger: {
+					DEFAULT: 'hsl(var(--danger))',
+					foreground: 'hsl(var(--danger-foreground))',
+				},
+				neutral: {
+					0: 'hsl(var(--neutral-0))',
+					100: 'hsl(var(--neutral-100))',
+					300: 'hsl(var(--neutral-300))',
+					600: 'hsl(var(--neutral-600))',
+					800: 'hsl(var(--neutral-800))',
+					900: 'hsl(var(--neutral-900))',
 				},
 				jio: {
 					DEFAULT: 'hsl(var(--jio))',
@@ -72,9 +100,48 @@ export default {
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				none: '0px',
+				sm: 'calc(var(--radius-sm))',
+				DEFAULT: 'calc(var(--radius-md))',
+				md: 'calc(var(--radius-md))',
+				lg: 'calc(var(--radius-lg))',
+				xl: 'calc(var(--radius-xl))',
+				'2xl': 'calc(var(--radius-xl) + 8px)',
+				'3xl': 'calc(var(--radius-xl) + 16px)',
+				pill: '9999px',
+				circle: '50%',
+			},
+			boxShadow: {
+				sm: 'var(--shadow-1)',
+				DEFAULT: 'var(--shadow-2)',
+				md: 'var(--shadow-2)',
+				lg: 'var(--shadow-3)',
+				xl: 'var(--shadow-3)',
+			},
+			fontSize: {
+				'xs': 'var(--font-size-caption)',
+				'sm': 'var(--font-size-body-sm)',
+				'base': 'var(--font-size-body-md)',
+				'lg': 'var(--font-size-body-lg)',
+				'xl': 'var(--font-size-h4)',
+				'2xl': 'var(--font-size-h3)',
+				'3xl': 'var(--font-size-h2)',
+				'4xl': 'var(--font-size-h1)',
+				'5xl': 'var(--font-size-display)',
+			},
+			lineHeight: {
+				heading: 'var(--line-height-heading)',
+				body: 'var(--line-height-body)',
+			},
+			spacing: {
+				'0.5': 'var(--spacing-0.5)',
+				'1': 'var(--spacing-1)',
+				'1.5': 'var(--spacing-1.5)',
+				'2': 'var(--spacing-2)',
+				'3': 'var(--spacing-3)',
+				'4': 'var(--spacing-4)',
+				'6': 'var(--spacing-6)',
+				'8': 'var(--spacing-8)',
 			},
 			keyframes: {
 				'accordion-down': {
