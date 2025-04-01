@@ -1,50 +1,92 @@
 
-import React from 'react';
-import { MoveRight } from 'lucide-react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface CourseCarouselHeaderProps {
   title: string;
-  viewAllUrl?: string;
   onViewAllClick?: () => void;
+  viewAllUrl?: string;
   carouselId: string;
 }
 
 const CourseCarouselHeader: React.FC<CourseCarouselHeaderProps> = ({
   title,
-  viewAllUrl = '',
   onViewAllClick,
+  viewAllUrl = '/view-all',
   carouselId
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
-  
-  const handleViewAll = () => {
+
+  const handleViewAllClick = () => {
     if (onViewAllClick) {
       onViewAllClick();
-    } else if (viewAllUrl) {
+    } else {
       navigate(viewAllUrl);
     }
   };
 
+  const triggerCarouselPrev = () => {
+    const carousel = document.getElementById(carouselId);
+    if (carousel) {
+      const prevButton = carousel.querySelector('[data-embla-prev]') as HTMLElement;
+      if (prevButton) prevButton.click();
+    }
+  };
+
+  const triggerCarouselNext = () => {
+    const carousel = document.getElementById(carouselId);
+    if (carousel) {
+      const nextButton = carousel.querySelector('[data-embla-next]') as HTMLElement;
+      if (nextButton) nextButton.click();
+    }
+  };
+
   return (
-    <div className="flex items-center justify-between" id={`${carouselId}-header`}>
-      <h2 className="text-xl md:text-2xl font-semibold tracking-tight group">
-        {title}
-        <div className="h-1 w-0 group-hover:w-full bg-primary/70 mt-1 transition-all duration-300"></div>
-      </h2>
+    <div 
+      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex items-center">
+        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <ChevronRight 
+          className="h-4 w-4 cursor-pointer ml-1" 
+          onClick={handleViewAllClick}
+        />
+        {isHovered && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="ml-1 p-0" 
+            onClick={handleViewAllClick}
+          >
+            View All
+          </Button>
+        )}
+      </div>
       
-      {(viewAllUrl || onViewAllClick) && (
+      {/* Navigation controls for carousel - displayed next to title */}
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <Button 
           variant="outline" 
-          size="sm" 
-          className="gap-1 rounded-full border-primary/30 hover:border-primary hover:bg-primary/5 transition-colors"
-          onClick={handleViewAll}
+          size="icon" 
+          className="h-8 w-8 rounded-full"
+          onClick={triggerCarouselPrev}
         >
-          <span>View all</span>
-          <MoveRight className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" />
         </Button>
-      )}
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-8 w-8 rounded-full"
+          onClick={triggerCarouselNext}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };

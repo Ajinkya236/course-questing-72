@@ -8,7 +8,7 @@ import { useCourseData } from '@/hooks/useCourseData';
 import { useCourseBookmarks } from '@/hooks/useCourseBookmarks';
 import { triggerCourseEvent } from '@/hooks/useCourseEvents';
 import CourseCarouselHeader from './CourseCarouselHeader';
-import CourseCarouselCard from './CourseCarouselCard';
+import CourseCard from '@/components/CourseCard';
 import { Button } from '@/components/ui/button';
 import { 
   Carousel, 
@@ -182,7 +182,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
     [];
 
   return (
-    <div className="space-y-4 overflow-visible animate-fade-in">
+    <div className="space-y-4 overflow-visible">
       <CourseCarouselHeader 
         title={title}
         onViewAllClick={onViewAllClick}
@@ -213,7 +213,7 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
       )}
 
       <div 
-        className="course-carousel-container relative group/carousel rounded-lg"
+        className="course-carousel-container relative group/carousel"
         onMouseEnter={() => setIsCarouselHovered(true)}
         onMouseLeave={() => setIsCarouselHovered(false)}
         ref={carouselRef}
@@ -234,26 +234,24 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
               filteredCourses.map((course) => (
                 <CarouselItem 
                   key={course.id} 
-                  className="pl-4 transition-all hover:scale-[1.02] duration-200"
+                  className="pl-4"
                   style={{ 
                     flex: `0 0 ${getCardPercentage()}%`, 
                     maxWidth: `${getCardPercentage()}%`
                   }}
                 >
                   <div 
-                    className="cursor-pointer h-full"
+                    className="cursor-pointer"
                     onMouseEnter={() => handleMouseEnter(course.id)}
                     onMouseLeave={handleMouseLeave}
-                    onClick={() => handleCardClick(course.id)}
                   >
-                    <CourseCarouselCard
-                      course={course}
-                      hoveredCourseId={hoveredCourseId}
-                      handleCardClick={handleCardClick}
-                      handleShareClick={handleShareClick}
-                      handleBookmarkToggle={handleBookmarkToggle}
-                      handleAssignClick={handleAssignClick}
-                      showTrainingCategory={showTrainingCategory}
+                    <CourseCard 
+                      {...course}
+                      trainingCategory={course.trainingCategory}
+                      isBookmarked={course.isBookmarked}
+                      previewUrl={course.videoUrl || course.previewUrl}
+                      isHot={course.isHot}
+                      isNew={course.isNew}
                     />
                   </div>
                 </CarouselItem>
@@ -270,14 +268,14 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
           <div className={`absolute -left-4 top-1/2 -translate-y-1/2 z-10 transition-opacity duration-300 ${isCarouselHovered && canScrollPrev ? 'opacity-100' : 'opacity-0'}`}>
             <CarouselPrevious
               onClick={scrollPrev}
-              className="h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+              className="h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
             />
           </div>
           
           <div className={`absolute -right-4 top-1/2 -translate-y-1/2 z-10 transition-opacity duration-300 ${isCarouselHovered && canScrollNext ? 'opacity-100' : 'opacity-0'}`}>
             <CarouselNext
               onClick={scrollNext}
-              className="h-10 w-10 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
+              className="h-9 w-9 rounded-full border-none shadow-md hover:bg-primary hover:text-white transition-all"
             />
           </div>
         </Carousel>

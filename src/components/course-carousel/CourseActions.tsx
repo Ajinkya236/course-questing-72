@@ -1,78 +1,59 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Bookmark, Share2, UserPlus } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Share2, Bookmark, UserPlus, Play } from 'lucide-react';
 
 interface CourseActionsProps {
   isBookmarked: boolean;
-  handleBookmarkToggle: (e: React.MouseEvent) => void;
   handleShareClick: (e: React.MouseEvent) => void;
+  handleBookmarkToggle: (e: React.MouseEvent) => void;
   handleAssignClick: (e: React.MouseEvent) => void;
 }
 
 const CourseActions: React.FC<CourseActionsProps> = ({
   isBookmarked,
-  handleBookmarkToggle,
   handleShareClick,
+  handleBookmarkToggle,
   handleAssignClick
 }) => {
   return (
-    <div className="flex items-center justify-between">
-      <TooltipProvider delayDuration={300}>
-        <div className="flex items-center gap-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 rounded-full ${isBookmarked ? 'text-primary' : 'text-muted-foreground'}`}
-                onClick={handleBookmarkToggle}
-                aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
-              >
-                <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-primary' : ''}`} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full text-muted-foreground"
-                onClick={handleShareClick}
-                aria-label="Share course"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Share course</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full text-muted-foreground"
-                onClick={handleAssignClick}
-                aria-label="Assign to team member"
-              >
-                <UserPlus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Assign to team member</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </TooltipProvider>
+    <div className="pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="flex gap-1 mb-1">
+        <Button 
+          variant="default" 
+          className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] h-6 text-xs"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Play className="h-3 w-3 mr-1" /> Watch
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={handleShareClick}
+          aria-label="Share"
+          className="h-6 w-6"
+        >
+          <Share2 className="h-3 w-3" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={handleBookmarkToggle}
+          aria-label="Bookmark"
+          className={`h-6 w-6 ${isBookmarked ? "border-primary text-primary" : ""}`}
+        >
+          <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
+        </Button>
+      </div>
+      <Button 
+        variant="outline" 
+        className="w-full h-6 text-xs"
+        onClick={handleAssignClick}
+      >
+        <UserPlus className="h-3 w-3 mr-1" /> Assign
+      </Button>
     </div>
   );
 };

@@ -1,39 +1,25 @@
 
 import React from 'react';
-import { Progress } from '@/components/ui/progress';
 
 interface CourseProgressBarProps {
-  progress?: number;
+  progress: number;
 }
 
 const CourseProgressBar: React.FC<CourseProgressBarProps> = ({ progress }) => {
   if (progress === undefined) return null;
   
-  // Format to avoid decimals for cleaner UI
-  const formattedProgress = Math.round(progress);
-  
-  // Determine color based on progress (following Law of Prägnanz - simple visual cues)
-  const getProgressColor = () => {
-    if (formattedProgress < 25) return 'bg-red-500';
-    if (formattedProgress < 50) return 'bg-orange-500';
-    if (formattedProgress < 75) return 'bg-yellow-500';
-    return 'bg-emerald-500';
-  };
-
   return (
-    <div className="mt-2 space-y-1">
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Progress</span>
-        <span className={`font-medium ${formattedProgress === 100 ? 'text-emerald-500' : ''}`}>
-          {formattedProgress}%
-        </span>
+    <div className="mt-2">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-xs text-muted-foreground">Progress</span>
+        <span className="text-xs font-medium">{progress}%</span>
       </div>
-      <Progress 
-        value={formattedProgress} 
-        max={100}
-        className="h-1.5 bg-muted/30"
-        indicatorClassName={getProgressColor()}
-      />
+      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary rounded-full"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
     </div>
   );
 };
