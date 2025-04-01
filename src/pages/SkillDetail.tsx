@@ -30,7 +30,8 @@ const SkillDetail: React.FC = () => {
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
 
-  const skill = mockSkills.find(s => s.id === Number(skillId));
+  // Safely find the skill, with fallback
+  const skill = mockSkills ? mockSkills.find(s => s.id === Number(skillId)) : null;
   
   useEffect(() => {
     if (skill && !selectedProficiency) {
@@ -114,7 +115,7 @@ const SkillDetail: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <ChatInterface 
               skillName={skill.name}
-              skillDescription={skill.description}
+              skillDescription={skill.description || ""}
               selectedProficiency={selectedProficiency}
               sources={sources}
               chatMessages={chatMessages}
@@ -125,7 +126,7 @@ const SkillDetail: React.FC = () => {
           <div className="space-y-6">
             <LearningTools 
               skillName={skill.name}
-              skillDescription={skill.description}
+              skillDescription={skill.description || ""}
               selectedProficiency={selectedProficiency}
               sources={sources}
               setChatMessages={setChatMessages}

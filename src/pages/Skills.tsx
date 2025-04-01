@@ -22,12 +22,13 @@ const Skills: React.FC = () => {
   const recommendedCarouselRef = useRef<HTMLDivElement>(null);
   const trendingCarouselRef = useRef<HTMLDivElement>(null);
   
-  // Filter skills based on selected proficiency
-  const filteredSkills = mockSkills.filter(skill => {
+  // Make sure mockSkills is defined and initialize filteredSkills safely
+  const filteredSkills = mockSkills ? mockSkills.filter(skill => {
     const matchesProficiency = proficiency ? skill.proficiency === proficiency : true;
     return matchesProficiency;
-  });
+  }) : [];
   
+  // Safely filter categories
   const roleSkills = filteredSkills.filter(skill => skill.category === "role");
   const recommendedSkills = filteredSkills.filter(skill => skill.category === "recommended");
   const trendingSkills = filteredSkills.filter(skill => skill.category === "trending");
@@ -94,7 +95,7 @@ const Skills: React.FC = () => {
           className="flex overflow-x-auto scrollbar-hide gap-4 pb-4"
           style={{ scrollBehavior: 'smooth' }}
         >
-          {roleSkills.length > 0 ? (
+          {roleSkills && roleSkills.length > 0 ? (
             roleSkills.map((skill) => (
               <SkillBubble 
                 key={skill.id} 
@@ -136,7 +137,7 @@ const Skills: React.FC = () => {
           className="flex overflow-x-auto scrollbar-hide gap-4 pb-4"
           style={{ scrollBehavior: 'smooth' }}
         >
-          {recommendedSkills.length > 0 ? (
+          {recommendedSkills && recommendedSkills.length > 0 ? (
             recommendedSkills.map((skill) => (
               <SkillBubble 
                 key={skill.id} 
@@ -178,7 +179,7 @@ const Skills: React.FC = () => {
           className="flex overflow-x-auto scrollbar-hide gap-4 pb-4"
           style={{ scrollBehavior: 'smooth' }}
         >
-          {trendingSkills.length > 0 ? (
+          {trendingSkills && trendingSkills.length > 0 ? (
             trendingSkills.map((skill) => (
               <SkillBubble 
                 key={skill.id} 

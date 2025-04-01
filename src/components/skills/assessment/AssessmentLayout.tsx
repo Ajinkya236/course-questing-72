@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
 import { SkillBadge } from './types';
@@ -19,13 +19,13 @@ interface AssessmentLayoutProps {
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
   handleBack,
-  skillName,
-  proficiency,
+  skillName = "",
+  proficiency = "",
   children,
   sidebarContent,
-  showBadgeModal,
-  closeBadgeModal,
-  latestBadge
+  showBadgeModal = false,
+  closeBadgeModal = () => {},
+  latestBadge = null
 }) => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -52,11 +52,13 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       </div>
       
       {/* Badge Award Modal */}
-      <BadgeAwardModal 
-        isOpen={showBadgeModal} 
-        onClose={closeBadgeModal} 
-        badge={latestBadge} 
-      />
+      {showBadgeModal && (
+        <BadgeAwardModal 
+          isOpen={showBadgeModal} 
+          onClose={closeBadgeModal} 
+          badge={latestBadge} 
+        />
+      )}
     </div>
   );
 };
