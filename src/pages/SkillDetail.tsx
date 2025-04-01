@@ -8,9 +8,16 @@ import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterfa
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
-import { mockSkills } from '@/data/skillsData';
+import { mockSkills, proficiencyColors } from '@/data/skillsData';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -33,6 +40,14 @@ const SkillDetail: React.FC = () => {
 
   const handleBack = () => {
     navigate('/skills');
+  };
+
+  const handleProficiencyChange = (value: string) => {
+    setSelectedProficiency(value);
+    toast({
+      title: "Proficiency Updated",
+      description: `Proficiency level set to ${value}`,
+    });
   };
 
   const handleSourcesSubmit = () => {
@@ -73,12 +88,27 @@ const SkillDetail: React.FC = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-8">
-        <SkillHeader 
-          skill={skill}
-          proficiency={selectedProficiency}
-          onProficiencyChange={setSelectedProficiency}
-          onBack={handleBack}
-        />
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <SkillHeader 
+            skill={skill}
+            proficiency={selectedProficiency}
+            onBack={handleBack}
+          />
+          
+          <div className="w-full md:w-48">
+            <Select value={selectedProficiency} onValueChange={handleProficiencyChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Set proficiency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Awareness">Awareness</SelectItem>
+                <SelectItem value="Knowledge">Knowledge</SelectItem>
+                <SelectItem value="Skill">Skill</SelectItem>
+                <SelectItem value="Mastery">Mastery</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div className="lg:col-span-2 space-y-6">
