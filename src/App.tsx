@@ -30,6 +30,10 @@ const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
+// Add new Skills pages
+const Skills = lazy(() => import('./pages/Skills'));
+const SkillDetail = lazy(() => import('./pages/SkillDetail'));
+
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminCourses = lazy(() => import('./pages/admin/Courses'));
 const AdminModules = lazy(() => import('./pages/admin/Modules'));
@@ -93,6 +97,13 @@ function App() {
                   <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
                   <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
                   <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+                  
+                  {/* Add new Skills routes */}
+                  <Route path="/skills" element={<PageLayout><Skills /></PageLayout>} />
+                  <Route path="/skills/:skillId" element={<PageLayout><SkillDetail /></PageLayout>} />
+                  <Route path="/skills/role" element={<PageLayout><Skills /></PageLayout>} />
+                  <Route path="/skills/recommended" element={<PageLayout><Skills /></PageLayout>} />
+                  <Route path="/skills/trending" element={<PageLayout><Skills /></PageLayout>} />
                   
                   <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
                   <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />

@@ -19,7 +19,8 @@ import {
   HelpCircle,
   ChevronDown,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  Sparkles
 } from "lucide-react";
 import ThemeSelector from "@/components/ThemeSelector";
 import { AuthContext } from '@/contexts/AuthContext';
@@ -135,6 +136,12 @@ const TopNavigation: React.FC = () => {
                   <Link to="/my-learning" className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
                     <span>My Learning</span>
+                  </Link>
+                </Button>
+                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
+                  <Link to="/skills" className="flex items-center gap-1">
+                    <Sparkles className="h-4 w-4" />
+                    <span>Skills</span>
                   </Link>
                 </Button>
                 <Button variant="ghost" asChild size="sm" className="nav-item text-white">
