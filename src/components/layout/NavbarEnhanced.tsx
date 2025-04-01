@@ -17,7 +17,11 @@ const NavbarEnhanced = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Fix: Improved detection of skills pages and handling of search bar display
+  // Only consider the main path for checking if we're on a skills page
+  const mainPath = location.pathname.split('/')[1];
+  const isSkillsPage = mainPath === 'skills';
+  
+  // Determine which pages should show the skills search
   const isSkillsListPage = location.pathname === '/skills';
   const isSkillDetailPage = /^\/skills\/\d+$/.test(location.pathname);
   const isSkillAssessmentPage = /^\/skills\/\d+\/assessment$/.test(location.pathname);
@@ -42,7 +46,7 @@ const NavbarEnhanced = () => {
             isSkillsPage={showSkillsSearch} 
             onFocus={() => {
               // Only navigate to search if not already on a skills page 
-              if (!isSkillsListPage && !isSkillDetailPage) {
+              if (!isSkillsPage) {
                 navigate('/search');
               }
             }} 
@@ -87,7 +91,7 @@ const NavbarEnhanced = () => {
         onClose={() => setShowMobileMenu(false)}
         navigateToSearch={() => {
           // Only navigate to search if not already on a skills page
-          if (!isSkillsListPage && !isSkillDetailPage) {
+          if (!isSkillsPage) {
             navigate('/search');
           }
         }}

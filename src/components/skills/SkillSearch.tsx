@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -69,23 +68,26 @@ const SkillSearch: React.FC = () => {
     }
   };
 
-  // Fix: Only show results, but don't shift focus to dropdown
+  // Show results but maintain focus on input
   const handleInputFocus = () => {
-    // Only show results if there are any and query is valid
     if (searchResults.length > 0 && searchQuery.trim().length >= 2) {
       setIsOpen(true);
     }
   };
   
-  // Fix: Handle keyboard navigation without shifting focus
+  // Handle keyboard navigation but maintain focus on input
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       handleClearSearch();
     } else if (e.key === 'Enter') {
       // If there are results and dropdown is open, navigate to first result
-      if (searchResults.length > 0 && isOpen) {
+      if (searchResults.length > 0) {
         handleSelectSkill(searchResults[0].id);
       }
+    } else if (e.key === 'ArrowDown' && isOpen && searchResults.length > 0) {
+      // When arrow down is pressed, show results but maintain focus
+      e.preventDefault(); // Prevent default to keep focus on input
+      setIsOpen(true);
     }
   };
 
@@ -105,6 +107,12 @@ const SkillSearch: React.FC = () => {
               onFocus={handleInputFocus}
               onKeyDown={handleInputKeyDown}
               autoComplete="off"
+              // Keep focus on input by preventing default behavior
+              onMouseDown={(e) => {
+                if (e.target === inputRef.current) {
+                  e.stopPropagation();
+                }
+              }}
             />
             {searchQuery && (
               <Button
@@ -119,7 +127,23 @@ const SkillSearch: React.FC = () => {
             )}
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[350px] p-0" align="start">
+        <PopoverContent 
+          className="w-[350px] p-0" 
+          align="start"
+          onInteractOutside={(e) => {
+            // Only close if clicking outside the component
+            if (!triggerRef.current?.contains(e.target as Node)) {
+              setIsOpen(false);
+            }
+          }}
+          onEscapeKeyDown={() => {
+            setIsOpen(false);
+            // Keep focus on input when escape is pressed
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }}
+        >
           <div className="max-h-[400px] overflow-auto">
             {searchResults.length > 0 ? (
               <div>
@@ -133,7 +157,7 @@ const SkillSearch: React.FC = () => {
                       variant="ghost"
                       className="w-full justify-start text-left px-4 py-3 hover:bg-accent rounded-none"
                       onClick={() => handleSelectSkill(skill.id)}
-                      onMouseDown={(e) => e.preventDefault()} // Prevent blur on input
+                      onMouseDown={(e) => e.preventDefault()} // Prevent input blur
                     >
                       <div className="flex flex-col">
                         <span className="font-medium">{skill.name}</span>
