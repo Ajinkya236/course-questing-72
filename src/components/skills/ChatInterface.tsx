@@ -12,9 +12,12 @@ interface ChatInterfaceProps {
   skillDescription: string;
   selectedProficiency: string;
   sources: string;
+  chatMessages: ChatMessage[];
+  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  onToolResponse?: (role: string, content: string) => void;
 }
 
-type ChatMessage = {
+export type ChatMessage = {
   role: string;
   content: string;
 };
@@ -23,16 +26,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   skillName,
   skillDescription,
   selectedProficiency,
-  sources
+  sources,
+  chatMessages,
+  setChatMessages,
+  onToolResponse
 }) => {
   const { toast } = useToast();
   const [userQuery, setUserQuery] = useState<string>("");
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'
-    }
-  ]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { generateResponse } = useGemini();
@@ -65,6 +65,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       
       // Add AI response to chat
       setChatMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
+      
+      // Notify parent component if callback exists
+      if (onToolResponse) {
+        onToolResponse('assistant', result.generatedText);
+      }
     } catch (error) {
       console.error("Error getting response:", error);
       toast({
@@ -83,13 +88,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       e.preventDefault();
       handleSendMessage();
     }
-  };
-
-  const addSystemMessage = (message: string) => {
-    setChatMessages(prev => [
-      ...prev, 
-      {role: 'system', content: message}
-    ]);
   };
 
   return (
@@ -143,4 +141,4 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   );
 };
 
-export { ChatInterface, type ChatMessage };
+export { ChatInterface };

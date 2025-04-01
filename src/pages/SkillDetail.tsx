@@ -57,7 +57,7 @@ const mockSkillsDetailed: Skill[] = [
     id: 7, 
     name: "Cloud Computing", 
     proficiency: "Skill",
-    description: "Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ('the cloud') to offer faster innovation, flexible resources, and economies of scale.",
+    description: 'Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software, analytics, and intelligence—over the Internet ("the cloud") to offer faster innovation, flexible resources, and economies of scale.',
     courses: [13, 22]
   },
   { 
@@ -89,6 +89,7 @@ const SkillDetail: React.FC = () => {
   const { toast } = useToast();
   const [selectedProficiency, setSelectedProficiency] = useState<string>("");
   const [sources, setSources] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
@@ -119,10 +120,6 @@ const SkillDetail: React.FC = () => {
         {role: 'system', content: 'New context sources have been added. The AI will now use this information to provide more relevant responses.'}
       ]);
     }
-  };
-
-  const handleToolResponse = (role: string, content: string) => {
-    setChatMessages(prev => [...prev, { role, content }]);
   };
 
   if (!skill) {
@@ -157,6 +154,8 @@ const SkillDetail: React.FC = () => {
               skillDescription={skill.description}
               selectedProficiency={selectedProficiency}
               sources={sources}
+              chatMessages={chatMessages}
+              setChatMessages={setChatMessages}
             />
           </div>
           
@@ -167,7 +166,9 @@ const SkillDetail: React.FC = () => {
               skillDescription={skill.description}
               selectedProficiency={selectedProficiency}
               sources={sources}
-              onToolResponse={handleToolResponse}
+              setChatMessages={setChatMessages}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
             />
             
             <KnowledgeSources 

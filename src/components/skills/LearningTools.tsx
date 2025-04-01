@@ -12,13 +12,16 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
+import { ChatMessage } from './ChatInterface';
 
 interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
   sources: string;
-  onToolResponse: (responseTitle: string, content: string) => void;
+  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({
@@ -26,10 +29,11 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   skillDescription,
   selectedProficiency,
   sources,
-  onToolResponse
+  setChatMessages,
+  isLoading,
+  setIsLoading
 }) => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { generateResponse } = useGemini();
 
   const handleToolClick = async (tool: string) => {
@@ -76,7 +80,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
     
     try {
       // Notify the user we're generating content
-      onToolResponse("system", `Generating ${responseTitle}...`);
+      setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
       
       // Get response from Gemini
       const result = await generateResponse({
@@ -85,7 +89,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       });
       
       // Add AI response to chat
-      onToolResponse("assistant", `## ${responseTitle}\n\n${result.generatedText}`);
+      setChatMessages(prev => [...prev, {role: 'assistant', content: `## ${responseTitle}\n\n${result.generatedText}`}]);
     } catch (error) {
       console.error("Error getting response:", error);
       toast({
