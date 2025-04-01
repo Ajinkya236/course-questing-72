@@ -15,9 +15,9 @@ import {
   CarouselContent, 
   CarouselItem,
   CarouselPrevious,
-  CarouselNext,
-  CarouselFilters
+  CarouselNext
 } from '@/components/ui/carousel';
+import { CarouselFilters } from '@/components/ui/carousel/carousel-filters';
 
 interface CourseCarouselProps {
   title: string;

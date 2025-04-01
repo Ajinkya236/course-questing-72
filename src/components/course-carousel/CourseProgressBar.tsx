@@ -3,7 +3,7 @@ import React from 'react';
 import { Progress } from '@/components/ui/progress';
 
 interface CourseProgressBarProps {
-  progress: number;
+  progress?: number;
 }
 
 const CourseProgressBar: React.FC<CourseProgressBarProps> = ({ progress }) => {

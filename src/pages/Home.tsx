@@ -1,16 +1,18 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import BannerCarousel from '@/components/BannerCarousel';
-import CourseCarousel from '@/components/course-carousel';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 
-// Import new components
+// Import components
 import SkillsSection from '@/components/homepage/SkillsSection';
 import ActionablesCard from '@/components/homepage/ActionablesCard';
 import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
+
+// Simplified CourseCarousel import to avoid circular dependencies
+import CourseCarousel from '@/components/CourseCarousel';
 
 // Helper function to convert string skills to proper skill objects
 const convertToSkillObjects = (skills: string[]) => {
@@ -68,7 +70,7 @@ const trainingCategories = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const [trainingFilter, setTrainingFilter] = useState('All Categories');
+  const [trainingFilter, setTrainingFilter] = React.useState('All Categories');
   
   return (
     <>

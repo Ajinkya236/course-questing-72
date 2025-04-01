@@ -70,3 +70,5 @@ export function useCourseData(courses: Course[]) {
     getCourseById
   };
 }
+
+export default useCourseData;
