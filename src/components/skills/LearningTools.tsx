@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -48,6 +49,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       return;
     }
     
+    // Handle podcast audio generation
     if (tool === 'podcast-audio' && onGeneratePodcast) {
       onGeneratePodcast();
       return;

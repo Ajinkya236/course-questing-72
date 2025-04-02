@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Clock } from "lucide-react";
+import { Course } from "@/types/course";
 
 export interface CourseProps {
   id: string;
