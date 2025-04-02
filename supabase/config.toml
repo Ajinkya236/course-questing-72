@@ -37,8 +37,6 @@ double_confirm_changes = true
 enable_confirmations = false
 
 [functions]
-# This was incorrectly formatted as an integer
-# Now it's formatted as a map (object)
 port = 9999
 
 [functions.generate-podcast]
