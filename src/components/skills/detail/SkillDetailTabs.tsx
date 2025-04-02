@@ -1,12 +1,12 @@
 
-import React, { useState, useRef } from 'react';
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
-import SkillTabContent from './SkillTabContent';
-import { Source } from '@/components/skills/knowledge/types';
-import TabHeader from './TabHeader';
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatTab from './ChatTab';
-import ShareDialog from './ShareDialog';
+import SkillInformation from './SkillInformation';
+import { ChatMessage } from '@/components/skills/ChatInterface';
+import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
+import LearningTools from '@/components/skills/learning-tools';
+import { Source } from '@/components/skills/knowledge/types';
 
 interface SkillDetailTabsProps {
   activeTab: string;
@@ -31,49 +31,39 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
   isGeneratingPodcast,
   setIsGeneratingPodcast
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  // Use useRef instead of state for the podcast ref to avoid infinite loops
-  const podcastRef = useRef<HTMLDivElement>(null);
-
-  const handleGeneratePodcast = () => {
-    // Switch to chat tab first
-    setActiveTab('chat');
-  };
-
   return (
-    <>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabHeader setShowShareDialog={setShowShareDialog} />
-        
-        <TabsContent value="chat" className="mt-0">
-          <ChatTab
-            skill={skill}
-            sources={sources}
-            setSources={setSources}
-            chatMessages={chatMessages}
-            setChatMessages={setChatMessages}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            onGeneratePodcast={handleGeneratePodcast}
-          />
-        </TabsContent>
-        
-        <TabsContent value="learn" className="mt-0">
-          <SkillTabContent 
-            skill={skill}
-            sources={sources}
-            setSources={setSources}
-          />
-        </TabsContent>
-      </Tabs>
-
-      <ShareDialog 
-        skillName={skill.name}
-        showShareDialog={showShareDialog}
-        setShowShareDialog={setShowShareDialog}
-      />
-    </>
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <TabsList className="grid grid-cols-3 w-full max-w-md mb-4">
+        <TabsTrigger value="chat">Chat</TabsTrigger>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="learn">Learning Tools</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="chat">
+        <ChatTab 
+          skill={skill}
+          chatMessages={chatMessages}
+          setChatMessages={setChatMessages}
+          sources={sources}
+          setSources={setSources}
+          isGeneratingPodcast={isGeneratingPodcast}
+          setIsGeneratingPodcast={setIsGeneratingPodcast}
+        />
+      </TabsContent>
+      
+      <TabsContent value="overview">
+        <SkillInformation skill={skill} />
+      </TabsContent>
+      
+      <TabsContent value="learn">
+        <LearningTools 
+          skillName={skill.name} 
+          skillDescription={skill.description}
+          proficiency={skill.proficiency} 
+          skillId={skill.id}
+        />
+      </TabsContent>
+    </Tabs>
   );
 };
 
