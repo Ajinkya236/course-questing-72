@@ -14,6 +14,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
 import { ChatMessage } from './ChatInterface';
+import { Source } from './knowledge/types';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  sources: string[];
+  sources: string[] | Source[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -77,7 +78,8 @@ const LearningTools: React.FC<LearningToolsProps> = ({
     // Prepare context information
     let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
     if (sources && sources.length > 0) {
-      context += `Additional Context Sources: ${sources.join(", ")}\n`;
+      const sourcesText = sources.map(source => typeof source === 'string' ? source : source.content).join(", ");
+      context += `Additional Context Sources: ${sourcesText}\n`;
     }
     
     let prompt = "";

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,12 +8,13 @@ import { useGemini } from '@/hooks/useGemini';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Source } from './knowledge/types';
 
 interface ChatInterfaceProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  sources: string[];
+  sources: string[] | Source[];
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   onToolResponse?: (role: string, content: string) => void;
@@ -51,7 +51,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const { generateResponse } = useGemini();
 
   useEffect(() => {
-    // Scroll to bottom of chat when new messages appear
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
@@ -97,7 +96,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleSendMessage = async () => {
     if ((!userQuery.trim() && attachments.length === 0)) return;
     
-    // Prepare message with attachments
     const newMessage: ChatMessage = {
       role: 'user',
       content: userQuery,
@@ -111,42 +109,27 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       }));
     }
     
-    // Add user message to chat
     setChatMessages(prev => [...prev, newMessage]);
     
-    // Prepare context for the AI
     let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
     
-    // Add sources to context
     if (sources && sources.length > 0) {
-      context += `Additional Context Sources: ${sources.join(", ")}\n`;
-    }
-    
-    // Add attachments to context
-    if (attachments.length > 0) {
-      context += `User has provided these attachments:\n`;
-      attachments.forEach((att, index) => {
-        if (att.type === 'url') {
-          context += `${index + 1}. URL: ${att.url}\n`;
-        } else {
-          context += `${index + 1}. File: ${att.name} (${att.type})\n`;
-        }
-      });
+      const sourcesText = sources.map(source => 
+        typeof source === 'string' ? source : source.content
+      ).join(", ");
+      context += `Additional Context Sources: ${sourcesText}\n`;
     }
     
     setIsLoading(true);
     
     try {
-      // Get response from Gemini
       const result = await generateResponse({
         prompt: userQuery || "Please analyze the attached content and provide insights related to this skill.",
         context: context
       });
       
-      // Add AI response to chat
       setChatMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
       
-      // Notify parent component if callback exists
       if (onToolResponse) {
         onToolResponse('assistant', result.generatedText);
       }
@@ -247,7 +230,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <div ref={chatEndRef} />
         </div>
         
-        {/* Attachments display */}
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-2">
             {attachments.map((att, idx) => (
@@ -268,7 +250,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         )}
         
-        {/* URL input */}
         {showUrlInput && (
           <div className="flex gap-2 mb-2">
             <Input
