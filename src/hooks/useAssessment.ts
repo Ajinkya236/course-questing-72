@@ -20,7 +20,9 @@ export const useAssessment = (skillId: string | undefined) => {
     questions,
     setQuestions,
     isLoading,
-    generateQuestionsForSkill
+    generationFailed,
+    generateQuestionsForSkill,
+    resetGenerationFailedState
   } = useQuestionGeneration();
   
   const {
@@ -61,6 +63,7 @@ export const useAssessment = (skillId: string | undefined) => {
 
   const resetAssessment = () => {
     setAssessmentScore(null);
+    resetGenerationFailedState();
     if (selectedSkill) {
       generateQuestionsForSkill(selectedSkill);
     }
@@ -84,6 +87,7 @@ export const useAssessment = (skillId: string | undefined) => {
     latestBadge,
     closeBadgeModal,
     PASS_RATE,
+    generationFailed,
     generateQuestionsForSkill,
     submitAssessment,
     resetAssessment

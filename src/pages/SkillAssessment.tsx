@@ -9,6 +9,7 @@ import AssessmentLayout from '@/components/skills/assessment/AssessmentLayout';
 import AssessmentTabs from '@/components/skills/assessment/AssessmentTabs';
 import { Question } from '@/components/skills/assessment/types';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from "@/components/ui/button";
 
 const SkillAssessment: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -33,7 +34,8 @@ const SkillAssessment: React.FC = () => {
     PASS_RATE,
     submitAssessment,
     resetAssessment,
-    generateQuestionsForSkill
+    generateQuestionsForSkill,
+    generationFailed
   } = useAssessment(skillId);
 
   useEffect(() => {
@@ -145,23 +147,40 @@ const SkillAssessment: React.FC = () => {
           )
         }
       >
-        <AssessmentTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isLoading={isLoading}
-          assessmentScore={assessmentScore}
-          questions={questions}
-          currentQuestionIndex={currentQuestionIndex}
-          totalQuestions={questions.length}
-          handleAnswer={handleAnswer}
-          handleNextQuestion={handleNextQuestion}
-          handlePreviousQuestion={handlePreviousQuestion}
-          handleRetryAssessment={handleRetryAssessment}
-          handleBack={handleBack}
-          previousAttempts={previousAttempts}
-          passRate={PASS_RATE}
-          onRetryGenerate={handleRetryGenerateQuestions}
-        />
+        {generationFailed ? (
+          <div className="flex flex-col items-center justify-center p-8 space-y-4">
+            <h3 className="text-lg font-medium">Failed to generate assessment</h3>
+            <p className="text-center text-muted-foreground">
+              We couldn't generate an assessment for this skill. Please try again later.
+            </p>
+            <div className="flex space-x-4">
+              <Button variant="outline" onClick={handleBack}>
+                Go Back
+              </Button>
+              <Button onClick={handleRetryGenerateQuestions}>
+                Try Again
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <AssessmentTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isLoading={isLoading}
+            assessmentScore={assessmentScore}
+            questions={questions}
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            handleAnswer={handleAnswer}
+            handleNextQuestion={handleNextQuestion}
+            handlePreviousQuestion={handlePreviousQuestion}
+            handleRetryAssessment={handleRetryAssessment}
+            handleBack={handleBack}
+            previousAttempts={previousAttempts}
+            passRate={PASS_RATE}
+            onRetryGenerate={handleRetryGenerateQuestions}
+          />
+        )}
       </AssessmentLayout>
     </PageLayout>
   );

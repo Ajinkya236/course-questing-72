@@ -1,115 +1,148 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Headphones, AlertCircle } from 'lucide-react';
+import { Mic, Play, Pause, SkipForward, Volume2, Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Spinner } from '@/components/ui/spinner';
-import { generatePodcast } from './PodcastUtils';
 import AudioPlayer from './AudioPlayer';
 
-export interface PodcastPlayerProps {
+interface PodcastPlayerProps {
   skillName: string;
   skillDescription: string;
   proficiency: string;
 }
 
-const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
-  skillName,
+const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ 
+  skillName, 
   skillDescription,
-  proficiency
+  proficiency 
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [transcript, setTranscript] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [generationFailed, setGenerationFailed] = useState(false);
   const { toast } = useToast();
 
   const handleGeneratePodcast = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await generatePodcast(skillName, skillDescription, proficiency);
-
-      if (response.error) {
-        setError(response.error);
-        toast({
-          title: "Failed to generate podcast",
-          description: response.error,
-          variant: "destructive",
-        });
-      } else if (response.audioUrl) {
-        setAudioUrl(response.audioUrl);
-        setTranscript(response.transcript || null);
-        toast({
-          title: "Podcast generated",
-          description: "Your 15-25 minute microlearning podcast is ready to play",
-          variant: "default",
-        });
-      }
-    } catch (err: any) {
-      const errorMessage = err.message || "An unexpected error occurred";
-      setError(errorMessage);
+    if (generationFailed) {
       toast({
-        title: "Something went wrong",
-        description: errorMessage,
+        title: "Generation previously failed",
+        description: "Please refresh the page and try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (isGenerating) {
+      toast({
+        title: "Generation in progress",
+        description: "Please wait for the current generation to complete.",
+        variant: "default",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      // Create a simulated podcast title based on skill name
+      const podcastTitle = `Learning ${skillName} at ${proficiency} level`;
+      
+      // Call the generate-podcast edge function
+      const { data, error } = await supabase.functions.invoke('generate-podcast', {
+        body: {
+          title: podcastTitle,
+          description: skillDescription,
+          skillName,
+          proficiency,
+          format: "beginner_friendly",
+          duration: "short",
+          voice: "en-US-Neural2-F" // Female voice
+        },
+      });
+      
+      if (error) {
+        throw new Error(`Failed to generate podcast: ${error.message}`);
+      }
+      
+      if (!data || !data.audioUrl) {
+        throw new Error("No audio URL returned from podcast generator");
+      }
+      
+      setAudioUrl(data.audioUrl);
+      
+      toast({
+        title: "Podcast generated",
+        description: "Your learning podcast is ready to play.",
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error("Podcast generation error:", error);
+      setGenerationFailed(true);
+      toast({
+        title: "Failed to generate podcast",
+        description: error.message || "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-medium flex items-center gap-2">
-          <Headphones className="h-5 w-5 text-primary" />
-          Microlearning Podcast (15-25 min)
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {audioUrl ? (
-          <div className="space-y-4">
-            <AudioPlayer 
-              audioUrl={audioUrl} 
-              title={`${skillName} - Learning Podcast`} 
-              subtitle={`${proficiency} level overview (15-25 min)`}
-            />
-            
-            {transcript && (
-              <div className="mt-4">
-                <details className="text-sm">
-                  <summary className="font-medium cursor-pointer hover:text-primary">Show Transcript</summary>
-                  <div className="mt-2 p-4 bg-muted rounded-md max-h-[300px] overflow-y-auto whitespace-pre-line">
-                    {transcript}
-                  </div>
-                </details>
-              </div>
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Skill Learning Podcast</h3>
+            {!audioUrl && (
+              <Button 
+                onClick={handleGeneratePodcast}
+                disabled={isGenerating || generationFailed}
+                className="flex items-center gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> 
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-4 w-4" /> 
+                    Generate Podcast
+                  </>
+                )}
+              </Button>
             )}
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-sm text-muted-foreground text-center">
-              Generate a 15-25 minute podcast explaining the key concepts of {skillName} at {proficiency} level.
-            </p>
-            {error && (
-              <div className="flex items-center gap-2 text-destructive text-sm">
-                <AlertCircle className="h-4 w-4" />
-                <span>{error}</span>
-              </div>
-            )}
-            <Button
-              onClick={handleGeneratePodcast}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? <Spinner className="mr-2" /> : <Headphones className="mr-2 h-4 w-4" />}
-              Generate Podcast
-            </Button>
-          </div>
-        )}
+          
+          {audioUrl ? (
+            <AudioPlayer audioUrl={audioUrl} />
+          ) : (
+            <div className="bg-muted rounded-md p-6 text-center">
+              {isGenerating ? (
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p>Creating your personalized learning podcast...</p>
+                  <p className="text-sm text-muted-foreground">This may take a minute or two</p>
+                </div>
+              ) : generationFailed ? (
+                <div>
+                  <p>Failed to generate podcast. Please try again later.</p>
+                </div>
+              ) : (
+                <div>
+                  <p>Generate a learning podcast to help you master {skillName}.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    The podcast will cover key concepts and practical applications 
+                    at the {proficiency} level.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

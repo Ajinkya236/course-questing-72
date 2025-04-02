@@ -13,6 +13,7 @@ type GenerateResponseParams = {
 export function useGemini() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [apiCallFailed, setApiCallFailed] = useState(false);
 
   const generateResponse = async ({ 
     prompt, 
@@ -20,6 +21,11 @@ export function useGemini() {
     model = 'gemini-1.5-pro',
     structuredFormat = true
   }: GenerateResponseParams) => {
+    // If API call previously failed, don't attempt again
+    if (apiCallFailed) {
+      return { generatedText: "Previous request failed. Please try again later or refresh the page." };
+    }
+    
     // If already loading, don't make another request
     if (loading) {
       toast({
@@ -45,15 +51,17 @@ export function useGemini() {
       });
 
       if (error) {
+        setApiCallFailed(true);
         throw new Error(error.message);
       }
 
       return data || { generatedText: "Sorry, I couldn't generate a response at this time." };
     } catch (err: any) {
       setError(err);
+      setApiCallFailed(true);
       toast({
         title: "Error generating response",
-        description: err.message || "An unexpected error occurred.",
+        description: err.message || "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
       return { generatedText: "Sorry, there was an error generating a response." };
@@ -62,9 +70,16 @@ export function useGemini() {
     }
   };
 
+  // Reset API failure state
+  const resetFailureState = () => {
+    setApiCallFailed(false);
+  };
+
   return {
     loading,
     error,
+    apiCallFailed,
     generateResponse,
+    resetFailureState
   };
 }

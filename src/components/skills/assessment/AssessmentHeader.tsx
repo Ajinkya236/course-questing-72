@@ -1,9 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Award, ChevronLeft } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import { proficiencyColors } from '@/data/skillsData';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface AssessmentHeaderProps {
   handleBack: () => void;
@@ -12,64 +18,64 @@ interface AssessmentHeaderProps {
   onProficiencyChange?: (value: string) => void;
 }
 
-const AssessmentHeader: React.FC<AssessmentHeaderProps> = ({ 
-  handleBack, 
-  skillName,
-  proficiency,
+const PROFICIENCIES = ["Awareness", "Basic", "Intermediate", "Advanced", "Expert"];
+
+const AssessmentHeader: React.FC<AssessmentHeaderProps> = ({
+  handleBack,
+  skillName = "Unknown Skill",
+  proficiency = "Basic",
   onProficiencyChange
 }) => {
-  // Proficiency levels for the selection
-  const proficiencyLevels = ['Awareness', 'Knowledge', 'Skill', 'Mastery'];
-
   return (
     <div className="mb-6">
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        onClick={handleBack}
-        className="mb-4 flex items-center"
-      >
-        <ChevronLeft className="h-4 w-4 mr-1" />
-        Back to Skill Details
-      </Button>
+      <div className="flex justify-between items-center mb-6">
+        <Button variant="outline" size="sm" onClick={handleBack} className="flex items-center gap-2">
+          <ChevronLeft className="h-4 w-4" />
+          Back to Skill
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          {onProficiencyChange && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  Change Level <ChevronDown className="h-3 w-3 opacity-70" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {PROFICIENCIES.map((level) => (
+                  <DropdownMenuItem
+                    key={level}
+                    onClick={() => onProficiencyChange(level)}
+                    className="flex items-center gap-2"
+                  >
+                    <div 
+                      className={`h-2 w-2 rounded-full`}
+                      style={{ backgroundColor: proficiencyColors[level.toLowerCase()] }}
+                    />
+                    {level}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </div>
       
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
-            <Award className="h-6 w-6 mr-2 text-primary" />
-            {skillName} Assessment
-          </h1>
-          
-          {onProficiencyChange ? (
-            <div className="mt-2">
-              <Tabs 
-                value={proficiency} 
-                onValueChange={onProficiencyChange}
-              >
-                <TabsList className="bg-transparent h-auto gap-2 p-1">
-                  {proficiencyLevels.map((level) => (
-                    <TabsTrigger
-                      key={level}
-                      value={level}
-                      className={`px-3 py-1 rounded-full text-xs ${
-                        proficiency === level 
-                          ? proficiencyColors[level as keyof typeof proficiencyColors] 
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {level}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            </div>
-          ) : proficiency ? (
-            <div className="mt-2">
-              <span className={`inline-block px-3 py-1 rounded-full text-xs ${proficiencyColors[proficiency as keyof typeof proficiencyColors] || 'bg-gray-100'}`}>
-                {proficiency} Level
-              </span>
-            </div>
-          ) : null}
+      <div>
+        <h1 className="text-2xl font-bold">{skillName} Skill Assessment</h1>
+        <div className="flex items-center gap-2 mt-2">
+          <div 
+            className={`px-3 py-1 rounded-full text-sm font-medium ${proficiency.toLowerCase() === proficiency ? 'bg-[#1A1F2C] text-white' : ''}`}
+            style={{ 
+              backgroundColor: proficiency ? 
+                (proficiency === proficiency ? '#1A1F2C' : proficiencyColors[proficiency.toLowerCase()]) : 
+                '#1A1F2C',
+              color: proficiency === proficiency ? 'white' : 'inherit'
+            }}
+          >
+            {proficiency || "Basic"} Level
+          </div>
         </div>
       </div>
     </div>

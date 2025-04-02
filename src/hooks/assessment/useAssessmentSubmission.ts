@@ -9,6 +9,7 @@ import { useBadgeManagement } from './useBadgeManagement';
 export function useAssessmentSubmission(skillId: number | undefined, PASS_RATE: number) {
   const [assessmentScore, setAssessmentScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionFailed, setSubmissionFailed] = useState(false);
   const { toast } = useToast();
   const { saveAttempt } = useAttemptManagement(skillId);
   const { awardBadge } = useBadgeManagement();
@@ -17,6 +18,16 @@ export function useAssessmentSubmission(skillId: number | undefined, PASS_RATE: 
     assessmentQuestions: Question[], 
     selectedSkill: any | null
   ) => {
+    // Prevent repeated submissions if previous one failed
+    if (submissionFailed) {
+      toast({
+        title: "Submission error",
+        description: "Previous submission failed. Please refresh the page and try again.",
+        variant: "destructive",
+      });
+      return { score: null, questions: assessmentQuestions };
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -41,97 +52,86 @@ export function useAssessmentSubmission(skillId: number | undefined, PASS_RATE: 
       });
       
       if (error) {
+        setSubmissionFailed(true);
         throw new Error(`Error evaluating assessment: ${error.message}`);
       }
       
       let score = 0;
       let feedback: any[] = [];
-      let updatedQuestions = [...assessmentQuestions];
       
       if (data) {
         score = data.score || 0;
         feedback = data.feedback || [];
 
         // Add explanations to questions
-        updatedQuestions = assessmentQuestions.map(q => {
+        const updatedQuestions = assessmentQuestions.map(q => {
           const feedbackItem = feedback.find(f => f.questionId === q.id);
           return {
             ...q,
             explanation: feedbackItem?.comment || "No explanation provided."
           };
         });
-      } else {
-        // If data parsing fails, just set a random score between 60-95
-        score = Math.floor(Math.random() * 36) + 60;
-      }
-      
-      setAssessmentScore(score);
-      
-      // Save the attempt
-      const attempt: AssessmentAttempt = {
-        id: `attempt-${Date.now()}`,
-        date: new Date().toISOString(),
-        score: score,
-        skillId: selectedSkill.id,
-        skillName: selectedSkill.name,
-        questions: updatedQuestions,
-        passed: score >= PASS_RATE
-      };
-      
-      saveAttempt(attempt);
-      
-      // If passed, award a badge
-      if (attempt.passed) {
-        const newBadge = awardBadge(selectedSkill.id, selectedSkill.name, selectedSkill.proficiency);
-        if (newBadge) {
-          // Update the attempt to show badge was awarded
-          attempt.badgeAwarded = true;
-        }
-      }
-      
-      toast({
-        title: "Assessment Completed",
-        description: `Your score: ${score}% (${score >= PASS_RATE ? 'Passed' : 'Failed'})`,
-      });
-
-      return { score, questions: updatedQuestions };
-    } catch (error) {
-      console.error("Error evaluating assessment:", error);
-      toast({
-        title: "Error",
-        description: "Failed to evaluate assessment. Please try again.",
-        variant: "destructive",
-      });
-      
-      // Fallback to a default score
-      const defaultScore = 75;
-      setAssessmentScore(defaultScore);
-      
-      // Save the attempt even with the error
-      if (selectedSkill) {
+        
+        setAssessmentScore(score);
+        
+        // Save the attempt
         const attempt: AssessmentAttempt = {
           id: `attempt-${Date.now()}`,
           date: new Date().toISOString(),
-          score: defaultScore,
+          score: score,
           skillId: selectedSkill.id,
           skillName: selectedSkill.name,
-          questions: assessmentQuestions,
-          passed: defaultScore >= PASS_RATE
+          questions: updatedQuestions,
+          passed: score >= PASS_RATE
         };
         
         saveAttempt(attempt);
+        
+        // If passed, award a badge
+        if (attempt.passed) {
+          const newBadge = awardBadge(selectedSkill.id, selectedSkill.name, selectedSkill.proficiency);
+          if (newBadge) {
+            // Update the attempt to show badge was awarded
+            attempt.badgeAwarded = true;
+          }
+        }
+        
+        toast({
+          title: "Assessment Completed",
+          description: `Your score: ${score}% (${score >= PASS_RATE ? 'Passed' : 'Failed'})`,
+        });
+
+        return { score, questions: updatedQuestions };
+      } else {
+        setSubmissionFailed(true);
+        throw new Error("No data returned from assessment evaluation");
       }
+    } catch (error: any) {
+      console.error("Error evaluating assessment:", error);
+      setSubmissionFailed(true);
+      toast({
+        title: "Error",
+        description: "Failed to evaluate assessment. Please try again later.",
+        variant: "destructive",
+      });
       
-      return { score: defaultScore, questions: assessmentQuestions };
+      return { score: null, questions: assessmentQuestions };
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Reset submission failed state
+  const resetSubmissionFailedState = () => {
+    setSubmissionFailed(false);
   };
 
   return {
     assessmentScore,
     setAssessmentScore,
     isSubmitting,
-    submitAssessment
+    submissionFailed,
+    submitAssessment,
+    resetSubmissionFailedState
   };
 }
