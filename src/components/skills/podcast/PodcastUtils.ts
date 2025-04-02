@@ -41,21 +41,41 @@ export const generatePodcast = async (
 
     if (error) {
       console.error("Error generating podcast:", error);
+      toast({
+        title: "Failed to generate podcast",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
       return { error: error.message || "Failed to generate podcast" };
     }
 
     console.log("Received podcast data:", data);
 
     if (data && data.audioUrl) {
+      toast({
+        title: "Podcast generated successfully",
+        description: "Your learning podcast is ready to play",
+        variant: "default",
+      });
       return { 
         audioUrl: data.audioUrl,
         transcript: data.transcript || null
       };
     }
 
+    toast({
+      title: "Error generating podcast",
+      description: "No audio was generated. Please try again later.",
+      variant: "destructive",
+    });
     return { error: "No audio was generated" };
   } catch (err: any) {
     console.error("Unexpected error in podcast generation:", err);
+    toast({
+      title: "Error generating podcast",
+      description: err.message || "An unexpected error occurred",
+      variant: "destructive",
+    });
     return { error: err.message || "An unexpected error occurred" };
   } finally {
     isGeneratingPodcast = false;

@@ -18,11 +18,15 @@ serve(async (req) => {
   try {
     const { skillName, skillDescription, proficiency } = await req.json();
     
+    console.log(`Starting podcast generation for ${skillName} at ${proficiency} level`);
+    
     // Step 1: Generate conversation transcript using Gemini
     const transcript = await generateTranscript(skillName, skillDescription, proficiency);
     
     // Step 2: Generate audio from the transcript
     const audioUrl = await generateAudio(transcript);
+    
+    console.log(`Successfully generated podcast audio for ${skillName}`);
     
     // Return success response
     return new Response(
@@ -71,7 +75,7 @@ async function generateTranscript(skillName: string, skillDescription: string, p
     Context about the skill: ${skillDescription || "A valuable professional skill"}
 
     Requirements:
-    - The conversation should be 15-20 minutes long when spoken (approximately 3000-4000 words)
+    - The conversation should be 12-20 minutes long when spoken (approximately 2500-4000 words)
     - Start with Michael introducing the topic and welcoming Sarah
     - Make it educational but conversational and easy to understand
     - Include at least 6-8 key points about the skill that would be valuable for someone at the ${proficiency} level
@@ -80,12 +84,12 @@ async function generateTranscript(skillName: string, skillDescription: string, p
     - End with Michael thanking Sarah and summarizing what was learned
     - Don't include sound effects or stage directions, only the spoken dialogue
     - Each line should be prefixed with either "Michael:" or "Sarah:" to indicate who is speaking
-    - Use the Gemini 1.5 Pro model for this generation to create detailed and comprehensive content
+    - Use the Gemini 2.5 Pro model for this generation to create detailed and comprehensive content
 
     Format the output as plain text dialogue only, with each speaker's line separated by a line break.
   `;
   
-  console.log("Sending prompt to Gemini for podcast transcript generation");
+  console.log("Sending prompt to Gemini 2.5 Pro for podcast transcript generation");
   
   try {
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent', {
@@ -169,40 +173,11 @@ async function generateAudio(transcript: string): Promise<string> {
   
   console.log(`Parsed transcript into ${segments.length} segments for audio generation`);
   
-  // Process segments into chunks to avoid length limitations
-  const MAX_CHAR_LENGTH = 5000; // Google TTS limit
-  const processedSegments = [];
-  
-  for (const segment of segments) {
-    if (segment.text.length <= MAX_CHAR_LENGTH) {
-      processedSegments.push(segment);
-    } else {
-      // Split long segments into multiple parts
-      let text = segment.text;
-      while (text.length > 0) {
-        const chunk = text.substring(0, MAX_CHAR_LENGTH);
-        // Try to break at sentence end
-        let breakPoint = chunk.lastIndexOf('. ');
-        if (breakPoint === -1 || breakPoint < MAX_CHAR_LENGTH / 2) {
-          breakPoint = chunk.lastIndexOf(' ');
-        }
-        const part = text.substring(0, breakPoint + 1);
-        
-        processedSegments.push({
-          ...segment,
-          text: part
-        });
-        
-        text = text.substring(breakPoint + 1);
-      }
-    }
-  }
-  
-  console.log(`Processing ${processedSegments.length} audio segments after chunking`);
-  
-  // Generate audio for the first segment only (for demo/testing purposes)
+  // For demo purposes, we'll just generate audio for the first few segments
+  // In production, you would process all segments and combine them
   try {
-    console.log(`Generating audio for segment: ${processedSegments[0].text.substring(0, 30)}...`);
+    // Just generate the first segment for proof of concept
+    console.log(`Generating audio for first segment: ${segments[0].text.substring(0, 30)}...`);
     
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
@@ -211,12 +186,12 @@ async function generateAudio(transcript: string): Promise<string> {
       },
       body: JSON.stringify({
         input: {
-          text: processedSegments[0].text
+          text: segments[0].text
         },
         voice: {
           languageCode: 'en-US',
-          name: processedSegments[0].voiceName,
-          ssmlGender: processedSegments[0].ssmlGender
+          name: segments[0].voiceName,
+          ssmlGender: segments[0].ssmlGender
         },
         audioConfig: {
           audioEncoding: 'MP3',

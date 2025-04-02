@@ -11,16 +11,6 @@ export function useQuestionGeneration() {
   const { toast } = useToast();
   
   const generateQuestionsForSkill = async (skill: any) => {
-    // If generation already failed, prevent repeated attempts
-    if (generationFailed) {
-      toast({
-        title: "Assessment generation failed",
-        description: "Please refresh the page and try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     // If already loading, prevent duplicate requests
     if (isLoading) {
       toast({
@@ -32,6 +22,7 @@ export function useQuestionGeneration() {
     }
     
     setIsLoading(true);
+    setGenerationFailed(false);
     console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
     
     try {
@@ -61,13 +52,11 @@ export function useQuestionGeneration() {
       
       if (error) {
         console.error("Error calling skill-assessment:", error);
-        setGenerationFailed(true);
         throw new Error(`Error calling skill-assessment: ${error.message}`);
       }
       
       if (!data) {
         console.error("No data returned from skill-assessment function");
-        setGenerationFailed(true);
         throw new Error("No data returned from assessment generator");
       }
       
@@ -78,7 +67,6 @@ export function useQuestionGeneration() {
         setQuestions(data.questions);
       } else {
         console.error("Invalid response format from assessment generator:", data);
-        setGenerationFailed(true);
         throw new Error("Invalid response format from assessment generator");
       }
     } catch (error: any) {

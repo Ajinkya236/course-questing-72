@@ -1,10 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { Mic, Play, Pause, SkipForward, Volume2, Loader2 } from 'lucide-react';
+import { Mic, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import AudioPlayer from './AudioPlayer';
 import { generatePodcast } from './PodcastUtils';
@@ -24,19 +22,10 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [generationFailed, setGenerationFailed] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleGeneratePodcast = async () => {
-    if (generationFailed) {
-      toast({
-        title: "Generation previously failed",
-        description: "Please refresh the page and try again later.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     if (isGenerating) {
       toast({
         title: "Generation in progress",
@@ -47,34 +36,25 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     }
 
     setIsGenerating(true);
+    setErrorMessage(null);
     
     try {
       // Generate podcast via edge function
       const result = await generatePodcast(skillName, skillDescription, proficiency);
       
       if (result.error) {
-        throw new Error(result.error);
+        setErrorMessage(result.error);
+        return;
       }
       
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
-        
-        toast({
-          title: "Podcast generated",
-          description: "Your learning podcast is ready to play.",
-          variant: "default",
-        });
       } else {
-        throw new Error("No audio URL was returned");
+        setErrorMessage("No audio URL was returned");
       }
     } catch (error: any) {
       console.error("Podcast generation error:", error);
-      setGenerationFailed(true);
-      toast({
-        title: "Failed to generate podcast",
-        description: error.message || "An unexpected error occurred. Please try again later.",
-        variant: "destructive",
-      });
+      setErrorMessage(error.message || "Failed to generate podcast");
     } finally {
       setIsGenerating(false);
     }
@@ -89,7 +69,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
             {!audioUrl && (
               <Button 
                 onClick={handleGeneratePodcast}
-                disabled={isGenerating || generationFailed}
+                disabled={isGenerating}
                 className="flex items-center gap-2"
               >
                 {isGenerating ? (
@@ -121,9 +101,10 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                   <p>Creating your personalized learning podcast...</p>
                   <p className="text-sm text-muted-foreground">This may take a minute or two</p>
                 </div>
-              ) : generationFailed ? (
+              ) : errorMessage ? (
                 <div>
-                  <p>Failed to generate podcast. Please try again later.</p>
+                  <p className="text-destructive">{errorMessage}</p>
+                  <Button onClick={handleGeneratePodcast} className="mt-4">Try Again</Button>
                 </div>
               ) : (
                 <div>
