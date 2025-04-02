@@ -36,9 +36,15 @@ const SkillRelatedList: React.FC<SkillRelatedListProps> = ({
     <div className="space-y-3">
       {relatedSkills.map(relatedSkill => {
         // Get the icon component from lucide-react
-        const IconComponent = relatedSkill.icon && 
-          (LucideIcons as Record<string, React.ComponentType<any>>)[relatedSkill.icon] || 
-          Zap;
+        let IconComponent = Zap; // Default icon
+        
+        if (relatedSkill.icon && typeof relatedSkill.icon === 'string') {
+          // Check if the icon exists in LucideIcons
+          const IconFromLibrary = (LucideIcons as any)[relatedSkill.icon];
+          if (IconFromLibrary) {
+            IconComponent = IconFromLibrary;
+          }
+        }
         
         return (
           <Link 
