@@ -7,6 +7,7 @@ import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
 import { ensureCompleteCourseArray } from '@/utils/courseUtils';
+import { CourseSkill } from '@/types/course';
 
 // Import new components
 import SkillsSection from '@/components/homepage/SkillsSection';
@@ -77,7 +78,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Leadership",
-    skill: "Leadership",
+    skills: [{ name: "Leadership", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -90,7 +91,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.8,
     isBookmarked: true,
     trainingCategory: "Soft Skills",
-    skill: "Communication",
+    skills: [{ name: "Communication", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -103,7 +104,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.7,
     isBookmarked: false,
     trainingCategory: "Management",
-    skill: "Project Management",
+    skills: [{ name: "Project Management", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -116,7 +117,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Leadership",
-    skill: "Decision Making",
+    skills: [{ name: "Decision Making", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -129,7 +130,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Management",
-    skill: "Strategic Planning",
+    skills: [{ name: "Strategic Planning", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -142,7 +143,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Soft Skills",
-    skill: "Conflict Resolution",
+    skills: [{ name: "Conflict Resolution", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -155,7 +156,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.9,
     isBookmarked: false,
     trainingCategory: "Leadership",
-    skill: "Team Building",
+    skills: [{ name: "Team Building", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -168,7 +169,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.7,
     isBookmarked: true,
     trainingCategory: "Management",
-    skill: "Problem Solving",
+    skills: [{ name: "Problem Solving", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -181,7 +182,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.8,
     isBookmarked: false,
     trainingCategory: "Soft Skills",
-    skill: "Time Management",
+    skills: [{ name: "Time Management", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   },
   {
@@ -194,7 +195,7 @@ const forYourRoleCourses = ensureCompleteCourseArray([
     rating: 4.6,
     isBookmarked: true,
     trainingCategory: "Leadership",
-    skill: "Delegation",
+    skills: [{ name: "Delegation", proficiency: "Advanced" }],
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   }
 ]);
