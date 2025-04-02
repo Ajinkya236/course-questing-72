@@ -38,9 +38,9 @@ export interface Course {
   previewUrl?: string;
   videoUrl?: string;
   thumbnail?: string;
-  learningObjectives: string[];
-  skills: CourseSkill[];
-  certificates: string[];
+  learningObjectives?: string[];
+  skills?: CourseSkill[];
+  certificates?: string[];
   
   // Additional properties needed by various components
   level?: string;

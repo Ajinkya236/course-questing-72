@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockCourses } from '@/data/mockCoursesData';
+import { ensureCompleteCourseArray } from '@/utils/courseUtils';
 
 // Import new components
 import SkillsSection from '@/components/homepage/SkillsSection';
@@ -14,40 +15,48 @@ import RewardsSummary from '@/components/homepage/RewardsSummary';
 import DomainCatalog from '@/components/homepage/DomainCatalog';
 
 // Filter courses and add video URLs and properly formatted images
-const continueLearningCourses = mockCourses
-  .filter(course => course.status === 'in-progress')
-  .slice(0, 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://source.unsplash.com/random/800x450/?coding,tech,${Math.random()}`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    progress: Math.floor(Math.random() * 80) + 10
-  }));
+const continueLearningCourses = ensureCompleteCourseArray(
+  mockCourses
+    .filter(course => course.status === 'in-progress')
+    .slice(0, 12)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://source.unsplash.com/random/800x450/?coding,tech,${Math.random()}`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      progress: Math.floor(Math.random() * 80) + 10
+    }))
+);
 
-const assignedCourses = mockCourses
-  .filter(course => course.status === 'assigned')
-  .slice(0, 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://source.unsplash.com/random/800x450/?business,office,${Math.random()}`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
-  }));
+const assignedCourses = ensureCompleteCourseArray(
+  mockCourses
+    .filter(course => course.status === 'assigned')
+    .slice(0, 12)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://source.unsplash.com/random/800x450/?business,office,${Math.random()}`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+    }))
+);
 
-const chosenForYou = mockCourses
-  .filter((_, idx) => idx < 12)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://source.unsplash.com/random/800x450/?learning,education,${Math.random()}`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
-  }));
+const chosenForYou = ensureCompleteCourseArray(
+  mockCourses
+    .filter((_, idx) => idx < 12)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://source.unsplash.com/random/800x450/?learning,education,${Math.random()}`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    }))
+);
 
-const basedOnInterest = mockCourses
-  .filter((_, idx) => idx >= 12 && idx < 24)
-  .map(course => ({
-    ...course,
-    imageUrl: `https://source.unsplash.com/random/800x450/?study,library,${Math.random()}`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
-  }));
+const basedOnInterest = ensureCompleteCourseArray(
+  mockCourses
+    .filter((_, idx) => idx >= 12 && idx < 24)
+    .map(course => ({
+      ...course,
+      imageUrl: `https://source.unsplash.com/random/800x450/?study,library,${Math.random()}`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+    }))
+);
 
 // New skills for your role courses - with job role specific skills
 const forYourRoleSkills = [
@@ -57,7 +66,7 @@ const forYourRoleSkills = [
 ];
 
 // Generate course data specifically for "For Your Role" section with skills
-const forYourRoleCourses = [
+const forYourRoleCourses = ensureCompleteCourseArray([
   {
     id: "role-course-001",
     title: "Leadership Masterclass: Advanced Techniques",
@@ -188,20 +197,22 @@ const forYourRoleCourses = [
     skill: "Delegation",
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
   }
-];
+]);
 
-const trendingCourses = [...mockCourses]
-  .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-  .slice(0, 12)
-  .map((course, idx) => ({
-    ...course,
-    imageUrl: `https://source.unsplash.com/random/800x450/?trending,popular,${Math.random()}`,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    title: `${idx + 1}. ${course.title}`
-  }));
+const trendingCourses = ensureCompleteCourseArray(
+  [...mockCourses]
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    .slice(0, 12)
+    .map((course, idx) => ({
+      ...course,
+      imageUrl: `https://source.unsplash.com/random/800x450/?trending,popular,${Math.random()}`,
+      videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+      title: `${idx + 1}. ${course.title}`
+    }))
+);
 
 // New popular with similar users courses with realistic data
-const popularWithSimilarUsers = [
+const popularWithSimilarUsers = ensureCompleteCourseArray([
   {
     id: "similar-course-001",
     title: "Big Data Analytics for Managers",
@@ -322,7 +333,7 @@ const popularWithSimilarUsers = [
     trainingCategory: "HR",
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
   }
-];
+]);
 
 // Mock banner data for BannerCarousel including video banner
 const mockBanners = [
