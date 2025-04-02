@@ -5,6 +5,7 @@ import LearningTools from '@/components/skills/LearningTools';
 import ChatInterface from '@/components/skills/ChatInterface';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
+import { Source } from '@/components/skills/knowledge/types';
 
 interface SkillTabContentProps {
   activeTab: string;
@@ -12,8 +13,8 @@ interface SkillTabContentProps {
   skillDescription: string;
   skillId: number;
   proficiency: string;
-  sources: string[];
-  setSources: React.Dispatch<React.SetStateAction<string[]>>;
+  sources: string[] | Source[];
+  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   setActiveTab: (tab: string) => void;
@@ -51,7 +52,7 @@ const SkillTabContent: React.FC<SkillTabContentProps> = ({
         />
         <KnowledgeSources 
           sources={sources}
-          setSources={setSources as React.Dispatch<React.SetStateAction<string[] | import('@/components/skills/knowledge/types').Source[]>>}
+          setSources={setSources}
           onSubmit={() => {}}
           minimal={true}
         />

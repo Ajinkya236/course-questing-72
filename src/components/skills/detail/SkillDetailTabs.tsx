@@ -2,13 +2,14 @@
 import React from 'react';
 import { ChatMessage } from '@/components/skills/ChatInterface';
 import SkillTabContent from './SkillTabContent';
+import { Source } from '@/components/skills/knowledge/types';
 
 interface SkillDetailTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   skill: any;
-  sources: string[];
-  setSources: React.Dispatch<React.SetStateAction<string[]>>;
+  sources: string[] | Source[];
+  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isGeneratingPodcast: boolean;

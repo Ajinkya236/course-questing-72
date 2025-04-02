@@ -94,7 +94,7 @@ const SkillAssessment: React.FC = () => {
       ? { ...selectedSkill, proficiency: customProficiency }
       : selectedSkill;
       
-    await submitAssessment(questions, skillToSubmit);
+    await submitAssessment(questions);
   };
 
   const handleRetryAssessment = () => {
