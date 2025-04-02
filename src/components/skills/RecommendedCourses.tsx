@@ -46,7 +46,6 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
           <CourseCarousel 
             title="" 
             courses={courses}
-            hideHeader={true}
           />
         ) : (
           <div className="text-center py-8 text-muted-foreground">

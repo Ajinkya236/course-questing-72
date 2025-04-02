@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
 import LearningTools from '@/components/skills/LearningTools';
-import KnowledgeSources from '@/components/skills/knowledge/types';
+import KnowledgeSources from '@/components/skills/knowledge/KnowledgeSources';
 import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 import { Source } from '@/components/skills/knowledge/types';
 
