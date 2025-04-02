@@ -55,7 +55,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     `How can I practice ${skillName} at ${selectedProficiency} level?`,
     `What are common challenges when learning ${skillName}?`,
     `How is ${skillName} applied in real-world scenarios?`,
-    `What resources do you recommend for learning ${skillName}?`
+    `What resources do you recommend for learning ${skillName}?`,
+    `What are the prerequisites for mastering ${skillName}?`,
+    `Can you explain a difficult concept in ${skillName} in simple terms?`,
+    `What career paths benefit from ${skillName} expertise?`
   ];
 
   useEffect(() => {
@@ -153,10 +156,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <HelpCircle className="h-5 w-5" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-4">
+            <PopoverContent className="w-[320px] p-4">
               <div className="space-y-2">
                 <h4 className="font-medium">Sample Questions</h4>
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-2 max-h-[300px] overflow-y-auto">
                   {sampleQuestions.map((question, index) => (
                     <Button 
                       key={index} 
@@ -176,7 +179,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <CardContent className="flex flex-col h-full p-4">
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[750px]" // Increased height
+          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[500px]" // Increased height from 400px
         >
           {messages.map((message, index) => (
             <div 
@@ -237,3 +240,4 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 };
 
 export default ChatInterface;
+

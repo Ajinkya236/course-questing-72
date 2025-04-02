@@ -57,8 +57,9 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
       <TabsContent value="learn">
         <LearningTools 
           skillName={skill.name} 
-          skillDescription={skill.description}
-          selectedProficiency={skill.proficiency} 
+          skillDescription={skill.description || ''}
+          selectedProficiency={skill.proficiency}
+          proficiency={skill.proficiency}
           skillId={skill.id}
         />
       </TabsContent>

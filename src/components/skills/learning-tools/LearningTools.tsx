@@ -10,7 +10,7 @@ import LearningToolsGrid from './LearningToolsGrid';
 interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
-  selectedProficiency: string;
+  selectedProficiency?: string;
   sources?: Source[];
   setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading?: boolean;
@@ -18,12 +18,14 @@ interface LearningToolsProps {
   onGeneratePodcast?: () => void;
   hidePodcastButton?: boolean;
   skillId?: number;
+  proficiency?: string;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({ 
   skillName,
   skillDescription,
   selectedProficiency,
+  proficiency,
   sources = [],
   setChatMessages,
   isLoading = false,
@@ -32,10 +34,13 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   hidePodcastButton = false,
   skillId
 }) => {
+  // Use proficiency if provided, otherwise use selectedProficiency
+  const effectiveProficiency = proficiency || selectedProficiency || '';
+  
   const { handleToolGeneration, isBusy, apiCallFailed } = useToolGeneration(
     skillName,
     skillDescription,
-    selectedProficiency,
+    effectiveProficiency,
     sources,
     setChatMessages || (() => {}),
     setIsLoading
@@ -58,7 +63,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
         <LearningToolsGrid
           skillName={skillName}
           skillDescription={skillDescription}
-          selectedProficiency={selectedProficiency}
+          selectedProficiency={effectiveProficiency}
           isBusy={combinedBusyState}
           onToolClick={handleToolGeneration}
           onGeneratePodcast={onGeneratePodcast}
