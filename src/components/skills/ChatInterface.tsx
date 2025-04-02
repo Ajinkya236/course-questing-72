@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -46,14 +45,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { generateResponse, loading: geminiLoading, resetFailureState } = useGemini();
   
-  // Update external loading state
   useEffect(() => {
     if (setIsLoading) {
       setIsLoading(geminiLoading);
     }
   }, [geminiLoading, setIsLoading]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -61,7 +58,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [inputValue]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -85,19 +81,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const userMessage = inputValue.trim();
     setInputValue('');
     
-    // Add user message
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     
-    // Create context for the AI request
     const contextInfo = sources
       .map(source => {
-        // Check if source has a name/title property and content
-        const sourceName = source.name || 'Source';
+        const sourceName = source.name || source.description || 'Source';
         return `Source: ${sourceName}\nContent: ${source.content}`;
       })
       .join('\n\n');
     
-    // Skill context for the AI request
     let skillContext = '';
     if (skillName) {
       skillContext = `You are an expert in ${skillName}`;
@@ -118,7 +110,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       });
       
       if (result?.generatedText) {
-        // Add AI response
         setMessages(prev => [...prev, { role: 'assistant', content: result.generatedText }]);
       }
     } catch (error) {
@@ -135,7 +126,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleRetry = () => {
     resetFailureState();
-    // Remove the last assistant message if it was an error
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === 'assistant' && 
         lastMessage.content.includes('error')) {

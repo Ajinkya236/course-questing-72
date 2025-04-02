@@ -6,6 +6,7 @@ export interface Source {
   type: SourceType;
   content: string;
   description?: string;
+  name?: string; // Add the name property as optional
 }
 
 export interface KnowledgeSourcesProps {
