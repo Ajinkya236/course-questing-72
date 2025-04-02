@@ -17,14 +17,9 @@ port = 54324
 
 [auth]
 enabled = true
-port = 54325
 
 [storage]
 enabled = true
-port = 54326
-
-[edge_functions]
-port = 9000
 
 [functions.gemini-generate-response]
 verify_jwt = false
@@ -33,4 +28,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.skill-assessment]
+verify_jwt = false
+
+[functions.domains-skills]
 verify_jwt = false
