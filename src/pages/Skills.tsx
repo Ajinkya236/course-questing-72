@@ -17,7 +17,7 @@ import { mockSkills, proficiencyColors, getIconByName } from '@/data/skillsData'
 import { CarouselFilters } from '@/components/ui/carousel';
 
 const Skills: React.FC = () => {
-  const [proficiency, setProficiency] = useState("");
+  const [proficiency, setProficiency] = useState<string>("all");
   
   // Refs for carousel scrolling
   const roleCarouselRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ const Skills: React.FC = () => {
   
   // Filter skills based on selected proficiency
   const filteredSkills = mockSkills.filter(skill => {
-    const matchesProficiency = proficiency ? skill.proficiency === proficiency : true;
+    const matchesProficiency = proficiency === "all" ? true : skill.proficiency === proficiency;
     return matchesProficiency;
   });
   
@@ -56,7 +56,7 @@ const Skills: React.FC = () => {
                 <SelectValue placeholder="Proficiency level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Proficiency Levels</SelectItem>
+                <SelectItem value="all">All Proficiency Levels</SelectItem>
                 <SelectItem value="Awareness">Awareness</SelectItem>
                 <SelectItem value="Knowledge">Knowledge</SelectItem>
                 <SelectItem value="Skill">Skill</SelectItem>
