@@ -7,9 +7,10 @@ import AudioControls from './AudioControls';
 interface AudioPlayerProps {
   audioUrl: string;
   title: string;
+  subtitle?: string;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, subtitle }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -112,6 +113,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title }) => {
           <Headphones className="h-5 w-5 text-primary" />
           <span>{title}</span>
         </CardTitle>
+        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </CardHeader>
       <CardContent>
         <audio ref={audioRef} src={audioUrl} preload="metadata" />

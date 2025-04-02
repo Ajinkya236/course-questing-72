@@ -1,14 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Headphones, AlertCircle } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Spinner } from '@/components/ui/spinner';
 import { generatePodcast } from './PodcastUtils';
 import AudioPlayer from './AudioPlayer';
 
-interface PodcastPlayerProps {
+export interface PodcastPlayerProps {
   skillName: string;
   skillDescription: string;
   proficiency: string;
@@ -22,6 +22,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleGeneratePodcast = async () => {
     setIsLoading(true);
@@ -71,6 +72,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           <AudioPlayer 
             audioUrl={audioUrl} 
             title={`${skillName} - Microlearning Podcast`} 
+            subtitle={`${proficiency} level overview`}
           />
         ) : (
           <div className="flex flex-col items-center gap-4">

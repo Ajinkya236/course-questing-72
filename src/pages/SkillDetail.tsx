@@ -40,9 +40,7 @@ const SkillDetail: React.FC = () => {
   
   const { toast } = useToast();
   
-  // Fetch skill data
   useEffect(() => {
-    // Simulate API fetch
     setTimeout(() => {
       if (id) {
         const skillId = parseInt(id);
@@ -57,7 +55,6 @@ const SkillDetail: React.FC = () => {
     }, 800);
   }, [id]);
 
-  // Handle podcast generation
   const handleGeneratePodcast = async () => {
     if (!skill) return;
     
@@ -97,7 +94,6 @@ const SkillDetail: React.FC = () => {
     }
   };
   
-  // If loading, show spinner
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
@@ -106,7 +102,6 @@ const SkillDetail: React.FC = () => {
     );
   }
   
-  // If skill not found
   if (!skill) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
@@ -129,7 +124,6 @@ const SkillDetail: React.FC = () => {
       </Helmet>
       
       <div className="container mx-auto px-4 py-6">
-        {/* Back button */}
         <div className="mb-6">
           <Button variant="outline" size="sm" asChild>
             <Link to="/skills">
@@ -139,14 +133,11 @@ const SkillDetail: React.FC = () => {
           </Button>
         </div>
         
-        {/* Skill Header */}
         <SkillHeader 
           skill={skill} 
         />
         
-        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          {/* Left Column - Tabs */}
           <div className="col-span-1 lg:col-span-2">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-3">
@@ -208,36 +199,16 @@ const SkillDetail: React.FC = () => {
               </TabsContent>
             </Tabs>
             
-            {/* Podcast Player (only shown when podcast is generated) */}
-            {podcastAudio && (
-              <div className="mt-8">
-                <PodcastPlayer 
-                  audioUrl={podcastAudio} 
-                  title={`${skill.name} Podcast`}
-                  subtitle={`${skill.proficiency} level overview`}
-                />
-              </div>
-            )}
-            
-            {podcastError && (
-              <div className="mt-8 p-4 border border-destructive/30 bg-destructive/10 rounded-md text-destructive">
-                <h3 className="font-medium mb-2">Error Generating Podcast</h3>
-                <p className="text-sm">{podcastError}</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleGeneratePodcast} 
-                  className="mt-2"
-                >
-                  Try Again
-                </Button>
-              </div>
-            )}
+            <div className="mt-8">
+              <PodcastPlayer 
+                skillName={skill.name}
+                skillDescription={skill.description || ""}
+                proficiency={skill.proficiency}
+              />
+            </div>
           </div>
           
-          {/* Right Column - Related Info */}
           <div className="col-span-1">
-            {/* Skill information card */}
             <div className="bg-card rounded-lg border shadow-sm p-6 mb-6">
               <h3 className="text-lg font-semibold mb-4">Skill Information</h3>
               
@@ -285,12 +256,10 @@ const SkillDetail: React.FC = () => {
               </div>
             </div>
             
-            {/* Related skills */}
             <div className="bg-card rounded-lg border shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-4">Related Skills</h3>
               
               <div className="space-y-3">
-                {/* Generate 5 related skills */}
                 {mockSkills
                   .filter(s => s.id !== skill.id && s.category === skill.category)
                   .slice(0, 5)
