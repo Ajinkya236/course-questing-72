@@ -11,9 +11,9 @@ const Index = () => {
     // Check if user is authenticated
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data } = await supabase.auth.getSession();
         
-        if (session) {
+        if (data && data.session) {
           // User is logged in, redirect to home
           navigate('/home', { replace: true });
         } else {

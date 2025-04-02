@@ -30,8 +30,9 @@ const SkillDetail: React.FC = () => {
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
 
-  // Safely find the skill, with fallback
-  const skill = mockSkills ? mockSkills.find(s => s.id === Number(skillId)) : null;
+  // Safely find the skill from mockSkills, with fallback
+  const availableMockSkills = mockSkills || [];
+  const skill = availableMockSkills.find(s => s.id === Number(skillId)) || null;
   
   useEffect(() => {
     if (skill && !selectedProficiency) {

@@ -12,9 +12,9 @@ interface AssessmentLayoutProps {
   proficiency?: string;
   children: ReactNode;
   sidebarContent?: ReactNode;
-  showBadgeModal: boolean;
-  closeBadgeModal: () => void;
-  latestBadge: SkillBadge | null;
+  showBadgeModal?: boolean;
+  closeBadgeModal?: () => void;
+  latestBadge?: SkillBadge | null;
 }
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
@@ -52,7 +52,7 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       </div>
       
       {/* Badge Award Modal */}
-      {showBadgeModal && (
+      {showBadgeModal && latestBadge && (
         <BadgeAwardModal 
           isOpen={showBadgeModal} 
           onClose={closeBadgeModal} 

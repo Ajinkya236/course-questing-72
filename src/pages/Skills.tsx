@@ -22,11 +22,12 @@ const Skills: React.FC = () => {
   const recommendedCarouselRef = useRef<HTMLDivElement>(null);
   const trendingCarouselRef = useRef<HTMLDivElement>(null);
   
-  // Make sure mockSkills is defined and initialize filteredSkills safely
-  const filteredSkills = mockSkills ? mockSkills.filter(skill => {
+  // Safely initialize mockSkills and filteredSkills
+  const availableSkills = mockSkills || [];
+  const filteredSkills = availableSkills.filter(skill => {
     const matchesProficiency = proficiency ? skill.proficiency === proficiency : true;
     return matchesProficiency;
-  }) : [];
+  });
   
   // Safely filter categories
   const roleSkills = filteredSkills.filter(skill => skill.category === "role");
@@ -218,7 +219,7 @@ const SkillBubble: React.FC<SkillProps> = ({ skill }) => {
               <IconComponent className="h-8 w-8 text-primary" />
             </div>
             <h3 className="skill-title text-lg mb-2">{skill.name}</h3>
-            <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors]}`}>
+            <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[skill.proficiency as keyof typeof proficiencyColors] || ""}`}>
               {skill.proficiency}
             </span>
           </div>
