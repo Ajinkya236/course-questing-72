@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { 
@@ -18,6 +18,7 @@ import { CarouselFilters } from '@/components/ui/carousel';
 
 const Skills: React.FC = () => {
   const [proficiency, setProficiency] = useState<string>("all");
+  const navigate = useNavigate();
   
   // Refs for carousel scrolling
   const roleCarouselRef = useRef<HTMLDivElement>(null);
@@ -42,13 +43,18 @@ const Skills: React.FC = () => {
     }
   };
 
+  // Handle skill selection from search
+  const handleSkillSearch = (skillId: string) => {
+    navigate(`/skills/${skillId}`);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-heading text-gray-800 mb-6">Discover and Gain Skills</h1>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-grow">
-            <SkillSearch />
+            <SkillSearch onSelectSkill={handleSkillSearch} />
           </div>
           <div className="w-full md:w-64">
             <Select value={proficiency} onValueChange={setProficiency}>

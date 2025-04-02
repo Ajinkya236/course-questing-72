@@ -1,12 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { PlusCircle, Upload, Link as LinkIcon, FileText } from 'lucide-react';
 import { SourceType } from './types';
+import { useToast } from '@/hooks/use-toast';
 
 interface SourceFormDialogProps {
   isOpen: boolean;
@@ -33,12 +35,40 @@ const SourceFormDialog: React.FC<SourceFormDialogProps> = ({
   onAddOrUpdateSource,
   isEditing
 }) => {
+  const { toast } = useToast();
+  const [fileUploadName, setFileUploadName] = useState<string>('');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const handleSave = () => {
+    if (!sourceContent.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter content for your source",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     onAddOrUpdateSource();
   };
 
   const handleTypeChange = (value: string) => {
     setSourceType(value as SourceType);
+    // Reset content when changing type
+    if (!isEditing) {
+      setSourceContent('');
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setFileUploadName(file.name);
+      // For demonstration, we'll just use the filename
+      // In a real app, you would upload this file to storage
+      setSourceContent(file.name);
+    }
   };
 
   return (
@@ -60,15 +90,24 @@ const SourceFormDialog: React.FC<SourceFormDialogProps> = ({
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="link" id="link" />
-              <Label htmlFor="link">URL / Link</Label>
+              <Label htmlFor="link" className="flex items-center">
+                <LinkIcon className="h-4 w-4 mr-1 text-blue-500" />
+                <span>URL / Link</span>
+              </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="text" id="text" />
-              <Label htmlFor="text">Notes / Text</Label>
+              <Label htmlFor="text" className="flex items-center">
+                <FileText className="h-4 w-4 mr-1 text-green-500" />
+                <span>Notes / Text</span>
+              </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="file" id="file" />
-              <Label htmlFor="file">File Reference</Label>
+              <Label htmlFor="file" className="flex items-center">
+                <Upload className="h-4 w-4 mr-1 text-amber-500" />
+                <span>File Reference</span>
+              </Label>
             </div>
           </RadioGroup>
           
@@ -77,16 +116,48 @@ const SourceFormDialog: React.FC<SourceFormDialogProps> = ({
               {sourceType === 'link' ? 'URL' : 
                sourceType === 'file' ? 'File Reference' : 'Text Content'}
             </Label>
-            {sourceType === 'text' ? (
+            
+            {sourceType === 'file' ? (
+              <div className="space-y-2">
+                <div className="border-2 border-dashed rounded-md p-4 text-center">
+                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {fileUploadName || 'Select a file to use as reference'}
+                  </p>
+                  <Input 
+                    ref={fileInputRef}
+                    id="file-upload" 
+                    type="file" 
+                    className="hidden" 
+                    onChange={handleFileSelect}
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Browse Files
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Supported formats: PDF, DOC, DOCX, TXT, JPG, PNG, etc.
+                  </p>
+                </div>
+                {fileUploadName && (
+                  <Input
+                    id="source-content"
+                    value={sourceContent}
+                    onChange={(e) => setSourceContent(e.target.value)}
+                    className="mt-2"
+                  />
+                )}
+              </div>
+            ) : sourceType === 'text' ? (
               <Textarea
                 id="source-content"
                 value={sourceContent}
                 onChange={(e) => setSourceContent(e.target.value)}
-                placeholder={
-                  sourceType === 'text' ? 'Enter your notes, information or content...' :
-                  sourceType === 'link' ? 'https://example.com' : 
-                  'Reference to file or document'
-                }
+                placeholder="Enter your notes, information or content..."
                 className="min-h-[100px]"
               />
             ) : (
@@ -94,10 +165,7 @@ const SourceFormDialog: React.FC<SourceFormDialogProps> = ({
                 id="source-content"
                 value={sourceContent}
                 onChange={(e) => setSourceContent(e.target.value)}
-                placeholder={
-                  sourceType === 'link' ? 'https://example.com' : 
-                  'Reference to file or document'
-                }
+                placeholder="https://example.com"
               />
             )}
           </div>

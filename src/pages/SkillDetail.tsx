@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const SkillDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('learning');
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
@@ -39,8 +40,22 @@ const SkillDetail: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       if (id) {
-        const skillId = parseInt(id);
-        const foundSkill = mockSkills.find(s => s.id === skillId);
+        // Fix: Properly handle string IDs by ensuring numeric conversion
+        let foundSkill;
+        
+        // Try to find by numeric ID first
+        const numericId = parseInt(id);
+        if (!isNaN(numericId)) {
+          foundSkill = mockSkills.find(s => s.id === numericId);
+        }
+        
+        // If not found, try to find by name match (case insensitive)
+        if (!foundSkill) {
+          foundSkill = mockSkills.find(s => 
+            s.name.toLowerCase() === id.toLowerCase() ||
+            s.name.toLowerCase().includes(id.toLowerCase())
+          );
+        }
         
         if (foundSkill) {
           setSkill(foundSkill);
@@ -50,6 +65,12 @@ const SkillDetail: React.FC = () => {
       setIsLoading(false);
     }, 800);
   }, [id]);
+  
+  const handleSkillAssessment = () => {
+    if (skill) {
+      navigate(`/skills/${skill.id}/assessment`);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -122,11 +143,18 @@ const SkillDetail: React.FC = () => {
                   isLoading={isGeneratingPodcast}
                   setIsLoading={setIsGeneratingPodcast}
                 />
-                <KnowledgeSources 
-                  sources={sources}
-                  setSources={setSources}
-                  onSubmit={() => {}}
-                />
+                <div className="mt-6">
+                  <KnowledgeSources 
+                    sources={sources}
+                    setSources={setSources}
+                    onSubmit={() => {
+                      toast({
+                        title: "Knowledge Sources Updated",
+                        description: `${sources.length} sources will be used for AI responses.`,
+                      });
+                    }}
+                  />
+                </div>
               </TabsContent>
               
               <TabsContent value="chat" className="mt-4">
@@ -142,16 +170,31 @@ const SkillDetail: React.FC = () => {
               
               <TabsContent value="assessment" className="mt-4">
                 <div className="flex flex-col items-center justify-center p-8 text-center bg-background border rounded-lg space-y-4">
-                  <Trophy className="h-12 w-12 text-muted-foreground" />
+                  <Trophy className="h-12 w-12 text-primary" />
                   <h3 className="text-xl font-semibold">Skill Assessment</h3>
                   <p className="text-muted-foreground max-w-md">
                     Test your knowledge and proficiency in {skill.name} with our adaptive assessment.
+                    Upload files or provide resources to customize your assessment experience.
                   </p>
-                  <Button asChild size="lg" className="mt-2">
-                    <Link to={`/skills/${skill.id}/assessment`}>
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                    <Button 
+                      onClick={handleSkillAssessment}
+                      size="lg" 
+                      className="flex items-center gap-2"
+                    >
+                      <Trophy className="h-4 w-4" />
                       Start Assessment
-                    </Link>
-                  </Button>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={() => setActiveTab('learning')}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload Materials First
+                    </Button>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
