@@ -139,12 +139,19 @@ The JSON must be valid and properly formatted. Ensure all IDs are unique.
       <div key={concept.id} className={`ml-${level * 4} mb-2`} style={{ marginLeft: `${level * 16}px` }}>
         <div className="flex items-start">
           {hasChildren ? (
-            <CollapsibleTrigger 
-              onClick={() => toggleNode(concept.id)}
-              className="mr-1 mt-1"
-            >
-              {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </CollapsibleTrigger>
+            <Collapsible open={isExpanded}>
+              <CollapsibleTrigger 
+                onClick={() => toggleNode(concept.id)}
+                className="mr-1 mt-1"
+              >
+                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-2">
+                  {concept.children.map(child => renderConceptNode(child, level + 1))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           ) : (
             <div className="w-4 mr-1"></div>
           )}
@@ -163,16 +170,6 @@ The JSON must be valid and properly formatted. Ensure all IDs are unique.
             </Tooltip>
           </TooltipProvider>
         </div>
-        
-        {hasChildren && (
-          <Collapsible open={isExpanded}>
-            <CollapsibleContent>
-              <div className="mt-2">
-                {concept.children.map(child => renderConceptNode(child, level + 1))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
       </div>
     );
   };
@@ -187,7 +184,7 @@ The JSON must be valid and properly formatted. Ensure all IDs are unique.
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button variant="outline" className="h-auto py-3 flex flex-col items-center text-center">
           <Lightbulb size={16} />
           <span>Concept Map</span>
         </Button>
