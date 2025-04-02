@@ -14,6 +14,7 @@ const SkillAssessment: React.FC = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("assessment");
+  const [customProficiency, setCustomProficiency] = useState<string | null>(null);
   
   const {
     questions,
@@ -29,7 +30,8 @@ const SkillAssessment: React.FC = () => {
     closeBadgeModal,
     PASS_RATE,
     submitAssessment,
-    resetAssessment
+    resetAssessment,
+    generateQuestionsForSkill
   } = useAssessment(skillId);
 
   useEffect(() => {
@@ -40,6 +42,26 @@ const SkillAssessment: React.FC = () => {
     
     // This will trigger the useAssessment hook to load data
   }, [skillId, navigate]);
+
+  // Handle proficiency change
+  const handleProficiencyChange = (newProficiency: string) => {
+    if (selectedSkill) {
+      setCustomProficiency(newProficiency);
+      
+      // Create a modified skill object with the new proficiency
+      const updatedSkill = {
+        ...selectedSkill,
+        proficiency: newProficiency
+      };
+      
+      // Reset assessment state
+      setAssessmentScore(null);
+      setCurrentQuestionIndex(0);
+      
+      // Generate new questions based on updated proficiency
+      generateQuestionsForSkill(updatedSkill);
+    }
+  };
 
   const handleBack = () => {
     navigate(`/skills/${skillId}`);
@@ -67,7 +89,12 @@ const SkillAssessment: React.FC = () => {
   };
 
   const handleSubmitAssessment = async () => {
-    await submitAssessment(questions);
+    // If we're using custom proficiency, update the skill object
+    const skillToSubmit = customProficiency && selectedSkill 
+      ? { ...selectedSkill, proficiency: customProficiency }
+      : selectedSkill;
+      
+    await submitAssessment(questions, skillToSubmit);
   };
 
   const handleRetryAssessment = () => {
@@ -81,12 +108,16 @@ const SkillAssessment: React.FC = () => {
     return <div className="container mx-auto px-4 py-8">Skill not found</div>;
   }
 
+  // Use customProficiency if set, otherwise use the selected skill's proficiency
+  const displayProficiency = customProficiency || selectedSkill?.proficiency;
+
   return (
     <PageLayout>
       <AssessmentLayout
         handleBack={handleBack}
         skillName={selectedSkill?.name}
-        proficiency={selectedSkill?.proficiency}
+        proficiency={displayProficiency}
+        onProficiencyChange={handleProficiencyChange}
         showBadgeModal={showBadgeModal}
         closeBadgeModal={closeBadgeModal}
         latestBadge={latestBadge}

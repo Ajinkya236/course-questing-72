@@ -6,15 +6,17 @@ import { ChatMessage } from '@/components/skills/ChatInterface';
 import SkillDetailLoader from '@/components/skills/detail/SkillDetailLoader';
 import SkillNotFound from '@/components/skills/detail/SkillNotFound';
 import SkillDetailLayout from '@/components/skills/detail/SkillDetailLayout';
+import { Source } from '@/components/skills/knowledge/types';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
-  const [activeTab] = useState('chat'); // Default to chat tab, no longer needs to change
+  const [activeTab] = useState('chat'); // Default to chat tab
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [sources, setSources] = useState<string[]>([]);
+  const [sources, setSources] = useState<Source[]>([]);
+  const [selectedProficiency, setSelectedProficiency] = useState<string>('');
   
   useEffect(() => {
     // Add a small delay to simulate loading (can be removed in production)
@@ -57,6 +59,7 @@ const SkillDetail: React.FC = () => {
         
         if (foundSkill) {
           setSkill(foundSkill);
+          setSelectedProficiency(foundSkill.proficiency);
           
           // Add welcome message to chat
           setChatMessages([{
@@ -75,6 +78,18 @@ const SkillDetail: React.FC = () => {
     return () => clearTimeout(timer);
   }, [skillId]);
 
+  const handleProficiencyChange = (newProficiency: string) => {
+    setSelectedProficiency(newProficiency);
+    
+    // Update welcome message based on new proficiency
+    if (skill) {
+      setChatMessages([{
+        role: 'assistant',
+        content: `# Welcome to ${skill.name} at ${newProficiency} level\n\nI've updated the proficiency level to ${newProficiency}. How can I help you with ${skill.name}?`
+      }]);
+    }
+  };
+
   if (isLoading) {
     return <SkillDetailLoader />;
   }
@@ -83,11 +98,16 @@ const SkillDetail: React.FC = () => {
     return <SkillNotFound />;
   }
 
+  const skillWithCustomProficiency = {
+    ...skill,
+    proficiency: selectedProficiency
+  };
+
   const setActiveTab = () => {}; // Dummy function since we no longer need to change tabs
 
   return (
     <SkillDetailLayout
-      skill={skill}
+      skill={skillWithCustomProficiency}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       sources={sources}
@@ -96,6 +116,7 @@ const SkillDetail: React.FC = () => {
       setChatMessages={setChatMessages}
       isGeneratingPodcast={isGeneratingPodcast}
       setIsGeneratingPodcast={setIsGeneratingPodcast}
+      onProficiencyChange={handleProficiencyChange}
     />
   );
 };

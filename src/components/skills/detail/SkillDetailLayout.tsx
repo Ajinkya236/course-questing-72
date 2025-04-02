@@ -8,17 +8,19 @@ import { ChatMessage } from '@/components/skills/ChatInterface';
 import SkillHeader from '@/components/skills/SkillHeader';
 import SkillDetailTabs from './SkillDetailTabs';
 import SkillSidebar from './SkillSidebar';
+import { Source } from '@/components/skills/knowledge/types';
 
 interface SkillDetailLayoutProps {
   skill: any;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  sources: string[];
-  setSources: React.Dispatch<React.SetStateAction<string[]>>;
+  sources: string[] | Source[];
+  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isGeneratingPodcast: boolean;
   setIsGeneratingPodcast: React.Dispatch<React.SetStateAction<boolean>>;
+  onProficiencyChange?: (value: string) => void;
 }
 
 const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
@@ -30,7 +32,8 @@ const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
   chatMessages,
   setChatMessages,
   isGeneratingPodcast,
-  setIsGeneratingPodcast
+  setIsGeneratingPodcast,
+  onProficiencyChange
 }) => {
   return (
     <>
@@ -48,7 +51,10 @@ const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
           </Button>
         </div>
         
-        <SkillHeader skill={skill} />
+        <SkillHeader 
+          skill={skill} 
+          onProficiencyChange={onProficiencyChange}
+        />
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
           <div className="col-span-1 lg:col-span-3">

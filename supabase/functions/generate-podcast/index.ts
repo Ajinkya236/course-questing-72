@@ -28,7 +28,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        audioUrl 
+        audioUrl,
+        transcript
       }),
       { 
         headers: { 
@@ -65,22 +66,26 @@ async function generateTranscript(skillName: string, skillDescription: string, p
   }
   
   const prompt = `
-    Create a short, engaging conversation script between a male host named Michael and a female expert named Sarah discussing "${skillName}" at the "${proficiency}" level.
+    Create a longer educational podcast script between a male host named Michael and a female expert named Sarah discussing "${skillName}" at the "${proficiency}" level.
 
     Context about the skill: ${skillDescription || "A valuable professional skill"}
 
     Requirements:
-    - The conversation should be exactly 2-3 minutes long when spoken
+    - The conversation should be 15-25 minutes long when spoken (approximately 3000-5000 words)
     - Start with Michael introducing the topic and welcoming Sarah
     - Make it educational but conversational and easy to understand
-    - Include 3-4 key points about the skill that would be valuable for someone at the ${proficiency} level
+    - Include at least 6-8 key points about the skill that would be valuable for someone at the ${proficiency} level
+    - Include some practical examples and real-world applications
+    - Discuss common challenges people face when developing this skill
     - End with Michael thanking Sarah and summarizing what was learned
     - Don't include sound effects or stage directions, only the spoken dialogue
     - Each line should be prefixed with either "Michael:" or "Sarah:" to indicate who is speaking
-    - Total length should be approximately 400-500 words
+    - Use the Gemini 1.5 Pro model for this generation to create detailed and comprehensive content
 
     Format the output as plain text dialogue only, with each speaker's line separated by a line break.
   `;
+  
+  console.log("Sending prompt to Gemini for podcast transcript generation");
   
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent', {
     method: 'POST',
@@ -93,7 +98,11 @@ async function generateTranscript(skillName: string, skillDescription: string, p
         parts: [{
           text: prompt
         }]
-      }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+      }
     })
   });
   
@@ -111,7 +120,7 @@ async function generateTranscript(skillName: string, skillDescription: string, p
   }
   
   const generatedText = data.candidates[0].content.parts[0].text;
-  console.log("Successfully generated transcript with Gemini");
+  console.log("Successfully generated transcript with Gemini (length: " + generatedText.length + " characters)");
   
   return generatedText;
 }
@@ -155,10 +164,41 @@ async function generateAudio(transcript: string): Promise<string> {
   
   console.log(`Parsed transcript into ${segments.length} segments for audio generation`);
   
+  // Process segments into chunks to avoid length limitations
+  const MAX_CHAR_LENGTH = 5000; // Google TTS limit
+  const processedSegments = [];
+  
+  for (const segment of segments) {
+    if (segment.text.length <= MAX_CHAR_LENGTH) {
+      processedSegments.push(segment);
+    } else {
+      // Split long segments into multiple parts
+      let text = segment.text;
+      while (text.length > 0) {
+        const chunk = text.substring(0, MAX_CHAR_LENGTH);
+        // Try to break at sentence end
+        let breakPoint = chunk.lastIndexOf('. ');
+        if (breakPoint === -1 || breakPoint < MAX_CHAR_LENGTH / 2) {
+          breakPoint = chunk.lastIndexOf(' ');
+        }
+        const part = text.substring(0, breakPoint + 1);
+        
+        processedSegments.push({
+          ...segment,
+          text: part
+        });
+        
+        text = text.substring(breakPoint + 1);
+      }
+    }
+  }
+  
+  console.log(`Processing ${processedSegments.length} audio segments after chunking`);
+  
   // Combine all audio segments
   const audioContents = [];
   
-  for (const segment of segments) {
+  for (const segment of processedSegments) {
     try {
       console.log(`Generating audio for segment: ${segment.text.substring(0, 30)}...`);
       

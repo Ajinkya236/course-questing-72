@@ -21,6 +21,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -40,9 +41,10 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
         });
       } else if (response.audioUrl) {
         setAudioUrl(response.audioUrl);
+        setTranscript(response.transcript || null);
         toast({
           title: "Podcast generated",
-          description: "Your microlearning podcast is ready to play",
+          description: "Your 15-25 minute microlearning podcast is ready to play",
           variant: "default",
         });
       }
@@ -64,20 +66,33 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <Headphones className="h-5 w-5 text-primary" />
-          Microlearning Podcast
+          Microlearning Podcast (15-25 min)
         </CardTitle>
       </CardHeader>
       <CardContent>
         {audioUrl ? (
-          <AudioPlayer 
-            audioUrl={audioUrl} 
-            title={`${skillName} - Microlearning Podcast`} 
-            subtitle={`${proficiency} level overview`}
-          />
+          <div className="space-y-4">
+            <AudioPlayer 
+              audioUrl={audioUrl} 
+              title={`${skillName} - Learning Podcast`} 
+              subtitle={`${proficiency} level overview (15-25 min)`}
+            />
+            
+            {transcript && (
+              <div className="mt-4">
+                <details className="text-sm">
+                  <summary className="font-medium cursor-pointer hover:text-primary">Show Transcript</summary>
+                  <div className="mt-2 p-4 bg-muted rounded-md max-h-[300px] overflow-y-auto whitespace-pre-line">
+                    {transcript}
+                  </div>
+                </details>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="flex flex-col items-center gap-4">
             <p className="text-sm text-muted-foreground text-center">
-              Generate a short podcast explaining the key concepts of {skillName} at {proficiency} level.
+              Generate a 15-25 minute podcast explaining the key concepts of {skillName} at {proficiency} level.
             </p>
             {error && (
               <div className="flex items-center gap-2 text-destructive text-sm">

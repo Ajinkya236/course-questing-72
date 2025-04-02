@@ -1,6 +1,6 @@
 
 import React, { ReactNode, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
 import { SkillBadge } from './types';
@@ -15,6 +15,7 @@ interface AssessmentLayoutProps {
   showBadgeModal: boolean;
   closeBadgeModal: () => void;
   latestBadge: SkillBadge | null;
+  onProficiencyChange?: (value: string) => void;
 }
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
@@ -25,7 +26,8 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
   sidebarContent,
   showBadgeModal,
   closeBadgeModal,
-  latestBadge
+  latestBadge,
+  onProficiencyChange
 }) => {
   // Add debug logging
   useEffect(() => {
@@ -37,28 +39,15 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       <AssessmentHeader 
         handleBack={handleBack} 
         skillName={skillName} 
-        proficiency={proficiency} 
+        proficiency={proficiency}
+        onProficiencyChange={onProficiencyChange}
       />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content - Left Column */}
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center font-archivo-black text-gray-700">
-                {skillName && (
-                  <>
-                    <span>{skillName} Assessment</span>
-                    {proficiency && (
-                      <span className={`ml-3 text-xs px-3 py-1 rounded-full ${proficiencyColors[proficiency as keyof typeof proficiencyColors] || 'bg-gray-100'}`}>
-                        {proficiency}
-                      </span>
-                    )}
-                  </>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               {children}
             </CardContent>
           </Card>

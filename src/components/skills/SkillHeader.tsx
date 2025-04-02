@@ -79,38 +79,28 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
               <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
               
               {/* Proficiency Selection */}
-              {onProficiencyChange && (
-                <Tabs 
-                  value={displayProficiency} 
-                  onValueChange={onProficiencyChange}
-                  className="mb-3"
-                >
-                  <TabsList className="bg-transparent h-auto gap-2 p-1">
-                    {proficiencyLevels.map((level) => (
-                      <TabsTrigger
-                        key={level}
-                        value={level}
-                        className={`px-3 py-1 rounded-full text-xs ${
-                          displayProficiency === level 
-                            ? proficiencyColors[level as keyof typeof proficiencyColors] 
-                            : "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {level}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-              )}
-              
-              {/* Current Proficiency (only show if not selectable) */}
-              {!onProficiencyChange && displayProficiency && (
-                <div className="flex flex-wrap gap-3 mb-3">
-                  <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
-                    {displayProficiency}
-                  </span>
-                </div>
-              )}
+              <Tabs 
+                value={displayProficiency} 
+                onValueChange={onProficiencyChange || (() => {})}
+                className="mb-3"
+              >
+                <TabsList className="bg-transparent h-auto gap-2 p-1">
+                  {proficiencyLevels.map((level) => (
+                    <TabsTrigger
+                      key={level}
+                      value={level}
+                      disabled={!onProficiencyChange}
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        displayProficiency === level 
+                          ? proficiencyColors[level as keyof typeof proficiencyColors] 
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {level}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
               
               <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
               

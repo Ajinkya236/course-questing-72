@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link, LinkIcon, Plus, X } from 'lucide-react';
+import { Link, LinkIcon, Plus, X, FileText, Edit } from 'lucide-react';
 import SourceList from '@/components/skills/knowledge/SourceList';
 import SourceFormDialog from '@/components/skills/knowledge/SourceFormDialog';
-import { Source } from './knowledge/types';
+import { Source, SourceType } from './knowledge/types';
 
 interface KnowledgeSourcesProps {
   sources: string[] | Source[];
@@ -22,6 +23,10 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
 }) => {
   const [newSource, setNewSource] = useState<string>('');
   const [showSourceDialog, setShowSourceDialog] = useState<boolean>(false);
+  const [sourceContent, setSourceContent] = useState<string>('');
+  const [sourceDescription, setSourceDescription] = useState<string>('');
+  const [sourceType, setSourceType] = useState<SourceType>('text');
+  const [editingSourceId, setEditingSourceId] = useState<string | null>(null);
   
   const isStringArray = (arr: any[]): arr is string[] => {
     return arr.length === 0 || typeof arr[0] === 'string';
@@ -46,6 +51,67 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
     }
   };
 
+  const handleOpenSourceDialog = () => {
+    setSourceContent('');
+    setSourceDescription('');
+    setSourceType('text');
+    setEditingSourceId(null);
+    setShowSourceDialog(true);
+  };
+
+  const handleEditSource = (source: Source) => {
+    setSourceContent(source.content);
+    setSourceDescription(source.description || '');
+    setSourceType(source.type);
+    setEditingSourceId(source.id);
+    setShowSourceDialog(true);
+  };
+
+  const handleAddOrUpdateSource = () => {
+    // If we're using the simple string array, convert to Source[]
+    if (isStringArray(sources)) {
+      const sourcesArray: Source[] = [...sources].map(s => ({
+        id: Date.now().toString() + Math.random().toString(36).substring(7),
+        type: 'text',
+        content: s
+      }));
+      
+      // Add the new source
+      sourcesArray.push({
+        id: Date.now().toString(),
+        type: sourceType,
+        content: sourceContent,
+        description: sourceDescription || undefined
+      });
+      
+      setSources(sourcesArray);
+    } else {
+      // Already working with Source[]
+      const sourcesArray = sources as Source[];
+      
+      if (editingSourceId) {
+        // Update existing source
+        const updatedSources = sourcesArray.map(s => 
+          s.id === editingSourceId 
+            ? { ...s, type: sourceType, content: sourceContent, description: sourceDescription || undefined }
+            : s
+        );
+        setSources(updatedSources);
+      } else {
+        // Add new source
+        const newSource: Source = {
+          id: Date.now().toString(),
+          type: sourceType,
+          content: sourceContent,
+          description: sourceDescription || undefined
+        };
+        setSources([...sourcesArray, newSource]);
+      }
+    }
+    
+    setShowSourceDialog(false);
+  };
+
   const handleRemoveSource = (index: number) => {
     const updatedSources = [...sources];
     updatedSources.splice(index, 1);
@@ -54,6 +120,14 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
       setSources(updatedSources as string[]);
     } else {
       setSources(updatedSources as Source[]);
+    }
+  };
+
+  const handleDeleteSourceById = (id: string) => {
+    if (!isStringArray(sources)) {
+      const sourcesArray = sources as Source[];
+      const updatedSources = sourcesArray.filter(s => s.id !== id);
+      setSources(updatedSources);
     }
   };
 
@@ -97,24 +171,32 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
                 No knowledge sources added yet.
               </p>
             )}
-            <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
-              <Input
-                value={newSource}
-                onChange={(e) => setNewSource(e.target.value)}
-                placeholder="Add website URL, document, or text..."
-                className="text-xs h-8"
-              />
+            <div className="flex gap-2 mt-4">
               <Button 
                 type="button" 
                 size="sm"
                 variant="outline"
-                className="h-8 px-2"
-                onClick={handleAddSource}
+                className="h-8 gap-1 text-xs"
+                onClick={handleOpenSourceDialog}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" /> Add Knowledge Source
               </Button>
-            </form>
+            </div>
           </div>
+          
+          {/* Source Dialog */}
+          <SourceFormDialog
+            isOpen={showSourceDialog}
+            setIsOpen={setShowSourceDialog}
+            sourceContent={sourceContent}
+            setSourceContent={setSourceContent}
+            sourceDescription={sourceDescription}
+            setSourceDescription={setSourceDescription}
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            onAddOrUpdateSource={handleAddOrUpdateSource}
+            isEditing={!!editingSourceId}
+          />
         </CardContent>
       </Card>
     );
@@ -152,21 +234,35 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
               </p>
             )}
           </div>
-          <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
-            <Input
-              value={newSource}
-              onChange={(e) => setNewSource(e.target.value)}
-              placeholder="Add website URL, document, or text..."
-            />
-            <Button type="button" variant="outline" onClick={handleAddSource}>
-              Add Source
+          <div className="flex gap-2 mt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleOpenSourceDialog}
+              className="gap-1"
+            >
+              <Plus className="h-4 w-4" /> Add Knowledge Source
             </Button>
-          </form>
+          </div>
           {onSubmit && (
             <Button onClick={handleSubmit} className="w-full mt-4">
               Update Knowledge Sources
             </Button>
           )}
+          
+          {/* Source Dialog */}
+          <SourceFormDialog
+            isOpen={showSourceDialog}
+            setIsOpen={setShowSourceDialog}
+            sourceContent={sourceContent}
+            setSourceContent={setSourceContent}
+            sourceDescription={sourceDescription}
+            setSourceDescription={setSourceDescription}
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            onAddOrUpdateSource={handleAddOrUpdateSource}
+            isEditing={!!editingSourceId}
+          />
         </CardContent>
       </Card>
     );
@@ -181,27 +277,38 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
         <CardContent>
           <SourceList 
             sources={sourcesArray} 
-            onEditSource={() => {}} 
-            onDeleteSource={(id) => {
-              const updatedSources = sourcesArray.filter(s => s.id !== id);
-              setSources(updatedSources);
-            }}
+            onEditSource={handleEditSource} 
+            onDeleteSource={handleDeleteSourceById}
           />
-          <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
-            <Input
-              value={newSource}
-              onChange={(e) => setNewSource(e.target.value)}
-              placeholder="Add website URL, document, or text..."
-            />
-            <Button type="button" variant="outline" onClick={handleAddSource}>
-              Add Source
+          <div className="flex gap-2 mt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleOpenSourceDialog}
+              className="gap-1"
+            >
+              <Plus className="h-4 w-4" /> Add Knowledge Source
             </Button>
-          </form>
+          </div>
           {onSubmit && (
             <Button onClick={handleSubmit} className="w-full mt-4">
               Update Knowledge Sources
             </Button>
           )}
+          
+          {/* Source Dialog */}
+          <SourceFormDialog
+            isOpen={showSourceDialog}
+            setIsOpen={setShowSourceDialog}
+            sourceContent={sourceContent}
+            setSourceContent={setSourceContent}
+            sourceDescription={sourceDescription}
+            setSourceDescription={setSourceDescription}
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            onAddOrUpdateSource={handleAddOrUpdateSource}
+            isEditing={!!editingSourceId}
+          />
         </CardContent>
       </Card>
     );
