@@ -118,7 +118,11 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           </div>
           
           {audioUrl ? (
-            <AudioPlayer audioUrl={audioUrl} />
+            <AudioPlayer 
+              audioUrl={audioUrl} 
+              title={`${skillName} Learning Podcast`}
+              subtitle={`${proficiency} level overview`}
+            />
           ) : (
             <div className="bg-muted rounded-md p-6 text-center">
               {isGenerating ? (
