@@ -90,7 +90,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     // Create context for the AI request
     const contextInfo = sources
-      .map(source => `Source: ${source.title}\nContent: ${source.content}`)
+      .map(source => {
+        // Check if source has a name/title property and content
+        const sourceName = source.name || 'Source';
+        return `Source: ${sourceName}\nContent: ${source.content}`;
+      })
       .join('\n\n');
     
     // Skill context for the AI request
