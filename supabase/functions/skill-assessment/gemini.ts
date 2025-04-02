@@ -1,9 +1,82 @@
-
-import { processSource } from './utils.ts';
+import { corsHeaders } from './utils.ts';
 
 // Gemini API configuration
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
+
+/**
+ * Call the Gemini API with the given prompt
+ */
+export async function callGeminiAPI(prompt: string, model = 'gemini-1.5-flash'): Promise<string> {
+  // Check if API key is available
+  if (!GEMINI_API_KEY) {
+    throw new Error("Missing Gemini API key. Please add GEMINI_API_KEY to your Supabase secrets.");
+  }
+
+  console.log("Sending prompt to Gemini API...");
+
+  // Create the request to Gemini API
+  const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${model}:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const response = await fetch(GEMINI_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt
+            }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.4,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 4096, // Reduced from 8192 to avoid timeouts
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    }),
+  });
+
+  // Parse the response
+  const data = await response.json();
+
+  // Handle API errors
+  if (!response.ok) {
+    console.error("Gemini API error:", data);
+    throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
+  }
+
+  // Extract the generated text
+  const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+    "Sorry, I couldn't generate a response.";
+
+  console.log("Gemini API response received successfully");
+  
+  return generatedText;
+}
 
 /**
  * Creates context information based on sources and media files
@@ -37,80 +110,32 @@ export function createContextInfo(sources: string[] = [], mediaFiles: any[] = []
 }
 
 /**
- * Call the Gemini API
+ * Extract JSON from the response text
  */
-export async function callGeminiAPI(prompt: string, model: string = 'gemini-1.5-pro', temperature: number = 0.2) {
-  if (!GEMINI_API_KEY) {
-    throw new Error("Missing Gemini API key. Please add GEMINI_API_KEY to your Supabase secrets.");
-  }
-  
-  // Always use gemini-1.5-pro model regardless of what was passed
-  const selectedModel = 'gemini-1.5-pro';
-  const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${selectedModel}:generateContent?key=${GEMINI_API_KEY}`;
-  
-  console.log(`Calling Gemini API with model ${selectedModel}`);
-  
+export function extractJsonFromResponse(text: string): any {
   try {
-    const response = await fetch(GEMINI_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: temperature,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 8192
-        }
-      })
-    });
-
-    // Handle API errors
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Gemini API error:", errorData);
-      throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
+    // Try to parse the entire response as JSON first
+    return JSON.parse(text);
+  } catch (e) {
+    console.log("Response is not a valid JSON, trying to extract JSON from text");
+    
+    // Try to extract JSON from the text
+    const jsonRegex = /```json([\s\S]*?)```|```([\s\S]*?)```|\{[\s\S]*\}/g;
+    const match = jsonRegex.exec(text);
+    
+    if (match) {
+      const jsonStr = match[1] || match[2] || match[0];
+      try {
+        return JSON.parse(jsonStr.trim());
+      } catch (e) {
+        console.error("Failed to parse extracted JSON:", e);
+      }
     }
-
-    // Parse the response
-    const data = await response.json();
-
-    // Extract the generated text
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-      "Sorry, I couldn't generate a response.";
-
-    console.log("Gemini API response received successfully");
-    return generatedText;
-  } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    throw error;
-  }
-}
-
-/**
- * Extract JSON from Gemini response 
- */
-export function extractJsonFromResponse(generatedText: string): any {
-  try {
-    // Look for JSON in the response
-    const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    } else {
-      return { rawResponse: generatedText };
-    }
-  } catch (error) {
-    console.error("Error parsing JSON from response:", error);
-    return { rawResponse: generatedText };
+    
+    // If all parsing fails, return a basic response
+    return {
+      error: "Failed to parse AI response",
+      rawResponse: text
+    };
   }
 }

@@ -17,22 +17,34 @@ serve(async (req) => {
     
     let result;
     
-    // Handle the request based on the action
-    switch (action) {
-      case 'generate_questions':
-        result = await handleGenerateQuestions(requestData);
-        break;
-        
-      case 'evaluate_answer':
-        result = await handleEvaluateAnswer(requestData);
-        break;
-        
-      case 'evaluate_assessment':
-        result = await handleEvaluateAssessment(requestData);
-        break;
-        
-      default:
-        throw new Error("Invalid action. Supported actions are 'generate_questions', 'evaluate_answer', and 'evaluate_assessment'");
+    // Set a timeout for the entire function to prevent infinite hangs
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Function execution timed out")), 50000);
+    });
+    
+    // We'll race our handler against the timeout
+    const executeHandler = async () => {
+      switch (action) {
+        case 'generate_questions':
+          return await handleGenerateQuestions(requestData);
+          
+        case 'evaluate_answer':
+          return await handleEvaluateAnswer(requestData);
+          
+        case 'evaluate_assessment':
+          return await handleEvaluateAssessment(requestData);
+          
+        default:
+          throw new Error("Invalid action. Supported actions are 'generate_questions', 'evaluate_answer', and 'evaluate_assessment'");
+      }
+    };
+    
+    try {
+      // Race the handler against the timeout
+      result = await Promise.race([executeHandler(), timeoutPromise]);
+    } catch (error) {
+      console.error("Handler execution error:", error);
+      throw error;
     }
     
     // Return the result

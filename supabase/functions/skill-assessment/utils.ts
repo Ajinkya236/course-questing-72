@@ -62,3 +62,34 @@ export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+/**
+ * Creates context information based on sources and media files
+ */
+export function createContextInfo(sources: string[] = [], mediaFiles: any[] = []): string {
+  let contextInfo = '';
+  
+  if (sources && sources.length > 0) {
+    contextInfo += `Additional context from provided sources:\n\n`;
+    sources.forEach((source: string, index: number) => {
+      const processedSource = processSource(source);
+      contextInfo += `Source ${index + 1}: ${processedSource}\n\n`;
+    });
+  }
+  
+  if (mediaFiles && mediaFiles.length > 0) {
+    contextInfo += `Media files information:\n\n`;
+    mediaFiles.forEach((file: any, index: number) => {
+      const fileType = file.type || 'Unknown type';
+      const fileName = file.name || `File ${index + 1}`;
+      const fileUrl = file.url || '';
+      
+      contextInfo += `Media ${index + 1}: ${fileName} (${fileType})`;
+      if (fileUrl) contextInfo += ` - ${fileUrl}`;
+      contextInfo += `\n`;
+    });
+    contextInfo += `\n`;
+  }
+  
+  return contextInfo;
+}
