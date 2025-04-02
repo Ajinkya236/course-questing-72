@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Skill } from '@/components/skills/types';
 import { mockSkills } from '@/data/skillsData';
+import { Zap } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 interface SkillRelatedListProps {
   currentSkillId: number;
@@ -33,11 +35,10 @@ const SkillRelatedList: React.FC<SkillRelatedListProps> = ({
   return (
     <div className="space-y-3">
       {relatedSkills.map(relatedSkill => {
-        // Import the icon dynamically from lucide-react
-        const IconComponent = relatedSkill.icon ? 
-          require('lucide-react')[relatedSkill.icon] || 
-          require('lucide-react').Zap : 
-          require('lucide-react').Zap;
+        // Get the icon component from lucide-react
+        const IconComponent = relatedSkill.icon && 
+          (LucideIcons as Record<string, React.ComponentType<any>>)[relatedSkill.icon] || 
+          Zap;
         
         return (
           <Link 
