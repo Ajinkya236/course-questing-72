@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -22,7 +21,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { mockSkills } from '@/data/skillsData';
 import SkillHeader from '@/components/skills/SkillHeader';
 import LearningTools from '@/components/skills/LearningTools';
-import ChatInterface from '@/components/skills/ChatInterface';
+import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterface';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 import { generatePodcast } from '@/components/skills/podcast/PodcastUtils';
@@ -36,6 +35,8 @@ const SkillDetail: React.FC = () => {
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
   const [podcastAudio, setPodcastAudio] = useState<string | null>(null);
   const [podcastError, setPodcastError] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [sources, setSources] = useState<string[]>([]);
   
   const { toast } = useToast();
   
@@ -141,8 +142,6 @@ const SkillDetail: React.FC = () => {
         {/* Skill Header */}
         <SkillHeader 
           skill={skill} 
-          onGeneratePodcast={handleGeneratePodcast}
-          isGeneratingPodcast={isGeneratingPodcast}
         />
         
         {/* Main Content */}
@@ -166,12 +165,31 @@ const SkillDetail: React.FC = () => {
               </TabsList>
 
               <TabsContent value="learning" className="rounded-md mt-4">
-                <LearningTools skill={skill} />
-                <KnowledgeSources skill={skill} />
+                <LearningTools 
+                  skillName={skill.name}
+                  skillDescription={skill.description || ""}
+                  selectedProficiency={skill.proficiency}
+                  sources={sources}
+                  setChatMessages={setChatMessages}
+                  isLoading={isGeneratingPodcast}
+                  setIsLoading={setIsGeneratingPodcast}
+                />
+                <KnowledgeSources 
+                  sources={sources}
+                  setSources={setSources}
+                  onSubmit={() => {}}
+                />
               </TabsContent>
               
               <TabsContent value="chat" className="mt-4">
-                <ChatInterface skillId={skill.id} skillName={skill.name} />
+                <ChatInterface 
+                  skillName={skill.name}
+                  skillDescription={skill.description || ""}
+                  selectedProficiency={skill.proficiency}
+                  sources={sources}
+                  chatMessages={chatMessages}
+                  setChatMessages={setChatMessages}
+                />
               </TabsContent>
               
               <TabsContent value="assessment" className="mt-4">
