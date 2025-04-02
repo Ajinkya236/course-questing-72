@@ -7,6 +7,7 @@ import SkillHeader from '@/components/skills/SkillHeader';
 import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterface';
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
+import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 import { Skill } from '@/components/skills/types';
 import { mockSkills } from '@/data/skillsData';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,14 @@ const SkillDetail: React.FC = () => {
 
   const handleBack = () => {
     navigate('/skills');
+  };
+
+  const handleProficiencyChange = (value: string) => {
+    setSelectedProficiency(value);
+    toast({
+      title: "Proficiency updated",
+      description: `Your proficiency level for ${skill?.name} has been set to ${value}`,
+    });
   };
 
   const handleSourcesSubmit = () => {
@@ -76,7 +85,7 @@ const SkillDetail: React.FC = () => {
         <SkillHeader 
           skill={skill}
           proficiency={selectedProficiency}
-          onProficiencyChange={setSelectedProficiency}
+          onProficiencyChange={handleProficiencyChange}
           onBack={handleBack}
         />
         
@@ -93,6 +102,12 @@ const SkillDetail: React.FC = () => {
           </div>
           
           <div className="space-y-6">
+            <PodcastPlayer
+              skillName={skill.name}
+              skillDescription={skill.description}
+              proficiency={selectedProficiency}
+            />
+            
             <LearningTools 
               skillName={skill.name}
               skillDescription={skill.description}

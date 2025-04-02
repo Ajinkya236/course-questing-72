@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, ChevronLeft } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { Skill } from './types';
 import { proficiencyColors } from '@/data/skillsData';
 import { Link } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface SkillHeaderProps {
   skill: Skill;
@@ -49,6 +50,9 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
   // Safely check if skill and skill.icon exist before using them
   const iconToRender = skill?.icon || 'BrainCircuit';
 
+  // Proficiency levels for the selection
+  const proficiencyLevels = ['Awareness', 'Knowledge', 'Skill', 'Mastery'];
+
   return (
     <div className="mb-8">
       {onBack && (
@@ -73,11 +77,41 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
             {/* Skill Info */}
             <div className="flex-grow">
               <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
-              <div className="flex flex-wrap gap-3 mb-3">
-                <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
-                  {displayProficiency}
-                </span>
-              </div>
+              
+              {/* Proficiency Selection */}
+              {onProficiencyChange && (
+                <Tabs 
+                  value={displayProficiency} 
+                  onValueChange={onProficiencyChange}
+                  className="mb-3"
+                >
+                  <TabsList className="bg-transparent h-auto gap-2 p-1">
+                    {proficiencyLevels.map((level) => (
+                      <TabsTrigger
+                        key={level}
+                        value={level}
+                        className={`px-3 py-1 rounded-full text-xs ${
+                          displayProficiency === level 
+                            ? proficiencyColors[level as keyof typeof proficiencyColors] 
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {level}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              )}
+              
+              {/* Current Proficiency (only show if not selectable) */}
+              {!onProficiencyChange && displayProficiency && (
+                <div className="flex flex-wrap gap-3 mb-3">
+                  <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
+                    {displayProficiency}
+                  </span>
+                </div>
+              )}
+              
               <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
               
               {/* Progress bar only if there's progress */}
