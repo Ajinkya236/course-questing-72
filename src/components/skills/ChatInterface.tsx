@@ -134,7 +134,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <CardContent className="flex flex-col h-full p-4">
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[500px]"
+          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[550px]"
         >
           {messages.map((message, index) => (
             <div 

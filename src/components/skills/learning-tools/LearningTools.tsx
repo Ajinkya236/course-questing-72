@@ -11,7 +11,6 @@ interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  skillId?: number;
   sources: Source[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading: boolean;
@@ -24,7 +23,6 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   skillName,
   skillDescription,
   selectedProficiency,
-  skillId,
   sources,
   setChatMessages,
   isLoading,
@@ -59,7 +57,6 @@ const LearningTools: React.FC<LearningToolsProps> = ({
           skillName={skillName}
           skillDescription={skillDescription}
           selectedProficiency={selectedProficiency}
-          skillId={skillId}
           isBusy={combinedBusyState}
           onToolClick={handleToolGeneration}
           onGeneratePodcast={onGeneratePodcast}

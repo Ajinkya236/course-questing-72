@@ -11,7 +11,6 @@ interface LearningToolsGridProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  skillId?: number;
   isBusy: boolean;
   onToolClick: (toolType: 'summary' | 'quiz' | 'study-guide' | 'examples') => void;
   onGeneratePodcast: () => void;
@@ -22,7 +21,6 @@ const LearningToolsGrid: React.FC<LearningToolsGridProps> = ({
   skillName,
   skillDescription,
   selectedProficiency,
-  skillId,
   isBusy,
   onToolClick,
   onGeneratePodcast,
@@ -60,7 +58,6 @@ const LearningToolsGrid: React.FC<LearningToolsGridProps> = ({
         skillName={skillName}
         skillDescription={skillDescription}
         proficiency={selectedProficiency}
-        skillId={skillId}
       />
     </div>
   );
