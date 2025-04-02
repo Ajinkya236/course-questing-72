@@ -8,7 +8,7 @@ import SkillNotFound from '@/components/skills/detail/SkillNotFound';
 import SkillDetailLayout from '@/components/skills/detail/SkillDetailLayout';
 
 const SkillDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { skillId } = useParams<{ skillId: string }>();
   const [activeTab, setActiveTab] = useState('learning');
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
@@ -18,46 +18,56 @@ const SkillDetail: React.FC = () => {
   
   useEffect(() => {
     // Add a small delay to simulate loading (can be removed in production)
-    setTimeout(() => {
-      if (id) {
-        console.log("Looking for skill with ID:", id);
+    const timer = setTimeout(() => {
+      if (skillId) {
+        console.log("Looking for skill with ID:", skillId);
         
         let foundSkill = null;
         
-        // Try to find by string ID first
-        const numericId = parseInt(id);
+        // Try to find by numeric ID first
+        const numericId = parseInt(skillId);
         
         // Check if it's a valid number
         if (!isNaN(numericId)) {
           console.log("Searching for numeric ID:", numericId);
           foundSkill = mockSkills.find(s => s.id === numericId);
+          
+          // Debug: Log the matched skill if found
+          if (foundSkill) {
+            console.log("Found skill by ID:", foundSkill);
+          } else {
+            console.log("No skill found with ID:", numericId);
+            // Debug: Log available IDs
+            console.log("Available IDs:", mockSkills.map(s => s.id));
+          }
         }
         
         // If not found by ID, try by name (case insensitive)
         if (!foundSkill) {
-          console.log("Searching by name:", id);
+          console.log("Searching by name:", skillId);
           foundSkill = mockSkills.find(s => 
-            s.name.toLowerCase() === id.toLowerCase() ||
-            s.name.toLowerCase().includes(id.toLowerCase())
+            s.name.toLowerCase() === skillId.toLowerCase() ||
+            s.name.toLowerCase().includes(skillId.toLowerCase())
           );
+          
+          if (foundSkill) {
+            console.log("Found skill by name:", foundSkill);
+          }
         }
         
-        // Debug: Log all available skills
-        console.log("Available skills:", mockSkills.map(s => ({ id: s.id, name: s.name })));
-        
         if (foundSkill) {
-          console.log("Found skill:", foundSkill);
           setSkill(foundSkill);
         } else {
-          console.log("No skill found for ID or name:", id);
-          // If we're here, no skill was found. Let's set skill to null explicitly
+          console.log("No skill found for ID or name:", skillId);
           setSkill(null);
         }
       }
       
       setIsLoading(false);
     }, 300);
-  }, [id]);
+
+    return () => clearTimeout(timer);
+  }, [skillId]);
 
   if (isLoading) {
     return <SkillDetailLoader />;
