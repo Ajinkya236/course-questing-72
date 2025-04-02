@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
 import { SkillBadge } from './types';
@@ -12,20 +12,20 @@ interface AssessmentLayoutProps {
   proficiency?: string;
   children: ReactNode;
   sidebarContent?: ReactNode;
-  showBadgeModal?: boolean;
-  closeBadgeModal?: () => void;
-  latestBadge?: SkillBadge | null;
+  showBadgeModal: boolean;
+  closeBadgeModal: () => void;
+  latestBadge: SkillBadge | null;
 }
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
   handleBack,
-  skillName = "",
-  proficiency = "",
+  skillName,
+  proficiency,
   children,
   sidebarContent,
-  showBadgeModal = false,
-  closeBadgeModal = () => {},
-  latestBadge = null
+  showBadgeModal,
+  closeBadgeModal,
+  latestBadge
 }) => {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -39,7 +39,21 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
         {/* Main Content - Left Column */}
         <div className="lg:col-span-2">
           <Card>
-            <CardContent className="pt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center font-archivo-black text-gray-700">
+                {skillName && (
+                  <>
+                    <span>{skillName} Assessment</span>
+                    {proficiency && (
+                      <span className={`ml-3 text-xs px-3 py-1 rounded-full ${proficiencyColors[proficiency as keyof typeof proficiencyColors]}`}>
+                        {proficiency}
+                      </span>
+                    )}
+                  </>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {children}
             </CardContent>
           </Card>
@@ -52,13 +66,11 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       </div>
       
       {/* Badge Award Modal */}
-      {showBadgeModal && latestBadge && (
-        <BadgeAwardModal 
-          isOpen={showBadgeModal} 
-          onClose={closeBadgeModal} 
-          badge={latestBadge} 
-        />
-      )}
+      <BadgeAwardModal 
+        isOpen={showBadgeModal} 
+        onClose={closeBadgeModal} 
+        badge={latestBadge} 
+      />
     </div>
   );
 };

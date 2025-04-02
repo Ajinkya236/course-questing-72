@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -10,28 +10,22 @@ const Index = () => {
   useEffect(() => {
     // Check if user is authenticated
     const checkAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // User is logged in, redirect to home
+        navigate('/', { replace: true });
+      } else {
+        // No session, toast a welcome message
+        toast({
+          title: "Welcome to Jio Learning",
+          description: "Please sign in to access your learning resources.",
+        });
         
-        if (data && data.session) {
-          // User is logged in, redirect to home
-          navigate('/home', { replace: true });
-        } else {
-          // No session, toast a welcome message
-          toast({
-            title: "Welcome to Jio Learning",
-            description: "Please sign in to access your learning resources.",
-          });
-          
-          // Redirect to sign-in after 2 seconds
-          setTimeout(() => {
-            navigate('/sign-in', { replace: true });
-          }, 2000);
-        }
-      } catch (error) {
-        console.error("Auth check error:", error);
-        // Fallback navigation in case of error
-        navigate('/sign-in', { replace: true });
+        // Redirect to sign-in after 2 seconds
+        setTimeout(() => {
+          navigate('/sign-in', { replace: true });
+        }, 2000);
       }
     };
     

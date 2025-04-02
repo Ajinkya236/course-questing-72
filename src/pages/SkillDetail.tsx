@@ -8,16 +8,9 @@ import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterfa
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
-import { mockSkills, proficiencyColors } from '@/data/skillsData';
+import { mockSkills } from '@/data/skillsData';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -30,9 +23,7 @@ const SkillDetail: React.FC = () => {
     {role: 'assistant', content: 'Hello! I\'m your AI skill assistant. Ask me anything about this skill or use the tools on the right to explore further.'}
   ]);
 
-  // Safely find the skill from mockSkills, with fallback
-  const availableMockSkills = mockSkills || [];
-  const skill = availableMockSkills.find(s => s.id === Number(skillId)) || null;
+  const skill = mockSkills.find(s => s.id === Number(skillId));
   
   useEffect(() => {
     if (skill && !selectedProficiency) {
@@ -42,14 +33,6 @@ const SkillDetail: React.FC = () => {
 
   const handleBack = () => {
     navigate('/skills');
-  };
-
-  const handleProficiencyChange = (value: string) => {
-    setSelectedProficiency(value);
-    toast({
-      title: "Proficiency Updated",
-      description: `Proficiency level set to ${value}`,
-    });
   };
 
   const handleSourcesSubmit = () => {
@@ -90,33 +73,18 @@ const SkillDetail: React.FC = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <SkillHeader 
-            skill={skill}
-            proficiency={selectedProficiency}
-            onBack={handleBack}
-          />
-          
-          <div className="w-full md:w-48">
-            <Select value={selectedProficiency} onValueChange={handleProficiencyChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Set proficiency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Awareness">Awareness</SelectItem>
-                <SelectItem value="Knowledge">Knowledge</SelectItem>
-                <SelectItem value="Skill">Skill</SelectItem>
-                <SelectItem value="Mastery">Mastery</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <SkillHeader 
+          skill={skill}
+          proficiency={selectedProficiency}
+          onProficiencyChange={setSelectedProficiency}
+          onBack={handleBack}
+        />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div className="lg:col-span-2 space-y-6">
             <ChatInterface 
               skillName={skill.name}
-              skillDescription={skill.description || ""}
+              skillDescription={skill.description}
               selectedProficiency={selectedProficiency}
               sources={sources}
               chatMessages={chatMessages}
@@ -127,7 +95,7 @@ const SkillDetail: React.FC = () => {
           <div className="space-y-6">
             <LearningTools 
               skillName={skill.name}
-              skillDescription={skill.description || ""}
+              skillDescription={skill.description}
               selectedProficiency={selectedProficiency}
               sources={sources}
               setChatMessages={setChatMessages}

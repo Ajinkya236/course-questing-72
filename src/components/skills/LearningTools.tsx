@@ -9,10 +9,7 @@ import {
   Headphones, 
   FileSpreadsheet, 
   Info,
-  Upload,
-  Play,
-  Pause,
-  X
+  Upload
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
@@ -23,12 +20,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogClose
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { supabase } from '@/integrations/supabase/client';
 
 interface LearningToolsProps {
   skillName: string;
@@ -52,13 +47,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   const { toast } = useToast();
   const { generateResponse } = useGemini();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [podcastDialogOpen, setPodcastDialogOpen] = useState(false);
   const [currentTool, setCurrentTool] = useState<string>("");
-  const [podcastAudio, setPodcastAudio] = useState<string | null>(null);
-  const [podcastScript, setPodcastScript] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
-  const audioRef = React.useRef<HTMLAudioElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // In a real implementation, you would process the file upload
@@ -76,69 +65,10 @@ const LearningTools: React.FC<LearningToolsProps> = ({
     }
   };
 
-  const handlePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleGeneratePodcast = async () => {
-    setIsGeneratingPodcast(true);
-    toast({
-      title: "Generating Podcast",
-      description: "Creating an audio podcast for this skill. This may take a moment...",
-    });
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-podcast', {
-        body: {
-          skillName,
-          skillDescription,
-          proficiencyLevel: selectedProficiency
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      setPodcastScript(data.script);
-      setPodcastAudio(data.audioContent);
-      
-      toast({
-        title: "Podcast Generated",
-        description: "Your podcast has been created successfully!",
-      });
-    } catch (err: any) {
-      console.error("Error generating podcast:", err);
-      toast({
-        title: "Error",
-        description: err.message || "Failed to generate podcast. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGeneratingPodcast(false);
-    }
-  };
-
   const handleToolClick = async (tool: string, hasUploadedFile = false) => {
     if (tool === 'assess' && !hasUploadedFile) {
       setCurrentTool(tool);
       setUploadDialogOpen(true);
-      return;
-    }
-
-    if (tool === 'podcast') {
-      setPodcastDialogOpen(true);
       return;
     }
     
@@ -165,6 +95,10 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       case 'mindmap':
         prompt = `Create a detailed concept map or mind map for the skill "${skillName}" at the "${selectedProficiency}" level. Describe the key concepts, their relationships, and how they connect together in a hierarchical structure. Format this as a text-based mind map that could be easily converted to a visual mind map.`;
         responseTitle = "Concept Map";
+        break;
+      case 'podcast':
+        prompt = `Create a script for a microlearning podcast between a male host named Michael and a female host named Sarah explaining the key concepts of "${skillName}" at the "${selectedProficiency}" level. Make it conversational, engaging, and cover the most important aspects in a concise manner. Format this as a script with clear speaker indicators (Michael: and Sarah:). The podcast should be around 5-7 minutes long when read aloud at a normal pace.`;
+        responseTitle = "Microlearning Podcast Script";
         break;
       case 'questionnaire':
         prompt = `Create a comprehensive question bank for the skill "${skillName}" at the "${selectedProficiency}" level. Include at least 15 questions with a variety of types (multiple choice, true/false, short answer) and organize them by topic or difficulty level. For multiple choice questions, provide 4 options and indicate the correct answer. For all questions, provide comprehensive answer explanations.`;
@@ -246,7 +180,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
             disabled={isLoading}
           >
             <Headphones className="h-6 w-6 text-primary" />
-            <span className="text-xs">Podcast</span>
+            <span className="text-xs">Podcast Script</span>
           </Button>
           <Button 
             variant="outline" 
@@ -302,92 +236,6 @@ const LearningTools: React.FC<LearningToolsProps> = ({
                 </Button>
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Podcast Dialog */}
-      <Dialog open={podcastDialogOpen} onOpenChange={setPodcastDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>Skill Podcast</span>
-              <DialogClose className="rounded-full hover:bg-gray-200 p-1">
-                <X className="h-4 w-4" />
-              </DialogClose>
-            </DialogTitle>
-            <DialogDescription>
-              Listen to a microlearning podcast about {skillName} at the {selectedProficiency} level.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            {!podcastAudio && !isGeneratingPodcast && (
-              <div className="flex justify-center">
-                <Button 
-                  onClick={handleGeneratePodcast}
-                  className="flex items-center gap-2"
-                >
-                  <Headphones className="h-4 w-4" />
-                  Generate Podcast
-                </Button>
-              </div>
-            )}
-
-            {isGeneratingPodcast && (
-              <div className="text-center p-8">
-                <div className="animate-pulse flex flex-col items-center">
-                  <Headphones className="h-12 w-12 text-primary mb-4" />
-                  <p>Generating your podcast...</p>
-                  <p className="text-sm text-muted-foreground mt-2">This may take up to a minute</p>
-                </div>
-              </div>
-            )}
-
-            {podcastAudio && (
-              <div className="space-y-4">
-                <div className="bg-primary/5 rounded-lg p-4">
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <Button 
-                      onClick={handlePlayPause}
-                      variant="outline"
-                      size="icon"
-                      className="rounded-full h-12 w-12 bg-primary text-white hover:bg-primary/90"
-                    >
-                      {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-                    </Button>
-                    <div>
-                      <h3 className="font-semibold">Skill Spotlight: {skillName}</h3>
-                      <p className="text-sm text-muted-foreground">Michael & Sarah • {selectedProficiency} Level</p>
-                    </div>
-                  </div>
-                  
-                  <audio 
-                    ref={audioRef}
-                    src={`data:audio/mp3;base64,${podcastAudio}`}
-                    onEnded={() => setIsPlaying(false)}
-                    className="w-full" 
-                    controls
-                  />
-                </div>
-                
-                {podcastScript && (
-                  <div className="mt-4">
-                    <h3 className="font-semibold mb-2">Podcast Transcript</h3>
-                    <div className="max-h-[300px] overflow-y-auto bg-muted/40 p-4 rounded-md">
-                      {podcastScript.split('\n').map((line, index) => (
-                        <p key={index} className={`mb-2 ${
-                          line.startsWith('Michael:') ? 'text-blue-600 dark:text-blue-400' : 
-                          line.startsWith('Sarah:') ? 'text-rose-600 dark:text-rose-400' : ''
-                        }`}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
