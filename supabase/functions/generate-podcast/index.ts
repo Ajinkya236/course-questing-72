@@ -58,10 +58,10 @@ serve(async (req) => {
 
 // Function to generate conversation transcript using Gemini API
 async function generateTranscript(skillName: string, skillDescription: string, proficiency: string): Promise<string> {
-  const GEMINI_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
   
   if (!GEMINI_API_KEY) {
-    throw new Error('GOOGLE_API_KEY is not configured');
+    throw new Error('GEMINI_API_KEY is not configured');
   }
   
   const prompt = `
@@ -104,7 +104,14 @@ async function generateTranscript(skillName: string, skillDescription: string, p
   }
   
   const data = await response.json();
+  
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+    console.error('Unexpected Gemini API response format:', JSON.stringify(data));
+    throw new Error('Received invalid response format from Gemini API');
+  }
+  
   const generatedText = data.candidates[0].content.parts[0].text;
+  console.log("Successfully generated transcript with Gemini");
   
   return generatedText;
 }
@@ -142,11 +149,19 @@ async function generateAudio(transcript: string): Promise<string> {
     }
   }
   
+  if (segments.length === 0) {
+    throw new Error("Could not parse transcript into speaker segments");
+  }
+  
+  console.log(`Parsed transcript into ${segments.length} segments for audio generation`);
+  
   // Combine all audio segments
   const audioContents = [];
   
   for (const segment of segments) {
     try {
+      console.log(`Generating audio for segment: ${segment.text.substring(0, 30)}...`);
+      
       const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
         method: 'POST',
         headers: {
@@ -176,12 +191,19 @@ async function generateAudio(transcript: string): Promise<string> {
       }
       
       const data = await response.json();
+      
+      if (!data.audioContent) {
+        throw new Error("No audio content in Google TTS response");
+      }
+      
       audioContents.push(data.audioContent);
     } catch (error) {
       console.error('Error generating audio segment:', error);
       throw error;
     }
   }
+  
+  console.log(`Successfully generated ${audioContents.length} audio segments`);
   
   // For simplicity of this demo, we'll return the first audio segment as base64
   // In a production environment, you'd want to combine these audio segments

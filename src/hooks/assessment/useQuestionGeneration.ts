@@ -11,6 +11,7 @@ export function useQuestionGeneration() {
   
   const generateQuestionsForSkill = async (skill: any) => {
     setIsLoading(true);
+    console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
     
     try {
       // Call the skill-assessment edge function to generate questions
@@ -25,15 +26,25 @@ export function useQuestionGeneration() {
       });
       
       if (error) {
+        console.error("Error calling skill-assessment:", error);
         throw new Error(`Error calling skill-assessment: ${error.message}`);
       }
       
+      if (!data) {
+        console.error("No data returned from skill-assessment function");
+        throw new Error("No data returned from assessment generator");
+      }
+      
+      console.log("Received data from skill-assessment:", data);
+      
       if (data && data.questions && Array.isArray(data.questions)) {
+        console.log("Successfully parsed questions:", data.questions.length);
         setQuestions(data.questions);
       } else {
+        console.error("Invalid response format from assessment generator:", data);
         throw new Error("Invalid response format from assessment generator");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating questions:", error);
       toast({
         title: "Error",

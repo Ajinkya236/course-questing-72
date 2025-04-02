@@ -9,7 +9,7 @@ import SkillDetailLayout from '@/components/skills/detail/SkillDetailLayout';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
-  const [activeTab, setActiveTab] = useState('learning');
+  const [activeTab] = useState('chat'); // Default to chat tab, no longer needs to change
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
@@ -57,6 +57,12 @@ const SkillDetail: React.FC = () => {
         
         if (foundSkill) {
           setSkill(foundSkill);
+          
+          // Add welcome message to chat
+          setChatMessages([{
+            role: 'assistant',
+            content: `# Welcome to ${foundSkill.name} at ${foundSkill.proficiency} level\n\nI'm your AI learning assistant. Ask me anything about ${foundSkill.name} or use the learning tools on the right to generate resources.`
+          }]);
         } else {
           console.log("No skill found for ID or name:", skillId);
           setSkill(null);
@@ -76,6 +82,8 @@ const SkillDetail: React.FC = () => {
   if (!skill) {
     return <SkillNotFound />;
   }
+
+  const setActiveTab = () => {}; // Dummy function since we no longer need to change tabs
 
   return (
     <SkillDetailLayout

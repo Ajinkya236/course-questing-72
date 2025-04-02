@@ -12,6 +12,8 @@ export const generatePodcast = async (
   proficiency: string
 ): Promise<PodcastResponse> => {
   try {
+    console.log("Generating podcast for:", skillName, proficiency);
+    
     const { data, error } = await supabase.functions.invoke('generate-podcast', {
       body: {
         skillName,
@@ -22,9 +24,15 @@ export const generatePodcast = async (
 
     if (error) {
       console.error('Error generating podcast:', error);
-      return { error: error.message };
+      return { error: error.message || 'Failed to generate podcast' };
     }
 
+    if (!data || !data.audioUrl) {
+      console.error('Invalid response from generate-podcast function:', data);
+      return { error: 'Invalid response from podcast generation service' };
+    }
+
+    console.log("Podcast generated successfully");
     return data as PodcastResponse;
   } catch (err: any) {
     console.error('Failed to generate podcast:', err);

@@ -115,6 +115,11 @@ const LearningTools: React.FC<LearningToolsProps> = ({
     
     try {
       // Notify the user we're generating content
+      setChatMessages(prev => [...prev, {
+        role: 'user', 
+        content: `Generate ${responseTitle} for ${skillName} at ${selectedProficiency} level`
+      }]);
+      
       setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
       
       // Use Gemini 2.5 Pro model with specified prompt
@@ -125,7 +130,18 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       });
       
       // Add AI response to chat
-      setChatMessages(prev => [...prev, {role: 'assistant', content: `## ${responseTitle}\n\n${result.generatedText}`}]);
+      setChatMessages(prev => {
+        // Remove the system "Generating..." message
+        const filteredMessages = prev.filter(msg => 
+          !(msg.role === 'system' && msg.content === `Generating ${responseTitle}...`)
+        );
+        
+        // Add the new response
+        return [...filteredMessages, {
+          role: 'assistant', 
+          content: `## ${responseTitle}\n\n${result.generatedText}`
+        }];
+      });
     } catch (error) {
       console.error("Error getting response:", error);
       toast({
@@ -133,6 +149,11 @@ const LearningTools: React.FC<LearningToolsProps> = ({
         description: "Failed to generate content. Please try again.",
         variant: "destructive"
       });
+      
+      // Remove the system "Generating..." message
+      setChatMessages(prev => prev.filter(msg => 
+        !(msg.role === 'system' && msg.content === `Generating ${responseTitle}...`)
+      ));
     } finally {
       setIsLoading(false);
     }

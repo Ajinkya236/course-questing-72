@@ -50,8 +50,8 @@ const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
         
         <SkillHeader skill={skill} />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          <div className="col-span-1 lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
+          <div className="col-span-1 lg:col-span-3">
             <SkillDetailTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
