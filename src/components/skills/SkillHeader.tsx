@@ -1,133 +1,81 @@
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, ChevronLeft } from 'lucide-react';
-import { Button } from '../ui/button';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Skill } from './types';
 import { proficiencyColors } from '@/data/skillsData';
-import { Link } from 'react-router-dom';
+
+interface ProficiencyOption {
+  label: string;
+  value: string;
+  color: string;
+}
+
+const proficiencyOptions: ProficiencyOption[] = [
+  { label: 'Beginner', value: 'beginner', color: 'bg-blue-500' },
+  { label: 'Intermediate', value: 'intermediate', color: 'bg-green-500' },
+  { label: 'Advanced', value: 'advanced', color: 'bg-purple-500' },
+  { label: 'Expert', value: 'expert', color: 'bg-red-500' }
+];
 
 interface SkillHeaderProps {
   skill: Skill;
-  progress?: number;
-  skillName?: string;
-  skillDescription?: string;
-  proficiency?: string;
-  onProficiencyChange?: (value: string) => void;
-  onBack?: () => void;
+  proficiency: string;
+  onProficiencyChange: (proficiency: string) => void;
+  onBack: () => void;
 }
-
-// Helper function to get the appropriate icon
-const getSkillIcon = (icon?: string) => {
-  switch(icon) {
-    case 'Award': return <Award className="h-10 w-10 text-primary" />;
-    case 'BrainCircuit': return <BrainCircuit className="h-10 w-10 text-primary" />;
-    case 'Lightbulb': return <Lightbulb className="h-10 w-10 text-primary" />;
-    case 'Code': return <Code className="h-10 w-10 text-primary" />;
-    case 'Database': return <Database className="h-10 w-10 text-primary" />;
-    case 'Rocket': return <Rocket className="h-10 w-10 text-primary" />;
-    case 'TrendingUp': return <TrendingUp className="h-10 w-10 text-primary" />;
-    default: return <BrainCircuit className="h-10 w-10 text-primary" />;
-  }
-};
 
 const SkillHeader: React.FC<SkillHeaderProps> = ({ 
   skill, 
-  progress = 0,
-  skillName,
-  skillDescription,
   proficiency,
   onProficiencyChange,
-  onBack
+  onBack 
 }) => {
-  // Handle both direct skill prop and individual props
-  const displayName = skillName || (skill?.name || '');
-  const displayDescription = skillDescription || (skill?.description || '');
-  const displayProficiency = proficiency || (skill?.proficiency || '');
-  
-  // Safely check if skill and skill.icon exist before using them
-  const iconToRender = skill?.icon || 'BrainCircuit';
-
-  const proficiencyLevels = ["Awareness", "Knowledge", "Skill", "Mastery"];
-
   return (
-    <div className="mb-8">
-      {onBack && (
-        <Button 
-          variant="ghost" 
-          onClick={onBack} 
-          className="mb-4 flex items-center gap-1"
-          size="sm"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back to Skills
-        </Button>
-      )}
+    <>
+      <Button 
+        variant="ghost" 
+        onClick={onBack} 
+        className="mb-4 flex items-center gap-1"
+        size="sm"
+      >
+        <ChevronLeft className="h-4 w-4" /> Back to Skills
+      </Button>
       
-      <Card className="border-0 shadow-sm bg-white dark:bg-gray-800">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            {/* Skill Icon */}
-            <div className="bg-primary/10 p-4 rounded-full">
-              {getSkillIcon(iconToRender)}
-            </div>
-            
-            {/* Skill Info */}
-            <div className="flex-grow">
-              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
-              
-              {onProficiencyChange ? (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {proficiencyLevels.map((level) => (
-                    <Button
-                      key={level}
-                      variant="outline"
-                      size="sm"
-                      className={`rounded-full px-3 py-1 text-xs ${displayProficiency === level ? proficiencyColors[level as keyof typeof proficiencyColors] : ''}`}
-                      onClick={() => onProficiencyChange(level)}
-                    >
-                      {level}
-                    </Button>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-3 mb-3">
-                  <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
-                    {displayProficiency}
-                  </span>
-                </div>
-              )}
-              
-              <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
-              
-              {/* Progress bar only if there's progress */}
-              {progress > 0 && (
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Your progress</span>
-                    <span>{progress}%</span>
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </div>
-              )}
-            </div>
-            
-            {/* Action Button - Changed to "Earn Skill" */}
-            <div>
-              <Button 
-                asChild
-                className="w-full md:w-auto"
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-2xl font-bold">{skill.name}</h1>
+          <p className="text-muted-foreground">{skill.description}</p>
+        </div>
+        
+        <Badge 
+          className={`${proficiencyColors[proficiency] || proficiencyColors.intermediate} px-3 py-1 text-white`}
+        >
+          {proficiency}
+        </Badge>
+      </div>
+      
+      <div className="mb-6">
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium">Set your proficiency level:</label>
+          <div className="flex flex-wrap gap-2 mt-1">
+            {proficiencyOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => onProficiencyChange(option.value)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all
+                  ${proficiency === option.value ? 
+                    'ring-2 ring-primary ring-offset-2' : 'opacity-80 hover:opacity-100'}
+                  ${option.color} text-white`}
               >
-                <Link to={`/skills/${skill?.id}/assessment`}>
-                  <Award className="h-4 w-4 mr-2" />
-                  Earn Skill
-                </Link>
-              </Button>
-            </div>
+                {option.label}
+              </button>
+            ))}
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
 

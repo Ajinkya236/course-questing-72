@@ -26,24 +26,15 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ skillName, proficiency })
     setIsLoading(true);
     try {
       // Generate a conversation script first
-      const scriptResponse = await supabase.functions.invoke('gemini-generate-response', {
+      const scriptResponse = await supabase.functions.invoke('gemini-generate-transcript', {
         body: {
-          prompt: `Create a conversational podcast script between Michael (male) and Sarah (female) discussing ${skillName} at a ${proficiency} level. 
-          Format it exactly as follows with each speaker's name followed by a colon and their dialogue:
-          
-          Michael: Introduction line here
-          Sarah: Response here
-          Michael: Next line
-          
-          The podcast should be informative, engaging, and about 2-3 minutes long when read aloud. 
-          Include an introduction, 3-4 key concepts about ${skillName}, and a conclusion with takeaways.`,
-          structuredFormat: true,
-          model: 'gemini-1.5-pro'
+          skillName,
+          proficiency
         }
       });
 
       if (scriptResponse.error) {
-        throw new Error(`Script generation failed: ${scriptResponse.error}`);
+        throw new Error(`Script generation failed: ${scriptResponse.error.message}`);
       }
 
       const script = scriptResponse.data.generatedText;
@@ -54,7 +45,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ skillName, proficiency })
       });
 
       if (audioResponse.error) {
-        throw new Error(`Audio generation failed: ${audioResponse.error}`);
+        throw new Error(`Audio generation failed: ${audioResponse.error.message}`);
       }
 
       // Convert base64 audio to URL
