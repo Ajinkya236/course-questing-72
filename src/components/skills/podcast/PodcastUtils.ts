@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface PodcastResponse {
   audioUrl?: string;
@@ -7,12 +8,27 @@ interface PodcastResponse {
   error?: string;
 }
 
+// Track if a podcast generation is in progress
+let isGeneratingPodcast = false;
+
 export const generatePodcast = async (
   skillName: string,
   skillDescription: string,
   proficiency: string
 ): Promise<PodcastResponse> => {
+  // If already generating, prevent duplicate requests
+  if (isGeneratingPodcast) {
+    toast({
+      title: "Podcast generation in progress",
+      description: "Please wait for the current podcast to finish generating.",
+      variant: "default",
+    });
+    return { error: "A podcast is already being generated. Please wait." };
+  }
+
   try {
+    isGeneratingPodcast = true;
+    
     const { data, error } = await supabase.functions.invoke('generate-podcast', {
       body: {
         skillName,
@@ -37,5 +53,7 @@ export const generatePodcast = async (
   } catch (err: any) {
     console.error("Unexpected error in podcast generation:", err);
     return { error: err.message || "An unexpected error occurred" };
+  } finally {
+    isGeneratingPodcast = false;
   }
 };

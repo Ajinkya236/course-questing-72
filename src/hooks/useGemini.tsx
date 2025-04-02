@@ -20,6 +20,16 @@ export function useGemini() {
     model = 'gemini-1.5-pro',
     structuredFormat = true
   }: GenerateResponseParams) => {
+    // If already loading, don't make another request
+    if (loading) {
+      toast({
+        title: "Request in progress",
+        description: "Please wait for the current request to complete.",
+        variant: "default",
+      });
+      return { generatedText: "A request is already in progress. Please wait." };
+    }
+
     setLoading(true);
     setError(null);
 

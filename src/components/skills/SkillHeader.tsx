@@ -92,7 +92,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
                       disabled={!onProficiencyChange}
                       className={`px-3 py-1 rounded-full text-xs ${
                         displayProficiency === level 
-                          ? proficiencyColors[level as keyof typeof proficiencyColors] 
+                          ? "bg-gray-800 text-white hover:bg-gray-700" 
                           : "bg-gray-100 text-gray-700"
                       }`}
                     >

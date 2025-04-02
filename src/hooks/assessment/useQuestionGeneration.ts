@@ -10,6 +10,16 @@ export function useQuestionGeneration() {
   const { toast } = useToast();
   
   const generateQuestionsForSkill = async (skill: any) => {
+    // If already loading, prevent duplicate requests
+    if (isLoading) {
+      toast({
+        title: "Generation in progress",
+        description: "Please wait for the current assessment to finish generating.",
+        variant: "default",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
     
@@ -49,7 +59,7 @@ export function useQuestionGeneration() {
       toast({
         title: "Error",
         description: "Failed to generate assessment questions. Please try again.",
-        variant: "destructive",
+        variant: "default",
       });
       
       // Fallback to some default questions for demo purposes

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
@@ -8,23 +8,12 @@ import {
   Network, 
   Headphones, 
   FileSpreadsheet, 
-  Info,
-  Upload
+  Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
 import { ChatMessage } from './ChatInterface';
 import { Source } from './knowledge/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 
 interface LearningToolsProps {
   skillName: string;
@@ -47,29 +36,14 @@ const LearningTools: React.FC<LearningToolsProps> = ({
 }) => {
   const { toast } = useToast();
   const { generateResponse } = useGemini();
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [currentTool, setCurrentTool] = useState<string>("");
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    // In a real implementation, you would process the file upload
-    // For now, we'll just simulate a file upload
-    toast({
-      title: "File Received",
-      description: "Your file has been received and will be processed.",
-    });
-    
-    setUploadDialogOpen(false);
-    
-    // After closing the dialog, generate the assessment with the file content context
-    if (currentTool) {
-      handleToolClick(currentTool, true);
-    }
-  };
-
-  const handleToolClick = async (tool: string, hasUploadedFile = false) => {
-    if (tool === 'assess' && !hasUploadedFile) {
-      setCurrentTool(tool);
-      setUploadDialogOpen(true);
+  const handleToolClick = async (tool: string) => {
+    if (isLoading) {
+      toast({
+        title: "Request in progress",
+        description: "Please wait for the current request to complete.",
+        variant: "default",
+      });
       return;
     }
     
@@ -124,11 +98,11 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       
       setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
       
-      // Use Gemini 2.5 Pro model with specified prompt
+      // Use Gemini 1.5 Pro model with specified prompt
       const result = await generateResponse({
         prompt: prompt,
         context: context,
-        model: "gemini-1.5-pro" // Specify Gemini 2.5 Pro model
+        model: "gemini-1.5-pro" // Specify Gemini 1.5 Pro model
       });
       
       // Add AI response to chat
@@ -149,7 +123,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       toast({
         title: "Error",
         description: "Failed to generate content. Please try again.",
-        variant: "destructive"
+        variant: "default",
       });
       
       // Remove the system "Generating..." message
@@ -162,107 +136,68 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   };
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Learning Tools</CardTitle>
-          <CardDescription>Generate personalized learning resources</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3">
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('assess')} 
-            disabled={isLoading}
-          >
-            <FileQuestion className="h-6 w-6 text-primary" />
-            <span className="text-xs">Assessment Plan</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('notes')} 
-            disabled={isLoading}
-          >
-            <FileText className="h-6 w-6 text-primary" />
-            <span className="text-xs">Study Notes</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('mindmap')} 
-            disabled={isLoading}
-          >
-            <Network className="h-6 w-6 text-primary" />
-            <span className="text-xs">Concept Map</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('podcast')} 
-            disabled={isLoading}
-          >
-            <Headphones className="h-6 w-6 text-primary" />
-            <span className="text-xs">Podcast Script</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('questionnaire')} 
-            disabled={isLoading}
-          >
-            <FileSpreadsheet className="h-6 w-6 text-primary" />
-            <span className="text-xs">Question Bank</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('overview')} 
-            disabled={isLoading}
-          >
-            <Info className="h-6 w-6 text-primary" />
-            <span className="text-xs">Skill Overview</span>
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* File Upload Dialog for Assessment */}
-      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upload Content for Assessment</DialogTitle>
-            <DialogDescription>
-              Upload documents, videos, texts, PDFs, PPTs, or other materials to help customize your skill assessment.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="file-upload">Upload File</Label>
-              <div className="border-2 border-dashed rounded-md p-6 text-center">
-                <Upload className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  Drag and drop your files here, or click to browse
-                </p>
-                <Input 
-                  id="file-upload" 
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileUpload}
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => document.getElementById('file-upload')?.click()}
-                >
-                  Browse Files
-                </Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Learning Tools</CardTitle>
+        <CardDescription>Generate personalized learning resources</CardDescription>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-3">
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('assess')} 
+          disabled={isLoading}
+        >
+          <FileQuestion className="h-6 w-6 text-primary" />
+          <span className="text-xs">Assessment Plan</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('notes')} 
+          disabled={isLoading}
+        >
+          <FileText className="h-6 w-6 text-primary" />
+          <span className="text-xs">Study Notes</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('mindmap')} 
+          disabled={isLoading}
+        >
+          <Network className="h-6 w-6 text-primary" />
+          <span className="text-xs">Concept Map</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('podcast')} 
+          disabled={isLoading}
+        >
+          <Headphones className="h-6 w-6 text-primary" />
+          <span className="text-xs">Podcast Script</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('questionnaire')} 
+          disabled={isLoading}
+        >
+          <FileSpreadsheet className="h-6 w-6 text-primary" />
+          <span className="text-xs">Question Bank</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-auto py-4 flex flex-col items-center gap-2" 
+          onClick={() => handleToolClick('overview')} 
+          disabled={isLoading}
+        >
+          <Info className="h-6 w-6 text-primary" />
+          <span className="text-xs">Skill Overview</span>
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

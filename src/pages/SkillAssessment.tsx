@@ -8,6 +8,7 @@ import AssessmentSidebar from '@/components/skills/assessment/AssessmentSidebar'
 import AssessmentLayout from '@/components/skills/assessment/AssessmentLayout';
 import AssessmentTabs from '@/components/skills/assessment/AssessmentTabs';
 import { Question } from '@/components/skills/assessment/types';
+import { useToast } from '@/hooks/use-toast';
 
 const SkillAssessment: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -15,6 +16,7 @@ const SkillAssessment: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("assessment");
   const [customProficiency, setCustomProficiency] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const {
     questions,
@@ -42,6 +44,19 @@ const SkillAssessment: React.FC = () => {
     
     // This will trigger the useAssessment hook to load data
   }, [skillId, navigate]);
+
+  // Add retry functionality for assessment generation
+  const handleRetryGenerateQuestions = () => {
+    if (selectedSkill) {
+      toast({
+        title: "Generating new assessment",
+        description: `Creating a new assessment for ${selectedSkill.name} at ${selectedSkill.proficiency} level.`,
+        variant: "default",
+      });
+      
+      generateQuestionsForSkill(selectedSkill);
+    }
+  };
 
   // Handle proficiency change
   const handleProficiencyChange = (newProficiency: string) => {
@@ -145,6 +160,7 @@ const SkillAssessment: React.FC = () => {
           handleBack={handleBack}
           previousAttempts={previousAttempts}
           passRate={PASS_RATE}
+          onRetryGenerate={handleRetryGenerateQuestions}
         />
       </AssessmentLayout>
     </PageLayout>

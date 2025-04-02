@@ -71,7 +71,7 @@ async function generateTranscript(skillName: string, skillDescription: string, p
     Context about the skill: ${skillDescription || "A valuable professional skill"}
 
     Requirements:
-    - The conversation should be 15-25 minutes long when spoken (approximately 3000-5000 words)
+    - The conversation should be 15-20 minutes long when spoken (approximately 3000-4000 words)
     - Start with Michael introducing the topic and welcoming Sarah
     - Make it educational but conversational and easy to understand
     - Include at least 6-8 key points about the skill that would be valuable for someone at the ${proficiency} level
