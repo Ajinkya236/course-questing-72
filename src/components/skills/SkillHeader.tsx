@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skill } from './types';
-import { proficiencyColors } from '@/data/skillsData';
 
 interface ProficiencyOption {
   label: string;
@@ -18,6 +17,14 @@ const proficiencyOptions: ProficiencyOption[] = [
   { label: 'Advanced', value: 'advanced', color: 'bg-purple-500' },
   { label: 'Expert', value: 'expert', color: 'bg-red-500' }
 ];
+
+// Define a mapping for user-level proficiencies
+const proficiencyColors: Record<string, string> = {
+  beginner: 'bg-blue-500',
+  intermediate: 'bg-green-500',
+  advanced: 'bg-purple-500',
+  expert: 'bg-red-500'
+};
 
 interface SkillHeaderProps {
   skill: Skill;
@@ -50,7 +57,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
         </div>
         
         <Badge 
-          className={`${proficiencyColors[proficiency as keyof typeof proficiencyColors] || proficiencyColors.beginner} px-3 py-1 text-white`}
+          className={`${proficiencyColors[proficiency] || 'bg-blue-500'} px-3 py-1 text-white`}
         >
           {proficiency}
         </Badge>

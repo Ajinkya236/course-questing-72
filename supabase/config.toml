@@ -2,15 +2,10 @@
 project_id = "vxohrnvgfleqnnwzkecm"
 
 [api]
-# Port to use for the API URL.
 port = 54321
-# Enable PostgreSQL branching.
 schemas = ["public", "storage", "graphql_public"]
-prepared_statement_cache_size = 0
-storage = { enabled = true }
 
 [db]
-# Port to use for the local database URL.
 port = 54322
 shadow_port = 54320
 major_version = 15
@@ -35,9 +30,6 @@ enabled = true
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["https://localhost:3000"]
 jwt_expiry = 3600
-enable_refresh_tokens = true
-refresh_token_reuse_interval = 10
-enable_signup = true
 
 [functions]
 [functions.gemini-generate-response]
@@ -46,6 +38,3 @@ verify_jwt = false
 verify_jwt = false
 [functions.gemini-generate-transcript]
 verify_jwt = false
-
-[vector]
-enabled = false
