@@ -17,14 +17,16 @@ const Skills: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <PageLayout>
       <Helmet>
         <title>Skills | Learning Portal</title>
       </Helmet>
       
-      <SkillsHeader skills={mockSkills} onSearch={setFilteredSkills} />
-      <SkillsGrid skills={filteredSkills} onSkillClick={handleSkillClick} />
-    </div>
+      <div className="container mx-auto px-4 py-8">
+        <SkillsHeader skills={mockSkills} onSearch={setFilteredSkills} />
+        <SkillsGrid skills={filteredSkills} onSkillClick={handleSkillClick} />
+      </div>
+    </PageLayout>
   );
 };
 
