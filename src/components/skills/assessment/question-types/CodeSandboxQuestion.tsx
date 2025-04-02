@@ -1,59 +1,41 @@
-
-import React, { useState } from 'react';
-import { Textarea } from "@/components/ui/textarea";
-import { Code } from 'lucide-react';
+import React from 'react';
 import { Question } from '../types';
 
-interface CodeSandboxQuestionProps {
+export interface CodeSandboxQuestionProps {
   question: Question;
   onAnswerChange: (answer: string) => void;
+  disabled?: boolean; // Added disabled prop
 }
 
 const CodeSandboxQuestion: React.FC<CodeSandboxQuestionProps> = ({ 
   question, 
-  onAnswerChange 
+  onAnswerChange,
+  disabled = false // Default to false
 }) => {
-  const [codeSolution, setCodeSolution] = useState(question.initialCode || '// Write your code here');
-  
-  const handleCodeChange = (value: string) => {
-    setCodeSolution(value);
-    onAnswerChange(value);
-  };
-
   return (
-    <div className="space-y-4">
-      <div className="p-4 border rounded-lg flex items-center gap-3 bg-muted/50">
-        <Code className="h-6 w-6 text-primary" />
-        <div>
-          <p className="font-medium">Code Sandbox</p>
-          <p className="text-sm text-muted-foreground">Complete the coding exercise to demonstrate your skills</p>
+    <div>
+      <div className="mb-3">
+        <div className="bg-gray-800 text-white p-3 rounded-t-lg font-mono text-sm overflow-x-auto">
+          {question.initialCode}
         </div>
+        <textarea
+          className="w-full min-h-[200px] p-3 border border-t-0 rounded-b-lg font-mono"
+          value={(question.userAnswer as string) || ""}
+          onChange={(e) => onAnswerChange(e.target.value)}
+          placeholder="Write your code here..."
+          disabled={disabled}
+        />
       </div>
-      
-      {question.testCases && question.testCases.length > 0 && (
-        <div className="p-4 border rounded-lg bg-muted/30">
-          <p className="font-medium mb-2">Test Cases:</p>
-          <ul className="list-disc pl-5 text-sm space-y-1">
+      {question.testCases && (
+        <div className="mt-4">
+          <h4 className="font-medium mb-2">Test Cases:</h4>
+          <ul className="list-disc pl-5">
             {question.testCases.map((test, idx) => (
               <li key={idx}>{test}</li>
             ))}
           </ul>
         </div>
       )}
-      
-      {question.expectedOutput && (
-        <div className="p-4 border rounded-lg bg-muted/30">
-          <p className="font-medium mb-2">Expected Output:</p>
-          <p className="text-sm font-mono">{question.expectedOutput}</p>
-        </div>
-      )}
-      
-      <Textarea
-        placeholder="Write your code here..."
-        className="min-h-[200px] font-mono text-sm"
-        value={question.userAnswer as string || question.initialCode || '// Write your code here'}
-        onChange={(e) => handleCodeChange(e.target.value)}
-      />
     </div>
   );
 };

@@ -1,33 +1,36 @@
-
 import React from 'react';
-import { Textarea } from "@/components/ui/textarea";
 import { Question } from '../types';
 
-interface VideoResponseQuestionProps {
+export interface VideoResponseQuestionProps {
   question: Question;
   onAnswerChange: (answer: string) => void;
+  disabled?: boolean; // Added disabled prop
 }
 
 const VideoResponseQuestion: React.FC<VideoResponseQuestionProps> = ({ 
   question, 
-  onAnswerChange 
+  onAnswerChange,
+  disabled = false // Default to false
 }) => {
   return (
-    <div className="space-y-4">
+    <div>
       {question.videoUrl && (
-        <div className="aspect-video">
+        <div className="relative w-full mb-4 rounded-lg overflow-hidden aspect-video">
           <iframe
             src={question.videoUrl}
-            className="w-full h-full rounded-lg"
+            className="absolute top-0 left-0 w-full h-full"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
         </div>
       )}
-      <Textarea
-        placeholder="Type your analysis of the video..."
-        className="min-h-[120px]"
-        value={question.userAnswer as string || ''}
+      <textarea
+        className="w-full min-h-[120px] p-3 border rounded-lg"
+        value={(question.userAnswer as string) || ""}
         onChange={(e) => onAnswerChange(e.target.value)}
+        placeholder="After watching the video, type your response here..."
+        disabled={disabled}
       />
     </div>
   );

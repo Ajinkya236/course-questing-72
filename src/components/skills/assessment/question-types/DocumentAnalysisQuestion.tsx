@@ -1,38 +1,38 @@
-
 import React from 'react';
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { FileText } from 'lucide-react';
 import { Question } from '../types';
 
-interface DocumentAnalysisQuestionProps {
+export interface DocumentAnalysisQuestionProps {
   question: Question;
   onAnswerChange: (answer: string) => void;
+  disabled?: boolean; // Added disabled prop
 }
 
 const DocumentAnalysisQuestion: React.FC<DocumentAnalysisQuestionProps> = ({ 
   question, 
-  onAnswerChange 
+  onAnswerChange,
+  disabled = false // Default to false
 }) => {
   return (
-    <div className="space-y-4">
+    <div>
       {question.documentUrl && (
-        <div className="p-4 border rounded-lg flex items-center gap-3 bg-muted/50">
-          <FileText className="h-6 w-6 text-primary" />
-          <div>
-            <p className="font-medium">Document for Analysis</p>
-            <p className="text-sm text-muted-foreground">Review this document to answer the question</p>
-          </div>
-          <Button variant="ghost" size="sm" className="ml-auto" onClick={() => window.open(question.documentUrl, '_blank')}>
-            View
-          </Button>
+        <div className="mb-4">
+          <a 
+            href={question.documentUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline flex items-center"
+          >
+            <span className="mr-2">Open document for analysis</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
         </div>
       )}
-      <Textarea
-        placeholder="Type your analysis of the document..."
-        className="min-h-[120px]"
-        value={question.userAnswer as string || ''}
+      <textarea
+        className="w-full min-h-[150px] p-3 border rounded-lg"
+        value={(question.userAnswer as string) || ""}
         onChange={(e) => onAnswerChange(e.target.value)}
+        placeholder="Based on the document, provide your analysis here..."
+        disabled={disabled}
       />
     </div>
   );
