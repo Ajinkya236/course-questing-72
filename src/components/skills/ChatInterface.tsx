@@ -88,7 +88,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       if (sources && sources.length > 0) {
         context += "Consider these additional knowledge sources:\n";
         sources.forEach((source, index) => {
-          context += `${index + 1}. ${source.title || 'Source'}: ${source.url || source.content || 'No content'}\n`;
+          const sourceTitle = source.content ? source.content.substring(0, 30) + '...' : 'Source';
+          const sourceContent = source.content || 'No content';
+          context += `${index + 1}. ${sourceTitle}: ${sourceContent}\n`;
         });
       }
       

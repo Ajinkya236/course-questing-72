@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SquareDashedCircle, Pen, Mic, ScrollText, FileTextIcon, RefreshCw, Lightbulb } from 'lucide-react';
+import { SquareDashed, Pen, Mic, ScrollText, FileTextIcon, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ChatMessage } from '@/components/skills/ChatInterface';
 import { Source } from '@/components/skills/knowledge/types';
@@ -88,7 +88,8 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       if (sources.length > 0) {
         prompt += "\n\nConsider the following sources in your response:";
         sources.forEach((source, index) => {
-          prompt += `\n${index + 1}. ${source.title} - ${source.url}`;
+          const sourceContent = source.content || 'No content available';
+          prompt += `\n${index + 1}. ${sourceContent.substring(0, 100)}...`;
         });
       }
 
@@ -178,7 +179,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
             disabled={isBusy}
             className="h-auto py-3 flex flex-col items-center text-center"
           >
-            <SquareDashedCircle className="h-4 w-4 mb-1" />
+            <SquareDashed className="h-4 w-4 mb-1" />
             <span>Examples</span>
           </Button>
 
