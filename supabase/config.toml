@@ -81,7 +81,7 @@ refresh_token_reuse_interval = 10
 enable_signup = true
 
 [functions]
-# Port to use for Functions.
+# Port to use for Functions server.
 port = 54321
 
 [functions.serve]
