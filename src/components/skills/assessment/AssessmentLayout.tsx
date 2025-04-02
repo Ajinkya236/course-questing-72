@@ -48,15 +48,17 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
                 <div className="flex flex-wrap gap-2 mt-2">
                   {proficiencyOptions.map((option) => {
                     const isSelected = proficiency === option;
-                    const bgColorClass = isSelected ? `bg-${proficiencyColors[option.toLowerCase()]}` : '';
-                    const hoverClass = isSelected ? `hover:bg-${proficiencyColors[option.toLowerCase()]}/90` : '';
                     
                     return (
                       <Button
                         key={option}
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        className={`rounded-full ${bgColorClass} ${hoverClass} ${isSelected ? 'text-white font-medium' : ''}`}
+                        className={`rounded-full ${
+                          isSelected 
+                            ? `bg-gray-800 text-white hover:bg-gray-700` 
+                            : ''
+                        }`}
                         onClick={() => onProficiencyChange(option)}
                       >
                         {option}

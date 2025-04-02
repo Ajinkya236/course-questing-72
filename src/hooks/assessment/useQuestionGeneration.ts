@@ -27,7 +27,7 @@ export function useQuestionGeneration() {
     
     try {
       // Set a timeout to detect stalled API calls
-      const timeoutPromise = new Promise((_, reject) => {
+      const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
         setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
       });
       
@@ -45,9 +45,7 @@ export function useQuestionGeneration() {
       // Race the API call against the timeout
       const { data, error } = await Promise.race([
         apiCallPromise, 
-        timeoutPromise.then(() => {
-          throw new Error("Request timed out after 60 seconds");
-        })
+        timeoutPromise
       ]) as any;
       
       if (error) {
