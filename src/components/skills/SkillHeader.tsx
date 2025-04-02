@@ -1,131 +1,136 @@
 
-import React from 'react';
-import { Calendar, BookOpen, Award, Clock } from 'lucide-react';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, ChevronLeft } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Skill } from './types';
+import { proficiencyColors } from '@/data/skillsData';
 import { Link } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface SkillHeaderProps {
-  skill: any;
+  skill: Skill;
+  progress?: number;
+  skillName?: string;
+  skillDescription?: string;
+  proficiency?: string;
   onProficiencyChange?: (value: string) => void;
+  onBack?: () => void;
 }
 
-const SkillHeader: React.FC<SkillHeaderProps> = ({ skill, onProficiencyChange }) => {
-  const proficiencyOptions = ["Awareness", "Knowledge", "Skill", "Mastery"];
-  const currentProficiency = skill.proficiency || proficiencyOptions[0];
+// Helper function to get the appropriate icon
+const getSkillIcon = (icon?: string) => {
+  switch(icon) {
+    case 'Award': return <Award className="h-10 w-10 text-primary" />;
+    case 'BrainCircuit': return <BrainCircuit className="h-10 w-10 text-primary" />;
+    case 'Lightbulb': return <Lightbulb className="h-10 w-10 text-primary" />;
+    case 'Code': return <Code className="h-10 w-10 text-primary" />;
+    case 'Database': return <Database className="h-10 w-10 text-primary" />;
+    case 'Rocket': return <Rocket className="h-10 w-10 text-primary" />;
+    case 'TrendingUp': return <TrendingUp className="h-10 w-10 text-primary" />;
+    default: return <BrainCircuit className="h-10 w-10 text-primary" />;
+  }
+};
+
+const SkillHeader: React.FC<SkillHeaderProps> = ({ 
+  skill, 
+  progress = 0,
+  skillName,
+  skillDescription,
+  proficiency,
+  onProficiencyChange,
+  onBack
+}) => {
+  // Handle both direct skill prop and individual props
+  const displayName = skillName || (skill?.name || '');
+  const displayDescription = skillDescription || (skill?.description || '');
+  const displayProficiency = proficiency || (skill?.proficiency || '');
   
-  // Format date string in a human-readable format
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
-  };
-  
-  // Get the initials for the avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
-  };
-  
-  // Calculate progress percentage based on proficiency level
-  const calculateProgress = (proficiency: string) => {
-    const index = proficiencyOptions.indexOf(proficiency);
-    return ((index + 1) / proficiencyOptions.length) * 100;
-  };
+  // Safely check if skill and skill.icon exist before using them
+  const iconToRender = skill?.icon || 'BrainCircuit';
+
+  // Proficiency levels for the selection
+  const proficiencyLevels = ['Awareness', 'Knowledge', 'Skill', 'Mastery'];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-12 w-12 border">
-            <AvatarFallback className="bg-primary/10 text-primary">
-              {getInitials(skill.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-2xl font-bold">{skill.name}</h1>
-            <div className="flex flex-wrap items-center gap-2 mt-1">
-              <Badge variant="outline" className="text-xs font-normal">
-                {skill.category || 'Technology'}
-              </Badge>
-              <div className="flex items-center text-muted-foreground text-xs">
-                <Calendar className="h-3 w-3 mr-1" />
-                {formatDate(skill.dateAdded) || 'Recently added'}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          <div className="flex-1 min-w-[150px]">
-            <div className="text-sm font-medium mb-1">Current Proficiency</div>
-            {onProficiencyChange ? (
-              <Select value={currentProficiency} onValueChange={onProficiencyChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select proficiency" />
-                </SelectTrigger>
-                <SelectContent>
-                  {proficiencyOptions.map(option => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Badge className="bg-primary">{currentProficiency}</Badge>
-            )}
-          </div>
-          
-          <Button asChild className="shrink-0">
-            <Link to={`/skills/${skill.id}/assessment`}>
-              <Award className="h-4 w-4 mr-2" />
-              Earn Skill
-            </Link>
-          </Button>
-        </div>
-      </div>
-      
-      {skill.description && (
-        <div className="bg-muted/60 rounded-lg p-4 space-y-3">
-          <div className="flex items-start gap-3">
-            <BookOpen className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-medium">Description</h3>
-              <p className="text-muted-foreground mt-1">{skill.description}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-medium">Proficiency Progress</h3>
-              <div className="mt-2 space-y-1">
-                <Progress value={calculateProgress(currentProficiency)} className="h-2" />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  {proficiencyOptions.map((level, index) => (
-                    <span key={level} className={currentProficiency === level ? "font-medium text-primary" : ""}>
-                      {level}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="mb-8">
+      {onBack && (
+        <Button 
+          variant="ghost" 
+          onClick={onBack} 
+          className="mb-4 flex items-center gap-1"
+          size="sm"
+        >
+          <ChevronLeft className="h-4 w-4" /> Back to Skills
+        </Button>
       )}
+      
+      <Card className="border-0 shadow-sm bg-white dark:bg-gray-800">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            {/* Skill Icon */}
+            <div className="bg-primary/10 p-4 rounded-full">
+              {getSkillIcon(iconToRender)}
+            </div>
+            
+            {/* Skill Info */}
+            <div className="flex-grow">
+              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
+              
+              {/* Proficiency Selection */}
+              <Tabs 
+                value={displayProficiency} 
+                onValueChange={onProficiencyChange || (() => {})}
+                className="mb-3"
+              >
+                <TabsList className="bg-transparent h-auto gap-2 p-1">
+                  {proficiencyLevels.map((level) => (
+                    <TabsTrigger
+                      key={level}
+                      value={level}
+                      disabled={!onProficiencyChange}
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        displayProficiency === level 
+                          ? "bg-gray-800 text-white hover:bg-gray-700" 
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {level}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+              
+              <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
+              
+              {/* Progress bar only if there's progress */}
+              {progress > 0 && (
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Your progress</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <Progress value={progress} className="h-2" />
+                </div>
+              )}
+            </div>
+            
+            {/* Action Button - Changed to "Earn Skill" */}
+            <div>
+              <Button 
+                asChild
+                className="w-full md:w-auto"
+              >
+                <Link to={`/skills/${skill?.id}/assessment`}>
+                  <Award className="h-4 w-4 mr-2" />
+                  Earn Skill
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

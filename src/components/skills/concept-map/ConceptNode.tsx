@@ -24,25 +24,6 @@ const ConceptNode: React.FC<ConceptNodeProps> = ({
   const proficiencyLevel = concept.proficiencyLevel || 'Intermediate';
   const colorClass = proficiencyColors[proficiencyLevel as keyof typeof proficiencyColors] || '';
   
-  // Calculate branch styles for the "fractal tree" effect
-  const getBranchStyle = (index: number, total: number) => {
-    if (!hasChildren || !isExpanded) return {};
-    
-    // For the first level, spread children horizontally
-    if (level === 0) {
-      return {};
-    }
-    
-    // For deeper levels, use a fractal-like pattern
-    const angle = -30 + (60 * (index / Math.max(1, total - 1)));
-    const distance = 12 + level * 8;
-    
-    return {
-      transform: `rotate(${angle}deg) translateX(${distance}px)`,
-      transformOrigin: 'left center',
-    };
-  };
-  
   return (
     <div key={concept.id} className="mb-3" style={{ marginLeft: `${level * 24}px` }}>
       <div className="flex items-start">
@@ -56,15 +37,14 @@ const ConceptNode: React.FC<ConceptNodeProps> = ({
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-3 pl-2 border-l-2 border-dashed border-gray-200 ml-2 space-y-1">
-                {concept.children.map((child, index) => (
-                  <div key={child.id} style={getBranchStyle(index, concept.children.length)}>
-                    <ConceptNode 
-                      concept={child} 
-                      level={level + 1} 
-                      expandedNodes={expandedNodes} 
-                      toggleNode={toggleNode} 
-                    />
-                  </div>
+                {concept.children.map(child => (
+                  <ConceptNode 
+                    key={child.id}
+                    concept={child} 
+                    level={level + 1} 
+                    expandedNodes={expandedNodes} 
+                    toggleNode={toggleNode} 
+                  />
                 ))}
               </div>
             </CollapsibleContent>
@@ -74,14 +54,14 @@ const ConceptNode: React.FC<ConceptNodeProps> = ({
         )}
         
         <div className="concept-node flex-1">
-          <div className={`p-3 rounded-lg shadow-sm border ${level === 0 ? 'bg-primary/10 border-primary/20' : 'bg-card hover:bg-accent/50 border-border'} transition-colors`}>
+          <div className={`p-2 rounded-lg border ${level === 0 ? 'bg-primary/10 border-primary/20' : 'bg-card hover:bg-accent/50 border-border'} transition-colors`}>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
                 <Lightbulb size={16} className="mr-2 text-primary" />
                 <span className="font-medium">{concept.name}</span>
               </div>
               {concept.proficiencyLevel && (
-                <Badge variant="outline" className={`text-xs ${colorClass} ml-2`}>
+                <Badge variant="outline" className={`text-xs ${colorClass}`}>
                   {concept.proficiencyLevel}
                 </Badge>
               )}

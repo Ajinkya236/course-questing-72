@@ -33,9 +33,9 @@ export const generatePodcast = async (
     
     console.log("Calling generate-podcast function with:", { skillName, skillDescription, proficiency });
     
-    // Increase timeout to 120 seconds for longer generations
+    // Increase timeout to 90 seconds for longer generations
     const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timed out after 120 seconds")), 120000);
+      setTimeout(() => reject(new Error("Request timed out after 90 seconds")), 90000);
     });
     
     const functionPromise = supabase.functions.invoke('generate-podcast', {

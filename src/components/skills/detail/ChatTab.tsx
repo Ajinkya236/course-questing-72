@@ -37,25 +37,22 @@ const ChatTab: React.FC<ChatTabProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-2 flex flex-col space-y-6">
-        <div className="h-[600px] md:h-[700px] border rounded-lg shadow-sm">
-          <ChatInterface
-            skillName={skill.name}
-            skillDescription={skill.description || ''}
-            selectedProficiency={skill.proficiency}
-            sources={sources}
-            messages={chatMessages}
-            setMessages={setChatMessages}
-            placeholder={`Ask me anything about ${skill.name}...`}
-            apiParams={{ 
-              skillName: skill.name,
-              skillProficiency: skill.proficiency,
-              sources: sources
-            }}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            containerClassName="h-full"
-          />
-        </div>
+        <ChatInterface
+          skillName={skill.name}
+          skillDescription={skill.description || ''}
+          selectedProficiency={skill.proficiency}
+          sources={sources}
+          messages={chatMessages}
+          setMessages={setChatMessages}
+          placeholder={`Ask me anything about ${skill.name}...`}
+          apiParams={{ 
+            skillName: skill.name,
+            skillProficiency: skill.proficiency,
+            sources: sources
+          }}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
         
         <PodcastPlayer
           skillName={skill.name}
