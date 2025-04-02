@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from "./components/theme-provider";
@@ -82,6 +81,8 @@ const routeObjects = [
     { path: "/skills/trending", element: <PageLayout><Skills /></PageLayout>, key: "skills-trending" },
     
     { path: "/skills/:skillId/assessment", element: <SkillAssessment />, key: "skill-assessment" },
+    
+    { path: "/skills/:skillId/concept-map", element={<ConceptMapFullPage />} },
     
     { path: "/admin/dashboard", element: <PageLayout><AdminDashboard /></PageLayout>, key: "admin-dashboard" },
     { path: "/admin/courses", element: <PageLayout><AdminCourses /></PageLayout>, key: "admin-courses" },

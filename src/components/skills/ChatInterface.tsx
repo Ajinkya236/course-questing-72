@@ -1,12 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, HelpCircle } from "lucide-react";
 import { useGemini } from '@/hooks/useGemini';
 import { Source } from '@/components/skills/knowledge/types';
 import ReactMarkdown from 'react-markdown';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -47,6 +48,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const { generateResponse, loading: internalLoading } = useGemini();
   
   const isLoading = externalLoading || internalLoading;
+  
+  // Sample questions based on the skill
+  const sampleQuestions = [
+    `What are the core concepts of ${skillName}?`,
+    `How can I practice ${skillName} at ${selectedProficiency} level?`,
+    `What are common challenges when learning ${skillName}?`,
+    `How is ${skillName} applied in real-world scenarios?`,
+    `What resources do you recommend for learning ${skillName}?`
+  ];
 
   useEffect(() => {
     // Scroll to bottom on new messages
@@ -55,10 +65,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const handleSendMessage = async (message = inputMessage) => {
+    if (!message.trim() || isLoading) return;
     
-    const userMessage = inputMessage.trim();
+    const userMessage = message.trim();
     setInputMessage('');
     
     // Add user message to chat
@@ -126,13 +136,47 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       handleSendMessage();
     }
   };
+  
+  const handleSampleQuestion = (question: string) => {
+    setInputMessage(question);
+    handleSendMessage(question);
+  };
 
   return (
     <Card className="flex flex-col h-full">
+      <CardHeader className="px-4 py-3 border-b">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">AI Learning Assistant</h3>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <HelpCircle className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-4">
+              <div className="space-y-2">
+                <h4 className="font-medium">Sample Questions</h4>
+                <div className="flex flex-col space-y-2">
+                  {sampleQuestions.map((question, index) => (
+                    <Button 
+                      key={index} 
+                      variant="ghost" 
+                      className="justify-start text-left text-sm h-auto py-2"
+                      onClick={() => handleSampleQuestion(question)}
+                    >
+                      {question}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </CardHeader>
       <CardContent className="flex flex-col h-full p-4">
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[650px]" // Increased height from 550px to 650px
+          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[750px]" // Increased height
         >
           {messages.map((message, index) => (
             <div 
@@ -180,7 +224,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             disabled={isLoading}
           />
           <Button 
-            onClick={handleSendMessage} 
+            onClick={() => handleSendMessage()}
             className="ml-2 h-10 px-3"
             disabled={isLoading || !inputMessage.trim()}
           >

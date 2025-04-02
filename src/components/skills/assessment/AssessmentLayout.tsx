@@ -1,93 +1,100 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ChevronLeft } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BadgeAwardModal from './BadgeAwardModal';
-import { proficiencyColors } from "@/data/skillsData";
 
 interface AssessmentLayoutProps {
+  children: React.ReactNode;
+  sidebarContent: React.ReactNode;
   handleBack: () => void;
   skillName?: string;
   proficiency?: string;
   proficiencyOptions?: string[];
-  onProficiencyChange?: (proficiency: string) => void;
-  showBadgeModal: boolean;
-  closeBadgeModal: () => void;
-  latestBadge: any;
-  sidebarContent: React.ReactNode;
-  children: React.ReactNode;
+  onProficiencyChange?: (value: string) => void;
+  showBadgeModal?: boolean;
+  closeBadgeModal?: () => void;
+  latestBadge?: any;
 }
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
+  children,
+  sidebarContent,
   handleBack,
-  skillName,
-  proficiency,
+  skillName = 'Skill',
+  proficiency = 'Intermediate',
   proficiencyOptions = [],
   onProficiencyChange,
-  showBadgeModal,
-  closeBadgeModal,
-  latestBadge,
-  sidebarContent,
-  children
+  showBadgeModal = false,
+  closeBadgeModal = () => {},
+  latestBadge
 }) => {
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto py-6 px-4">
       <div className="mb-6">
-        <Button variant="outline" size="sm" onClick={handleBack}>
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Back to Skill
-        </Button>
-      </div>
-      
-      <div className="mb-6 flex flex-col space-y-4">
-        <h1 className="text-3xl font-bold">{skillName} Assessment</h1>
-        {proficiency && (
-          <div className="flex flex-col space-y-2">
-            <div className="flex flex-row items-center gap-2 flex-wrap">
-              {proficiencyOptions && proficiencyOptions.length > 0 && onProficiencyChange && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {proficiencyOptions.map((option) => {
-                    const isSelected = proficiency === option;
-                    
-                    return (
-                      <Button
-                        key={option}
-                        variant={isSelected ? "default" : "outline"}
-                        size="sm"
-                        className={`rounded-full ${
-                          isSelected 
-                            ? `bg-gray-800 text-white hover:bg-gray-700` 
-                            : ''
-                        }`}
-                        onClick={() => onProficiencyChange(option)}
-                      >
-                        {option}
-                      </Button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="order-2 lg:order-1 col-span-1 lg:col-span-3">
-          {children}
+        <div className="flex items-center justify-between">
+          <Button variant="outline" size="sm" onClick={handleBack}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <h1 className="text-2xl font-bold text-center">{skillName} Assessment</h1>
+          <div className="w-[73px]"></div> {/* Empty div for alignment */}
         </div>
-        
-        <div className="order-1 lg:order-2 col-span-1">
+      </div>
+
+      <div className="my-4">
+        <Card>
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Current Proficiency:</span>
+              <Badge variant="outline" className="font-semibold">
+                {proficiency}
+              </Badge>
+            </div>
+            
+            {proficiencyOptions.length > 0 && onProficiencyChange && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm">Target Level:</span>
+                <Select
+                  value={proficiency}
+                  onValueChange={onProficiencyChange}
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {proficiencyOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="col-span-1 space-y-6">
           {sidebarContent}
         </div>
+        <div className="col-span-1 md:col-span-3">
+          {children}
+        </div>
       </div>
       
-      <BadgeAwardModal
-        isOpen={showBadgeModal}
-        onClose={closeBadgeModal}
-        badge={latestBadge}
-        skillName={skillName || ""}
-      />
+      {showBadgeModal && latestBadge && (
+        <BadgeAwardModal
+          isOpen={showBadgeModal}
+          onClose={closeBadgeModal}
+          badge={latestBadge}
+        />
+      )}
     </div>
   );
 };

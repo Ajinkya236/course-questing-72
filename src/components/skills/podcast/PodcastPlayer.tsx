@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Mic, Loader2, FileText, Download } from 'lucide-react';
+import { Mic, Loader2, FileText, Download, Volume2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
@@ -27,8 +27,15 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isMockMode, setIsMockMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('transcript');
+  const [activeTab, setActiveTab] = useState<string>('audio');
   const { toast } = useToast();
+
+  // Auto-generate podcast on component mount if not in chat mode
+  useEffect(() => {
+    if (!inChatMode && !transcript && !audioUrl && !isGenerating) {
+      handleGeneratePodcast();
+    }
+  }, []);
 
   const handleGeneratePodcast = async () => {
     if (isGenerating) {
@@ -60,7 +67,6 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.transcript) {
         setTranscript(result.transcript);
-        setActiveTab('transcript');
         
         toast({
           title: "Transcript Generated",
@@ -71,12 +77,27 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
+        setActiveTab('audio');
+        
+        toast({
+          title: "Podcast Generated",
+          description: "Your learning podcast is ready to play.",
+          variant: "success",
+        });
+      } else {
+        setActiveTab('transcript');
       }
       
       setIsMockMode(result.mockMode || false);
     } catch (error: any) {
       console.error("Podcast generation error:", error);
       setErrorMessage(error.message || "Failed to generate podcast");
+      
+      toast({
+        title: "Generation Failed",
+        description: error.message || "Failed to generate podcast. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -100,11 +121,14 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   };
 
   return (
-    <Card className={inChatMode ? "mt-4" : ""}>
+    <Card className={`${inChatMode ? "mt-4" : ""} overflow-hidden`}>
       <CardContent className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Skill Learning Podcast</h3>
+            <h3 className="text-lg font-semibold flex items-center">
+              <Volume2 className="h-5 w-5 text-primary mr-2" />
+              Skill Learning Podcast
+            </h3>
             {!transcript && !audioUrl && (
               <Button 
                 onClick={handleGeneratePodcast}
@@ -128,8 +152,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           
           {(transcript || audioUrl) ? (
             <div className="space-y-4">
-              {transcript && (
-                <div className="flex justify-end mb-2">
+              <div className="flex justify-between mb-2">
+                {transcript && (
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -139,13 +163,37 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                     <Download className="h-4 w-4" />
                     Download Transcript
                   </Button>
-                </div>
-              )}
+                )}
+                
+                {(transcript || audioUrl) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGeneratePodcast}
+                    disabled={isGenerating}
+                    className="flex items-center gap-2"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> 
+                        Regenerating...
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4" /> 
+                        Regenerate
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
               
               <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="audio" disabled={!audioUrl}>Audio</TabsTrigger>
-                  <TabsTrigger value="transcript">Transcript</TabsTrigger>
+                  <TabsTrigger value="audio" disabled={!audioUrl && !transcript}>
+                    {audioUrl ? "Audio Player" : "Audio (Unavailable)"}
+                  </TabsTrigger>
+                  <TabsTrigger value="transcript" disabled={!transcript}>Transcript</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="audio">
@@ -155,7 +203,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                       title={`${skillName} Learning Podcast`}
                       subtitle={`${proficiency} level overview`}
                     />
-                  ) : (
+                  ) : transcript ? (
                     <div className="bg-muted rounded-md p-6 text-center">
                       <p>Audio generation is currently unavailable.</p>
                       <p className="text-sm text-muted-foreground mt-2">
@@ -165,13 +213,17 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                         View Transcript
                       </Button>
                     </div>
+                  ) : (
+                    <div className="bg-muted rounded-md p-6 text-center">
+                      <p>No podcast available. Please generate one first.</p>
+                    </div>
                   )}
                 </TabsContent>
                 
                 <TabsContent value="transcript">
                   {transcript ? (
                     <div className="bg-muted rounded-md p-6 max-h-[400px] overflow-y-auto">
-                      <div className="prose prose-sm">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
                         <h4 className="text-md font-semibold mb-2">{skillName} Podcast Transcript</h4>
                         <div className="whitespace-pre-line">
                           {transcript}
