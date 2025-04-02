@@ -27,7 +27,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isMockMode, setIsMockMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('transcript');
+  const [activeTab, setActiveTab] = useState<string>('audio');
   const { toast } = useToast();
 
   const handleGeneratePodcast = async () => {
@@ -60,7 +60,6 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.transcript) {
         setTranscript(result.transcript);
-        setActiveTab('transcript');
         
         toast({
           title: "Transcript Generated",
@@ -71,6 +70,9 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
+        setActiveTab('audio');
+      } else {
+        setActiveTab('transcript');
       }
       
       setIsMockMode(result.mockMode || false);
@@ -128,8 +130,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           
           {(transcript || audioUrl) ? (
             <div className="space-y-4">
-              {transcript && (
-                <div className="flex justify-end mb-2">
+              <div className="flex justify-end gap-2 mb-2">
+                {transcript && (
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -139,8 +141,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                     <Download className="h-4 w-4" />
                     Download Transcript
                   </Button>
-                </div>
-              )}
+                )}
+              </div>
               
               <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2">
@@ -170,8 +172,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                 
                 <TabsContent value="transcript">
                   {transcript ? (
-                    <div className="bg-muted rounded-md p-6 max-h-[400px] overflow-y-auto">
-                      <div className="prose prose-sm">
+                    <div className="bg-muted rounded-md p-6 max-h-[500px] overflow-y-auto">
+                      <div className="prose prose-sm max-w-none">
                         <h4 className="text-md font-semibold mb-2">{skillName} Podcast Transcript</h4>
                         <div className="whitespace-pre-line">
                           {transcript}

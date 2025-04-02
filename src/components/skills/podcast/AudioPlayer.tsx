@@ -130,6 +130,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, subtitle }) 
           onTimeUpdate={handleTimeUpdate}
           onVolumeChange={handleVolumeChange}
           onToggleMute={toggleMute}
+          audioUrl={audioUrl}
         />
       </CardContent>
     </Card>
