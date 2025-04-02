@@ -15,6 +15,7 @@ import {
   Users,
   BookmarkPlus,
   Share2,
+  Upload,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { mockSkills } from '@/data/skillsData';
