@@ -90,6 +90,10 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <ChatInterface
+                skillName={skill.name}
+                skillDescription={skill.description || ''}
+                selectedProficiency={skill.proficiency}
+                sources={sources}
                 messages={chatMessages}
                 setMessages={setChatMessages}
                 placeholder={`Ask me anything about ${skill.name}...`}
