@@ -46,21 +46,23 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
             <div className="flex flex-row items-center gap-2 flex-wrap">
               {proficiencyOptions && proficiencyOptions.length > 0 && onProficiencyChange && (
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {proficiencyOptions.map((option) => (
-                    <Button
-                      key={option}
-                      variant={proficiency === option ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full ${
-                        proficiency === option 
-                          ? `bg-${proficiencyColors[option.toLowerCase()]} hover:bg-${proficiencyColors[option.toLowerCase()]}/90`
-                          : ""
-                      }`}
-                      onClick={() => onProficiencyChange(option)}
-                    >
-                      {option}
-                    </Button>
-                  ))}
+                  {proficiencyOptions.map((option) => {
+                    const isSelected = proficiency === option;
+                    const bgColorClass = isSelected ? `bg-${proficiencyColors[option.toLowerCase()]}` : '';
+                    const hoverClass = isSelected ? `hover:bg-${proficiencyColors[option.toLowerCase()]}/90` : '';
+                    
+                    return (
+                      <Button
+                        key={option}
+                        variant={isSelected ? "default" : "outline"}
+                        size="sm"
+                        className={`rounded-full ${bgColorClass} ${hoverClass} ${isSelected ? 'text-white font-medium' : ''}`}
+                        onClick={() => onProficiencyChange(option)}
+                      >
+                        {option}
+                      </Button>
+                    );
+                  })}
                 </div>
               )}
             </div>

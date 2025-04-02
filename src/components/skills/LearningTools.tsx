@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,8 +7,7 @@ import {
   Network, 
   Headphones, 
   FileSpreadsheet, 
-  Info,
-  Mic
+  Info
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
@@ -204,17 +202,6 @@ const LearningTools: React.FC<LearningToolsProps> = ({
           <Info className="h-6 w-6 text-primary" />
           <span className="text-xs">Skill Overview</span>
         </Button>
-        {onGeneratePodcast && (
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2 col-span-2" 
-            onClick={() => handleToolClick('podcast-audio')} 
-            disabled={isLoading}
-          >
-            <Mic className="h-6 w-6 text-primary" />
-            <span className="text-xs">Generate Podcast</span>
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

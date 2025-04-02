@@ -1,10 +1,8 @@
 
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRecommendations } from '@/hooks/useRecommendations';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Source } from '@/components/skills/knowledge/types';
-import { Course } from '@/types/course';
-import CourseCard from '@/components/CourseCard';
+import RecommendedCourses from '@/components/skills/RecommendedCourses';
 
 interface SkillTabContentProps {
   skill: any;
@@ -19,67 +17,39 @@ const SkillTabContent: React.FC<SkillTabContentProps> = ({
   setSources,
   children
 }) => {
-  const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
-  const { getRecommendations, loading } = useRecommendations();
-
-  useEffect(() => {
-    const fetchRecommendedCourses = async () => {
-      // Get courses related to the skill
-      const courses = await getRecommendations('followed_skills', 6, [skill.id.toString()]);
-      setRecommendedCourses(courses);
-    };
-
-    fetchRecommendedCourses();
-  }, [skill.id, getRecommendations]);
+  const [activeContentTab, setActiveContentTab] = useState<string>("resources");
 
   return (
     <div className="space-y-8">
       {children}
       
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Recommended Courses</h2>
+      <Tabs 
+        value={activeContentTab} 
+        onValueChange={setActiveContentTab} 
+        className="w-full"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="resources">Learning Resources</TabsTrigger>
+          <TabsTrigger value="certification">Certification Path</TabsTrigger>
+        </TabsList>
         
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="w-full h-60 animate-pulse">
-                <div className="h-40 bg-muted rounded-t-lg"></div>
-                <CardContent className="p-4">
-                  <div className="h-4 w-3/4 bg-muted rounded mb-2"></div>
-                  <div className="h-4 w-1/2 bg-muted rounded"></div>
-                </CardContent>
-              </Card>
-            ))}
+        <TabsContent value="resources" className="mt-6 space-y-8">
+          <RecommendedCourses 
+            skillName={skill.name}
+            selectedProficiency={skill.proficiency}
+          />
+        </TabsContent>
+        
+        <TabsContent value="certification" className="mt-6">
+          <div className="bg-muted p-6 rounded-lg text-center">
+            <h3 className="text-lg font-medium mb-2">Certification Path</h3>
+            <p className="text-muted-foreground">
+              This feature is coming soon. You'll be able to see recommended certifications
+              for {skill.name} at the {skill.proficiency} level.
+            </p>
           </div>
-        ) : recommendedCourses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recommendedCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                id={course.id}
-                title={course.title}
-                description={course.description}
-                imageUrl={course.imageUrl}
-                category={course.category}
-                duration={course.duration}
-                rating={course.rating}
-                trainingCategory={course.trainingCategory}
-                isBookmarked={course.isBookmarked}
-                previewUrl={course.previewUrl}
-                videoUrl={course.videoUrl}
-                isHot={course.isHot}
-                isNew={course.isNew}
-              />
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">No courses found for this skill. Try another proficiency level.</p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
