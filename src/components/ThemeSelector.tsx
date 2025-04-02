@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/components/ThemeProvider';
+import { useTheme } from 'next-themes';
 
 const ThemeSelector = () => {
   const { theme, setTheme } = useTheme();

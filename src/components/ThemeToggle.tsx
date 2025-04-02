@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from 'next-themes';
 
 interface ThemeToggleProps {
   variant?: 'default' | 'outline' | 'ghost';
