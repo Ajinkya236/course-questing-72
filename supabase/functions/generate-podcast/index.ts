@@ -27,13 +27,14 @@ serve(async (req) => {
     // Generate podcast script using Gemini
     const transcript = await generatePodcastTranscript(skillName, skillDescription, proficiency);
     
-    // For now, we'll return a mock audio URL and the transcript
-    // This way we avoid the timeout issues with actual audio generation
+    // We now skip the audio generation due to API rate limiting issues
+    // and return only the transcript
     return new Response(
       JSON.stringify({
         transcript: transcript,
-        audioUrl: "https://example.com/mock-podcast.mp3", // Just return a placeholder URL
-        mockMode: true // Indicate this is not actual audio
+        audioUrl: null,
+        mockMode: true,
+        message: "Podcast transcript generated successfully. Audio generation is currently unavailable due to API rate limits."
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -43,7 +44,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error generating podcast:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || "An unexpected error occurred" }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
@@ -72,37 +73,59 @@ The script should be conversational, engaging, and educational. Write it as if i
 `;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048,
-        },
-      }),
-    });
-
-    const data = await response.json();
+    // Add retry mechanism with exponential backoff
+    const maxRetries = 3;
+    let retryCount = 0;
+    let lastError = null;
     
-    if (!response.ok) {
-      console.error("Gemini API error:", data);
-      throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
+    while (retryCount < maxRetries) {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: prompt }]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 2048,
+            },
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          console.error("Gemini API error:", data);
+          throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
+        }
+
+        const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+          "Sorry, I couldn't generate a podcast transcript.";
+        
+        return transcript;
+      } catch (error) {
+        lastError = error;
+        retryCount++;
+        
+        if (retryCount < maxRetries) {
+          // Exponential backoff: wait 2^retryCount * 1000 ms before retrying
+          const waitTime = Math.pow(2, retryCount) * 1000;
+          console.log(`Attempt ${retryCount} failed. Retrying in ${waitTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
     }
-
-    const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-      "Sorry, I couldn't generate a podcast transcript.";
     
-    return transcript;
+    // If we've exhausted all retries
+    throw lastError || new Error("Failed to generate transcript after multiple attempts");
   } catch (error) {
     console.error("Error generating transcript:", error);
     throw error;

@@ -1,147 +1,100 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Question, QuestionFeedback } from '@/components/skills/assessment/types';
+import { Question } from '@/components/skills/assessment/types';
+import { toast } from '@/hooks/use-toast';
 
 export function useApiSubmission() {
-  const { toast } = useToast();
-
-  // Submit a single answer to the API for evaluation
   const evaluateAnswer = async (
     question: Question,
     userAnswer: string | string[],
     skillName: string,
     proficiency: string
-  ): Promise<QuestionFeedback | null> => {
+  ) => {
     try {
-      console.log("Submitting answer for evaluation:", {
-        skill: skillName,
-        proficiency: proficiency,
-        question: question.id,
-        answer: userAnswer
-      });
-      
-      // Set a timeout to detect stalled API calls
+      // Set a timeout to detect stalled API calls - increased to 45 seconds
       const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-        setTimeout(() => reject(new Error("Request timed out after 30 seconds")), 30000);
+        setTimeout(() => reject(new Error("Request timed out after 45 seconds")), 45000);
       });
       
-      // Call the skill-assessment edge function to evaluate the answer
-      const functionPromise = supabase.functions.invoke('skill-assessment', {
+      // Create the API call promise - always use gemini-1.5-flash
+      const apiCallPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'evaluate_answer',
+          question,
+          userAnswer,
           skill: skillName,
           proficiency: proficiency,
-          question: {
-            id: question.id,
-            type: question.type,
-            text: question.text,
-            userAnswer: userAnswer,
-            correctAnswer: question.correctAnswer || ''
-          },
-          model: 'gemini-1.5-pro'
+          model: 'gemini-1.5-flash' // Always use flash model for speed
         },
       });
       
-      // Race the function call against the timeout
+      // Race the API call against the timeout
       const { data, error } = await Promise.race([
-        functionPromise,
+        apiCallPromise, 
         timeoutPromise
-      ]);
+      ]) as any;
       
       if (error) {
-        throw new Error(`Error evaluating answer: ${error.message}`);
+        console.error("Error calling skill-assessment evaluate_answer:", error);
+        throw new Error(`Error calling assessment evaluator: ${error.message}`);
       }
       
-      if (data) {
-        const feedback: QuestionFeedback = {
-          questionId: question.id,
-          correct: data.correct,
-          explanation: data.explanation || "No detailed explanation available.",
-          improvement: data.improvement || null,
-          nextSteps: data.nextSteps || []
-        };
-        
-        return feedback;
-      } else {
-        throw new Error("No data returned from answer evaluation");
-      }
+      return data;
     } catch (error: any) {
       console.error("Error evaluating answer:", error);
       toast({
-        title: "Error",
-        description: "Failed to evaluate answer. Please try again.",
+        title: "Evaluation failed",
+        description: "We couldn't evaluate your answer. Please try again.",
         variant: "destructive",
       });
-      
       return null;
     }
   };
   
-  // Submit the entire assessment to the API for evaluation
   const evaluateAssessment = async (
-    assessmentQuestions: Question[],
+    questions: Question[],
     skillName: string,
     proficiency: string
   ) => {
     try {
-      console.log("Submitting assessment for evaluation:", {
-        skill: skillName,
-        proficiency: proficiency,
-        questionsCount: assessmentQuestions.length
-      });
-      
-      // Set a timeout to detect stalled API calls
+      // Set a timeout to detect stalled API calls - increased to 45 seconds
       const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-        setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
+        setTimeout(() => reject(new Error("Request timed out after 45 seconds")), 45000);
       });
       
-      // Call the skill-assessment edge function to evaluate the assessment
-      const functionPromise = supabase.functions.invoke('skill-assessment', {
+      // Create the API call promise - always use gemini-1.5-flash
+      const apiCallPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'evaluate_assessment',
+          questions,
           skill: skillName,
           proficiency: proficiency,
-          userAnswers: assessmentQuestions.map(q => ({
-            id: q.id,
-            type: q.type,
-            text: q.text,
-            userAnswer: q.userAnswer || '',
-            correctAnswer: q.correctAnswer || ''
-          })),
-          sources: [],
-          model: 'gemini-1.5-pro'
+          model: 'gemini-1.5-flash' // Always use flash model for speed
         },
       });
       
-      // Race the function call against the timeout
+      // Race the API call against the timeout
       const { data, error } = await Promise.race([
-        functionPromise,
+        apiCallPromise, 
         timeoutPromise
-      ]);
+      ]) as any;
       
       if (error) {
+        console.error("Error calling skill-assessment evaluate_assessment:", error);
         throw new Error(`Error evaluating assessment: ${error.message}`);
       }
       
-      if (data) {
-        return {
-          score: data.score || 0,
-          feedback: data.feedback || [],
-          improvements: data.improvements || [],
-          nextSteps: data.nextSteps || []
-        };
-      } else {
-        throw new Error("No data returned from assessment evaluation");
-      }
+      return data;
     } catch (error: any) {
       console.error("Error evaluating assessment:", error);
+      toast({
+        title: "Assessment evaluation failed",
+        description: "We couldn't evaluate your assessment. Please try again.",
+        variant: "destructive",
+      });
       throw error;
     }
   };
 
-  return {
-    evaluateAnswer,
-    evaluateAssessment
-  };
+  return { evaluateAnswer, evaluateAssessment };
 }

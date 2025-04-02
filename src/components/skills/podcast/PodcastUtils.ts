@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 interface PodcastResponse {
-  audioUrl?: string;
+  audioUrl?: string | null;
   transcript?: string;
   mockMode?: boolean;
   error?: string;
+  message?: string;
 }
 
 // Track if a podcast generation is in progress
@@ -32,9 +33,9 @@ export const generatePodcast = async (
     
     console.log("Calling generate-podcast function with:", { skillName, skillDescription, proficiency });
     
-    // Call the Supabase edge function with timeout handling
+    // Increase timeout to 45 seconds
     const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timed out after 30 seconds")), 30000);
+      setTimeout(() => reject(new Error("Request timed out after 45 seconds")), 45000);
     });
     
     const functionPromise = supabase.functions.invoke('generate-podcast', {
@@ -53,20 +54,26 @@ export const generatePodcast = async (
 
     if (error) {
       console.error("Error generating podcast:", error);
+      
+      // Check if it's a timeout error
+      const errorMessage = error.message?.includes("timed out") ? 
+        "The request timed out. Please try again later." : 
+        error.message || "An unexpected error occurred";
+      
       toast({
         title: "Failed to generate podcast",
-        description: error.message || "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       });
-      return { error: error.message || "Failed to generate podcast" };
+      
+      return { error: errorMessage };
     }
 
     console.log("Received podcast data:", data);
 
     if (data) {
-      const responseMessage = data.mockMode 
-        ? "Podcast transcript generated successfully" 
-        : "Podcast generated successfully";
+      const responseMessage = data.message || 
+        (data.mockMode ? "Podcast transcript generated successfully" : "Podcast generated successfully");
         
       toast({
         title: responseMessage,
@@ -79,7 +86,8 @@ export const generatePodcast = async (
       return {
         audioUrl: data.audioUrl || null,
         transcript: data.transcript || null,
-        mockMode: data.mockMode || false
+        mockMode: data.mockMode || false,
+        message: data.message
       };
     }
 

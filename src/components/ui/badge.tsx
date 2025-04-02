@@ -16,12 +16,6 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        jio: "border-transparent bg-jio text-jio-foreground hover:bg-jio/80",
-        "jio-outline": "border-jio text-jio",
-        "jio-gradient": "border-transparent jio-gradient text-white",
-        "pro-blue": "border-transparent bg-jio-dark text-white hover:bg-jio-dark/80",
-        "modern-light": "border-transparent bg-jio text-white hover:bg-jio/80",
-        "focused-dark": "border-transparent bg-jio-light text-white hover:bg-jio-light/80",
       },
     },
     defaultVariants: {
