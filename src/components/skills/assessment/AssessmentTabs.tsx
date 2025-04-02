@@ -24,6 +24,7 @@ interface AssessmentTabsProps {
   handleBack: () => void;
   previousAttempts: any[];
   passRate: number;
+  onRetryGenerate?: () => void; // Add the missing prop
 }
 
 const AssessmentTabs: React.FC<AssessmentTabsProps> = ({
@@ -40,7 +41,8 @@ const AssessmentTabs: React.FC<AssessmentTabsProps> = ({
   handleRetryAssessment,
   handleBack,
   previousAttempts,
-  passRate
+  passRate,
+  onRetryGenerate
 }) => {
   const renderQuestion = () => {
     if (isLoading) {

@@ -10,16 +10,6 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Source } from './knowledge/types';
 
-interface ChatInterfaceProps {
-  skillName: string;
-  skillDescription: string;
-  selectedProficiency: string;
-  sources: string[] | Source[];
-  chatMessages: ChatMessage[];
-  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  onToolResponse?: (role: string, content: string) => void;
-}
-
 export type ChatMessage = {
   role: string;
   content: string;
@@ -31,28 +21,56 @@ export type ChatMessage = {
   }[];
 };
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({
+interface ChatInterfaceProps {
+  skillName: string;
+  skillDescription: string;
+  selectedProficiency: string;
+  sources: string[] | Source[];
+  chatMessages?: ChatMessage[];
+  setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  messages?: ChatMessage[];
+  setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  placeholder?: string;
+  apiParams?: any;
+  isLoading?: boolean;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  onToolResponse?: (role: string, content: string) => void;
+}
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({
   skillName,
   skillDescription,
   selectedProficiency,
   sources,
-  chatMessages,
-  setChatMessages,
+  chatMessages = [],
+  setChatMessages = () => {},
+  messages = [],
+  setMessages = () => {},
+  placeholder = "Ask a question about this skill...",
+  apiParams,
+  isLoading: externalIsLoading,
+  setIsLoading: setExternalIsLoading = () => {},
   onToolResponse
 }) => {
   const { toast } = useToast();
   const [userQuery, setUserQuery] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [internalIsLoading, setInternalIsLoading] = useState<boolean>(false);
   const [urlInput, setUrlInput] = useState<string>("");
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { generateResponse } = useGemini();
+  
+  const isLoading = externalIsLoading !== undefined ? externalIsLoading : internalIsLoading;
+  const setIsLoading = setExternalIsLoading || setInternalIsLoading;
+  
+  const actualMessages = messages.length > 0 ? messages : chatMessages;
+  const setActualMessages = setMessages !== (() => {}) ? setMessages : setChatMessages;
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
+  }, [actualMessages]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -109,7 +127,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       }));
     }
     
-    setChatMessages(prev => [...prev, newMessage]);
+    setActualMessages(prev => [...prev, newMessage]);
     
     let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
     
@@ -123,12 +141,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setIsLoading(true);
     
     try {
+      const promptParams = apiParams || {
+        skillName,
+        skillProficiency: selectedProficiency,
+        sources
+      };
+      
       const result = await generateResponse({
         prompt: userQuery || "Please analyze the attached content and provide insights related to this skill.",
         context: context
       });
       
-      setChatMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
+      setActualMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
       
       if (onToolResponse) {
         onToolResponse('assistant', result.generatedText);
@@ -175,7 +199,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden flex flex-col h-full">
         <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
-          {chatMessages.length === 0 && (
+          {actualMessages.length === 0 && (
             <div className="text-center p-4">
               <h3 className="text-lg font-medium mb-2">Sample Prompts</h3>
               <div className="grid gap-2">
@@ -193,7 +217,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
           )}
           
-          {chatMessages.map((message, index) => (
+          {actualMessages.map((message, index) => (
             <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] p-3 rounded-lg ${
                 message.role === 'user' 
@@ -281,7 +305,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question about this skill..."
+              placeholder={placeholder}
               className="min-h-[60px] resize-none"
               disabled={isLoading}
             />
