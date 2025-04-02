@@ -1,29 +1,12 @@
 
 import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { 
-  FileQuestion, 
-  FileText, 
-  Network, 
-  Headphones, 
-  FileSpreadsheet, 
-  Info,
-  Upload
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useGemini } from '@/hooks/useGemini';
+import { ChevronRight, BookOpen, Mic, FileText, Video, Brain } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatInterface';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import PodcastPlayer from './PodcastPlayer';
 
 interface LearningToolsProps {
   skillName: string;
@@ -44,202 +27,120 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   isLoading,
   setIsLoading
 }) => {
-  const { toast } = useToast();
-  const { generateResponse } = useGemini();
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [currentTool, setCurrentTool] = useState<string>("");
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    // In a real implementation, you would process the file upload
-    // For now, we'll just simulate a file upload
-    toast({
-      title: "File Received",
-      description: "Your file has been received and will be processed.",
-    });
-    
-    setUploadDialogOpen(false);
-    
-    // After closing the dialog, generate the assessment with the file content context
-    if (currentTool) {
-      handleToolClick(currentTool, true);
-    }
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
+  
+  const startAssessment = () => {
+    navigate(`/skill-assessment?skill=${encodeURIComponent(skillName)}&proficiency=${encodeURIComponent(selectedProficiency)}`);
   };
-
-  const handleToolClick = async (tool: string, hasUploadedFile = false) => {
-    if (tool === 'assess' && !hasUploadedFile) {
-      setCurrentTool(tool);
-      setUploadDialogOpen(true);
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    // Prepare context information
-    let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
-    if (sources && sources.length > 0) {
-      context += `Additional Context Sources: ${sources.join(", ")}\n`;
-    }
-    
-    let prompt = "";
-    let responseTitle = "";
-    
-    switch (tool) {
-      case 'assess':
-        prompt = `Create an adaptive assessment plan for the skill "${skillName}" at the "${selectedProficiency}" level. Include various assessment types like quizzes, interactive activities, and project evaluations. Format this as a comprehensive assessment plan with INTERACTIVE FEATURES like multiple choice questions, true/false questions, drag and drop exercises, etc. Make it GAMIFIED with points, progress tracking, and achievement badges. Include at least 5 interactive assessment activities.`;
-        responseTitle = "Adaptive Skill Assessment Plan";
-        break;
-      case 'notes':
-        prompt = `Create comprehensive study notes for the skill "${skillName}" at the "${selectedProficiency}" level. Make these notes concise, well-organized, and easy to understand. Format them with clear headings, bullet points, and examples. Structure them like a student would organize them for maximum clarity and retention.`;
-        responseTitle = "Study Notes";
-        break;
-      case 'mindmap':
-        prompt = `Create a detailed concept map or mind map for the skill "${skillName}" at the "${selectedProficiency}" level. Describe the key concepts, their relationships, and how they connect together in a hierarchical structure. Format this as a text-based mind map that could be easily converted to a visual mind map.`;
-        responseTitle = "Concept Map";
-        break;
-      case 'podcast':
-        prompt = `Create a script for a microlearning podcast between a male host named Michael and a female host named Sarah explaining the key concepts of "${skillName}" at the "${selectedProficiency}" level. Make it conversational, engaging, and cover the most important aspects in a concise manner. Format this as a script with clear speaker indicators (Michael: and Sarah:). The podcast should be around 5-7 minutes long when read aloud at a normal pace.`;
-        responseTitle = "Microlearning Podcast Script";
-        break;
-      case 'questionnaire':
-        prompt = `Create a comprehensive question bank for the skill "${skillName}" at the "${selectedProficiency}" level. Include at least 15 questions with a variety of types (multiple choice, true/false, short answer) and organize them by topic or difficulty level. For multiple choice questions, provide 4 options and indicate the correct answer. For all questions, provide comprehensive answer explanations.`;
-        responseTitle = "Question Bank";
-        break;
-      case 'overview':
-        prompt = `Provide a brief but comprehensive overview of the skill "${skillName}" at the "${selectedProficiency}" level. Include key concepts, importance, applications, and learning resources. Format this as an easy-to-understand guide with sections for: 1) What is ${skillName}?, 2) Why is it important?, 3) Key concepts to understand, 4) How to apply ${skillName}, 5) Resources for further learning.`;
-        responseTitle = "Skill Overview";
-        break;
-      default:
-        prompt = `Tell me more about the skill "${skillName}" at the "${selectedProficiency}" level.`;
-        responseTitle = "Skill Information";
-    }
-    
-    try {
-      // Notify the user we're generating content
-      setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
-      
-      // Use Gemini 2.5 Pro model with specified prompt
-      const result = await generateResponse({
-        prompt: prompt,
-        context: context,
-        model: "gemini-1.5-pro" // Specify Gemini 2.5 Pro model
-      });
-      
-      // Add AI response to chat
-      setChatMessages(prev => [...prev, {role: 'assistant', content: `## ${responseTitle}\n\n${result.generatedText}`}]);
-    } catch (error) {
-      console.error("Error getting response:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate content. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Learning Tools</CardTitle>
-          <CardDescription>Generate personalized learning resources</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3">
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('assess')} 
-            disabled={isLoading}
-          >
-            <FileQuestion className="h-6 w-6 text-primary" />
-            <span className="text-xs">Assessment Plan</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('notes')} 
-            disabled={isLoading}
-          >
-            <FileText className="h-6 w-6 text-primary" />
-            <span className="text-xs">Study Notes</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('mindmap')} 
-            disabled={isLoading}
-          >
-            <Network className="h-6 w-6 text-primary" />
-            <span className="text-xs">Concept Map</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('podcast')} 
-            disabled={isLoading}
-          >
-            <Headphones className="h-6 w-6 text-primary" />
-            <span className="text-xs">Podcast Script</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('questionnaire')} 
-            disabled={isLoading}
-          >
-            <FileSpreadsheet className="h-6 w-6 text-primary" />
-            <span className="text-xs">Question Bank</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('overview')} 
-            disabled={isLoading}
-          >
-            <Info className="h-6 w-6 text-primary" />
-            <span className="text-xs">Skill Overview</span>
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* File Upload Dialog for Assessment */}
-      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upload Content for Assessment</DialogTitle>
-            <DialogDescription>
-              Upload documents, videos, texts, PDFs, PPTs, or other materials to help customize your skill assessment.
-            </DialogDescription>
-          </DialogHeader>
+    <Card className="overflow-hidden">
+      <CardHeader>
+        <CardTitle className="text-lg">Learning Tools</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full grid grid-cols-4">
+            <TabsTrigger value="overview" className="text-xs">
+              <BookOpen className="h-3 w-3 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="podcast" className="text-xs">
+              <Mic className="h-3 w-3 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Podcast</span>
+            </TabsTrigger>
+            <TabsTrigger value="resources" className="text-xs">
+              <FileText className="h-3 w-3 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Resources</span>
+            </TabsTrigger>
+            <TabsTrigger value="assessment" className="text-xs">
+              <Brain className="h-3 w-3 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Assessment</span>
+            </TabsTrigger>
+          </TabsList>
           
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="file-upload">Upload File</Label>
-              <div className="border-2 border-dashed rounded-md p-6 text-center">
-                <Upload className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  Drag and drop your files here, or click to browse
-                </p>
-                <Input 
-                  id="file-upload" 
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileUpload}
-                />
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => document.getElementById('file-upload')?.click()}
-                >
-                  Browse Files
+          <TabsContent value="overview" className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium text-base">About {skillName}</h3>
+              <p className="text-sm text-muted-foreground">{skillDescription}</p>
+              <div className="grid gap-2">
+                <h4 className="font-medium text-sm">Learn this skill by:</h4>
+                <ul className="text-sm space-y-1">
+                  <li className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-primary" />
+                    Listening to the skill podcast
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-primary" />
+                    Reviewing learning resources
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-primary" />
+                    Taking an assessment
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-primary" />
+                    Asking questions to the AI assistant
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="podcast" className="p-4">
+            <PodcastPlayer 
+              skillName={skillName} 
+              proficiency={selectedProficiency} 
+            />
+          </TabsContent>
+          
+          <TabsContent value="resources" className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium text-base">Learning Resources</h3>
+              <p className="text-sm text-muted-foreground">
+                Explore these recommended resources to develop your {skillName} skills at the {selectedProficiency} level.
+              </p>
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full justify-between" size="sm">
+                  <span className="flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Skill Guide
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" className="w-full justify-between" size="sm">
+                  <span className="flex items-center">
+                    <Video className="h-4 w-4 mr-2" />
+                    Video Tutorials
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" className="w-full justify-between" size="sm">
+                  <span className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Recommended Reading
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+          </TabsContent>
+          
+          <TabsContent value="assessment" className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-medium text-base">Skill Assessment</h3>
+              <p className="text-sm text-muted-foreground">
+                Test your knowledge and get certified in {skillName} at the {selectedProficiency} level.
+              </p>
+              <Button onClick={startAssessment} className="w-full">
+                Start Assessment
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 

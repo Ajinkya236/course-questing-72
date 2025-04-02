@@ -13,12 +13,15 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({
   onAnswerChange 
 }) => {
   return (
-    <Textarea
-      placeholder="Type your answer here..."
-      className="min-h-[120px]"
-      value={question.userAnswer as string || ''}
-      onChange={(e) => onAnswerChange(e.target.value)}
-    />
+    <div className="space-y-3">
+      <p className="text-muted-foreground text-sm">Please provide a short answer to the question:</p>
+      <Textarea
+        placeholder="Type your answer here..."
+        className="min-h-[120px] focus:border-primary"
+        value={question.userAnswer as string || ''}
+        onChange={(e) => onAnswerChange(e.target.value)}
+      />
+    </div>
   );
 };
 

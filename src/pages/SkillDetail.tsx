@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import PageLayout from "@/components/layout/PageLayout";
 import { useToast } from "@/hooks/use-toast";
 import SkillHeader from '@/components/skills/SkillHeader';
@@ -9,8 +11,6 @@ import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Skill } from '@/components/skills/types';
 import { mockSkills } from '@/data/skillsData';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -49,6 +49,21 @@ const SkillDetail: React.FC = () => {
     }
   };
 
+  const handleProficiencyChange = (proficiency: string) => {
+    setSelectedProficiency(proficiency);
+    
+    // Add a message to the chat about the proficiency change
+    setChatMessages(prev => [
+      ...prev, 
+      {role: 'system', content: `Proficiency level changed to "${proficiency}". The AI will now provide information appropriate for this level.`}
+    ]);
+    
+    toast({
+      title: "Proficiency Updated",
+      description: `Skill proficiency level set to "${proficiency}".`,
+    });
+  };
+
   if (!skill) {
     return (
       <PageLayout>
@@ -76,7 +91,7 @@ const SkillDetail: React.FC = () => {
         <SkillHeader 
           skill={skill}
           proficiency={selectedProficiency}
-          onProficiencyChange={setSelectedProficiency}
+          onProficiencyChange={handleProficiencyChange}
           onBack={handleBack}
         />
         
