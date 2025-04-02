@@ -23,7 +23,7 @@ export const generatePodcast = async (
         toast({
           title: "Request in progress",
           description: "Please wait for the current podcast generation to complete.",
-          variant: "warning",
+          variant: "default", // Changed from "warning" to "default"
         });
         return { error: "A podcast generation is already in progress. Please wait." };
       } else {

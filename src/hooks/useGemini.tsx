@@ -28,7 +28,7 @@ export function useGemini() {
       toast({
         title: "Request in progress",
         description: "Please wait for the current request to complete.",
-        variant: "warning",
+        variant: "default", // Changed from "warning" to "default"
       });
       return { generatedText: "A request is already in progress. Please wait." };
     }

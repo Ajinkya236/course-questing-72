@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -44,7 +43,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       toast({
         title: "Request in progress",
         description: "Please wait for the current request to complete.",
-        variant: "warning",
+        variant: "default",
       });
       return;
     }
@@ -105,7 +104,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       const result = await generateResponse({
         prompt: prompt,
         context: context,
-        model: "gemini-1.5-pro" // Specify Gemini 1.5 Pro model
+        model: "gemini-1.5-pro"
       });
       
       // Add AI response to chat
