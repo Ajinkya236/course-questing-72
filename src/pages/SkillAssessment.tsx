@@ -60,7 +60,7 @@ const SkillAssessment: React.FC = () => {
     }
   };
 
-  // Handle proficiency change
+  // Handle proficiency change - updated to use new proficiency levels
   const handleProficiencyChange = (newProficiency: string) => {
     if (selectedSkill) {
       setCustomProficiency(newProficiency);

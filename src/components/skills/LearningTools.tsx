@@ -8,7 +8,8 @@ import {
   Network, 
   Headphones, 
   FileSpreadsheet, 
-  Info
+  Info,
+  Mic
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
@@ -23,6 +24,7 @@ interface LearningToolsProps {
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  onGeneratePodcast?: () => void;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({
@@ -32,7 +34,8 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   sources,
   setChatMessages,
   isLoading,
-  setIsLoading
+  setIsLoading,
+  onGeneratePodcast
 }) => {
   const { toast } = useToast();
   const { generateResponse } = useGemini();
@@ -44,6 +47,11 @@ const LearningTools: React.FC<LearningToolsProps> = ({
         description: "Please wait for the current request to complete.",
         variant: "default",
       });
+      return;
+    }
+    
+    if (tool === 'podcast-audio' && onGeneratePodcast) {
+      onGeneratePodcast();
       return;
     }
     
@@ -123,7 +131,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
       toast({
         title: "Error",
         description: "Failed to generate content. Please try again.",
-        variant: "default",
+        variant: "destructive",
       });
       
       // Remove the system "Generating..." message
@@ -196,6 +204,17 @@ const LearningTools: React.FC<LearningToolsProps> = ({
           <Info className="h-6 w-6 text-primary" />
           <span className="text-xs">Skill Overview</span>
         </Button>
+        {onGeneratePodcast && (
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex flex-col items-center gap-2 col-span-2" 
+            onClick={() => handleToolClick('podcast-audio')} 
+            disabled={isLoading}
+          >
+            <Mic className="h-6 w-6 text-primary" />
+            <span className="text-xs">Generate Podcast</span>
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

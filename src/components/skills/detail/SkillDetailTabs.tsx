@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Share, Save, Pen } from "lucide-react";
+import { Sparkles, Share } from "lucide-react";
 import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
@@ -50,6 +50,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [employeeIds, setEmployeeIds] = useState('');
   const { toast } = useToast();
+  const [podcastRef, setPodcastRef] = useState<React.RefObject<HTMLDivElement> | null>(null);
 
   const handleShareSkill = () => {
     toast({
@@ -59,6 +60,19 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
     });
     setShowShareDialog(false);
     setEmployeeIds('');
+  };
+  
+  const handleGeneratePodcast = () => {
+    // Switch to learn tab first
+    setActiveTab('learn');
+    
+    // Create a timeout to allow the tab to render first
+    setTimeout(() => {
+      // Then scroll to the podcast player (if needed)
+      if (podcastRef && podcastRef.current) {
+        podcastRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -115,6 +129,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
                 setChatMessages={setChatMessages}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
+                onGeneratePodcast={handleGeneratePodcast}
               />
               
               <KnowledgeSources
@@ -131,7 +146,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
             sources={sources}
             setSources={setSources}
           >
-            <div className="mb-8">
+            <div className="mb-8" ref={(el) => setPodcastRef({ current: el })}>
               <PodcastPlayer
                 skillName={skill.name}
                 skillDescription={skill.description || ''}

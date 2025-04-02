@@ -35,8 +35,13 @@ export function useQuestionGeneration() {
     console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
     
     try {
-      // Call the skill-assessment edge function to generate questions
-      const { data, error } = await supabase.functions.invoke('skill-assessment', {
+      // Set a timeout to detect stalled API calls
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Request timed out after 45 seconds")), 45000);
+      });
+      
+      // Create the actual API call promise
+      const apiCallPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'generate_questions',
           skill: skill.name,
@@ -45,6 +50,14 @@ export function useQuestionGeneration() {
           model: 'gemini-1.5-pro'
         },
       });
+      
+      // Race the API call against the timeout
+      const { data, error } = await Promise.race([
+        apiCallPromise, 
+        timeoutPromise.then(() => {
+          throw new Error("Request timed out after 45 seconds");
+        })
+      ]) as any;
       
       if (error) {
         console.error("Error calling skill-assessment:", error);
@@ -73,12 +86,10 @@ export function useQuestionGeneration() {
       setGenerationFailed(true);
       toast({
         title: "Assessment generation failed",
-        description: "Failed to generate assessment questions. Please try again later.",
+        description: error.message || "Failed to generate assessment questions. Please try again later.",
         variant: "destructive",
       });
       
-      // We'll no longer fallback to default questions as per requirement #0
-      // Instead, we'll just show an error and end the flow
       setQuestions([]);
     } finally {
       setIsLoading(false);

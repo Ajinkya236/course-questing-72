@@ -46,11 +46,16 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     setIsGenerating(true);
     
     try {
+      // Set a timeout to detect stalled API calls
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Podcast generation timed out after 60 seconds")), 60000);
+      });
+      
       // Create a simulated podcast title based on skill name
       const podcastTitle = `Learning ${skillName} at ${proficiency} level`;
       
       // Call the generate-podcast edge function
-      const { data, error } = await supabase.functions.invoke('generate-podcast', {
+      const apiCallPromise = supabase.functions.invoke('generate-podcast', {
         body: {
           title: podcastTitle,
           description: skillDescription,
@@ -61,6 +66,14 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           voice: "en-US-Neural2-F" // Female voice
         },
       });
+      
+      // Race the API call against the timeout
+      const { data, error } = await Promise.race([
+        apiCallPromise, 
+        timeoutPromise.then(() => {
+          throw new Error("Podcast generation timed out after 60 seconds");
+        })
+      ]) as any;
       
       if (error) {
         throw new Error(`Failed to generate podcast: ${error.message}`);

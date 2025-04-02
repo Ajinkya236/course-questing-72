@@ -18,12 +18,13 @@ interface AssessmentHeaderProps {
   onProficiencyChange?: (value: string) => void;
 }
 
-const PROFICIENCIES = ["Awareness", "Basic", "Intermediate", "Advanced", "Expert"];
+// Updated proficiency levels
+const PROFICIENCIES = ["Awareness", "Knowledge", "Skill", "Mastery"];
 
 const AssessmentHeader: React.FC<AssessmentHeaderProps> = ({
   handleBack,
   skillName = "Unknown Skill",
-  proficiency = "Basic",
+  proficiency = "Knowledge",
   onProficiencyChange
 }) => {
   return (
@@ -66,15 +67,13 @@ const AssessmentHeader: React.FC<AssessmentHeaderProps> = ({
         <h1 className="text-2xl font-bold">{skillName} Skill Assessment</h1>
         <div className="flex items-center gap-2 mt-2">
           <div 
-            className={`px-3 py-1 rounded-full text-sm font-medium ${proficiency.toLowerCase() === proficiency ? 'bg-[#1A1F2C] text-white' : ''}`}
+            className={`px-3 py-1 rounded-full text-sm font-medium`}
             style={{ 
-              backgroundColor: proficiency ? 
-                (proficiency === proficiency ? '#1A1F2C' : proficiencyColors[proficiency.toLowerCase()]) : 
-                '#1A1F2C',
-              color: proficiency === proficiency ? 'white' : 'inherit'
+              backgroundColor: proficiency ? '#1A1F2C' : '#1A1F2C',
+              color: 'white'
             }}
           >
-            {proficiency || "Basic"} Level
+            {proficiency || "Knowledge"} Level
           </div>
         </div>
       </div>
