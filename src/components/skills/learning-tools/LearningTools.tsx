@@ -11,31 +11,33 @@ interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  sources: Source[];
-  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  onGeneratePodcast: () => void;
+  sources?: Source[];
+  setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  isLoading?: boolean;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  onGeneratePodcast?: () => void;
   hidePodcastButton?: boolean;
+  skillId?: number;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({ 
   skillName,
   skillDescription,
   selectedProficiency,
-  sources,
+  sources = [],
   setChatMessages,
-  isLoading,
-  setIsLoading,
-  onGeneratePodcast,
-  hidePodcastButton = false
+  isLoading = false,
+  setIsLoading = () => {},
+  onGeneratePodcast = () => {},
+  hidePodcastButton = false,
+  skillId
 }) => {
   const { handleToolGeneration, isBusy, apiCallFailed } = useToolGeneration(
     skillName,
     skillDescription,
     selectedProficiency,
     sources,
-    setChatMessages,
+    setChatMessages || (() => {}),
     setIsLoading
   );
 

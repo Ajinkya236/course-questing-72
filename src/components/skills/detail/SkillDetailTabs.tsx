@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatTab from './ChatTab';
 import SkillInformation from './SkillInformation';
 import { ChatMessage } from '@/components/skills/ChatInterface';
-import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 import LearningTools from '@/components/skills/learning-tools';
 import { Source } from '@/components/skills/knowledge/types';
 
@@ -59,7 +58,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
         <LearningTools 
           skillName={skill.name} 
           skillDescription={skill.description}
-          proficiency={skill.proficiency} 
+          selectedProficiency={skill.proficiency} 
           skillId={skill.id}
         />
       </TabsContent>

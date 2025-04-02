@@ -12,9 +12,8 @@ interface ChatTabProps {
   setSources: React.Dispatch<React.SetStateAction<Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  onGeneratePodcast: () => void;
+  isGeneratingPodcast: boolean;
+  setIsGeneratingPodcast: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatTab: React.FC<ChatTabProps> = ({
@@ -23,10 +22,10 @@ const ChatTab: React.FC<ChatTabProps> = ({
   setSources,
   chatMessages,
   setChatMessages,
-  isLoading,
-  setIsLoading,
-  onGeneratePodcast
+  isGeneratingPodcast,
+  setIsGeneratingPodcast
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [showPodcast, setShowPodcast] = useState(false);
   
   const handleGeneratePodcast = () => {
