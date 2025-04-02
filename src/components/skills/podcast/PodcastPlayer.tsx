@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Mic, Loader2 } from 'lucide-react';
+import { Mic, Loader2, FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
 import AudioPlayer from './AudioPlayer';
 import { generatePodcast } from './PodcastUtils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PodcastPlayerProps {
   skillName: string;
@@ -22,7 +23,10 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<string | null>(null);
+  const [isMockMode, setIsMockMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('audio');
   const { toast } = useToast();
 
   const handleGeneratePodcast = async () => {
@@ -47,10 +51,24 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
         return;
       }
       
+      if (result.transcript) {
+        setTranscript(result.transcript);
+      }
+      
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
       } else {
         setErrorMessage("No audio URL was returned");
+      }
+      
+      if (result.mockMode) {
+        setIsMockMode(true);
+        setActiveTab('transcript');
+        toast({
+          title: "Transcript Generated",
+          description: "Podcast transcript is ready. Audio generation was skipped to improve performance.",
+          variant: "default",
+        });
       }
     } catch (error: any) {
       console.error("Podcast generation error:", error);
@@ -66,7 +84,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Skill Learning Podcast</h3>
-            {!audioUrl && (
+            {!transcript && !audioUrl && (
               <Button 
                 onClick={handleGeneratePodcast}
                 disabled={isGenerating}
@@ -87,12 +105,50 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
             )}
           </div>
           
-          {audioUrl ? (
-            <AudioPlayer 
-              audioUrl={audioUrl} 
-              title={`${skillName} Learning Podcast`}
-              subtitle={`${proficiency} level overview`}
-            />
+          {(transcript || audioUrl) ? (
+            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="audio" disabled={isMockMode}>Audio</TabsTrigger>
+                <TabsTrigger value="transcript">Transcript</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="audio">
+                {audioUrl && !isMockMode ? (
+                  <AudioPlayer 
+                    audioUrl={audioUrl} 
+                    title={`${skillName} Learning Podcast`}
+                    subtitle={`${proficiency} level overview`}
+                  />
+                ) : (
+                  <div className="bg-muted rounded-md p-6 text-center">
+                    <p>Audio generation is currently unavailable.</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Please view the transcript instead.
+                    </p>
+                    <Button onClick={() => setActiveTab('transcript')} className="mt-4">
+                      View Transcript
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="transcript">
+                {transcript ? (
+                  <div className="bg-muted rounded-md p-6 max-h-[400px] overflow-y-auto">
+                    <div className="prose prose-sm">
+                      <h4 className="text-md font-semibold mb-2">{skillName} Podcast Transcript</h4>
+                      <div className="whitespace-pre-line">
+                        {transcript}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-muted rounded-md p-6 text-center">
+                    <p>No transcript available.</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           ) : (
             <div className="bg-muted rounded-md p-6 text-center">
               {isGenerating ? (

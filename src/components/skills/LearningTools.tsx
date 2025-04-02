@@ -1,33 +1,27 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { 
-  FileQuestion, 
-  FileText, 
-  Network, 
-  Headphones, 
-  FileSpreadsheet, 
-  Info
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SquareDashedCircle, Pen, Mic, ScrollText, FileTextIcon, RefreshCw, Lightbulb } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { ChatMessage } from '@/components/skills/ChatInterface';
+import { Source } from '@/components/skills/knowledge/types';
 import { useGemini } from '@/hooks/useGemini';
-import { ChatMessage } from './ChatInterface';
-import { Source } from './knowledge/types';
+import ConceptMap from './ConceptMap';
 
 interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
   selectedProficiency: string;
-  sources: string[] | Source[];
+  sources: Source[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  onGeneratePodcast?: () => void;
+  onGeneratePodcast: () => void;
   hidePodcastButton?: boolean;
 }
 
-const LearningTools: React.FC<LearningToolsProps> = ({
+const LearningTools: React.FC<LearningToolsProps> = ({ 
   skillName,
   skillDescription,
   selectedProficiency,
@@ -39,107 +33,96 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   hidePodcastButton = false
 }) => {
   const { toast } = useToast();
-  const { generateResponse } = useGemini();
+  const { generateResponse, loading, apiCallFailed } = useGemini();
 
-  const handleToolClick = async (tool: string) => {
-    if (isLoading) {
+  const isBusy = isLoading || loading;
+
+  const handleToolClick = async (toolType: string) => {
+    if (isBusy) {
       toast({
-        title: "Request in progress",
-        description: "Please wait for the current request to complete.",
+        title: "In progress",
+        description: "Please wait for the current operation to complete.",
         variant: "default",
       });
       return;
     }
-    
-    // Handle podcast audio generation
-    if (tool === 'podcast-audio' && onGeneratePodcast) {
-      onGeneratePodcast();
+
+    if (apiCallFailed) {
+      toast({
+        title: "API Error",
+        description: "There was an error connecting to the AI service. Please refresh the page and try again.",
+        variant: "destructive",
+      });
       return;
     }
-    
+
+    let prompt = '';
+    let systemMessage = '';
+
     setIsLoading(true);
-    
-    // Prepare context information
-    let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
-    if (sources && sources.length > 0) {
-      const sourcesText = sources.map(source => typeof source === 'string' ? source : source.content).join(", ");
-      context += `Additional Context Sources: ${sourcesText}\n`;
-    }
-    
-    let prompt = "";
-    let responseTitle = "";
-    
-    switch (tool) {
-      case 'assess':
-        prompt = `Create an adaptive assessment plan for the skill "${skillName}" at the "${selectedProficiency}" level. Include various assessment types like quizzes, interactive activities, and project evaluations. Format this as a comprehensive assessment plan with INTERACTIVE FEATURES like multiple choice questions, true/false questions, drag and drop exercises, etc. Make it GAMIFIED with points, progress tracking, and achievement badges. Include at least 5 interactive assessment activities.`;
-        responseTitle = "Adaptive Skill Assessment Plan";
-        break;
-      case 'notes':
-        prompt = `Create comprehensive study notes for the skill "${skillName}" at the "${selectedProficiency}" level. Make these notes concise, well-organized, and easy to understand. Format them with clear headings, bullet points, and examples. Structure them like a student would organize them for maximum clarity and retention.`;
-        responseTitle = "Study Notes";
-        break;
-      case 'mindmap':
-        prompt = `Create a detailed concept map or mind map for the skill "${skillName}" at the "${selectedProficiency}" level. Describe the key concepts, their relationships, and how they connect together in a hierarchical structure. Format this as a text-based mind map that could be easily converted to a visual mind map.`;
-        responseTitle = "Concept Map";
-        break;
-      case 'podcast':
-        prompt = `Create a script for a microlearning podcast between a male host named Michael and a female host named Sarah explaining the key concepts of "${skillName}" at the "${selectedProficiency}" level. Make it conversational, engaging, and cover the most important aspects in a concise manner. Format this as a script with clear speaker indicators (Michael: and Sarah:). The podcast should be around 5-7 minutes long when read aloud at a normal pace.`;
-        responseTitle = "Microlearning Podcast Script";
-        break;
-      case 'questionnaire':
-        prompt = `Create a comprehensive question bank for the skill "${skillName}" at the "${selectedProficiency}" level. Include at least 15 questions with a variety of types (multiple choice, true/false, short answer) and organize them by topic or difficulty level. For multiple choice questions, provide 4 options and indicate the correct answer. For all questions, provide comprehensive answer explanations.`;
-        responseTitle = "Question Bank";
-        break;
-      case 'overview':
-        prompt = `Provide a brief but comprehensive overview of the skill "${skillName}" at the "${selectedProficiency}" level. Include key concepts, importance, applications, and learning resources. Format this as an easy-to-understand guide with sections for: 1) What is ${skillName}?, 2) Why is it important?, 3) Key concepts to understand, 4) How to apply ${skillName}, 5) Resources for further learning.`;
-        responseTitle = "Skill Overview";
-        break;
-      default:
-        prompt = `Tell me more about the skill "${skillName}" at the "${selectedProficiency}" level.`;
-        responseTitle = "Skill Information";
-    }
-    
+
     try {
-      // Notify the user we're generating content
-      setChatMessages(prev => [...prev, {
-        role: 'user', 
-        content: `Generate ${responseTitle} for ${skillName} at ${selectedProficiency} level`
-      }]);
-      
-      setChatMessages(prev => [...prev, {role: 'system', content: `Generating ${responseTitle}...`}]);
-      
-      // Use Gemini 1.5 Pro model with specified prompt
-      const result = await generateResponse({
-        prompt: prompt,
-        context: context,
-        model: "gemini-1.5-pro" // Specify Gemini 1.5 Pro model
+      switch (toolType) {
+        case 'summary':
+          prompt = `Create a concise summary of ${skillName} at the ${selectedProficiency} proficiency level.`;
+          systemMessage = `# ${skillName} Summary (${selectedProficiency} level)`;
+          break;
+        case 'quiz':
+          prompt = `Create a 5-question quiz about ${skillName} at the ${selectedProficiency} proficiency level with answers.`;
+          systemMessage = `# ${skillName} Quiz (${selectedProficiency} level)`;
+          break;
+        case 'study-guide':
+          prompt = `Create a comprehensive study guide for ${skillName} at the ${selectedProficiency} proficiency level.`;
+          systemMessage = `# ${skillName} Study Guide (${selectedProficiency} level)`;
+          break;
+        case 'examples':
+          prompt = `Provide practical examples and use cases of ${skillName} at the ${selectedProficiency} proficiency level.`;
+          systemMessage = `# ${skillName} Examples (${selectedProficiency} level)`;
+          break;
+        default:
+          setIsLoading(false);
+          return;
+      }
+
+      // Append source information if available
+      if (sources.length > 0) {
+        prompt += "\n\nConsider the following sources in your response:";
+        sources.forEach((source, index) => {
+          prompt += `\n${index + 1}. ${source.title} - ${source.url}`;
+        });
+      }
+
+      const { generatedText } = await generateResponse({
+        prompt,
+        context: `You are an expert in ${skillName} providing educational content for a student at the ${selectedProficiency} proficiency level.`,
+        structuredFormat: true,
+        model: 'gemini-1.5-pro',
       });
-      
-      // Add AI response to chat
-      setChatMessages(prev => {
-        // Remove the system "Generating..." message
-        const filteredMessages = prev.filter(msg => 
-          !(msg.role === 'system' && msg.content === `Generating ${responseTitle}...`)
-        );
-        
-        // Add the new response
-        return [...filteredMessages, {
-          role: 'assistant', 
-          content: `## ${responseTitle}\n\n${result.generatedText}`
-        }];
+
+      // Update the chat interface with the AI response
+      setChatMessages(prev => [
+        ...prev,
+        {
+          role: 'user',
+          content: `Generate a ${toolType.replace('-', ' ')} for ${skillName}.`
+        },
+        {
+          role: 'assistant',
+          content: `${systemMessage}\n\n${generatedText}`
+        }
+      ]);
+
+      toast({
+        title: "Content generated",
+        description: `${toolType.replace('-', ' ')} for ${skillName} has been created.`,
       });
     } catch (error) {
-      console.error("Error getting response:", error);
+      console.error("Error generating content:", error);
       toast({
         title: "Error",
         description: "Failed to generate content. Please try again.",
         variant: "destructive",
       });
-      
-      // Remove the system "Generating..." message
-      setChatMessages(prev => prev.filter(msg => 
-        !(msg.role === 'system' && msg.content === `Generating ${responseTitle}...`)
-      ));
     } finally {
       setIsLoading(false);
     }
@@ -148,66 +131,76 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Learning Tools</CardTitle>
-        <CardDescription>Generate personalized learning resources</CardDescription>
+        <CardTitle>Learning Tools</CardTitle>
+        <CardDescription>
+          Generate learning resources for {skillName}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-2 gap-3">
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('assess')} 
-          disabled={isLoading}
-        >
-          <FileQuestion className="h-6 w-6 text-primary" />
-          <span className="text-xs">Assessment Plan</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('notes')} 
-          disabled={isLoading}
-        >
-          <FileText className="h-6 w-6 text-primary" />
-          <span className="text-xs">Study Notes</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('mindmap')} 
-          disabled={isLoading}
-        >
-          <Network className="h-6 w-6 text-primary" />
-          <span className="text-xs">Concept Map</span>
-        </Button>
-        {!hidePodcastButton && (
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 flex flex-col items-center gap-2" 
-            onClick={() => handleToolClick('podcast')} 
-            disabled={isLoading}
+      <CardContent>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleToolClick('summary')}
+            disabled={isBusy}
+            className="h-auto py-3 flex flex-col items-center text-center"
           >
-            <Headphones className="h-6 w-6 text-primary" />
-            <span className="text-xs">Podcast Script</span>
+            <FileTextIcon className="h-4 w-4 mb-1" />
+            <span>Summary</span>
           </Button>
-        )}
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('questionnaire')} 
-          disabled={isLoading}
-        >
-          <FileSpreadsheet className="h-6 w-6 text-primary" />
-          <span className="text-xs">Question Bank</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('overview')} 
-          disabled={isLoading}
-        >
-          <Info className="h-6 w-6 text-primary" />
-          <span className="text-xs">Skill Overview</span>
-        </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleToolClick('quiz')}
+            disabled={isBusy}
+            className="h-auto py-3 flex flex-col items-center text-center"
+          >
+            <ScrollText className="h-4 w-4 mb-1" />
+            <span>Quiz</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleToolClick('study-guide')}
+            disabled={isBusy}
+            className="h-auto py-3 flex flex-col items-center text-center"
+          >
+            <Pen className="h-4 w-4 mb-1" />
+            <span>Study Guide</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleToolClick('examples')}
+            disabled={isBusy}
+            className="h-auto py-3 flex flex-col items-center text-center"
+          >
+            <SquareDashedCircle className="h-4 w-4 mb-1" />
+            <span>Examples</span>
+          </Button>
+
+          {!hidePodcastButton && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onGeneratePodcast}
+              disabled={isBusy}
+              className="h-auto py-3 flex flex-col items-center text-center"
+            >
+              <Mic className="h-4 w-4 mb-1" />
+              <span>Podcast</span>
+            </Button>
+          )}
+          
+          <ConceptMap 
+            skillName={skillName}
+            skillDescription={skillDescription}
+            proficiency={selectedProficiency}
+          />
+        </div>
       </CardContent>
     </Card>
   );

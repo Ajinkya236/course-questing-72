@@ -1,173 +1,120 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, PaperclipIcon, Link as LinkIcon, Send, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Send, Loader2 } from "lucide-react";
 import { useGemini } from '@/hooks/useGemini';
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Source } from './knowledge/types';
+import { Source } from '@/components/skills/knowledge/types';
+import ReactMarkdown from 'react-markdown';
 
-export type ChatMessage = {
-  role: string;
+export interface ChatMessage {
+  role: 'user' | 'assistant';
   content: string;
-  attachments?: {
-    type: string;
-    name?: string;
-    url?: string;
-    content?: string;
-  }[];
-};
+}
 
 interface ChatInterfaceProps {
-  skillName: string;
-  skillDescription: string;
-  selectedProficiency: string;
-  sources: string[] | Source[];
-  chatMessages?: ChatMessage[];
-  setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  messages?: ChatMessage[];
-  setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  skillName?: string;
+  skillDescription?: string;
+  selectedProficiency?: string;
+  sources?: Source[];
   placeholder?: string;
-  apiParams?: any;
+  messages: ChatMessage[];
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isLoading?: boolean;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  onToolResponse?: (role: string, content: string) => void;
+  apiParams?: {
+    skillName?: string;
+    skillProficiency?: string;
+    sources?: Source[];
+  };
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  skillName,
-  skillDescription,
-  selectedProficiency,
-  sources,
-  chatMessages = [],
-  setChatMessages = () => {},
-  messages = [],
-  setMessages = () => {},
-  placeholder = "Ask a question about this skill...",
-  apiParams,
-  isLoading: externalIsLoading,
-  setIsLoading: setExternalIsLoading = () => {},
-  onToolResponse
+  skillName = '',
+  skillDescription = '',
+  selectedProficiency = '',
+  sources = [],
+  placeholder = 'Ask me anything...',
+  messages,
+  setMessages,
+  isLoading: externalLoading = false,
+  setIsLoading: setExternalLoading,
+  apiParams = {}
 }) => {
-  const { toast } = useToast();
-  const [userQuery, setUserQuery] = useState<string>("");
-  const [internalIsLoading, setInternalIsLoading] = useState<boolean>(false);
-  const [urlInput, setUrlInput] = useState<string>("");
-  const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
-  const [attachments, setAttachments] = useState<any[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const { generateResponse } = useGemini();
+  const [inputMessage, setInputMessage] = useState('');
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { generateResponse, loading: internalLoading } = useGemini();
   
-  const isLoading = externalIsLoading !== undefined ? externalIsLoading : internalIsLoading;
-  const setIsLoading = setExternalIsLoading || setInternalIsLoading;
-  
-  const actualMessages = messages.length > 0 ? messages : chatMessages;
-  const setActualMessages = setMessages !== (() => {}) ? setMessages : setChatMessages;
+  const isLoading = externalLoading || internalLoading;
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [actualMessages]);
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    const newAttachments = Array.from(files).map(file => ({
-      type: file.type,
-      name: file.name,
-      file
-    }));
-
-    setAttachments(prev => [...prev, ...newAttachments]);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const handleAddUrl = () => {
-    if (!urlInput.trim()) return;
-    
-    try {
-      new URL(urlInput); // Validate URL
-      setAttachments(prev => [...prev, {
-        type: 'url',
-        name: urlInput,
-        url: urlInput
-      }]);
-      setUrlInput("");
-      setShowUrlInput(false);
-    } catch (e) {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid URL including http:// or https://",
-        variant: "destructive"
-      });
+    // Scroll to bottom on new messages
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  };
-
-  const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
+  }, [messages]);
 
   const handleSendMessage = async () => {
-    if ((!userQuery.trim() && attachments.length === 0)) return;
+    if (!inputMessage.trim() || isLoading) return;
     
-    const newMessage: ChatMessage = {
-      role: 'user',
-      content: userQuery,
-    };
+    const userMessage = inputMessage.trim();
+    setInputMessage('');
     
-    if (attachments.length > 0) {
-      newMessage.attachments = attachments.map(att => ({
-        type: att.type,
-        name: att.name,
-        url: att.url
-      }));
+    // Add user message to chat
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    
+    // Set loading state if external control is provided
+    if (setExternalLoading) {
+      setExternalLoading(true);
     }
-    
-    setActualMessages(prev => [...prev, newMessage]);
-    
-    let context = `Skill: ${skillName}\nProficiency Level: ${selectedProficiency}\nDescription: ${skillDescription}\n`;
-    
-    if (sources && sources.length > 0) {
-      const sourcesText = sources.map(source => 
-        typeof source === 'string' ? source : source.content
-      ).join(", ");
-      context += `Additional Context Sources: ${sourcesText}\n`;
-    }
-    
-    setIsLoading(true);
     
     try {
-      const promptParams = apiParams || {
-        skillName,
-        skillProficiency: selectedProficiency,
-        sources
-      };
-      
-      const result = await generateResponse({
-        prompt: userQuery || "Please analyze the attached content and provide insights related to this skill.",
-        context: context
-      });
-      
-      setActualMessages(prev => [...prev, {role: 'assistant', content: result.generatedText}]);
-      
-      if (onToolResponse) {
-        onToolResponse('assistant', result.generatedText);
+      // Construct context based on skill info and sources
+      let context = '';
+      if (skillName) {
+        context += `You are an expert in ${skillName}`;
+        if (selectedProficiency) {
+          context += ` at the ${selectedProficiency} level`;
+        }
+        context += `. Your goal is to provide helpful, educational responses about this subject.\n\n`;
+        
+        if (skillDescription) {
+          context += `The skill is described as: ${skillDescription}\n\n`;
+        }
       }
-    } catch (error) {
-      console.error("Error getting response:", error);
-      toast({
-        title: "Error",
-        description: "Failed to get a response. Please try again.",
-        variant: "destructive"
+      
+      // Include sources in context
+      if (sources && sources.length > 0) {
+        context += "Consider these additional knowledge sources:\n";
+        sources.forEach((source, index) => {
+          context += `${index + 1}. ${source.title || 'Source'}: ${source.url || source.content || 'No content'}\n`;
+        });
+      }
+      
+      // Generate response from AI
+      const { generatedText } = await generateResponse({ 
+        prompt: userMessage, 
+        context,
+        // Pass any additional parameters from apiParams
+        ...apiParams
       });
+      
+      // Add AI response to chat
+      setMessages(prev => [...prev, { role: 'assistant', content: generatedText }]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Add error message
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I'm sorry, I encountered an error processing your request. Please try again." 
+      }]);
     } finally {
-      setIsLoading(false);
-      setUserQuery("");
-      setAttachments([]);
+      // Reset loading state if external control is provided
+      if (setExternalLoading) {
+        setExternalLoading(false);
+      }
     }
   };
 
@@ -178,184 +125,65 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  const samplePrompts = [
-    "Explain the key concepts of this skill in simple terms",
-    "What resources would you recommend for learning this skill?",
-    "How can I apply this skill in real-world scenarios?",
-    "What are common misconceptions about this skill?",
-    "Give me a step-by-step learning path for this skill"
-  ];
-
   return (
-    <Card className="h-[700px] flex flex-col">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          AI Skill Assistant
-        </CardTitle>
-        <CardDescription>
-          Ask questions about this skill or upload content for analysis
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-hidden flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
-          {actualMessages.length === 0 && (
-            <div className="text-center p-4">
-              <h3 className="text-lg font-medium mb-2">Sample Prompts</h3>
-              <div className="grid gap-2">
-                {samplePrompts.map((prompt, idx) => (
-                  <Button 
-                    key={idx} 
-                    variant="outline" 
-                    className="text-left justify-start"
-                    onClick={() => setUserQuery(prompt)}
-                  >
-                    {prompt}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {actualMessages.map((message, index) => (
-            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] p-3 rounded-lg ${
-                message.role === 'user' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : message.role === 'system'
-                  ? 'bg-muted text-muted-foreground text-sm italic'
-                  : 'bg-muted'
-              }`}>
-                {message.attachments && message.attachments.length > 0 && (
-                  <div className="mb-2 space-y-1">
-                    {message.attachments.map((att, idx) => (
-                      <div key={idx} className="text-xs flex items-center gap-1">
-                        {att.type === 'url' ? (
-                          <LinkIcon className="h-3 w-3" />
-                        ) : (
-                          <PaperclipIcon className="h-3 w-3" />
-                        )}
-                        <span>{att.name || att.url}</span>
-                      </div>
-                    ))}
+    <Card className="flex flex-col h-full">
+      <CardContent className="flex flex-col h-full p-4">
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[550px]"
+        >
+          {messages.map((message, index) => (
+            <div 
+              key={index} 
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div 
+                className={`max-w-[80%] rounded-lg p-3 ${
+                  message.role === 'user' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted'
+                }`}
+              >
+                {message.role === 'user' ? (
+                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                ) : (
+                  <div className="prose prose-sm dark:prose-invert prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0 prose-p:my-2 max-w-none">
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
                 )}
-                <div className="prose prose-sm dark:prose-invert max-w-none"
-                     dangerouslySetInnerHTML={{ __html: 
-                       message.content.replace(/\n/g, '<br>').replace(
-                         /```([a-z]*)\n([\s\S]*?)```/g, 
-                         '<pre><code class="language-$1">$2</code></pre>'
-                       ) 
-                     }}>
-                </div>
               </div>
             </div>
           ))}
-          <div ref={chatEndRef} />
+          
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-muted rounded-lg p-3">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <p>Thinking...</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
-        {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
-            {attachments.map((att, idx) => (
-              <div 
-                key={idx} 
-                className="bg-muted text-xs py-1 px-2 rounded-full flex items-center gap-1.5"
-              >
-                {att.type === 'url' ? <LinkIcon className="h-3 w-3" /> : <PaperclipIcon className="h-3 w-3" />}
-                <span className="truncate max-w-[150px]">{att.name}</span>
-                <button 
-                  onClick={() => removeAttachment(idx)}
-                  className="text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        {showUrlInput && (
-          <div className="flex gap-2 mb-2">
-            <Input
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="Enter URL (YouTube, website, document)"
-              className="flex-1"
-            />
-            <Button 
-              size="sm" 
-              onClick={handleAddUrl}
-              variant="outline"
-            >
-              Add
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={() => setShowUrlInput(false)}
-              variant="ghost"
-            >
-              Cancel
-            </Button>
-          </div>
-        )}
-        
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Textarea 
-              value={userQuery}
-              onChange={(e) => setUserQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              className="min-h-[60px] resize-none"
-              disabled={isLoading}
-            />
-            <div className="flex flex-col gap-2">
-              <Button 
-                onClick={handleSendMessage} 
-                disabled={!userQuery.trim() && attachments.length === 0 || isLoading}
-                className="h-1/2"
-                size="icon"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="h-1/2"
-              >
-                <PaperclipIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <Button
-              type="button" 
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-              onClick={() => setShowUrlInput(true)}
-              disabled={showUrlInput || isLoading}
-            >
-              <LinkIcon className="h-3 w-3 mr-1" />
-              Add URL
-            </Button>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileSelect}
-              multiple
-            />
-            
-            <span className="text-xs text-muted-foreground">
-              {isLoading ? 'Generating response...' : 'Powered by Gemini 2.5 Pro'}
-            </span>
-          </div>
+        <div className="flex items-end">
+          <Textarea
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className="resize-none min-h-[80px]"
+            disabled={isLoading}
+          />
+          <Button 
+            onClick={handleSendMessage} 
+            className="ml-2 h-10 px-3"
+            disabled={isLoading || !inputMessage.trim()}
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          </Button>
         </div>
       </CardContent>
     </Card>

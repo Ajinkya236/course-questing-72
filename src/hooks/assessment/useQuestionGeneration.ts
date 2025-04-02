@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -30,12 +31,12 @@ export function useQuestionGeneration() {
     console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level with difficulty:", difficulty);
     
     try {
-      // Set a timeout to detect stalled API calls
+      // Set a timeout to detect stalled API calls - reduced from 60s to 30s
       const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-        setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
+        setTimeout(() => reject(new Error("Request timed out after 30 seconds")), 30000);
       });
       
-      // Create the actual API call promise - always use gemini-1.5-pro
+      // Create the actual API call promise - always use gemini-1.5-flash
       const apiCallPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'generate_questions',
@@ -43,7 +44,7 @@ export function useQuestionGeneration() {
           proficiency: skill.proficiency,
           difficulty: difficulty, // Pass difficulty to the API
           sources: [],
-          model: 'gemini-1.5-pro' // Ensure we always use 2.5 Pro model
+          model: 'gemini-1.5-flash' // Ensure we always use flash model for speed
         },
       });
       

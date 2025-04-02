@@ -1,14 +1,14 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import "https://deno.land/x/xhr@0.3.0/mod.ts";
 
-// CORS headers
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Handle function calls
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -18,111 +18,93 @@ serve(async (req) => {
   try {
     const { skillName, skillDescription, proficiency } = await req.json();
     
-    console.log(`Starting podcast generation for ${skillName} at ${proficiency} level`);
+    if (!skillName) {
+      throw new Error("Skill name is required");
+    }
     
-    // Step 1: Generate conversation transcript using Gemini
-    const transcript = await generateTranscript(skillName, skillDescription, proficiency);
+    console.log(`Generating podcast for: ${skillName} at ${proficiency} level`);
     
-    // For now, just return the transcript without audio generation since we're hitting rate limits
-    // This is a temporary solution until we have a more robust audio generation system
+    // Generate podcast script using Gemini
+    const transcript = await generatePodcastTranscript(skillName, skillDescription, proficiency);
+    
+    // For now, we'll return a mock audio URL and the transcript
+    // This way we avoid the timeout issues with actual audio generation
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        audioUrl: "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAsAAAXQAAiIiIiIiIiIjIyMjIyMjIyQkJCQkJCQkJSUlJSUlJSUmJiYmJiYmJicnJycnJycnKCgoKCgoKCgpKSkpKSkpKSoqKioqKioqKysrKysrKysr29vb29vb29zc3Nzc3Nzc3d3d3d3d3d3e3t7e3t7e3t/v7+/v7+/v4AAAA6TEFNRTMuMTAwAZYAAAAAAAAAABQ4JAOmQgAAQAAAF0DGhD0EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tgxAANAPcRSdQwwAD94uqZ5hgAG+6AAQBAC3XTEJtC737qtMzRB0LgDHtCTlxAYBCBgAwIDnT+j9QYKAyECFAjCPR+oHRAAcD0fn9PtCB3xDPx+PudzyAgGBgAwCECQoCgKAoCgL4wTBMEwTBhMx6P1f/QBMW99CIMAhAYxsYPAgLoY1SMi2FUdG5yAILQgSHggcPBAk9EA+8ED7wQJEjr/7sEHDC///////////iDA4cMQYHDjAIBwEAgGAkBoBAQDAIBAMAgEAwCAQDAIBAMAgEAQCAQCAIBAIAgDAIAAMAQAACAAQBAIAgCH////JCBwQOP0Bn//6GNkuZnQAAAAAASEDggeeCBIoSMq+nJiYlnuAC/iJMC7////////+INDGzhg0ObGDQ5wOBwEAgFgNAgEAQCgIBAIAgDAIAQCgIAgDAIAwCAMAgDAIAgDAgBghA4fQQgff//+hMvQmZoAMNjOCGGnVTHjymNwlNMRRGdlA2OpmJI7l8Ukyw4FUiUkpCEHvTz///////GBwQPPGGyCBwQOHOBwOAgEQZAgGAQCALAQEgQCAMAgDAOAgDAIAgDAPAwDwMA8DAOAwCAbA9A4fpA6BwQIb////tSUlIQtHYxEhYSSFIiVEGTMgVVc8VeXVTEFNRTMuMTAwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//tQxBGADQj9UjmtAAgZFqncdp5Apvf39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f3/8=",
-        transcript
+      JSON.stringify({
+        transcript: transcript,
+        audioUrl: "https://example.com/mock-podcast.mp3", // Just return a placeholder URL
+        mockMode: true // Indicate this is not actual audio
       }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
       }
     );
   } catch (error) {
-    console.error('Error in generate-podcast function:', error);
-    
+    console.error("Error generating podcast:", error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || 'An error occurred while generating the podcast' 
-      }),
+      JSON.stringify({ error: error.message }),
       { 
-        status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
       }
     );
   }
 });
 
-// Function to generate conversation transcript using Gemini API
-async function generateTranscript(skillName: string, skillDescription: string, proficiency: string): Promise<string> {
-  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-  
+async function generatePodcastTranscript(skillName: string, skillDescription: string, proficiency: string): Promise<string> {
   if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured');
+    throw new Error("Missing Gemini API key");
   }
   
   const prompt = `
-    Create a short educational podcast script between a male host named Michael and a female expert named Sarah discussing "${skillName}" at the "${proficiency}" level.
+You are an expert in ${skillName} creating a concise educational podcast for learners at the ${proficiency} level.
+${skillDescription ? `The skill is described as: ${skillDescription}` : ''}
 
-    Context about the skill: ${skillDescription || "A valuable professional skill"}
+Write a podcast script of about 5-7 minutes covering:
+1. Brief introduction to ${skillName}
+2. Key concepts at the ${proficiency} level
+3. Practical applications
+4. Common challenges and how to overcome them
+5. Tips for learning and advancement
 
-    Requirements:
-    - The conversation should be 3-5 minutes long when spoken (approximately 500-800 words)
-    - Start with Michael introducing the topic and welcoming Sarah
-    - Make it educational but conversational and easy to understand
-    - Include 3-4 key points about the skill that would be valuable for someone at the ${proficiency} level
-    - End with Michael thanking Sarah and summarizing what was learned
-    - Don't include sound effects or stage directions, only the spoken dialogue
-    - Each line should be prefixed with either "Michael:" or "Sarah:" to indicate who is speaking
+The script should be conversational, engaging, and educational. Write it as if it were being spoken by a podcast host.
+`;
 
-    Format the output as plain text dialogue only, with each speaker's line separated by a line break.
-  `;
-  
-  console.log("Sending prompt to Gemini for podcast transcript generation");
-  
   try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': GEMINI_API_KEY,
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ],
         generationConfig: {
           temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
           maxOutputTokens: 2048,
-        }
-      })
+        },
+      }),
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Gemini API error:', errorText);
-      throw new Error(`Failed to generate transcript: ${response.status} ${response.statusText}`);
-    }
-    
+
     const data = await response.json();
     
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-      console.error('Unexpected Gemini API response format:', JSON.stringify(data));
-      throw new Error('Received invalid response format from Gemini API');
+    if (!response.ok) {
+      console.error("Gemini API error:", data);
+      throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
     }
+
+    const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+      "Sorry, I couldn't generate a podcast transcript.";
     
-    const generatedText = data.candidates[0].content.parts[0].text;
-    console.log("Successfully generated transcript with Gemini (length: " + generatedText.length + " characters)");
-    
-    return generatedText;
+    return transcript;
   } catch (error) {
-    console.error('Error generating transcript:', error);
-    throw new Error(`Failed to generate transcript: ${error.message}`);
+    console.error("Error generating transcript:", error);
+    throw error;
   }
 }

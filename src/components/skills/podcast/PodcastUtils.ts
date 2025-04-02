@@ -5,6 +5,7 @@ import { toast } from "@/hooks/use-toast";
 interface PodcastResponse {
   audioUrl?: string;
   transcript?: string;
+  mockMode?: boolean;
   error?: string;
 }
 
@@ -33,7 +34,7 @@ export const generatePodcast = async (
     
     // Call the Supabase edge function with timeout handling
     const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
-      setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
+      setTimeout(() => reject(new Error("Request timed out after 30 seconds")), 30000);
     });
     
     const functionPromise = supabase.functions.invoke('generate-podcast', {
@@ -62,24 +63,32 @@ export const generatePodcast = async (
 
     console.log("Received podcast data:", data);
 
-    if (data && data.audioUrl) {
+    if (data) {
+      const responseMessage = data.mockMode 
+        ? "Podcast transcript generated successfully" 
+        : "Podcast generated successfully";
+        
       toast({
-        title: "Podcast generated successfully",
-        description: "Your learning podcast is ready to play",
+        title: responseMessage,
+        description: data.mockMode 
+          ? "Your podcast transcript is ready to read" 
+          : "Your learning podcast is ready to play",
         variant: "default",
       });
-      return { 
-        audioUrl: data.audioUrl,
-        transcript: data.transcript || null
+      
+      return {
+        audioUrl: data.audioUrl || null,
+        transcript: data.transcript || null,
+        mockMode: data.mockMode || false
       };
     }
 
     toast({
       title: "Error generating podcast",
-      description: "No audio was generated. Please try again later.",
+      description: "No content was generated. Please try again later.",
       variant: "destructive",
     });
-    return { error: "No audio was generated" };
+    return { error: "No content was generated" };
   } catch (err: any) {
     console.error("Unexpected error in podcast generation:", err);
     toast({

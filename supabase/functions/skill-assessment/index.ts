@@ -19,7 +19,7 @@ serve(async (req) => {
     
     // Set a timeout for the entire function to prevent infinite hangs
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Function execution timed out")), 50000);
+      setTimeout(() => reject(new Error("Function execution timed out")), 30000); // Reduced from 50s to 30s
     });
     
     // We'll race our handler against the timeout

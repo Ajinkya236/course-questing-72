@@ -1,3 +1,4 @@
+
 import { corsHeaders } from './utils.ts';
 
 // Gemini API configuration
@@ -34,10 +35,10 @@ export async function callGeminiAPI(prompt: string, model = 'gemini-1.5-flash'):
         }
       ],
       generationConfig: {
-        temperature: 0.4,
+        temperature: 0.2, // Reduced from 0.4
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 4096, // Reduced from 8192 to avoid timeouts
+        maxOutputTokens: 2048, // Reduced from 4096
       },
       safetySettings: [
         {

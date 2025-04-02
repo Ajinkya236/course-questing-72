@@ -17,6 +17,8 @@ serve(async (req) => {
       context = '', 
       sources = [], 
       mediaFiles = [],
+      skillName = '',
+      skillProficiency = '',
       structuredFormat = false, // Parameter for structured response
       model = 'gemini-1.5-pro' 
     } = await req.json();
@@ -34,15 +36,28 @@ serve(async (req) => {
     const sourceContext = createContextInfo(sources, mediaFiles);
 
     // Prepare prompt with context
-    let fullPrompt = prompt;
+    let fullPrompt = '';
     
+    // Add domain expertise context if skill information is provided
+    if (skillName) {
+      fullPrompt += `You are a subject matter expert in ${skillName}`;
+      if (skillProficiency) {
+        fullPrompt += ` at the ${skillProficiency} level`;
+      }
+      fullPrompt += `. You have deep knowledge and experience in this domain.\n\n`;
+    }
+    
+    // Add general context and query
     if ((context && context.trim() !== '') || sourceContext !== '') {
-      fullPrompt = `${sourceContext}\n${context ? `Context information:\n${context}\n\n` : ''}User query: ${prompt}
+      fullPrompt += `${sourceContext}\n${context ? `${context}\n\n` : ''}User query: ${prompt}\n\n`;
+    } else {
+      fullPrompt += prompt;
+    }
 
+    fullPrompt += `
 Remember to analyze all provided context information and source materials thoroughly before responding.
 If sources contain URLs, consider their content type (YouTube videos, PDFs, images, etc.) when formulating your response.
 `;
-    }
 
     // Add formatting instructions if structured format is requested
     if (structuredFormat) {
