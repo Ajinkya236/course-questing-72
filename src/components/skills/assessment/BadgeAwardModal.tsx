@@ -18,12 +18,14 @@ interface BadgeAwardModalProps {
   isOpen: boolean;
   onClose: () => void;
   badge: SkillBadge | null;
+  skillName?: string; // Added skillName prop as optional
 }
 
 const BadgeAwardModal: React.FC<BadgeAwardModalProps> = ({
   isOpen,
   onClose,
-  badge
+  badge,
+  skillName
 }) => {
   // Trigger confetti when modal is opened
   React.useEffect(() => {
@@ -46,6 +48,9 @@ const BadgeAwardModal: React.FC<BadgeAwardModalProps> = ({
     proficiencyColors[badge.proficiency as keyof typeof proficiencyColors] : 
     'bg-primary/10 text-primary';
 
+  // Use either the provided skillName or the badge's skillName
+  const displaySkillName = skillName || badge.skillName;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md text-center">
@@ -61,7 +66,7 @@ const BadgeAwardModal: React.FC<BadgeAwardModalProps> = ({
             {badge.imageUrl ? (
               <img 
                 src={badge.imageUrl} 
-                alt={`${badge.skillName} Badge`} 
+                alt={`${displaySkillName} Badge`} 
                 className="w-24 h-24 object-contain"
               />
             ) : (
@@ -69,7 +74,7 @@ const BadgeAwardModal: React.FC<BadgeAwardModalProps> = ({
             )}
           </div>
           
-          <h3 className="text-lg font-bold">{badge.skillName}</h3>
+          <h3 className="text-lg font-bold">{displaySkillName}</h3>
           
           <div className={`mt-2 px-3 py-1 rounded-full text-sm ${badgeColors}`}>
             {badge.proficiency} Level
