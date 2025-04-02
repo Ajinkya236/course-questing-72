@@ -87,42 +87,47 @@ async function generateTranscript(skillName: string, skillDescription: string, p
   
   console.log("Sending prompt to Gemini for podcast transcript generation");
   
-  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': GEMINI_API_KEY,
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-      }
-    })
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Gemini API error:', errorText);
-    throw new Error(`Failed to generate transcript: ${response.status} ${response.statusText}`);
+  try {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': GEMINI_API_KEY,
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 8192,
+        }
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error:', errorText);
+      throw new Error(`Failed to generate transcript: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+      console.error('Unexpected Gemini API response format:', JSON.stringify(data));
+      throw new Error('Received invalid response format from Gemini API');
+    }
+    
+    const generatedText = data.candidates[0].content.parts[0].text;
+    console.log("Successfully generated transcript with Gemini (length: " + generatedText.length + " characters)");
+    
+    return generatedText;
+  } catch (error) {
+    console.error('Error generating transcript:', error);
+    throw new Error(`Failed to generate transcript: ${error.message}`);
   }
-  
-  const data = await response.json();
-  
-  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-    console.error('Unexpected Gemini API response format:', JSON.stringify(data));
-    throw new Error('Received invalid response format from Gemini API');
-  }
-  
-  const generatedText = data.candidates[0].content.parts[0].text;
-  console.log("Successfully generated transcript with Gemini (length: " + generatedText.length + " characters)");
-  
-  return generatedText;
 }
 
 // Function to generate audio from text using Google Text-to-Speech API
@@ -195,7 +200,7 @@ async function generateAudio(transcript: string): Promise<string> {
   
   console.log(`Processing ${processedSegments.length} audio segments after chunking`);
   
-  // Generate audio for the first segment only (to reduce processing time)
+  // Generate audio for the first segment only (for demo/testing purposes)
   try {
     console.log(`Generating audio for segment: ${processedSegments[0].text.substring(0, 30)}...`);
     

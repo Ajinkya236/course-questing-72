@@ -2,7 +2,6 @@
 import React, { useState, useRef } from 'react';
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
-import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 import SkillTabContent from './SkillTabContent';
 import { Source } from '@/components/skills/knowledge/types';
 import TabHeader from './TabHeader';
@@ -38,16 +37,8 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
   const podcastRef = useRef<HTMLDivElement>(null);
 
   const handleGeneratePodcast = () => {
-    // Switch to learn tab first
-    setActiveTab('learn');
-    
-    // Create a timeout to allow the tab to render first
-    setTimeout(() => {
-      // Then scroll to the podcast player (if needed)
-      if (podcastRef && podcastRef.current) {
-        podcastRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+    // Switch to chat tab first
+    setActiveTab('chat');
   };
 
   return (
@@ -73,15 +64,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
             skill={skill}
             sources={sources}
             setSources={setSources}
-          >
-            <div className="mb-8" ref={podcastRef}>
-              <PodcastPlayer
-                skillName={skill.name}
-                skillDescription={skill.description || ''}
-                proficiency={skill.proficiency}
-              />
-            </div>
-          </SkillTabContent>
+          />
         </TabsContent>
       </Tabs>
 

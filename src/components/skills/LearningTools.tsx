@@ -24,6 +24,7 @@ interface LearningToolsProps {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onGeneratePodcast?: () => void;
+  hidePodcastButton?: boolean;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({
@@ -34,7 +35,8 @@ const LearningTools: React.FC<LearningToolsProps> = ({
   setChatMessages,
   isLoading,
   setIsLoading,
-  onGeneratePodcast
+  onGeneratePodcast,
+  hidePodcastButton = false
 }) => {
   const { toast } = useToast();
   const { generateResponse } = useGemini();
@@ -177,15 +179,17 @@ const LearningTools: React.FC<LearningToolsProps> = ({
           <Network className="h-6 w-6 text-primary" />
           <span className="text-xs">Concept Map</span>
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto py-4 flex flex-col items-center gap-2" 
-          onClick={() => handleToolClick('podcast')} 
-          disabled={isLoading}
-        >
-          <Headphones className="h-6 w-6 text-primary" />
-          <span className="text-xs">Podcast Script</span>
-        </Button>
+        {!hidePodcastButton && (
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex flex-col items-center gap-2" 
+            onClick={() => handleToolClick('podcast')} 
+            disabled={isLoading}
+          >
+            <Headphones className="h-6 w-6 text-primary" />
+            <span className="text-xs">Podcast Script</span>
+          </Button>
+        )}
         <Button 
           variant="outline" 
           className="h-auto py-4 flex flex-col items-center gap-2" 

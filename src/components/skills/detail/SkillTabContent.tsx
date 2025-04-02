@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Source } from '@/components/skills/knowledge/types';
 import RecommendedCourses from '@/components/skills/RecommendedCourses';
 

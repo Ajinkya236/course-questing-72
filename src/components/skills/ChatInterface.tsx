@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -6,7 +7,6 @@ import { Sparkles, PaperclipIcon, Link as LinkIcon, Send, Trash2 } from "lucide-
 import { useToast } from "@/hooks/use-toast";
 import { useGemini } from '@/hooks/useGemini';
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Source } from './knowledge/types';
 
@@ -187,7 +187,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   ];
 
   return (
-    <Card className="h-[600px] flex flex-col">
+    <Card className="h-[700px] flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />

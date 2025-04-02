@@ -214,12 +214,11 @@ Format as JSON using this exact structure:
       "questionId": 2, 
       "correct": false,
       "comment": "Incorrect. The correct answer is X because..." 
-    },
-    ...
+    }
   ],
   "summary": "Overall assessment summary...",
-  "improvements": ["Area 1", "Area 2", ...],
-  "nextSteps": ["Specific action 1", "Specific action 2", ...],
+  "improvements": ["Area 1", "Area 2"],
+  "nextSteps": ["Specific action 1", "Specific action 2"],
   "passed": true
 }
 
@@ -234,68 +233,81 @@ Be thorough but fair in your evaluation. Provide structured, helpful, and constr
     // Create the request to Gemini API
     const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${selectedModel}:generateContent?key=${GEMINI_API_KEY}`;
     
-    const response = await fetch(GEMINI_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.2, // Lower temperature for more structured responses
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 8192
-        }
-      })
-    });
-
-    // Parse the response
-    const data = await response.json();
-
-    // Handle API errors
-    if (!response.ok) {
-      console.error("Gemini API error:", data);
-      throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
-    }
-
-    // Extract the generated text
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-      "Sorry, I couldn't generate a response.";
-
-    console.log("Gemini API response received successfully");
-
-    // Try to extract JSON from the response
-    let result;
     try {
-      // Look for JSON in the response
-      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
+      const response = await fetch(GEMINI_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.2, // Lower temperature for more structured responses
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 8192
+          }
+        })
+      });
+
+      // Handle API errors
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Gemini API error:", errorData);
+        throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
+      }
+
+      // Parse the response
+      const data = await response.json();
+
+      // Extract the generated text
+      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+        "Sorry, I couldn't generate a response.";
+
+      console.log("Gemini API response received successfully");
+
+      // Try to extract JSON from the response
+      let result;
+      try {
+        // Look for JSON in the response
+        const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          result = JSON.parse(jsonMatch[0]);
+        } else {
+          result = { rawResponse: generatedText };
+        }
+      } catch (error) {
+        console.error("Error parsing JSON from response:", error);
         result = { rawResponse: generatedText };
       }
-    } catch (error) {
-      console.error("Error parsing JSON from response:", error);
-      result = { rawResponse: generatedText };
-    }
 
-    // Return the result
-    return new Response(
-      JSON.stringify(result),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
-    );
+      // Return the result
+      return new Response(
+        JSON.stringify(result),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
+    } catch (error) {
+      console.error("Error:", error.message);
+      
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      );
+    }
   } catch (error) {
     console.error("Error:", error.message);
     

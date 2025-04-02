@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Course } from '@/types/course';
 import { getRecommendedCourses } from '@/data/mockCourses';
 import { Loader2 } from 'lucide-react';
-import CourseCard from '@/components/ui/CourseCard';
+import CourseCarousel from '@/components/course-carousel';
 
 interface RecommendedCoursesProps {
   skillName: string;
@@ -43,23 +43,12 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : courses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {courses.map((course) => (
-              <div key={course.id} className="h-full">
-                <CourseCard
-                  id={course.id}
-                  title={course.title}
-                  description={course.description}
-                  imageUrl={course.imageUrl || "https://placehold.co/600x400?text=Course"}
-                  category={course.category}
-                  duration={course.duration}
-                  rating={course.rating}
-                  isHot={course.isHot}
-                  isNew={course.isNew}
-                />
-              </div>
-            ))}
-          </div>
+          <CourseCarousel 
+            title="" 
+            subtitle="" 
+            courses={courses}
+            hideHeader={true}
+          />
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             No courses found for {skillName} at {selectedProficiency} level.
