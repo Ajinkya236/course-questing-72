@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
 import LearningTools from '@/components/skills/LearningTools';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import { Source } from '@/components/skills/knowledge/types';
+import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
 
 interface ChatTabProps {
   skill: any;
@@ -26,6 +27,13 @@ const ChatTab: React.FC<ChatTabProps> = ({
   setIsLoading,
   onGeneratePodcast
 }) => {
+  const [showPodcast, setShowPodcast] = useState(false);
+  
+  const handleGeneratePodcast = () => {
+    setShowPodcast(true);
+    // We don't need to call onGeneratePodcast() since we're showing the podcast player inline
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-2">
@@ -45,6 +53,17 @@ const ChatTab: React.FC<ChatTabProps> = ({
           isLoading={isLoading}
           setIsLoading={setIsLoading}
         />
+        
+        {showPodcast && (
+          <div className="mt-6">
+            <PodcastPlayer
+              skillName={skill.name}
+              skillDescription={skill.description || ''}
+              proficiency={skill.proficiency}
+              inChatMode={true}
+            />
+          </div>
+        )}
       </div>
       <div className="space-y-6">
         <LearningTools 
@@ -55,7 +74,7 @@ const ChatTab: React.FC<ChatTabProps> = ({
           setChatMessages={setChatMessages}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
-          onGeneratePodcast={onGeneratePodcast}
+          onGeneratePodcast={handleGeneratePodcast}
         />
         
         <KnowledgeSources

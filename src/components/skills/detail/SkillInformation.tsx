@@ -1,12 +1,9 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
 import { 
   Clock, 
   Calendar, 
-  Users, 
-  BookmarkPlus, 
-  Share2 
+  Users
 } from "lucide-react";
 
 interface SkillInformationProps {
@@ -48,17 +45,6 @@ const SkillInformation: React.FC<SkillInformationProps> = ({ proficiency }) => {
             </p>
           </div>
         </div>
-      </div>
-      
-      <div className="flex space-x-2 mt-6">
-        <Button variant="outline" size="sm" className="flex-1">
-          <BookmarkPlus className="h-4 w-4 mr-2" />
-          <span>Save</span>
-        </Button>
-        <Button variant="outline" size="sm" className="flex-1">
-          <Share2 className="h-4 w-4 mr-2" />
-          <span>Share</span>
-        </Button>
       </div>
     </div>
   );

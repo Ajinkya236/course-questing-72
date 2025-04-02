@@ -1,95 +1,87 @@
 
-import React from 'react';
-import { ChatMessage } from '@/components/skills/ChatInterface';
-import LearningTools from '@/components/skills/LearningTools';
-import ChatInterface from '@/components/skills/ChatInterface';
-import KnowledgeSources from '@/components/skills/KnowledgeSources';
-import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRecommendations } from '@/hooks/useRecommendations';
 import { Source } from '@/components/skills/knowledge/types';
+import { Course } from '@/types/course';
+import CourseCard from '@/components/CourseCard';
 
 interface SkillTabContentProps {
-  activeTab?: string;  // Made optional
-  skillName?: string;  // Made optional
-  skillDescription?: string;  // Made optional
-  skillId?: number;  // Made optional
-  proficiency?: string;  // Made optional
-  sources: string[] | Source[];
-  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
-  chatMessages?: ChatMessage[];  // Made optional
-  setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;  // Made optional
-  setActiveTab?: (tab: string) => void;  // Made optional
-  isGeneratingPodcast?: boolean;  // Made optional
-  setIsGeneratingPodcast?: React.Dispatch<React.SetStateAction<boolean>>;  // Made optional
-  showToolsOnly?: boolean;
-  skill?: any;  // Added skill prop
-  children?: React.ReactNode;  // Added children prop
+  skill: any;
+  sources: Source[];
+  setSources: React.Dispatch<React.SetStateAction<Source[]>>;
+  children?: React.ReactNode;
 }
 
 const SkillTabContent: React.FC<SkillTabContentProps> = ({
-  activeTab = "learning",  // Default value
-  skillName = "",  // Default value
-  skillDescription = "",  // Default value
-  skillId = 0,  // Default value
-  proficiency = "",  // Default value
+  skill,
   sources,
   setSources,
-  chatMessages = [],  // Default value
-  setChatMessages = () => {},  // Default value
-  setActiveTab = () => {},  // Default value
-  isGeneratingPodcast = false,  // Default value
-  setIsGeneratingPodcast = () => {},  // Default value
-  showToolsOnly = false,
-  skill,
   children
 }) => {
-  // Use skill object properties if individual props not provided
-  const displayName = skillName || (skill?.name || "");
-  const displayDescription = skillDescription || (skill?.description || "");
-  const displayProficiency = proficiency || (skill?.proficiency || "");
+  const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
+  const { getRecommendations, loading } = useRecommendations();
 
-  if (activeTab === "learning" && showToolsOnly) {
-    return (
-      <div className="space-y-6">
-        <LearningTools 
-          skillName={displayName}
-          skillDescription={displayDescription}
-          selectedProficiency={displayProficiency}
-          sources={sources}
-          setChatMessages={setChatMessages}
-          isLoading={isGeneratingPodcast}
-          setIsLoading={setIsGeneratingPodcast}
-        />
-        <KnowledgeSources 
-          sources={sources}
-          setSources={setSources}
-          onSubmit={() => {}}
-          minimal={true}
-        />
-        <PodcastPlayer 
-          skillName={displayName}
-          skillDescription={displayDescription}
-          proficiency={displayProficiency}
-        />
-        {children}
+  useEffect(() => {
+    const fetchRecommendedCourses = async () => {
+      // Get courses related to the skill
+      const courses = await getRecommendations('followed_skills', 6, [skill.id.toString()]);
+      setRecommendedCourses(courses);
+    };
+
+    fetchRecommendedCourses();
+  }, [skill.id, getRecommendations]);
+
+  return (
+    <div className="space-y-8">
+      {children}
+      
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Recommended Courses</h2>
+        
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="w-full h-60 animate-pulse">
+                <div className="h-40 bg-muted rounded-t-lg"></div>
+                <CardContent className="p-4">
+                  <div className="h-4 w-3/4 bg-muted rounded mb-2"></div>
+                  <div className="h-4 w-1/2 bg-muted rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : recommendedCourses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recommendedCourses.map((course) => (
+              <CourseCard
+                key={course.id}
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                imageUrl={course.imageUrl}
+                category={course.category}
+                duration={course.duration}
+                rating={course.rating}
+                trainingCategory={course.trainingCategory}
+                isBookmarked={course.isBookmarked}
+                previewUrl={course.previewUrl}
+                videoUrl={course.videoUrl}
+                isHot={course.isHot}
+                isNew={course.isNew}
+              />
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <p className="text-muted-foreground">No courses found for this skill. Try another proficiency level.</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
-    );
-  }
-  
-  if (activeTab === "chat") {
-    return (
-      <ChatInterface 
-        skillName={displayName}
-        skillDescription={displayDescription}
-        selectedProficiency={displayProficiency}
-        sources={sources}
-        chatMessages={chatMessages}
-        setChatMessages={setChatMessages}
-      />
-    );
-  }
-  
-  // Default case - render children or null
-  return children || null;
+    </div>
+  );
 };
 
 export default SkillTabContent;

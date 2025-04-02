@@ -1,69 +1,88 @@
 
-import React, { ReactNode, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import AssessmentHeader from './AssessmentHeader';
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import BadgeAwardModal from './BadgeAwardModal';
-import { SkillBadge } from './types';
-import { proficiencyColors } from '@/data/skillsData';
+import { proficiencyColors } from "@/data/skillsData";
 
 interface AssessmentLayoutProps {
   handleBack: () => void;
   skillName?: string;
   proficiency?: string;
-  children: ReactNode;
-  sidebarContent?: ReactNode;
+  proficiencyOptions?: string[];
+  onProficiencyChange?: (proficiency: string) => void;
   showBadgeModal: boolean;
   closeBadgeModal: () => void;
-  latestBadge: SkillBadge | null;
-  onProficiencyChange?: (value: string) => void;
+  latestBadge: any;
+  sidebarContent: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
   handleBack,
   skillName,
   proficiency,
-  children,
-  sidebarContent,
+  proficiencyOptions = [],
+  onProficiencyChange,
   showBadgeModal,
   closeBadgeModal,
   latestBadge,
-  onProficiencyChange
+  sidebarContent,
+  children
 }) => {
-  // Add debug logging
-  useEffect(() => {
-    console.log("Assessment Layout mounted with:", { skillName, proficiency });
-  }, [skillName, proficiency]);
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <AssessmentHeader 
-        handleBack={handleBack} 
-        skillName={skillName} 
-        proficiency={proficiency}
-        onProficiencyChange={onProficiencyChange}
-      />
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-6">
+        <Button variant="outline" size="sm" onClick={handleBack}>
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Skill
+        </Button>
+      </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Left Column */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardContent className="p-6">
-              {children}
-            </CardContent>
-          </Card>
+      <div className="mb-6 flex flex-col space-y-4">
+        <h1 className="text-3xl font-bold">{skillName} Assessment</h1>
+        {proficiency && (
+          <div className="flex flex-col space-y-2">
+            <div className="flex flex-row items-center gap-2 flex-wrap">
+              {proficiencyOptions && proficiencyOptions.length > 0 && onProficiencyChange && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {proficiencyOptions.map((option) => (
+                    <Button
+                      key={option}
+                      variant={proficiency === option ? "default" : "outline"}
+                      size="sm"
+                      className={`rounded-full ${
+                        proficiency === option 
+                          ? `bg-${proficiencyColors[option.toLowerCase()]} hover:bg-${proficiencyColors[option.toLowerCase()]}/90`
+                          : ""
+                      }`}
+                      onClick={() => onProficiencyChange(option)}
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="order-2 lg:order-1 col-span-1 lg:col-span-3">
+          {children}
         </div>
         
-        {/* Sidebar - Right Column */}
-        <div className="space-y-6">
+        <div className="order-1 lg:order-2 col-span-1">
           {sidebarContent}
         </div>
       </div>
       
-      {/* Badge Award Modal */}
-      <BadgeAwardModal 
-        isOpen={showBadgeModal} 
-        onClose={closeBadgeModal} 
-        badge={latestBadge} 
+      <BadgeAwardModal
+        open={showBadgeModal}
+        onClose={closeBadgeModal}
+        badge={latestBadge}
+        skillName={skillName || ""}
       />
     </div>
   );

@@ -16,7 +16,7 @@ const SkillAssessment: React.FC = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("assessment");
-  const [customProficiency, setCustomProficiency] = useState<string | null>(null);
+  const [selectedProficiency, setSelectedProficiency] = useState<string | null>(null);
   const { toast } = useToast();
   
   const {
@@ -52,18 +52,24 @@ const SkillAssessment: React.FC = () => {
     if (selectedSkill) {
       toast({
         title: "Generating new assessment",
-        description: `Creating a new assessment for ${selectedSkill.name} at ${selectedSkill.proficiency} level.`,
+        description: `Creating a new assessment for ${selectedSkill.name} at ${selectedProficiency || selectedSkill.proficiency} level.`,
         variant: "default",
       });
       
-      generateQuestionsForSkill(selectedSkill);
+      // Create a modified skill object with the selected proficiency or use the default one
+      const updatedSkill = selectedProficiency ? {
+        ...selectedSkill,
+        proficiency: selectedProficiency
+      } : selectedSkill;
+      
+      generateQuestionsForSkill(updatedSkill);
     }
   };
 
-  // Handle proficiency change - updated to use new proficiency levels
+  // Handle proficiency change
   const handleProficiencyChange = (newProficiency: string) => {
     if (selectedSkill) {
-      setCustomProficiency(newProficiency);
+      setSelectedProficiency(newProficiency);
       
       // Create a modified skill object with the new proficiency
       const updatedSkill = {
@@ -107,8 +113,8 @@ const SkillAssessment: React.FC = () => {
 
   const handleSubmitAssessment = async () => {
     // If we're using custom proficiency, update the skill object
-    const skillToSubmit = customProficiency && selectedSkill 
-      ? { ...selectedSkill, proficiency: customProficiency }
+    const skillToSubmit = selectedProficiency && selectedSkill 
+      ? { ...selectedSkill, proficiency: selectedProficiency }
       : selectedSkill;
       
     await submitAssessment(questions);
@@ -125,15 +131,16 @@ const SkillAssessment: React.FC = () => {
     return <div className="container mx-auto px-4 py-8">Skill not found</div>;
   }
 
-  // Use customProficiency if set, otherwise use the selected skill's proficiency
-  const displayProficiency = customProficiency || selectedSkill?.proficiency;
+  // Proficiency options
+  const proficiencyOptions = ["Awareness", "Knowledge", "Skill", "Mastery"];
 
   return (
     <PageLayout>
       <AssessmentLayout
         handleBack={handleBack}
         skillName={selectedSkill?.name}
-        proficiency={displayProficiency}
+        proficiency={selectedProficiency || selectedSkill?.proficiency}
+        proficiencyOptions={proficiencyOptions}
         onProficiencyChange={handleProficiencyChange}
         showBadgeModal={showBadgeModal}
         closeBadgeModal={closeBadgeModal}
