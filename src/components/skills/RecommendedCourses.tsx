@@ -45,7 +45,6 @@ const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
         ) : courses.length > 0 ? (
           <CourseCarousel 
             title="" 
-            subtitle="" 
             courses={courses}
             hideHeader={true}
           />
