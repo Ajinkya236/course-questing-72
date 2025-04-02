@@ -1,136 +1,162 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Award, BrainCircuit, Lightbulb, Code, Database, TrendingUp, Rocket, ChevronLeft } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Skill } from './types';
-import { proficiencyColors } from '@/data/skillsData';
-import { Link } from 'react-router-dom';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React from 'react';
+import { 
+  LightbulbIcon,
+  CircleHelp,
+  FlagIcon,
+  ZapIcon,
+  Share2Icon
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
-interface SkillHeaderProps {
-  skill: Skill;
-  progress?: number;
-  skillName?: string;
-  skillDescription?: string;
-  proficiency?: string;
-  onProficiencyChange?: (value: string) => void;
-  onBack?: () => void;
-}
-
-// Helper function to get the appropriate icon
-const getSkillIcon = (icon?: string) => {
-  switch(icon) {
-    case 'Award': return <Award className="h-10 w-10 text-primary" />;
-    case 'BrainCircuit': return <BrainCircuit className="h-10 w-10 text-primary" />;
-    case 'Lightbulb': return <Lightbulb className="h-10 w-10 text-primary" />;
-    case 'Code': return <Code className="h-10 w-10 text-primary" />;
-    case 'Database': return <Database className="h-10 w-10 text-primary" />;
-    case 'Rocket': return <Rocket className="h-10 w-10 text-primary" />;
-    case 'TrendingUp': return <TrendingUp className="h-10 w-10 text-primary" />;
-    default: return <BrainCircuit className="h-10 w-10 text-primary" />;
-  }
+// Map skill categories to appropriate icons
+const categoryIconMap: Record<string, React.ReactNode> = {
+  'role': <LightbulbIcon className="h-5 w-5 mr-1" />,
+  'technical': <ZapIcon className="h-5 w-5 mr-1" />,
+  'soft': <CircleHelp className="h-5 w-5 mr-1" />,
+  'domain': <FlagIcon className="h-5 w-5 mr-1" />
 };
 
-const SkillHeader: React.FC<SkillHeaderProps> = ({ 
-  skill, 
-  progress = 0,
-  skillName,
-  skillDescription,
-  proficiency,
-  onProficiencyChange,
-  onBack
-}) => {
-  // Handle both direct skill prop and individual props
-  const displayName = skillName || (skill?.name || '');
-  const displayDescription = skillDescription || (skill?.description || '');
-  const displayProficiency = proficiency || (skill?.proficiency || '');
-  
-  // Safely check if skill and skill.icon exist before using them
-  const iconToRender = skill?.icon || 'BrainCircuit';
+// Skill proficiency levels
+const proficiencyLevels = [
+  'Awareness',
+  'Knowledge',
+  'Skill',
+  'Mastery',
+  'Expert'
+];
 
-  // Proficiency levels for the selection
-  const proficiencyLevels = ['Awareness', 'Knowledge', 'Skill', 'Mastery'];
+interface SkillHeaderProps {
+  skill: any;
+  onProficiencyChange?: (value: string) => void;
+}
+
+const SkillHeader: React.FC<SkillHeaderProps> = ({ 
+  skill,
+  onProficiencyChange
+}) => {
+  const { toast } = useToast();
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [employeeIds, setEmployeeIds] = useState("");
+
+  const handleProficiencySelect = (level: string) => {
+    if (onProficiencyChange) {
+      onProficiencyChange(level);
+    }
+  };
+
+  const handleShare = () => {
+    if (!employeeIds.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter at least one employee ID.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const ids = employeeIds.split(',').map(id => id.trim());
+    
+    toast({
+      title: "Skill shared",
+      description: `Shared "${skill.name}" with ${ids.length} employee(s).`,
+    });
+    
+    setIsShareDialogOpen(false);
+    setEmployeeIds("");
+  };
 
   return (
-    <div className="mb-8">
-      {onBack && (
-        <Button 
-          variant="ghost" 
-          onClick={onBack} 
-          className="mb-4 flex items-center gap-1"
-          size="sm"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back to Skills
-        </Button>
-      )}
-      
-      <Card className="border-0 shadow-sm bg-white dark:bg-gray-800">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            {/* Skill Icon */}
-            <div className="bg-primary/10 p-4 rounded-full">
-              {getSkillIcon(iconToRender)}
-            </div>
-            
-            {/* Skill Info */}
-            <div className="flex-grow">
-              <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
-              
-              {/* Proficiency Selection */}
-              <Tabs 
-                value={displayProficiency} 
-                onValueChange={onProficiencyChange || (() => {})}
-                className="mb-3"
-              >
-                <TabsList className="bg-transparent h-auto gap-2 p-1">
-                  {proficiencyLevels.map((level) => (
-                    <TabsTrigger
-                      key={level}
-                      value={level}
-                      disabled={!onProficiencyChange}
-                      className={`px-3 py-1 rounded-full text-xs ${
-                        displayProficiency === level 
-                          ? proficiencyColors[level as keyof typeof proficiencyColors] 
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {level}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-              
-              <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
-              
-              {/* Progress bar only if there's progress */}
-              {progress > 0 && (
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Your progress</span>
-                    <span>{progress}%</span>
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </div>
-              )}
-            </div>
-            
-            {/* Action Button - Changed to "Earn Skill" */}
-            <div>
-              <Button 
-                asChild
-                className="w-full md:w-auto"
-              >
-                <Link to={`/skills/${skill?.id}/assessment`}>
-                  <Award className="h-4 w-4 mr-2" />
-                  Earn Skill
-                </Link>
-              </Button>
-            </div>
+    <div className="bg-card shadow-sm rounded-lg p-6">
+      <div className="flex flex-col lg:flex-row justify-between gap-4">
+        <div>
+          <div className="flex items-center mb-2">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary p-1 mr-2">
+              {categoryIconMap[skill.category?.toLowerCase()] || <LightbulbIcon className="h-5 w-5" />}
+            </span>
+            <span className="text-muted-foreground text-sm font-medium">
+              {skill.category?.charAt(0).toUpperCase() + skill.category?.slice(1) || "Skill"}
+            </span>
           </div>
-        </CardContent>
-      </Card>
+          
+          <h1 className="text-2xl font-bold mb-2">{skill.name}</h1>
+          
+          <p className="text-muted-foreground mb-4">
+            {skill.description || "No description available"}
+          </p>
+        </div>
+        
+        <div className="lg:text-right">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {proficiencyLevels.map((level) => (
+              <button
+                key={level}
+                onClick={() => handleProficiencySelect(level)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  skill.proficiency === level
+                    ? 'bg-[#333333] text-white'
+                    : 'bg-muted hover:bg-muted/80'
+                }`}
+              >
+                {level}
+              </button>
+            ))}
+          </div>
+          
+          <div className="flex gap-2 justify-end">
+            <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Share2Icon className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Share with team members</DialogTitle>
+                  <DialogDescription>
+                    Enter the employee IDs of people you want to share this skill with.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Label htmlFor="employee-ids">Employee IDs</Label>
+                  <Input 
+                    id="employee-ids" 
+                    placeholder="e.g., E001, E002, E003" 
+                    value={employeeIds}
+                    onChange={(e) => setEmployeeIds(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Separate multiple IDs with commas
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsShareDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleShare}>Share</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

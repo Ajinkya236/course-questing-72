@@ -8,20 +8,34 @@ type GenerateResponseParams = {
   context?: string;
   model?: string;
   structuredFormat?: boolean;
+  retryAttempt?: number;
 };
 
 export function useGemini() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
 
   const generateResponse = async ({ 
     prompt, 
     context = '', 
     model = 'gemini-1.5-pro',
-    structuredFormat = true
+    structuredFormat = true,
+    retryAttempt = 0
   }: GenerateResponseParams) => {
+    // Prevent duplicate calls if a request is already in progress
+    if (isRequestInProgress && retryAttempt === 0) {
+      toast({
+        title: "Request in progress",
+        description: "Please wait for the current request to complete.",
+        variant: "warning",
+      });
+      return { generatedText: "A request is already in progress. Please wait." };
+    }
+
     setLoading(true);
     setError(null);
+    setIsRequestInProgress(true);
 
     try {
       // Call the Supabase Edge Function to generate a response
@@ -49,6 +63,7 @@ export function useGemini() {
       return { generatedText: "Sorry, there was an error generating a response." };
     } finally {
       setLoading(false);
+      setIsRequestInProgress(false);
     }
   };
 
@@ -56,5 +71,6 @@ export function useGemini() {
     loading,
     error,
     generateResponse,
+    isRequestInProgress
   };
 }

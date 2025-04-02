@@ -7,13 +7,40 @@ import { Question } from '@/components/skills/assessment/types';
 export function useQuestionGeneration() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
   const { toast } = useToast();
   
   const generateQuestionsForSkill = async (skill: any) => {
+    // Prevent duplicate requests
+    if (isRequestInProgress) {
+      toast({
+        title: "Generation in progress",
+        description: "Please wait for the current assessment to be generated.",
+        variant: "warning",
+      });
+      return;
+    }
+    
     setIsLoading(true);
+    setIsRequestInProgress(true);
     console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
     
     try {
+      // Check for cached assessment
+      const cachedAssessment = localStorage.getItem(`assessment_${skill.name}_${skill.proficiency}`);
+      if (cachedAssessment) {
+        try {
+          const parsedQuestions = JSON.parse(cachedAssessment);
+          if (Array.isArray(parsedQuestions) && parsedQuestions.length > 0) {
+            console.log("Using cached assessment questions");
+            setQuestions(parsedQuestions);
+            return;
+          }
+        } catch (e) {
+          console.log("Could not parse cached assessment, generating new one");
+        }
+      }
+      
       // Call the skill-assessment edge function to generate questions
       const { data, error } = await supabase.functions.invoke('skill-assessment', {
         body: {
@@ -40,6 +67,9 @@ export function useQuestionGeneration() {
       if (data && data.questions && Array.isArray(data.questions)) {
         console.log("Successfully parsed questions:", data.questions.length);
         setQuestions(data.questions);
+        
+        // Cache the assessment for future use
+        localStorage.setItem(`assessment_${skill.name}_${skill.proficiency}`, JSON.stringify(data.questions));
       } else {
         console.error("Invalid response format from assessment generator:", data);
         throw new Error("Invalid response format from assessment generator");
@@ -56,6 +86,7 @@ export function useQuestionGeneration() {
       setQuestions(getDefaultQuestions(skill));
     } finally {
       setIsLoading(false);
+      setIsRequestInProgress(false);
     }
   };
 
@@ -101,6 +132,7 @@ export function useQuestionGeneration() {
     questions,
     setQuestions,
     isLoading,
-    generateQuestionsForSkill
+    generateQuestionsForSkill,
+    isRequestInProgress
   };
 }

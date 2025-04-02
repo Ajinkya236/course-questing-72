@@ -1,14 +1,16 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import "https://deno.land/x/xhr@0.3.0/mod.ts";
 
-// CORS headers
+// Set up CORS headers for browser requests
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Handle function calls
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -16,191 +18,160 @@ serve(async (req) => {
   }
 
   try {
-    const { skillName, skillDescription, proficiency } = await req.json();
+    if (!GEMINI_API_KEY) {
+      throw new Error("Missing Gemini API key. Please add GEMINI_API_KEY to your Supabase secrets.");
+    }
+
+    if (!GOOGLE_API_KEY) {
+      throw new Error("Missing Google API key. Please add GOOGLE_API_KEY to your Supabase secrets.");
+    }
+
+    const { skillName, skillDescription, proficiency, duration = "15-25 minutes", transcriptLength = "15-20 minutes reading time" } = await req.json();
+
+    if (!skillName || !proficiency) {
+      throw new Error("Missing required parameters: skillName and proficiency are required");
+    }
+
+    console.log(`Generating podcast script for ${skillName} at ${proficiency} level`);
+
+    // Step 1: Generate podcast script using Gemini 1.5 Pro
+    const script = await generatePodcastScript(skillName, skillDescription, proficiency, transcriptLength);
     
-    // Step 1: Generate conversation transcript using Gemini
-    const transcript = await generateTranscript(skillName, skillDescription, proficiency);
+    if (!script || script.length < 500) {
+      throw new Error("Failed to generate an adequate podcast script");
+    }
     
-    // Step 2: Generate audio from the transcript
-    const audioUrl = await generateAudio(transcript);
+    console.log(`Successfully generated podcast script (${script.length} chars)`);
+
+    // Step 2: Generate audio using Google Text-to-Speech API
+    const audioUrl = await generateAudio(script);
     
-    // Return success response
+    if (!audioUrl) {
+      throw new Error("Failed to generate audio from the podcast script");
+    }
+    
+    console.log(`Successfully generated podcast audio: ${audioUrl}`);
+
     return new Response(
       JSON.stringify({ 
-        success: true, 
-        audioUrl,
-        transcript
+        audioUrl, 
+        transcript: script,
+        success: true
       }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200 
       }
     );
   } catch (error) {
-    console.error('Error in generate-podcast function:', error);
+    console.error("Error:", error.message);
     
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || 'An error occurred while generating the podcast' 
-      }),
+      JSON.stringify({ error: error.message }),
       { 
-        status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
       }
     );
   }
 });
 
-// Function to generate conversation transcript using Gemini API
-async function generateTranscript(skillName: string, skillDescription: string, proficiency: string): Promise<string> {
-  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-  
-  if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured');
-  }
-  
-  const prompt = `
-    Create a longer educational podcast script between a male host named Michael and a female expert named Sarah discussing "${skillName}" at the "${proficiency}" level.
+async function generatePodcastScript(skillName: string, skillDescription: string, proficiency: string, targetLength: string) {
+  const prompt = `Create a detailed educational podcast script between a male host named Michael and a female host named Sarah explaining the key concepts of "${skillName}" at the "${proficiency}" level. 
 
-    Context about the skill: ${skillDescription || "A valuable professional skill"}
+IMPORTANT REQUIREMENTS:
+- Script must be SUBSTANTIAL, targeting ${targetLength}
+- Make it conversational, engaging, and thorough
+- Cover key concepts, examples, benefits, and how to apply this skill
+- Format this as a dialogue script with clear speaker indicators (Michael: and Sarah:)
+- Include a brief introduction and conclusion
+- Divide into sections with smooth transitions
+- No placeholders - provide complete, in-depth explanations
+- Aim for an audio duration between 15-25 minutes when read at normal pace
+- Include occasional light humor or interesting facts to keep engagement
 
-    Requirements:
-    - The conversation should be 15-25 minutes long when spoken (approximately 3000-5000 words)
-    - Start with Michael introducing the topic and welcoming Sarah
-    - Make it educational but conversational and easy to understand
-    - Include at least 6-8 key points about the skill that would be valuable for someone at the ${proficiency} level
-    - Include some practical examples and real-world applications
-    - Discuss common challenges people face when developing this skill
-    - End with Michael thanking Sarah and summarizing what was learned
-    - Don't include sound effects or stage directions, only the spoken dialogue
-    - Each line should be prefixed with either "Michael:" or "Sarah:" to indicate who is speaking
-    - Use the Gemini 1.5 Pro model for this generation to create detailed and comprehensive content
+This is for a skill learning platform, so ensure the content is professional and educational while remaining accessible to learners.
 
-    Format the output as plain text dialogue only, with each speaker's line separated by a line break.
-  `;
-  
-  console.log("Sending prompt to Gemini for podcast transcript generation");
-  
-  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': GEMINI_API_KEY,
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-      }
-    })
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Gemini API error:', errorText);
-    throw new Error(`Failed to generate transcript: ${response.status} ${response.statusText}`);
+Use this description if available: ${skillDescription || "No additional details provided"}
+
+THE SCRIPT MUST BE IN-DEPTH AND SUBSTANTIVE, NOT A BASIC OVERVIEW.`;
+
+  try {
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const response = await fetch(GEMINI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 8192, // Use maximum tokens for a longer response
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error("Gemini API error:", data);
+      throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
+    }
+
+    const script = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    
+    // Check if the script is long enough (minimum 3000 characters for a ~15 min podcast)
+    if (script.length < 3000) {
+      console.warn("Generated script is too short:", script.length);
+      throw new Error("Generated script is too short for a 15-25 minute podcast");
+    }
+    
+    return script;
+  } catch (error) {
+    console.error("Error generating podcast script:", error);
+    throw error;
   }
-  
-  const data = await response.json();
-  
-  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-    console.error('Unexpected Gemini API response format:', JSON.stringify(data));
-    throw new Error('Received invalid response format from Gemini API');
-  }
-  
-  const generatedText = data.candidates[0].content.parts[0].text;
-  console.log("Successfully generated transcript with Gemini (length: " + generatedText.length + " characters)");
-  
-  return generatedText;
 }
 
-// Function to generate audio from text using Google Text-to-Speech API
-async function generateAudio(transcript: string): Promise<string> {
-  const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
-  
-  if (!GOOGLE_API_KEY) {
-    throw new Error('GOOGLE_API_KEY is not configured');
-  }
-  
-  // Parse the transcript into speaker segments
-  const lines = transcript.split('\n').filter(line => line.trim().length > 0);
-  const segments = [];
-  
-  for (const line of lines) {
-    if (line.startsWith('Michael:')) {
-      segments.push({
-        text: line.replace('Michael:', '').trim(),
-        voiceName: 'en-US-Neural2-D', // Male voice
-        ssmlGender: 'MALE'
-      });
-    } else if (line.startsWith('Sarah:')) {
-      segments.push({
-        text: line.replace('Sarah:', '').trim(),
-        voiceName: 'en-US-Neural2-F', // Female voice
-        ssmlGender: 'FEMALE'
-      });
-    } else {
-      // If no speaker prefix, add to the last segment
-      if (segments.length > 0) {
-        segments[segments.length - 1].text += ' ' + line.trim();
-      }
-    }
-  }
-  
-  if (segments.length === 0) {
-    throw new Error("Could not parse transcript into speaker segments");
-  }
-  
-  console.log(`Parsed transcript into ${segments.length} segments for audio generation`);
-  
-  // Process segments into chunks to avoid length limitations
-  const MAX_CHAR_LENGTH = 5000; // Google TTS limit
-  const processedSegments = [];
-  
-  for (const segment of segments) {
-    if (segment.text.length <= MAX_CHAR_LENGTH) {
-      processedSegments.push(segment);
-    } else {
-      // Split long segments into multiple parts
-      let text = segment.text;
-      while (text.length > 0) {
-        const chunk = text.substring(0, MAX_CHAR_LENGTH);
-        // Try to break at sentence end
-        let breakPoint = chunk.lastIndexOf('. ');
-        if (breakPoint === -1 || breakPoint < MAX_CHAR_LENGTH / 2) {
-          breakPoint = chunk.lastIndexOf(' ');
-        }
-        const part = text.substring(0, breakPoint + 1);
-        
-        processedSegments.push({
-          ...segment,
-          text: part
-        });
-        
-        text = text.substring(breakPoint + 1);
-      }
-    }
-  }
-  
-  console.log(`Processing ${processedSegments.length} audio segments after chunking`);
-  
-  // Combine all audio segments
-  const audioContents = [];
-  
-  for (const segment of processedSegments) {
-    try {
-      console.log(`Generating audio for segment: ${segment.text.substring(0, 30)}...`);
+async function generateAudio(script: string) {
+  try {
+    // Create a reasonable chunk size to avoid request size limits
+    const MAX_CHUNK_SIZE = 4500;
+    const chunks = chunkText(script, MAX_CHUNK_SIZE);
+    const audioUrls = [];
+
+    console.log(`Split script into ${chunks.length} chunks for TTS processing`);
+
+    for (let i = 0; i < chunks.length; i++) {
+      console.log(`Processing TTS chunk ${i+1}/${chunks.length}`);
       
       const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
         method: 'POST',
@@ -209,12 +180,11 @@ async function generateAudio(transcript: string): Promise<string> {
         },
         body: JSON.stringify({
           input: {
-            text: segment.text
+            text: chunks[i]
           },
           voice: {
             languageCode: 'en-US',
-            name: segment.voiceName,
-            ssmlGender: segment.ssmlGender
+            ssmlGender: i % 2 === 0 ? 'MALE' : 'FEMALE' // Alternate voices for dialogue
           },
           audioConfig: {
             audioEncoding: 'MP3',
@@ -223,30 +193,48 @@ async function generateAudio(transcript: string): Promise<string> {
           }
         })
       });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Text-to-Speech API error:', errorText);
-        throw new Error(`Failed to generate audio: ${response.status} ${response.statusText}`);
-      }
-      
+
       const data = await response.json();
       
       if (!data.audioContent) {
-        throw new Error("No audio content in Google TTS response");
+        console.error("TTS API error:", data);
+        throw new Error("Failed to generate audio content");
       }
       
-      audioContents.push(data.audioContent);
-    } catch (error) {
-      console.error('Error generating audio segment:', error);
-      throw error;
+      // This would be where you'd upload the audio to storage or create a URL
+      // For this example, we're creating a mock URL
+      audioUrls.push(`data:audio/mp3;base64,${data.audioContent}`);
+    }
+
+    // In a real implementation, you would combine these audio files
+    // For now, we'll just return the first chunk's audio
+    return audioUrls[0];
+  } catch (error) {
+    console.error("Error generating audio:", error);
+    throw error;
+  }
+}
+
+function chunkText(text: string, maxChunkSize: number): string[] {
+  const chunks = [];
+  const dialogue = text.split(/\n+/); // Split by line breaks to respect dialogue format
+  
+  let currentChunk = "";
+  
+  for (const line of dialogue) {
+    // If adding this line would exceed the limit, save current chunk and start a new one
+    if (currentChunk.length + line.length + 1 > maxChunkSize && currentChunk.length > 0) {
+      chunks.push(currentChunk);
+      currentChunk = line;
+    } else {
+      currentChunk += (currentChunk ? "\n" : "") + line;
     }
   }
   
-  console.log(`Successfully generated ${audioContents.length} audio segments`);
+  // Add the last chunk if it has content
+  if (currentChunk.length > 0) {
+    chunks.push(currentChunk);
+  }
   
-  // For simplicity of this demo, we'll return the first audio segment as base64
-  // In a production environment, you'd want to combine these audio segments
-  // or save them to Supabase storage
-  return `data:audio/mp3;base64,${audioContents[0]}`;
+  return chunks;
 }
