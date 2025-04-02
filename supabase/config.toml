@@ -80,12 +80,12 @@ refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 enable_signup = true
 
-# Functions configuration
 [functions]
+enabled = true
 # Port for Functions server
 port = 54321
 
-# Port for Function serving
+# Function serving configuration
 [functions.serve]
 port = 54321
 
