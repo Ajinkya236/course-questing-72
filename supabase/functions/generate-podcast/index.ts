@@ -27,14 +27,14 @@ serve(async (req) => {
     // Generate podcast script using Gemini
     const transcript = await generatePodcastTranscript(skillName, skillDescription, proficiency);
     
-    // We now skip the audio generation due to API rate limiting issues
-    // and return only the transcript
+    // We're skipping audio generation for now and returning just the transcript
+    // This will allow us to test the functionality without hitting API limits
     return new Response(
       JSON.stringify({
         transcript: transcript,
         audioUrl: null,
         mockMode: true,
-        message: "Podcast transcript generated successfully. Audio generation is currently unavailable due to API rate limits."
+        message: "Podcast transcript generated successfully. Audio will be implemented in a later phase."
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -59,73 +59,53 @@ async function generatePodcastTranscript(skillName: string, skillDescription: st
   }
   
   const prompt = `
-You are an expert in ${skillName} creating a concise educational podcast for learners at the ${proficiency} level.
+Generate a 12-20 minute podcast script transcript between two hosts, a male and a female discussing ${skillName} at ${proficiency} level.
 ${skillDescription ? `The skill is described as: ${skillDescription}` : ''}
 
-Write a podcast script of about 5-7 minutes covering:
-1. Brief introduction to ${skillName}
-2. Key concepts at the ${proficiency} level
-3. Practical applications
-4. Common challenges and how to overcome them
-5. Tips for learning and advancement
+The transcript should:
+1. Include host names (Mark and Sarah)
+2. Cover key concepts of ${skillName} at the ${proficiency} level
+3. Discuss practical applications and real-world examples
+4. Address common challenges and how to overcome them
+5. Share tips for learning and advancing in this skill
+6. Be entertaining, valuable, engaging and natural
+7. Be formatted clearly with speaker names before their lines
 
-The script should be conversational, engaging, and educational. Write it as if it were being spoken by a podcast host.
+Start with an introduction and welcome, then a structured discussion, and end with a conclusion and call to action.
 `;
 
   try {
-    // Add retry mechanism with exponential backoff
-    const maxRetries = 3;
-    let retryCount = 0;
-    let lastError = null;
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192, // Increased for longer transcript
+        },
+      }),
+    });
+
+    const data = await response.json();
     
-    while (retryCount < maxRetries) {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: prompt }]
-              }
-            ],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 2048,
-            },
-          }),
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-          console.error("Gemini API error:", data);
-          throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
-        }
-
-        const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-          "Sorry, I couldn't generate a podcast transcript.";
-        
-        return transcript;
-      } catch (error) {
-        lastError = error;
-        retryCount++;
-        
-        if (retryCount < maxRetries) {
-          // Exponential backoff: wait 2^retryCount * 1000 ms before retrying
-          const waitTime = Math.pow(2, retryCount) * 1000;
-          console.log(`Attempt ${retryCount} failed. Retrying in ${waitTime}ms...`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-      }
+    if (!response.ok) {
+      console.error("Gemini API error:", data);
+      throw new Error(`Gemini API error: ${data.error?.message || "Unknown error"}`);
     }
+
+    const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+      "Sorry, I couldn't generate a podcast transcript.";
     
-    // If we've exhausted all retries
-    throw lastError || new Error("Failed to generate transcript after multiple attempts");
+    return transcript;
   } catch (error) {
     console.error("Error generating transcript:", error);
     throw error;
