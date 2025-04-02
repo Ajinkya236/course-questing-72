@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Share } from "lucide-react";
@@ -27,8 +27,8 @@ interface SkillDetailTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   skill: any;
-  sources: string[] | Source[];
-  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
+  sources: Source[];
+  setSources: React.Dispatch<React.SetStateAction<Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isGeneratingPodcast: boolean;
@@ -50,7 +50,8 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [employeeIds, setEmployeeIds] = useState('');
   const { toast } = useToast();
-  const [podcastRef, setPodcastRef] = useState<React.RefObject<HTMLDivElement> | null>(null);
+  // Fix: Use useRef instead of state for the podcast ref to avoid infinite loops
+  const podcastRef = useRef<HTMLDivElement>(null);
 
   const handleShareSkill = () => {
     toast({
@@ -146,7 +147,8 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
             sources={sources}
             setSources={setSources}
           >
-            <div className="mb-8" ref={(el) => setPodcastRef({ current: el })}>
+            {/* Fix: Use ref directly instead of using a state setter function */}
+            <div className="mb-8" ref={podcastRef}>
               <PodcastPlayer
                 skillName={skill.name}
                 skillDescription={skill.description || ''}
