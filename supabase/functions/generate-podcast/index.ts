@@ -136,7 +136,8 @@ async function generateTranscript(skillName: string, skillDescription: string, p
 
 // Function to generate audio from text using Google Text-to-Speech API
 async function generateAudio(transcript: string): Promise<string> {
-  const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+  // Use the hardcoded Google API key instead of environment variable
+  const GOOGLE_API_KEY = "AIzaSyDas3RDWpmkt64D3T9ftjnvRSwjpxpO_Uc";
   
   if (!GOOGLE_API_KEY) {
     throw new Error('GOOGLE_API_KEY is not configured');

@@ -18,7 +18,7 @@ export function useGemini() {
   const generateResponse = async ({ 
     prompt, 
     context = '', 
-    model = 'gemini-1.5-pro',
+    model = 'gemini-1.5-pro', // Default to 2.5 Pro regardless of input
     structuredFormat = true
   }: GenerateResponseParams) => {
     // If API call previously failed, don't attempt again
@@ -40,12 +40,15 @@ export function useGemini() {
     setError(null);
 
     try {
+      // Always use gemini-1.5-pro regardless of passed model parameter
+      const actualModel = 'gemini-1.5-pro';
+      
       // Call the Supabase Edge Function to generate a response
       const { data, error } = await supabase.functions.invoke('gemini-generate-response', {
         body: {
           prompt,
           context,
-          model,
+          model: actualModel,
           structuredFormat,
         },
       });

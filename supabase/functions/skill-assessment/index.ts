@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.3.0/mod.ts";
 
@@ -98,9 +97,8 @@ serve(async (req) => {
       throw new Error("Skill information is required");
     }
 
-    // Validate the model
-    const validModels = ['gemini-1.5-flash', 'gemini-1.5-pro'];
-    const selectedModel = validModels.includes(model) ? model : 'gemini-1.5-pro';
+    // Always use gemini-1.5-pro model regardless of what was passed
+    const selectedModel = 'gemini-1.5-pro';
 
     // Process sources and media files to create better context
     let contextInfo = '';
@@ -228,7 +226,7 @@ Be thorough but fair in your evaluation. Provide structured, helpful, and constr
       throw new Error("Invalid action. Supported actions are 'generate_questions' and 'evaluate_assessment'");
     }
 
-    console.log(`Sending ${action} request to Gemini API for skill ${skill}`);
+    console.log(`Sending ${action} request to Gemini API for skill ${skill} using model ${selectedModel}`);
 
     // Create the request to Gemini API
     const GEMINI_API_URL = `${GEMINI_API_BASE_URL}${selectedModel}:generateContent?key=${GEMINI_API_KEY}`;

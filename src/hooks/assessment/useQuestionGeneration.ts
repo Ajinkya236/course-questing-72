@@ -31,14 +31,14 @@ export function useQuestionGeneration() {
         setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
       });
       
-      // Create the actual API call promise
+      // Create the actual API call promise - always use gemini-1.5-pro
       const apiCallPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'generate_questions',
           skill: skill.name,
           proficiency: skill.proficiency,
           sources: [],
-          model: 'gemini-1.5-pro'
+          model: 'gemini-1.5-pro' // Ensure we always use 2.5 Pro model
         },
       });
       
