@@ -173,11 +173,11 @@ async function generateAudio(transcript: string): Promise<string> {
   
   console.log(`Parsed transcript into ${segments.length} segments for audio generation`);
   
-  // For demo purposes, we'll just generate audio for the first few segments
-  // In production, you would process all segments and combine them
   try {
-    // Just generate the first segment for proof of concept
-    console.log(`Generating audio for first segment: ${segments[0].text.substring(0, 30)}...`);
+    // Generate audio for a segment (for demonstration purposes)
+    // In a real implementation, you would process all segments and combine them
+    const sampleSegment = segments[0];
+    console.log(`Generating audio for sample segment: ${sampleSegment.text.substring(0, 30)}...`);
     
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
@@ -186,12 +186,12 @@ async function generateAudio(transcript: string): Promise<string> {
       },
       body: JSON.stringify({
         input: {
-          text: segments[0].text
+          text: sampleSegment.text
         },
         voice: {
           languageCode: 'en-US',
-          name: segments[0].voiceName,
-          ssmlGender: segments[0].ssmlGender
+          name: sampleSegment.voiceName,
+          ssmlGender: sampleSegment.ssmlGender
         },
         audioConfig: {
           audioEncoding: 'MP3',

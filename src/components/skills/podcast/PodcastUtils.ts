@@ -31,13 +31,24 @@ export const generatePodcast = async (
     
     console.log("Calling generate-podcast function with:", { skillName, skillDescription, proficiency });
     
-    const { data, error } = await supabase.functions.invoke('generate-podcast', {
+    // Call the Supabase edge function with timeout handling
+    const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
+      setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
+    });
+    
+    const functionPromise = supabase.functions.invoke('generate-podcast', {
       body: {
         skillName,
         skillDescription,
         proficiency
       }
     });
+    
+    // Race the function call against the timeout
+    const { data, error } = await Promise.race([
+      functionPromise,
+      timeoutPromise
+    ]);
 
     if (error) {
       console.error("Error generating podcast:", error);

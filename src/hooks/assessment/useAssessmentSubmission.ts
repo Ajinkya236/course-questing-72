@@ -28,13 +28,31 @@ export function useAssessmentSubmission(skillId: number | undefined, PASS_RATE: 
       return { score: null, questions: assessmentQuestions };
     }
     
+    if (!selectedSkill) {
+      toast({
+        title: "Error",
+        description: "No skill selected for assessment.",
+        variant: "destructive",
+      });
+      return { score: null, questions: assessmentQuestions };
+    }
+    
     setIsSubmitting(true);
     
     try {
-      if (!selectedSkill) throw new Error("No skill selected");
+      console.log("Submitting assessment for evaluation:", {
+        skill: selectedSkill.name,
+        proficiency: selectedSkill.proficiency,
+        questionsCount: assessmentQuestions.length
+      });
+      
+      // Set a timeout to detect stalled API calls
+      const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
+        setTimeout(() => reject(new Error("Request timed out after 60 seconds")), 60000);
+      });
       
       // Call the skill-assessment edge function to evaluate the assessment
-      const { data, error } = await supabase.functions.invoke('skill-assessment', {
+      const functionPromise = supabase.functions.invoke('skill-assessment', {
         body: {
           action: 'evaluate_assessment',
           skill: selectedSkill.name,
@@ -50,6 +68,12 @@ export function useAssessmentSubmission(skillId: number | undefined, PASS_RATE: 
           model: 'gemini-1.5-pro'
         },
       });
+      
+      // Race the function call against the timeout
+      const { data, error } = await Promise.race([
+        functionPromise,
+        timeoutPromise
+      ]);
       
       if (error) {
         setSubmissionFailed(true);
