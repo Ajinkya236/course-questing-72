@@ -50,7 +50,7 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
         </div>
         
         <Badge 
-          className={`${proficiencyColors[proficiency] || proficiencyColors.intermediate} px-3 py-1 text-white`}
+          className={`${proficiencyColors[proficiency as keyof typeof proficiencyColors] || proficiencyColors.beginner} px-3 py-1 text-white`}
         >
           {proficiency}
         </Badge>
