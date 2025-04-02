@@ -29,6 +29,8 @@ export const generatePodcast = async (
   try {
     isGeneratingPodcast = true;
     
+    console.log("Calling generate-podcast function with:", { skillName, skillDescription, proficiency });
+    
     const { data, error } = await supabase.functions.invoke('generate-podcast', {
       body: {
         skillName,
@@ -41,6 +43,8 @@ export const generatePodcast = async (
       console.error("Error generating podcast:", error);
       return { error: error.message || "Failed to generate podcast" };
     }
+
+    console.log("Received podcast data:", data);
 
     if (data && data.audioUrl) {
       return { 

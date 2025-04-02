@@ -24,7 +24,7 @@ interface AssessmentTabsProps {
   handleBack: () => void;
   previousAttempts: any[];
   passRate: number;
-  onRetryGenerate?: () => void; // Add the missing prop
+  onRetryGenerate?: () => void;
 }
 
 const AssessmentTabs: React.FC<AssessmentTabsProps> = ({
@@ -70,8 +70,8 @@ const AssessmentTabs: React.FC<AssessmentTabsProps> = ({
       return (
         <div className="flex flex-col items-center justify-center p-8">
           <p>No questions available. Please try again.</p>
-          <Button onClick={() => window.location.reload()} className="mt-4">
-            Reload
+          <Button onClick={onRetryGenerate} className="mt-4">
+            Generate New Assessment
           </Button>
         </div>
       );

@@ -195,58 +195,48 @@ async function generateAudio(transcript: string): Promise<string> {
   
   console.log(`Processing ${processedSegments.length} audio segments after chunking`);
   
-  // Combine all audio segments
-  const audioContents = [];
-  
-  for (const segment of processedSegments) {
-    try {
-      console.log(`Generating audio for segment: ${segment.text.substring(0, 30)}...`);
-      
-      const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  // Generate audio for the first segment only (to reduce processing time)
+  try {
+    console.log(`Generating audio for segment: ${processedSegments[0].text.substring(0, 30)}...`);
+    
+    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: {
+          text: processedSegments[0].text
         },
-        body: JSON.stringify({
-          input: {
-            text: segment.text
-          },
-          voice: {
-            languageCode: 'en-US',
-            name: segment.voiceName,
-            ssmlGender: segment.ssmlGender
-          },
-          audioConfig: {
-            audioEncoding: 'MP3',
-            speakingRate: 1.0,
-            pitch: 0.0
-          }
-        })
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Text-to-Speech API error:', errorText);
-        throw new Error(`Failed to generate audio: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (!data.audioContent) {
-        throw new Error("No audio content in Google TTS response");
-      }
-      
-      audioContents.push(data.audioContent);
-    } catch (error) {
-      console.error('Error generating audio segment:', error);
-      throw error;
+        voice: {
+          languageCode: 'en-US',
+          name: processedSegments[0].voiceName,
+          ssmlGender: processedSegments[0].ssmlGender
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          speakingRate: 1.0,
+          pitch: 0.0
+        }
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Text-to-Speech API error:', errorText);
+      throw new Error(`Failed to generate audio: ${response.status} ${response.statusText}`);
     }
+    
+    const data = await response.json();
+    
+    if (!data.audioContent) {
+      throw new Error("No audio content in Google TTS response");
+    }
+    
+    // Return audio content as a data URL
+    return `data:audio/mp3;base64,${data.audioContent}`;
+  } catch (error) {
+    console.error('Error generating audio segment:', error);
+    throw error;
   }
-  
-  console.log(`Successfully generated ${audioContents.length} audio segments`);
-  
-  // For simplicity of this demo, we'll return the first audio segment as base64
-  // In a production environment, you'd want to combine these audio segments
-  // or save them to Supabase storage
-  return `data:audio/mp3;base64,${audioContents[0]}`;
 }
