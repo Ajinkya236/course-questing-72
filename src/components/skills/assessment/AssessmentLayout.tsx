@@ -79,7 +79,7 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       </div>
       
       <BadgeAwardModal
-        open={showBadgeModal}
+        isOpen={showBadgeModal}
         onClose={closeBadgeModal}
         badge={latestBadge}
         skillName={skillName || ""}
