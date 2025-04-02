@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -12,10 +13,8 @@ import {
   Clock,
   Calendar,
   Users,
-  Bookmark,
   BookmarkPlus,
   Share2,
-  MoreHorizontal,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { mockSkills } from '@/data/skillsData';
@@ -24,7 +23,6 @@ import LearningTools from '@/components/skills/LearningTools';
 import { ChatInterface, type ChatMessage } from '@/components/skills/ChatInterface';
 import KnowledgeSources from '@/components/skills/KnowledgeSources';
 import PodcastPlayer from '@/components/skills/podcast/PodcastPlayer';
-import { generatePodcast } from '@/components/skills/podcast/PodcastUtils';
 import { useToast } from '@/hooks/use-toast';
 
 const SkillDetail: React.FC = () => {
@@ -33,8 +31,6 @@ const SkillDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
-  const [podcastAudio, setPodcastAudio] = useState<string | null>(null);
-  const [podcastError, setPodcastError] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [sources, setSources] = useState<string[]>([]);
   
@@ -54,45 +50,6 @@ const SkillDetail: React.FC = () => {
       setIsLoading(false);
     }, 800);
   }, [id]);
-
-  const handleGeneratePodcast = async () => {
-    if (!skill) return;
-    
-    setIsGeneratingPodcast(true);
-    setPodcastError(null);
-    
-    try {
-      const result = await generatePodcast(
-        skill.name,
-        skill.description || `A skill related to ${skill.name}`,
-        skill.proficiency
-      );
-      
-      if (result.error) {
-        setPodcastError(result.error);
-        toast({
-          title: "Error",
-          description: `Failed to generate podcast: ${result.error}`,
-          variant: "destructive",
-        });
-      } else if (result.audioUrl) {
-        setPodcastAudio(result.audioUrl);
-        toast({
-          title: "Success",
-          description: "Podcast generated successfully!",
-        });
-      }
-    } catch (error: any) {
-      setPodcastError(error.message || "An unexpected error occurred");
-      toast({
-        title: "Error",
-        description: `Failed to generate podcast: ${error.message || "Unknown error"}`,
-        variant: "destructive",
-      });
-    } finally {
-      setIsGeneratingPodcast(false);
-    }
-  };
   
   if (isLoading) {
     return (

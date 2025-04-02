@@ -1,25 +1,11 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { SourceType } from './types';
 
 interface SourceFormDialogProps {
@@ -47,107 +33,98 @@ const SourceFormDialog: React.FC<SourceFormDialogProps> = ({
   onAddOrUpdateSource,
   isEditing
 }) => {
-  // Helper function to get the appropriate placeholder based on source type
-  const getPlaceholder = (type: SourceType): string => {
-    switch (type) {
-      case "text":
-        return "Enter your source content here...";
-      case "link":
-        return "https://example.com/resource";
-      case "file":
-        return "Select file...";
-      default:
-        return "";
-    }
+  const handleSave = () => {
+    onAddOrUpdateSource();
+  };
+
+  const handleTypeChange = (value: string) => {
+    setSourceType(value as SourceType);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Source" : "Add Knowledge Source"}</DialogTitle>
+          <DialogTitle>{isEditing ? 'Edit' : 'Add'} Knowledge Source</DialogTitle>
           <DialogDescription>
-            Add links to documentation, research papers, or other resources related to this skill.
+            Add sources such as URLs, articles, documents or your own notes to enhance the AI's understanding.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="source-type">Source Type</Label>
-            <div className="flex space-x-2">
-              <Button 
-                type="button" 
-                variant={sourceType === "link" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSourceType("link")}
-              >
-                Link
-              </Button>
-              <Button 
-                type="button" 
-                variant={sourceType === "text" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSourceType("text")}
-              >
-                Text
-              </Button>
-              <Button 
-                type="button" 
-                variant={sourceType === "file" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSourceType("file")}
-                disabled
-              >
-                File (Coming Soon)
-              </Button>
+        <div className="grid gap-4 py-4">
+          <RadioGroup 
+            defaultValue={sourceType} 
+            value={sourceType}
+            onValueChange={handleTypeChange}
+            className="grid grid-cols-3 gap-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="link" id="link" />
+              <Label htmlFor="link">URL / Link</Label>
             </div>
-          </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="text" id="text" />
+              <Label htmlFor="text">Notes / Text</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="file" id="file" />
+              <Label htmlFor="file">File Reference</Label>
+            </div>
+          </RadioGroup>
           
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label htmlFor="source-content">
-              {sourceType === "link" ? "URL" : sourceType === "text" ? "Content" : "File"}
+              {sourceType === 'link' ? 'URL' : 
+               sourceType === 'file' ? 'File Reference' : 'Text Content'}
             </Label>
-            {sourceType === "text" ? (
+            {sourceType === 'text' ? (
               <Textarea
                 id="source-content"
-                placeholder={getPlaceholder(sourceType)}
                 value={sourceContent}
                 onChange={(e) => setSourceContent(e.target.value)}
+                placeholder={
+                  sourceType === 'text' ? 'Enter your notes, information or content...' :
+                  sourceType === 'link' ? 'https://example.com' : 
+                  'Reference to file or document'
+                }
                 className="min-h-[100px]"
               />
             ) : (
               <Input
                 id="source-content"
-                placeholder={getPlaceholder(sourceType)}
-                type={sourceType === "file" ? "file" : "text"}
                 value={sourceContent}
                 onChange={(e) => setSourceContent(e.target.value)}
-                disabled={sourceType === "file"}
+                placeholder={
+                  sourceType === 'link' ? 'https://example.com' : 
+                  'Reference to file or document'
+                }
               />
             )}
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="source-description">Description (optional)</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="source-description">Description (Optional)</Label>
             <Input
               id="source-description"
-              placeholder="Brief description of this source"
               value={sourceDescription}
               onChange={(e) => setSourceDescription(e.target.value)}
+              placeholder="Brief description of this source"
             />
           </div>
         </div>
         
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">Cancel</Button>
-          </DialogClose>
           <Button 
-            type="button" 
-            onClick={onAddOrUpdateSource} 
+            variant="outline" 
+            onClick={() => setIsOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSave}
             disabled={!sourceContent.trim()}
           >
-            {isEditing ? "Update Source" : "Add Source"}
+            {isEditing ? 'Update' : 'Add'} Source
           </Button>
         </DialogFooter>
       </DialogContent>
