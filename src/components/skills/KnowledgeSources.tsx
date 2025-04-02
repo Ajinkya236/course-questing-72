@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,15 +30,17 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
   const handleAddSource = () => {
     if (newSource.trim()) {
       if (isStringArray(sources)) {
-        setSources([...sources, newSource.trim()]);
+        const newSources: string[] = [...sources, newSource.trim()];
+        setSources(newSources);
       } else {
-        // If sources is Source[], create a new Source object
+        const sourceArray = sources as Source[];
         const newSourceObj: Source = {
           id: Date.now().toString(),
           type: 'text',
           content: newSource.trim()
         };
-        setSources([...sources, newSourceObj]);
+        const newSources: Source[] = [...sourceArray, newSourceObj];
+        setSources(newSources);
       }
       setNewSource('');
     }
@@ -48,7 +49,12 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
   const handleRemoveSource = (index: number) => {
     const updatedSources = [...sources];
     updatedSources.splice(index, 1);
-    setSources(updatedSources);
+    
+    if (isStringArray(sources)) {
+      setSources(updatedSources as string[]);
+    } else {
+      setSources(updatedSources as Source[]);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -114,9 +120,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
     );
   }
 
-  // For full (non-minimal) version
   if (isStringArray(sources)) {
-    // Simple string array view
     return (
       <Card>
         <CardHeader>
@@ -167,7 +171,7 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
       </Card>
     );
   } else {
-    // Use more advanced Source interface with SourceList
+    const sourcesArray = sources as Source[];
     return (
       <Card>
         <CardHeader>
@@ -176,9 +180,12 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
         </CardHeader>
         <CardContent>
           <SourceList 
-            sources={sources as Source[]} 
+            sources={sourcesArray} 
             onEditSource={() => {}} 
-            onDeleteSource={() => {}}
+            onDeleteSource={(id) => {
+              const updatedSources = sourcesArray.filter(s => s.id !== id);
+              setSources(updatedSources);
+            }}
           />
           <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
             <Input
