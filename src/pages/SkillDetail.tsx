@@ -16,6 +16,7 @@ import {
   BookmarkPlus,
   Share2,
   Upload,
+  Network,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { mockSkills } from '@/data/skillsData';
@@ -41,25 +42,35 @@ const SkillDetail: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       if (id) {
+        console.log("Looking for skill with ID:", id);
+        
         // Fix: Properly handle string IDs by ensuring numeric conversion
         let foundSkill;
         
         // Try to find by numeric ID first
         const numericId = parseInt(id);
         if (!isNaN(numericId)) {
+          console.log("Searching for numeric ID:", numericId);
           foundSkill = mockSkills.find(s => s.id === numericId);
         }
         
         // If not found, try to find by name match (case insensitive)
         if (!foundSkill) {
+          console.log("Searching by name:", id);
           foundSkill = mockSkills.find(s => 
             s.name.toLowerCase() === id.toLowerCase() ||
             s.name.toLowerCase().includes(id.toLowerCase())
           );
         }
         
+        // Debug: log all skills to see what's available
+        console.log("Available skills:", mockSkills.map(s => ({ id: s.id, name: s.name })));
+        
         if (foundSkill) {
+          console.log("Found skill:", foundSkill);
           setSkill(foundSkill);
+        } else {
+          console.log("No skill found for ID or name:", id);
         }
       }
       

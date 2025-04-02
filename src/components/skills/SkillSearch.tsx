@@ -46,6 +46,8 @@ const SkillSearch: React.FC<SkillSearchProps> = ({ onSelectSkill }) => {
     setShowResults(false);
     setSearchQuery('');
     
+    console.log("Selected skill ID:", skillId);
+    
     if (onSelectSkill) {
       onSelectSkill(skillId.toString());
     } else {
