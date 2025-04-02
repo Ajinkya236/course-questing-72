@@ -10,7 +10,7 @@ import { Source } from '@/components/skills/knowledge/types';
 
 const SkillDetail: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
-  const [activeTab] = useState('chat'); // Default to chat tab
+  const [activeTab, setActiveTab] = useState('chat'); // Default to chat tab
   const [isLoading, setIsLoading] = useState(true);
   const [skill, setSkill] = useState<any>(null);
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
@@ -102,8 +102,6 @@ const SkillDetail: React.FC = () => {
     ...skill,
     proficiency: selectedProficiency
   };
-
-  const setActiveTab = () => {}; // Dummy function since we no longer need to change tabs
 
   return (
     <SkillDetailLayout

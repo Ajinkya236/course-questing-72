@@ -14,8 +14,8 @@ interface SkillDetailLayoutProps {
   skill: any;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  sources: string[] | Source[];
-  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
+  sources: Source[];
+  setSources: React.Dispatch<React.SetStateAction<Source[]>>;
   chatMessages: ChatMessage[];
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isGeneratingPodcast: boolean;

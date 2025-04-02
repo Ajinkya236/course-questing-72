@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -67,10 +67,9 @@ const AssessmentHeader: React.FC<AssessmentHeaderProps> = ({
         <h1 className="text-2xl font-bold">{skillName} Skill Assessment</h1>
         <div className="flex items-center gap-2 mt-2">
           <div 
-            className={`px-3 py-1 rounded-full text-sm font-medium`}
+            className="px-3 py-1 rounded-full text-sm font-medium text-white"
             style={{ 
-              backgroundColor: proficiency ? '#1A1F2C' : '#1A1F2C',
-              color: 'white'
+              backgroundColor: '#1A1F2C',
             }}
           >
             {proficiency || "Knowledge"} Level
