@@ -51,7 +51,7 @@ const SkillTabContent: React.FC<SkillTabContentProps> = ({
         />
         <KnowledgeSources 
           sources={sources}
-          setSources={setSources}
+          setSources={setSources as React.Dispatch<React.SetStateAction<string[] | import('@/components/skills/knowledge/types').Source[]>>}
           onSubmit={() => {}}
           minimal={true}
         />

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -5,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Link, LinkIcon, Plus, X } from 'lucide-react';
 import SourceList from '@/components/skills/knowledge/SourceList';
 import SourceFormDialog from '@/components/skills/knowledge/SourceFormDialog';
+import { Source } from './knowledge/types';
 
 interface KnowledgeSourcesProps {
-  sources: string[];
-  setSources: React.Dispatch<React.SetStateAction<string[]>>;
+  sources: string[] | Source[];
+  setSources: React.Dispatch<React.SetStateAction<string[] | Source[]>>;
   onSubmit?: () => void;
   minimal?: boolean;
 }
@@ -22,9 +24,23 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
   const [newSource, setNewSource] = useState<string>('');
   const [showSourceDialog, setShowSourceDialog] = useState<boolean>(false);
   
+  const isStringArray = (arr: any[]): arr is string[] => {
+    return arr.length === 0 || typeof arr[0] === 'string';
+  };
+
   const handleAddSource = () => {
     if (newSource.trim()) {
-      setSources([...sources, newSource.trim()]);
+      if (isStringArray(sources)) {
+        setSources([...sources, newSource.trim()]);
+      } else {
+        // If sources is Source[], create a new Source object
+        const newSourceObj: Source = {
+          id: Date.now().toString(),
+          type: 'text',
+          content: newSource.trim()
+        };
+        setSources([...sources, newSourceObj]);
+      }
       setNewSource('');
     }
   };
@@ -58,7 +74,9 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
                     key={index}
                     className="bg-muted text-muted-foreground text-xs py-1 px-2 rounded-full flex items-center"
                   >
-                    <span className="truncate max-w-[180px]">{source}</span>
+                    <span className="truncate max-w-[180px]">
+                      {typeof source === 'string' ? source : source.content}
+                    </span>
                     <button
                       className="ml-1.5 text-muted-foreground hover:text-destructive"
                       onClick={() => handleRemoveSource(index)}
@@ -96,30 +114,91 @@ const KnowledgeSources: React.FC<KnowledgeSourcesProps> = ({
     );
   }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Knowledge Sources</CardTitle>
-        <CardDescription>Add resources to help customize AI responses</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <SourceList sources={sources} onRemove={handleRemoveSource} />
-        <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
-          <Input
-            value={newSource}
-            onChange={(e) => setNewSource(e.target.value)}
-            placeholder="Add website URL, document, or text..."
+  // For full (non-minimal) version
+  if (isStringArray(sources)) {
+    // Simple string array view
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Knowledge Sources</CardTitle>
+          <CardDescription>Add resources to help customize AI responses</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 mb-4">
+            {sources.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sources.map((source, index) => (
+                  <div
+                    key={index}
+                    className="bg-muted px-3 py-1 rounded-full flex items-center"
+                  >
+                    <span className="truncate max-w-[300px]">{source}</span>
+                    <button
+                      className="ml-2 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleRemoveSource(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">
+                No knowledge sources added yet.
+              </p>
+            )}
+          </div>
+          <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
+            <Input
+              value={newSource}
+              onChange={(e) => setNewSource(e.target.value)}
+              placeholder="Add website URL, document, or text..."
+            />
+            <Button type="button" variant="outline" onClick={handleAddSource}>
+              Add Source
+            </Button>
+          </form>
+          {onSubmit && (
+            <Button onClick={handleSubmit} className="w-full mt-4">
+              Update Knowledge Sources
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  } else {
+    // Use more advanced Source interface with SourceList
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Knowledge Sources</CardTitle>
+          <CardDescription>Add resources to help customize AI responses</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SourceList 
+            sources={sources as Source[]} 
+            onEditSource={() => {}} 
+            onDeleteSource={() => {}}
           />
-          <Button type="button" variant="outline" onClick={handleAddSource}>
-            Add Source
-          </Button>
-        </form>
-        <Button onClick={handleSubmit} className="w-full mt-4">
-          Update Knowledge Sources
-        </Button>
-      </CardContent>
-    </Card>
-  );
+          <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
+            <Input
+              value={newSource}
+              onChange={(e) => setNewSource(e.target.value)}
+              placeholder="Add website URL, document, or text..."
+            />
+            <Button type="button" variant="outline" onClick={handleAddSource}>
+              Add Source
+            </Button>
+          </form>
+          {onSubmit && (
+            <Button onClick={handleSubmit} className="w-full mt-4">
+              Update Knowledge Sources
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 };
 
 export default KnowledgeSources;

@@ -28,8 +28,8 @@ const SourceList: React.FC<SourceListProps> = ({
         <SourceItem 
           key={source.id}
           source={source}
-          onEdit={onEditSource}
-          onDelete={onDeleteSource}
+          onEdit={() => onEditSource(source)}
+          onDelete={() => onDeleteSource(source.id)}
         />
       ))}
     </div>
