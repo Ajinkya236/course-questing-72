@@ -51,6 +51,7 @@ const SkillSearch: React.FC<SkillSearchProps> = ({ onSelectSkill }) => {
     if (onSelectSkill) {
       onSelectSkill(skillId.toString());
     } else {
+      // Ensure skillId is converted to string for consistent routing
       navigate(`/skills/${skillId}`);
     }
   };

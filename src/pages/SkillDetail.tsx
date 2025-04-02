@@ -40,21 +40,23 @@ const SkillDetail: React.FC = () => {
   const { toast } = useToast();
   
   useEffect(() => {
+    // Add a small delay to simulate loading (can be removed in production)
     setTimeout(() => {
       if (id) {
         console.log("Looking for skill with ID:", id);
         
-        // Fix: Properly handle string IDs by ensuring numeric conversion
-        let foundSkill;
+        let foundSkill = null;
         
-        // Try to find by numeric ID first
+        // Try to find by string ID first
         const numericId = parseInt(id);
+        
+        // Check if it's a valid number
         if (!isNaN(numericId)) {
           console.log("Searching for numeric ID:", numericId);
           foundSkill = mockSkills.find(s => s.id === numericId);
         }
         
-        // If not found, try to find by name match (case insensitive)
+        // If not found by ID, try by name (case insensitive)
         if (!foundSkill) {
           console.log("Searching by name:", id);
           foundSkill = mockSkills.find(s => 
@@ -63,7 +65,7 @@ const SkillDetail: React.FC = () => {
           );
         }
         
-        // Debug: log all skills to see what's available
+        // Debug: Log all available skills
         console.log("Available skills:", mockSkills.map(s => ({ id: s.id, name: s.name })));
         
         if (foundSkill) {
@@ -71,11 +73,13 @@ const SkillDetail: React.FC = () => {
           setSkill(foundSkill);
         } else {
           console.log("No skill found for ID or name:", id);
+          // If we're here, no skill was found. Let's set skill to null explicitly
+          setSkill(null);
         }
       }
       
       setIsLoading(false);
-    }, 800);
+    }, 300);
   }, [id]);
   
   const handleSkillAssessment = () => {
