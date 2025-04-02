@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AssessmentHeader from './AssessmentHeader';
 import BadgeAwardModal from './BadgeAwardModal';
@@ -27,6 +27,11 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
   closeBadgeModal,
   latestBadge
 }) => {
+  // Add debug logging
+  useEffect(() => {
+    console.log("Assessment Layout mounted with:", { skillName, proficiency });
+  }, [skillName, proficiency]);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <AssessmentHeader 
@@ -45,7 +50,7 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
                   <>
                     <span>{skillName} Assessment</span>
                     {proficiency && (
-                      <span className={`ml-3 text-xs px-3 py-1 rounded-full ${proficiencyColors[proficiency as keyof typeof proficiencyColors]}`}>
+                      <span className={`ml-3 text-xs px-3 py-1 rounded-full ${proficiencyColors[proficiency as keyof typeof proficiencyColors] || 'bg-gray-100'}`}>
                         {proficiency}
                       </span>
                     )}

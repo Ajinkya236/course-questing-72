@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { mockSkills } from '@/data/skillsData';
 import { useToast } from '@/hooks/use-toast';
 import { Question } from '@/components/skills/assessment/types';
-import { useBadgeManagement } from './assessment/useBadgeManagement';
-import { useAttemptManagement } from './assessment/useAttemptManagement';
-import { useQuestionGeneration } from './assessment/useQuestionGeneration';
-import { useAssessmentSubmission } from './assessment/useAssessmentSubmission';
-import { PASS_RATE } from './assessment/constants';
+import { 
+  useBadgeManagement,
+  useAttemptManagement,
+  useQuestionGeneration,
+  useAssessmentSubmission,
+  PASS_RATE
+} from '@/hooks/assessment';
 
 export const useAssessment = (skillId: string | undefined) => {
   const [selectedSkill, setSelectedSkill] = useState<any>(null);

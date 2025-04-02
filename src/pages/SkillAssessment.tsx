@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
 import { proficiencyColors } from '@/data/skillsData';
@@ -31,6 +31,15 @@ const SkillAssessment: React.FC = () => {
     submitAssessment,
     resetAssessment
   } = useAssessment(skillId);
+
+  useEffect(() => {
+    if (!skillId) {
+      navigate('/skills');
+      return;
+    }
+    
+    // This will trigger the useAssessment hook to load data
+  }, [skillId, navigate]);
 
   const handleBack = () => {
     navigate(`/skills/${skillId}`);
@@ -67,6 +76,10 @@ const SkillAssessment: React.FC = () => {
     setActiveTab("assessment");
     resetAssessment();
   };
+
+  if (!selectedSkill && !isLoading) {
+    return <div className="container mx-auto px-4 py-8">Skill not found</div>;
+  }
 
   return (
     <PageLayout>

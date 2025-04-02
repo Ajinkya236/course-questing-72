@@ -6,7 +6,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
 import Home from './pages/Home';
+import SkillAssessment from './pages/SkillAssessment';
 
+// ... keep existing code (lazy imports)
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
@@ -30,7 +32,6 @@ const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
 
 const Skills = lazy(() => import('./pages/Skills'));
 const SkillDetail = lazy(() => import('./pages/SkillDetail'));
-const SkillAssessment = lazy(() => import('./pages/SkillAssessment'));
 
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminCourses = lazy(() => import('./pages/admin/Courses'));
@@ -56,12 +57,14 @@ const ProtectedRoute = () => {
 };
 
 const routes = [
+  // ... keep existing code (authentication routes)
   <Route path="/sign-in" element={<SignIn />} />,
   <Route path="/sign-up" element={<SignUp />} />,
   <Route path="/forgot-password" element={<ForgotPassword />} />,
   <Route path="/reset-password" element={<ResetPassword />} />,
   
   <Route element={<ProtectedRoute />}>
+    // ... keep existing code (other protected routes)
     <Route path="/" element={<PageLayout><Home /></PageLayout>} />
     <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
     <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
@@ -92,6 +95,7 @@ const routes = [
     
     <Route path="/skills/:skillId/assessment" element={<SkillAssessment />} />
     
+    // ... keep existing code (admin routes)
     <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
     <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
     <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />
