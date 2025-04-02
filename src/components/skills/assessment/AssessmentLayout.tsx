@@ -2,8 +2,9 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import BadgeAwardModal from './BadgeAwardModal';
-import { proficiencyColors } from "@/data/skillsData";
+import SkillBadgeModal from './SkillBadgeModal';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface AssessmentLayoutProps {
   handleBack: () => void;
@@ -41,6 +42,18 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
       
       <div className="mb-6 flex flex-col space-y-4">
         <h1 className="text-3xl font-bold">{skillName} Assessment</h1>
+        
+        <Card className="mb-4">
+          <CardContent className="p-4 flex items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Current Proficiency:</span>
+              <Badge variant="outline" className="font-semibold">
+                {proficiency}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+        
         {proficiency && (
           <div className="flex flex-col space-y-2">
             <div className="flex flex-row items-center gap-2 flex-wrap">
@@ -82,7 +95,7 @@ const AssessmentLayout: React.FC<AssessmentLayoutProps> = ({
         </div>
       </div>
       
-      <BadgeAwardModal
+      <SkillBadgeModal
         isOpen={showBadgeModal}
         onClose={closeBadgeModal}
         badge={latestBadge}

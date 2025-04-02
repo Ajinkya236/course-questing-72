@@ -30,6 +30,13 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [activeTab, setActiveTab] = useState<string>('transcript');
   const { toast } = useToast();
 
+  // On component mount, make the audio player visible by default
+  useEffect(() => {
+    if (!audioUrl && !transcript) {
+      handleGeneratePodcast();
+    }
+  }, []);
+
   const handleGeneratePodcast = async () => {
     if (isGenerating) {
       toast({
@@ -60,7 +67,6 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.transcript) {
         setTranscript(result.transcript);
-        setActiveTab('transcript');
         
         toast({
           title: "Transcript Generated",
@@ -71,6 +77,15 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
+        setActiveTab('audio');
+        
+        toast({
+          title: "Audio Generated",
+          description: "Podcast audio is ready to play.",
+          variant: "default",
+        });
+      } else {
+        setActiveTab('transcript');
       }
       
       setIsMockMode(result.mockMode || false);
@@ -96,6 +111,23 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     toast({
       title: "Transcript Downloaded",
       description: "Podcast transcript has been downloaded as a text file.",
+    });
+  };
+
+  const downloadAudio = () => {
+    if (!audioUrl) return;
+    
+    // For data URLs, we can directly create a link and click it
+    const element = document.createElement("a");
+    element.href = audioUrl;
+    element.download = `${skillName}_Podcast.mp3`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    
+    toast({
+      title: "Audio Downloaded",
+      description: "Podcast audio has been downloaded as an MP3 file.",
     });
   };
 
@@ -128,8 +160,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           
           {(transcript || audioUrl) ? (
             <div className="space-y-4">
-              {transcript && (
-                <div className="flex justify-end mb-2">
+              <div className="flex justify-end mb-2 gap-2">
+                {transcript && (
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -139,8 +171,19 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                     <Download className="h-4 w-4" />
                     Download Transcript
                   </Button>
-                </div>
-              )}
+                )}
+                {audioUrl && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={downloadAudio}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Audio
+                  </Button>
+                )}
+              </div>
               
               <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2">
