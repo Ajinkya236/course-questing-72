@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { mockSkills } from '@/data/skillsData';
 import { useToast } from '@/hooks/use-toast';
-import { Question } from '@/components/skills/assessment/types';
+import { Question, QuestionFeedback } from '@/components/skills/assessment/types';
 import { 
   useBadgeManagement,
   useAttemptManagement,
@@ -21,7 +21,9 @@ export const useAssessment = (skillId: string | undefined) => {
     setQuestions,
     isLoading,
     generationFailed,
+    currentDifficulty,
     generateQuestionsForSkill,
+    adjustDifficulty,
     resetGenerationFailedState
   } = useQuestionGeneration();
   
@@ -40,7 +42,13 @@ export const useAssessment = (skillId: string | undefined) => {
     assessmentScore,
     setAssessmentScore,
     isSubmitting,
-    submitAssessment: submit
+    submissionFailed,
+    detailedFeedback,
+    correctAnswersCount,
+    totalAnswered,
+    submitAnswer,
+    submitAssessment: submit,
+    resetAssessmentStates
   } = useAssessmentSubmission(selectedSkill?.id, PASS_RATE);
 
   useEffect(() => {
@@ -64,6 +72,7 @@ export const useAssessment = (skillId: string | undefined) => {
   const resetAssessment = () => {
     setAssessmentScore(null);
     resetGenerationFailedState();
+    resetAssessmentStates();
     if (selectedSkill) {
       generateQuestionsForSkill(selectedSkill);
     }
@@ -88,7 +97,13 @@ export const useAssessment = (skillId: string | undefined) => {
     closeBadgeModal,
     PASS_RATE,
     generationFailed,
+    currentDifficulty,
+    detailedFeedback,
+    correctAnswersCount,
+    totalAnswered,
     generateQuestionsForSkill,
+    adjustDifficulty,
+    submitAnswer,
     submitAssessment,
     resetAssessment
   };

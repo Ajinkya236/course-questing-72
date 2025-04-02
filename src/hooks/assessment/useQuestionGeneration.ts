@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -8,9 +7,10 @@ export function useQuestionGeneration() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [generationFailed, setGenerationFailed] = useState(false);
+  const [currentDifficulty, setCurrentDifficulty] = useState<string>("medium"); // track difficulty level
   const { toast } = useToast();
   
-  const generateQuestionsForSkill = async (skill: any) => {
+  const generateQuestionsForSkill = async (skill: any, customDifficulty?: string) => {
     // If already loading, prevent duplicate requests
     if (isLoading) {
       toast({
@@ -23,7 +23,11 @@ export function useQuestionGeneration() {
     
     setIsLoading(true);
     setGenerationFailed(false);
-    console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level");
+    
+    // Use custom difficulty if provided, otherwise use current tracked difficulty
+    const difficulty = customDifficulty || currentDifficulty;
+    
+    console.log("Generating questions for skill:", skill.name, "at", skill.proficiency, "level with difficulty:", difficulty);
     
     try {
       // Set a timeout to detect stalled API calls
@@ -37,6 +41,7 @@ export function useQuestionGeneration() {
           action: 'generate_questions',
           skill: skill.name,
           proficiency: skill.proficiency,
+          difficulty: difficulty, // Pass difficulty to the API
           sources: [],
           model: 'gemini-1.5-pro' // Ensure we always use 2.5 Pro model
         },
@@ -82,6 +87,35 @@ export function useQuestionGeneration() {
     }
   };
 
+  // Adjust difficulty based on user performance
+  const adjustDifficulty = (correctAnswers: number, totalAnswered: number) => {
+    if (totalAnswered < 3) return; // Need at least 3 questions to determine performance
+    
+    const successRate = correctAnswers / totalAnswered;
+    
+    if (successRate > 0.8) {
+      // User is doing very well - increase difficulty
+      if (currentDifficulty !== "hard") {
+        setCurrentDifficulty("hard");
+        return "hard";
+      }
+    } else if (successRate < 0.4) {
+      // User is struggling - decrease difficulty
+      if (currentDifficulty !== "easy") {
+        setCurrentDifficulty("easy");
+        return "easy";
+      }
+    } else {
+      // User is doing ok - keep medium difficulty
+      if (currentDifficulty !== "medium") {
+        setCurrentDifficulty("medium");
+        return "medium";
+      }
+    }
+    
+    return currentDifficulty; // Return current difficulty if no change
+  };
+
   // Reset generation failed state
   const resetGenerationFailedState = () => {
     setGenerationFailed(false);
@@ -92,7 +126,9 @@ export function useQuestionGeneration() {
     setQuestions,
     isLoading,
     generationFailed,
+    currentDifficulty,
     generateQuestionsForSkill,
+    adjustDifficulty,
     resetGenerationFailedState
   };
 }

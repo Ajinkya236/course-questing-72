@@ -26,6 +26,17 @@ export interface Question {
   initialCode?: string;
   expectedOutput?: string;
   testCases?: string[];
+  difficulty?: string; // Added difficulty level
+  feedback?: QuestionFeedback; // Referenced feedback
+  hints?: string[]; // Added hints for adaptive learning
+}
+
+export interface QuestionFeedback {
+  questionId: number;
+  correct: boolean;
+  explanation: string;
+  improvement: string | null;
+  nextSteps: string[];
 }
 
 export interface AssessmentAttempt {
@@ -37,6 +48,7 @@ export interface AssessmentAttempt {
   questions: Question[];
   passed: boolean;
   badgeAwarded?: boolean;
+  detailedFeedback?: QuestionFeedback[]; // Added detailed feedback
 }
 
 export interface SkillBadge {

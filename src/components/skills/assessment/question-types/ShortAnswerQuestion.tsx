@@ -1,23 +1,26 @@
 
 import React from 'react';
-import { Textarea } from "@/components/ui/textarea";
 import { Question } from '../types';
+import { Textarea } from "@/components/ui/textarea";
 
 interface ShortAnswerQuestionProps {
   question: Question;
   onAnswerChange: (answer: string) => void;
+  disabled?: boolean;
 }
 
 const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ 
   question, 
-  onAnswerChange 
+  onAnswerChange,
+  disabled = false
 }) => {
   return (
     <Textarea
-      placeholder="Type your answer here..."
-      className="min-h-[120px]"
-      value={question.userAnswer as string || ''}
+      value={(question.userAnswer as string) || ''}
       onChange={(e) => onAnswerChange(e.target.value)}
+      placeholder="Write your answer here..."
+      className="min-h-[100px]"
+      disabled={disabled}
     />
   );
 };

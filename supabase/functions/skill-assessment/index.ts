@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.3.0/mod.ts";
 
@@ -86,6 +87,8 @@ serve(async (req) => {
       action = 'generate_questions', 
       skill, 
       proficiency, 
+      difficulty = 'medium',
+      question, // For single answer evaluation
       userAnswers = [],
       sources = [], 
       mediaFiles = [], 
@@ -129,8 +132,13 @@ serve(async (req) => {
     
     // Prepare prompt based on action
     if (action === 'generate_questions') {
-      prompt = `Create a comprehensive assessment for the skill "${skill}" at the "${proficiency}" level. 
+      prompt = `Create a comprehensive assessment for the skill "${skill}" at the "${proficiency}" level. The assessment should have ${difficulty} difficulty.
       
+Guidelines for difficulty levels:
+- easy: Questions should test basic understanding and fundamentals. Include more straightforward multiple choice questions and true/false statements. Provide more context in questions.
+- medium: Questions should test application of concepts and deeper understanding. Include a mix of question types. 
+- hard: Questions should challenge even skilled individuals. Include questions requiring synthesis, analysis, and edge cases. Make multiple choice options more nuanced.
+
 The assessment should include a variety of question types including:
 - 5-7 multiple choice questions
 - 3-5 true/false questions 
@@ -185,7 +193,39 @@ Format as JSON with this structure:
   ]
 }
 
-Make sure all questions are directly relevant to testing proficiency in ${skill} at the ${proficiency} level. BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED.`;
+Make sure all questions are directly relevant to testing proficiency in ${skill} at the ${proficiency} level with ${difficulty} difficulty. BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED.`;
+    } else if (action === 'evaluate_answer') {
+      // For evaluating a single answer
+      if (!question) {
+        throw new Error("Question information is required for answer evaluation");
+      }
+      
+      prompt = `Evaluate this single answer for a question about "${skill}" at the "${proficiency}" level.
+      
+Question ID: ${question.id}
+Question Type: ${question.type}
+Question Text: ${question.text}
+User's Answer: ${question.userAnswer}
+Correct Answer: ${question.correctAnswer}
+
+${contextInfo ? `Additional context that may be relevant for evaluation:\n${contextInfo}\n` : ''}
+
+Provide:
+1. Whether the answer is correct (true/false)
+2. A detailed explanation of why the answer is correct or incorrect
+3. If incorrect, specific points for improvement
+4. Suggestions for next steps or additional learning resources
+
+Format as JSON using this exact structure:
+{
+  "correct": false,
+  "explanation": "Detailed explanation of why the answer is incorrect or correct...",
+  "improvement": "Specific point for improvement if answer is incorrect",
+  "nextSteps": ["Suggestion 1", "Suggestion 2"]
+}
+
+BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED.
+Be thorough, helpful, and constructive in your feedback. Focus on helping the learner understand, not just telling them they're wrong.`;
     } else if (action === 'evaluate_assessment') {
       prompt = `Evaluate this skill assessment for "${skill}" at the "${proficiency}" level.
       
@@ -196,8 +236,9 @@ ${contextInfo ? `Additional context and sources that may be relevant for evaluat
 
 Provide:
 1. A score from 0-100 (the passing rate is 80%)
-2. Brief feedback on each answer, explaining what was correct or incorrect
+2. Detailed feedback on each answer, explaining what was correct or incorrect
 3. Overall assessment summary with specific areas for improvement and next steps
+4. Personalized learning recommendations
 
 Format as JSON using this exact structure:
 {
@@ -206,24 +247,24 @@ Format as JSON using this exact structure:
     { 
       "questionId": 1, 
       "correct": true,
-      "comment": "Correct answer with good reasoning" 
+      "comment": "Detailed explanation of why this answer is correct and what concepts the learner demonstrated understanding of." 
     },
     { 
       "questionId": 2, 
       "correct": false,
-      "comment": "Incorrect. The correct answer is X because..." 
+      "comment": "Detailed explanation of why this answer is incorrect, including the misconception and how to correct it." 
     }
   ],
-  "summary": "Overall assessment summary...",
-  "improvements": ["Area 1", "Area 2"],
-  "nextSteps": ["Specific action 1", "Specific action 2"],
+  "summary": "Comprehensive assessment summary with strengths and weaknesses...",
+  "improvements": ["Specific area 1 to focus on", "Specific area 2 to improve"],
+  "nextSteps": ["Specific resource 1 to check out", "Practice exercise 2 to try"],
   "passed": true
 }
 
 BE SURE TO RETURN ONLY VALID JSON THAT CAN BE PARSED. The structure MUST follow the exact format shown above.
-Be thorough but fair in your evaluation. Provide structured, helpful, and constructive feedback.`;
+Be thorough, detailed, and constructive in your evaluation. Provide structured, helpful, and personalized feedback.`;
     } else {
-      throw new Error("Invalid action. Supported actions are 'generate_questions' and 'evaluate_assessment'");
+      throw new Error("Invalid action. Supported actions are 'generate_questions', 'evaluate_answer', and 'evaluate_assessment'");
     }
 
     console.log(`Sending ${action} request to Gemini API for skill ${skill} using model ${selectedModel}`);

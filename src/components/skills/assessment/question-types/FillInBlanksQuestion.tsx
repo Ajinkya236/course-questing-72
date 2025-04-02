@@ -1,28 +1,27 @@
 
 import React from 'react';
-import { Input } from "@/components/ui/input";
 import { Question } from '../types';
+import { Input } from "@/components/ui/input";
 
 interface FillInBlanksQuestionProps {
   question: Question;
   onAnswerChange: (answer: string) => void;
+  disabled?: boolean;
 }
 
 const FillInBlanksQuestion: React.FC<FillInBlanksQuestionProps> = ({ 
   question, 
-  onAnswerChange 
+  onAnswerChange,
+  disabled = false
 }) => {
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground text-sm mb-2">Fill in the blank:</p>
-      <Input
-        type="text"
-        placeholder="Your answer here..."
-        value={question.userAnswer as string || ''}
-        onChange={(e) => onAnswerChange(e.target.value)}
-        className="max-w-md"
-      />
-    </div>
+    <Input
+      type="text"
+      value={(question.userAnswer as string) || ''}
+      onChange={(e) => onAnswerChange(e.target.value)}
+      placeholder="Fill in the blank..."
+      disabled={disabled}
+    />
   );
 };
 
