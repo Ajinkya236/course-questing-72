@@ -49,8 +49,6 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
   // Safely check if skill and skill.icon exist before using them
   const iconToRender = skill?.icon || 'BrainCircuit';
 
-  const proficiencyLevels = ["Awareness", "Knowledge", "Skill", "Mastery"];
-
   return (
     <div className="mb-8">
       {onBack && (
@@ -75,29 +73,11 @@ const SkillHeader: React.FC<SkillHeaderProps> = ({
             {/* Skill Info */}
             <div className="flex-grow">
               <h1 className="text-2xl font-heading text-gray-800 dark:text-gray-100 mb-2 font-archivo-black">{displayName}</h1>
-              
-              {onProficiencyChange ? (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {proficiencyLevels.map((level) => (
-                    <Button
-                      key={level}
-                      variant="outline"
-                      size="sm"
-                      className={`rounded-full px-3 py-1 text-xs ${displayProficiency === level ? proficiencyColors[level as keyof typeof proficiencyColors] : ''}`}
-                      onClick={() => onProficiencyChange(level)}
-                    >
-                      {level}
-                    </Button>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-3 mb-3">
-                  <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
-                    {displayProficiency}
-                  </span>
-                </div>
-              )}
-              
+              <div className="flex flex-wrap gap-3 mb-3">
+                <span className={`px-3 py-1 rounded-full text-xs ${proficiencyColors[displayProficiency as keyof typeof proficiencyColors] || "bg-gray-100 text-gray-800"}`}>
+                  {displayProficiency}
+                </span>
+              </div>
               <p className="text-gray-600 dark:text-gray-300 mb-4">{displayDescription}</p>
               
               {/* Progress bar only if there's progress */}

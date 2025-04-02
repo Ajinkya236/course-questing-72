@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -10,13 +9,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Skill } from './types';
+import { mockSkills } from '@/data/skillsData';
 
-interface SkillSearchProps {
-  skills: Skill[];
-  onSearch: (results: Skill[]) => void;
-}
-
-const SkillSearch: React.FC<SkillSearchProps> = ({ skills, onSearch }) => {
+const SkillSearch: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Skill[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +27,7 @@ const SkillSearch: React.FC<SkillSearchProps> = ({ skills, onSearch }) => {
     
     const normalizedQuery = query.toLowerCase().trim();
     
-    return skills
+    return mockSkills
       .filter(skill => 
         skill.name.toLowerCase().includes(normalizedQuery) ||
         (skill.description && skill.description.toLowerCase().includes(normalizedQuery))
@@ -56,7 +51,7 @@ const SkillSearch: React.FC<SkillSearchProps> = ({ skills, onSearch }) => {
       setSearchResults([]);
       setIsOpen(false);
     }
-  }, [searchQuery, skills]);
+  }, [searchQuery]);
 
   const handleSelectSkill = (skillId: number) => {
     setIsOpen(false);
