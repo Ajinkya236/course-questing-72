@@ -36,13 +36,14 @@ export function useQuestionGeneration() {
       
       try {
         // First, try to call our edge function
+        // Remove 'signal' from options as it's not supported in FunctionInvokeOptions
         const { data, error } = await supabase.functions.invoke('generate-assessment', {
           body: {
             skillName: skill.name,
             proficiency: skill.proficiency,
             difficulty: difficulty
-          },
-          signal: controller.signal
+          }
+          // Removed 'signal: controller.signal' as it's not supported
         });
         
         clearTimeout(timeout);
@@ -61,7 +62,20 @@ export function useQuestionGeneration() {
         
         if (data.questions && Array.isArray(data.questions)) {
           console.log("Successfully parsed questions:", data.questions.length);
-          setQuestions(data.questions);
+          
+          // Transform the questions to match the required Question interface
+          // Map 'question' property to 'text' property to match the Question type
+          const formattedQuestions = data.questions.map((q: any) => ({
+            id: q.id,
+            text: q.question, // Map the 'question' field to 'text'
+            type: q.type,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+            difficulty: q.difficulty,
+            explanation: q.explanation
+          }));
+          
+          setQuestions(formattedQuestions);
         } else {
           console.error("Invalid response format from assessment generator:", data);
           throw new Error("Invalid response format from assessment generator");
@@ -83,7 +97,7 @@ export function useQuestionGeneration() {
       // Generate fallback questions
       const fallbackQuestions: Question[] = Array.from({ length: 12 }).map((_, i) => ({
         id: `q${i+1}`,
-        question: `What is an important principle of ${skill.name}?`,
+        text: `What is an important principle of ${skill.name}?`, // Using 'text' instead of 'question'
         type: "multipleChoice",
         options: [
           `Important principle ${i+1}`, 
