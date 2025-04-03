@@ -7,12 +7,10 @@ import {
 } from "lucide-react";
 
 interface SkillInformationProps {
-  skill: any;
+  proficiency: string;
 }
 
-const SkillInformation: React.FC<SkillInformationProps> = ({ skill }) => {
-  const proficiency = skill.proficiency;
-  
+const SkillInformation: React.FC<SkillInformationProps> = ({ proficiency }) => {
   return (
     <div className="bg-card rounded-lg border shadow-sm p-6 mb-6">
       <h3 className="text-lg font-semibold mb-4">Skill Information</h3>

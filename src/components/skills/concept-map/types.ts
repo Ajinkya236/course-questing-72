@@ -3,7 +3,6 @@ export interface ConceptMapProps {
   skillName: string;
   skillDescription?: string;
   proficiency: string;
-  skillId?: number;
 }
 
 export interface Concept {

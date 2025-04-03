@@ -13,7 +13,7 @@ interface SkillSidebarProps {
 const SkillSidebar: React.FC<SkillSidebarProps> = ({ skill }) => {
   return (
     <div className="col-span-1">
-      <SkillInformation skill={skill} />
+      <SkillInformation proficiency={skill.proficiency} />
       
       <div className="bg-card rounded-lg border shadow-sm p-6">
         <h3 className="text-lg font-semibold mb-4">Related Skills</h3>

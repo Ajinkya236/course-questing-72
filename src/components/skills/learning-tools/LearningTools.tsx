@@ -10,39 +10,32 @@ import LearningToolsGrid from './LearningToolsGrid';
 interface LearningToolsProps {
   skillName: string;
   skillDescription: string;
-  selectedProficiency?: string;
-  sources?: Source[];
-  setChatMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  isLoading?: boolean;
-  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  onGeneratePodcast?: () => void;
+  selectedProficiency: string;
+  sources: Source[];
+  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  onGeneratePodcast: () => void;
   hidePodcastButton?: boolean;
-  skillId?: number;
-  proficiency?: string;
 }
 
 const LearningTools: React.FC<LearningToolsProps> = ({ 
   skillName,
   skillDescription,
   selectedProficiency,
-  proficiency,
-  sources = [],
+  sources,
   setChatMessages,
-  isLoading = false,
-  setIsLoading = () => {},
-  onGeneratePodcast = () => {},
-  hidePodcastButton = false,
-  skillId
+  isLoading,
+  setIsLoading,
+  onGeneratePodcast,
+  hidePodcastButton = false
 }) => {
-  // Use proficiency if provided, otherwise use selectedProficiency
-  const effectiveProficiency = proficiency || selectedProficiency || '';
-  
   const { handleToolGeneration, isBusy, apiCallFailed } = useToolGeneration(
     skillName,
     skillDescription,
-    effectiveProficiency,
+    selectedProficiency,
     sources,
-    setChatMessages || (() => {}),
+    setChatMessages,
     setIsLoading
   );
 
@@ -63,7 +56,7 @@ const LearningTools: React.FC<LearningToolsProps> = ({
         <LearningToolsGrid
           skillName={skillName}
           skillDescription={skillDescription}
-          selectedProficiency={effectiveProficiency}
+          selectedProficiency={selectedProficiency}
           isBusy={combinedBusyState}
           onToolClick={handleToolGeneration}
           onGeneratePodcast={onGeneratePodcast}

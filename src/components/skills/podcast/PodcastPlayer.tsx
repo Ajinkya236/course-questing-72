@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Mic, Loader2, FileText, Download, Volume2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
         toast({
           title: "Podcast Generated",
           description: "Your learning podcast is ready to play.",
-          variant: "default",
+          variant: "success",
         });
       } else {
         setActiveTab('transcript');
