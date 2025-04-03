@@ -66,8 +66,9 @@ export function useQuestionGeneration() {
           
           // Transform the questions to match the required Question interface
           // Map 'question' property to 'text' property to match the Question type
-          const formattedQuestions = data.questions.map((q: any) => ({
-            id: q.id,
+          // Also convert string IDs to numbers to match the Question type
+          const formattedQuestions = data.questions.map((q: any, index: number) => ({
+            id: index + 1, // Convert string IDs to numbers
             text: q.question, // Map the 'question' field to 'text'
             type: q.type,
             options: q.options,
@@ -95,9 +96,9 @@ export function useQuestionGeneration() {
     } catch (error: any) {
       console.error("Error generating questions:", error);
       
-      // Generate fallback questions - ensure we use string IDs to match the Question type
+      // Generate fallback questions with numeric IDs to match the Question type
       const fallbackQuestions: Question[] = Array.from({ length: 12 }).map((_, i) => ({
-        id: `q${i+1}`,
+        id: i + 1, // Using numeric IDs
         text: `What is an important principle of ${skill.name}?`, 
         type: "multipleChoice",
         options: [
