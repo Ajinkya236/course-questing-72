@@ -198,7 +198,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                 
                 <TabsContent value="audio" className="min-h-[300px]">
                   {audioUrl ? (
-                    <div className="audio-player-container min-h-[250px]">
+                    <div className="audio-player-container min-h-[300px] flex justify-center items-center">
                       <AudioPlayer 
                         audioUrl={audioUrl} 
                         title={`${skillName} Learning Podcast`}
@@ -206,7 +206,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                       />
                     </div>
                   ) : transcript ? (
-                    <div className="bg-muted rounded-md p-6 text-center min-h-[200px]">
+                    <div className="bg-muted rounded-md p-6 text-center min-h-[250px]">
                       <p>Audio generation is currently unavailable.</p>
                       <p className="text-sm text-muted-foreground mt-2">
                         Please view the transcript instead.

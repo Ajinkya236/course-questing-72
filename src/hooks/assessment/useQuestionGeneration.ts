@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -94,10 +95,10 @@ export function useQuestionGeneration() {
     } catch (error: any) {
       console.error("Error generating questions:", error);
       
-      // Generate fallback questions
+      // Generate fallback questions - ensure we use string IDs to match the Question type
       const fallbackQuestions: Question[] = Array.from({ length: 12 }).map((_, i) => ({
         id: `q${i+1}`,
-        text: `What is an important principle of ${skill.name}?`, // Using 'text' instead of 'question'
+        text: `What is an important principle of ${skill.name}?`, 
         type: "multipleChoice",
         options: [
           `Important principle ${i+1}`, 
