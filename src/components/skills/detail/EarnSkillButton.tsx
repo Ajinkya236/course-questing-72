@@ -1,29 +1,28 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
 import { Award } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 interface EarnSkillButtonProps {
   skillId: number;
   skillName: string;
 }
 
-const EarnSkillButton = ({ skillId, skillName }: EarnSkillButtonProps) => {
+const EarnSkillButton: React.FC<EarnSkillButtonProps> = ({ skillId, skillName }) => {
   const navigate = useNavigate();
-
-  const handleEarnSkill = () => {
+  
+  const handleGoToAssessment = () => {
     navigate(`/skills/${skillId}/assessment`);
   };
 
   return (
     <Button 
-      onClick={handleEarnSkill}
+      onClick={handleGoToAssessment}
       className="flex items-center gap-2"
-      variant="default"
     >
-      <Award className="h-4 w-4" />
-      Earn Skill Badge
+      <Award size={16} />
+      <span>Earn This Skill</span>
     </Button>
   );
 };

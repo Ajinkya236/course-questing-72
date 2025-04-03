@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Mic, Loader2, FileText, Download, Volume2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -195,15 +196,17 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                   <TabsTrigger value="transcript" disabled={!transcript}>Transcript</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="audio">
+                <TabsContent value="audio" className="min-h-[300px]">
                   {audioUrl ? (
-                    <AudioPlayer 
-                      audioUrl={audioUrl} 
-                      title={`${skillName} Learning Podcast`}
-                      subtitle={`${proficiency} level overview`}
-                    />
+                    <div className="audio-player-container min-h-[250px]">
+                      <AudioPlayer 
+                        audioUrl={audioUrl} 
+                        title={`${skillName} Learning Podcast`}
+                        subtitle={`${proficiency} level overview`}
+                      />
+                    </div>
                   ) : transcript ? (
-                    <div className="bg-muted rounded-md p-6 text-center">
+                    <div className="bg-muted rounded-md p-6 text-center min-h-[200px]">
                       <p>Audio generation is currently unavailable.</p>
                       <p className="text-sm text-muted-foreground mt-2">
                         Please view the transcript instead.

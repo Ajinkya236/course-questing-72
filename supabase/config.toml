@@ -71,3 +71,6 @@ vector_port = 54328
 [functions]
 [functions.generate-assessment]
 verify_jwt = true
+
+[functions.generate-concept-map]
+verify_jwt = true
