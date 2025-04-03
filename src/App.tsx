@@ -1,6 +1,7 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider as ShadcnThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import PageLayout from './components/layout/PageLayout';
@@ -44,98 +45,83 @@ const PageLoader = () => (
   </div>
 );
 
-// Create an array of route objects with unique keys
-const routeObjects = [
-  { path: "/sign-in", element: <SignIn />, key: "sign-in" },
-  { path: "/sign-up", element: <SignUp />, key: "sign-up" },
-  { path: "/forgot-password", element: <ForgotPassword />, key: "forgot-password" },
-  { path: "/reset-password", element: <ResetPassword />, key: "reset-password" },
-  
-  { path: "/", element: <ProtectedRoute />, key: "protected", children: [
-    { path: "/", element: <PageLayout><Home /></PageLayout>, key: "home" },
-    { path: "/discover", element: <PageLayout><Discover /></PageLayout>, key: "discover" },
-    { path: "/my-learning", element: <PageLayout><MyLearning /></PageLayout>, key: "my-learning" },
-    { path: "/my-learning/:tab", element: <PageLayout><MyLearning /></PageLayout>, key: "my-learning-tab" },
-    { path: "/course/:courseId", element: <PageLayout><CoursePlayer /></PageLayout>, key: "course-player" },
-    { path: "/notifications", element: <PageLayout><Notifications /></PageLayout>, key: "notifications" },
-    { path: "/profile", element: <PageLayout><Profile /></PageLayout>, key: "profile" },
-    { path: "/view-all/:category", element: <PageLayout><ViewAllPage /></PageLayout>, key: "view-all" },
-    { path: "/search", element: <PageLayout><SearchResults /></PageLayout>, key: "search" },
-    { path: "/actionables", element: <PageLayout><Actionables /></PageLayout>, key: "actionables" },
-    { path: "/milestones", element: <PageLayout><LeaderboardFullView /></PageLayout>, key: "milestones" },
-    { path: "/mentoring", element: <PageLayout><Mentoring /></PageLayout>, key: "mentoring" },
-    { path: "/my-team", element: <PageLayout><MyTeam /></PageLayout>, key: "my-team" },
-    { path: "/my-team/member/:memberId", element: <PageLayout><Profile /></PageLayout>, key: "member-profile" },
-    { path: "/my-team/member/:memberId/learning", element: <PageLayout><MyLearning /></PageLayout>, key: "member-learning" },
-    { path: "/my-team/member/:memberId/goals", element: <PageLayout><MyLearning /></PageLayout>, key: "member-goals" },
-    { path: "/faq", element: <PageLayout><FAQ /></PageLayout>, key: "faq" },
-    { path: "/view-all/domains", element: <PageLayout><ViewAllDomainsPage /></PageLayout>, key: "view-all-domains" },
-    { path: "/domain/:domainId", element: <PageLayout><DomainCoursesPage /></PageLayout>, key: "domain-courses" },
-    { path: "/mentoring/recommended-mentors", element: <PageLayout><RecommendedMentorsPage /></PageLayout>, key: "recommended-mentors" },
-    { path: "/leaderboard", element: <PageLayout><LeaderboardFullView /></PageLayout>, key: "leaderboard" },
-    
-    { path: "/skills", element: <PageLayout><Skills /></PageLayout>, key: "skills" },
-    { path: "/skills/:skillId", element: <PageLayout><SkillDetail /></PageLayout>, key: "skill-detail" },
-    { path: "/skills/role", element: <PageLayout><Skills /></PageLayout>, key: "skills-role" },
-    { path: "/skills/recommended", element: <PageLayout><Skills /></PageLayout>, key: "skills-recommended" },
-    { path: "/skills/trending", element: <PageLayout><Skills /></PageLayout>, key: "skills-trending" },
-    
-    { path: "/skills/:skillId/assessment", element: <SkillAssessment />, key: "skill-assessment" },
-    
-    { path: "/skills/:skillId/concept-map", element={<ConceptMapFullPage />} },
-    
-    { path: "/admin/dashboard", element: <PageLayout><AdminDashboard /></PageLayout>, key: "admin-dashboard" },
-    { path: "/admin/courses", element: <PageLayout><AdminCourses /></PageLayout>, key: "admin-courses" },
-    { path: "/admin/modules", element: <PageLayout><AdminModules /></PageLayout>, key: "admin-modules" },
-    { path: "/admin/activities", element: <PageLayout><AdminActivities /></PageLayout>, key: "admin-activities" },
-    { path: "/admin/courses/create", element: <PageLayout><CourseCreation /></PageLayout>, key: "courses-create" },
-  ]},
-  
-  { path: "*", element: <NotFound />, key: "not-found" }
-];
-
-// Helper function to convert the route objects to Route components
-const renderRoutes = (routes) => {
-  return routes.map(route => {
-    if (route.children) {
-      return (
-        <Route key={route.key} path={route.path} element={route.element}>
-          {renderRoutes(route.children)}
-        </Route>
-      );
-    }
-    return <Route key={route.key} path={route.path} element={route.element} />;
-  });
-};
-
-function ProtectedRoute() {
-  const { user, session } = React.useContext(AuthContext);
+const ProtectedRoute = () => {
+  const { user, session } = useContext(AuthContext);
 
   if (!user || !session) {
     return <Navigate to="/sign-in" />;
   }
 
   return <Outlet />;
-}
+};
+
+const routes = [
+  <Route path="/sign-in" element={<SignIn />} />,
+  <Route path="/sign-up" element={<SignUp />} />,
+  <Route path="/forgot-password" element={<ForgotPassword />} />,
+  <Route path="/reset-password" element={<ResetPassword />} />,
+  
+  <Route element={<ProtectedRoute />}>
+    <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+    <Route path="/discover" element={<PageLayout><Discover /></PageLayout>} />
+    <Route path="/my-learning" element={<PageLayout><MyLearning /></PageLayout>} />
+    <Route path="/my-learning/:tab" element={<PageLayout><MyLearning /></PageLayout>} />
+    <Route path="/course/:courseId" element={<PageLayout><CoursePlayer /></PageLayout>} />
+    <Route path="/notifications" element={<PageLayout><Notifications /></PageLayout>} />
+    <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
+    <Route path="/view-all/:category" element={<PageLayout><ViewAllPage /></PageLayout>} />
+    <Route path="/search" element={<PageLayout><SearchResults /></PageLayout>} />
+    <Route path="/actionables" element={<PageLayout><Actionables /></PageLayout>} />
+    <Route path="/milestones" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+    <Route path="/mentoring" element={<PageLayout><Mentoring /></PageLayout>} />
+    <Route path="/my-team" element={<PageLayout><MyTeam /></PageLayout>} />
+    <Route path="/my-team/member/:memberId" element={<PageLayout><Profile /></PageLayout>} />
+    <Route path="/my-team/member/:memberId/learning" element={<PageLayout><MyLearning /></PageLayout>} />
+    <Route path="/my-team/member/:memberId/goals" element={<PageLayout><MyLearning /></PageLayout>} />
+    <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
+    <Route path="/view-all/domains" element={<PageLayout><ViewAllDomainsPage /></PageLayout>} />
+    <Route path="/domain/:domainId" element={<PageLayout><DomainCoursesPage /></PageLayout>} />
+    <Route path="/mentoring/recommended-mentors" element={<PageLayout><RecommendedMentorsPage /></PageLayout>} />
+    <Route path="/leaderboard" element={<PageLayout><LeaderboardFullView /></PageLayout>} />
+    
+    <Route path="/skills" element={<PageLayout><Skills /></PageLayout>} />
+    <Route path="/skills/:skillId" element={<PageLayout><SkillDetail /></PageLayout>} />
+    <Route path="/skills/role" element={<PageLayout><Skills /></PageLayout>} />
+    <Route path="/skills/recommended" element={<PageLayout><Skills /></PageLayout>} />
+    <Route path="/skills/trending" element={<PageLayout><Skills /></PageLayout>} />
+    
+    <Route path="/skills/:skillId/assessment" element={<SkillAssessment />} />
+    
+    <Route path="/admin/dashboard" element={<PageLayout><AdminDashboard /></PageLayout>} />
+    <Route path="/admin/courses" element={<PageLayout><AdminCourses /></PageLayout>} />
+    <Route path="/admin/modules" element={<PageLayout><AdminModules /></PageLayout>} />
+    <Route path="/admin/activities" element={<PageLayout><AdminActivities /></PageLayout>} />
+    <Route path="/admin/courses/create" element={<PageLayout><CourseCreation /></PageLayout>} />
+  </Route>,
+  
+  <Route path="*" element={<NotFound />} />
+];
 
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {renderRoutes(routeObjects)}
-            </Routes>
-          </Suspense>
-          <Toaster />
-        </ThemeProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ShadcnThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {routes}
+              </Routes>
+            </Suspense>
+            <Toaster />
+          </ShadcnThemeProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }
