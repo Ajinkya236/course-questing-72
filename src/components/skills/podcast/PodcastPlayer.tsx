@@ -44,12 +44,6 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     setErrorMessage(null);
     
     try {
-      toast({
-        title: "Generating podcast",
-        description: "This may take up to 2 minutes for longer podcasts. Please be patient.",
-        variant: "default",
-      });
-      
       // Generate podcast via edge function
       const result = await generatePodcast(skillName, skillDescription, proficiency);
       
@@ -73,7 +67,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
         setAudioUrl(result.audioUrl);
       }
       
-      setIsMockMode(result.mockMode || false);
+      setIsMockMode(true);
     } catch (error: any) {
       console.error("Podcast generation error:", error);
       setErrorMessage(error.message || "Failed to generate podcast");
@@ -203,8 +197,8 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                 <div>
                   <p>Generate a learning podcast to help you master {skillName}.</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    The podcast will feature a conversation between hosts discussing 
-                    key concepts and practical applications at the {proficiency} level.
+                    The podcast will cover key concepts and practical applications 
+                    at the {proficiency} level.
                   </p>
                 </div>
               )}

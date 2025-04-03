@@ -22,62 +22,21 @@ export async function handleGenerateQuestions(requestData: any) {
   // Generate the prompt for questions
   const prompt = generateQuestionsPrompt(skill, proficiency, difficulty, contextInfo);
   
-  try {
-    // Call the Gemini API with a timeout
-    const generatedText = await callGeminiAPI(prompt, model);
-    
-    // Extract JSON from the response
-    const result = extractJsonFromResponse(generatedText);
-    
-    // Add error handling for malformed responses
-    if (!result.questions || !Array.isArray(result.questions) || result.questions.length === 0) {
-      console.error("Invalid response format, questions array missing or empty:", result);
-      
-      // Return a fallback response with basic questions
-      return {
-        questions: [
-          {
-            id: "q1",
-            question: `What is the primary focus of ${skill}?`,
-            type: "multipleChoice",
-            options: ["Option A", "Option B", "Option C", "Option D"],
-            correctAnswer: "Option A",
-            difficulty: difficulty
-          },
-          {
-            id: "q2",
-            question: `Describe a practical application of ${skill} at the ${proficiency} level.`,
-            type: "shortAnswer",
-            difficulty: difficulty
-          }
-        ]
-      };
-    }
-    
-    console.log(`Successfully generated ${result.questions.length} questions`);
-    
-    return result;
-  } catch (error) {
-    console.error("Error generating questions:", error);
-    
-    // Return fallback questions on error
-    return {
-      questions: [
-        {
-          id: "fallback1",
-          question: `What is ${skill}?`,
-          type: "shortAnswer",
-          difficulty: difficulty
-        },
-        {
-          id: "fallback2",
-          question: `List three key components of ${skill}.`,
-          type: "shortAnswer",
-          difficulty: difficulty
-        }
-      ]
-    };
+  // Call the Gemini API with a timeout
+  const generatedText = await callGeminiAPI(prompt, model);
+  
+  // Extract JSON from the response
+  const result = extractJsonFromResponse(generatedText);
+  
+  // Ensure we have a valid questions array
+  if (!result.questions || !Array.isArray(result.questions)) {
+    console.error("Invalid response format, questions array missing:", result);
+    throw new Error("Failed to generate valid questions");
   }
+  
+  console.log(`Successfully generated ${result.questions.length} questions`);
+  
+  return result;
 }
 
 /**
@@ -100,22 +59,11 @@ export async function handleEvaluateAnswer(requestData: any) {
   // Generate the prompt for answer evaluation
   const prompt = evaluateAnswerPrompt(skill, proficiency, question, contextInfo);
   
-  try {
-    // Call the Gemini API
-    const generatedText = await callGeminiAPI(prompt, model);
-    
-    // Extract JSON from the response
-    return extractJsonFromResponse(generatedText);
-  } catch (error) {
-    console.error("Error evaluating answer:", error);
-    
-    // Return a default feedback on error
-    return {
-      isCorrect: false,
-      feedback: "Unable to evaluate your answer at this time. Please try again later.",
-      explanation: "There was an error processing your response."
-    };
-  }
+  // Call the Gemini API
+  const generatedText = await callGeminiAPI(prompt, model);
+  
+  // Extract JSON from the response
+  return extractJsonFromResponse(generatedText);
 }
 
 /**
@@ -138,26 +86,9 @@ export async function handleEvaluateAssessment(requestData: any) {
   // Generate the prompt for assessment evaluation
   const prompt = evaluateAssessmentPrompt(skill, proficiency, userAnswers, contextInfo);
   
-  try {
-    // Call the Gemini API
-    const generatedText = await callGeminiAPI(prompt, model);
-    
-    // Extract JSON from the response
-    return extractJsonFromResponse(generatedText);
-  } catch (error) {
-    console.error("Error evaluating assessment:", error);
-    
-    // Calculate a basic score based on correct answers
-    const correctCount = userAnswers.filter((answer: any) => answer.isCorrect).length;
-    const score = Math.round((correctCount / userAnswers.length) * 100);
-    
-    // Return a default assessment on error
-    return {
-      score: score,
-      feedback: "Assessment evaluation completed with limited feedback due to technical issues.",
-      strengths: ["Unable to analyze strengths at this time."],
-      weaknesses: ["Unable to analyze weaknesses at this time."],
-      recommendations: ["Please try again later for detailed recommendations."]
-    };
-  }
+  // Call the Gemini API
+  const generatedText = await callGeminiAPI(prompt, model);
+  
+  // Extract JSON from the response
+  return extractJsonFromResponse(generatedText);
 }
