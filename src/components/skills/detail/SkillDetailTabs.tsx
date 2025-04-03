@@ -2,7 +2,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatTab from './ChatTab';
-import SkillInformation from './SkillInformation';
 import { ChatMessage } from '@/components/skills/ChatInterface';
 import LearningTools from '@/components/skills/learning-tools';
 import { Source } from '@/components/skills/knowledge/types';
@@ -32,10 +31,8 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
 }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList className="grid grid-cols-3 w-full max-w-md mb-4">
+      <TabsList className="grid grid-cols-1 w-full max-w-md mb-4">
         <TabsTrigger value="chat">Chat</TabsTrigger>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="learn">Learning Tools</TabsTrigger>
       </TabsList>
       
       <TabsContent value="chat">
@@ -50,11 +47,8 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
         />
       </TabsContent>
       
-      <TabsContent value="overview">
-        <SkillInformation skill={skill} />
-      </TabsContent>
-      
-      <TabsContent value="learn">
+      <div className="mt-6">
+        <h3 className="text-lg font-medium mb-4">Learning Tools</h3>
         <LearningTools 
           skillName={skill.name} 
           skillDescription={skill.description || ''}
@@ -62,7 +56,7 @@ const SkillDetailTabs: React.FC<SkillDetailTabsProps> = ({
           proficiency={skill.proficiency}
           skillId={skill.id}
         />
-      </TabsContent>
+      </div>
     </Tabs>
   );
 };
