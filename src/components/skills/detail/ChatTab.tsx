@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChatInterface, ChatMessage } from '@/components/skills/ChatInterface';
+import ChatInterface, { ChatMessage } from '@/components/skills/ChatInterface';
 import { Source } from '@/components/skills/knowledge/types';
 
 interface ChatTabProps {
