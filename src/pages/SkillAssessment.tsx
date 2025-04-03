@@ -9,8 +9,6 @@ import AdaptiveModeToggle from '@/components/skills/assessment/AdaptiveModeToggl
 import GenerationFailedView from '@/components/skills/assessment/GenerationFailedView';
 import { useAssessmentState } from '@/hooks/assessment/useAssessmentState';
 import { PASS_RATE } from '@/hooks/assessment';
-import { Progress } from "@/components/ui/progress";
-import { Card } from "@/components/ui/card";
 
 const SkillAssessment: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -54,19 +52,6 @@ const SkillAssessment: React.FC = () => {
 
   // Proficiency options
   const proficiencyOptions = ["Awareness", "Knowledge", "Skill", "Mastery"];
-  
-  // Map proficiency to a progress value
-  const getProficiencyValue = (prof: string): number => {
-    switch (prof?.toLowerCase()) {
-      case 'awareness': return 25;
-      case 'knowledge': return 50;
-      case 'skill': return 75;
-      case 'mastery': return 100;
-      default: return 25;
-    }
-  };
-
-  const proficiencyValue = getProficiencyValue(selectedProficiency || selectedSkill?.proficiency || '');
 
   return (
     <PageLayout>
@@ -88,15 +73,6 @@ const SkillAssessment: React.FC = () => {
           )
         }
       >
-        <Card className="p-4 mb-4">
-          <h3 className="text-lg font-semibold mb-2">Current Proficiency</h3>
-          <div className="mb-2 flex justify-between text-sm">
-            <span>{selectedProficiency || selectedSkill?.proficiency}</span>
-            <span>{proficiencyValue}%</span>
-          </div>
-          <Progress value={proficiencyValue} className="h-2" />
-        </Card>
-        
         <AdaptiveModeToggle
           adaptiveMode={adaptiveMode}
           setAdaptiveMode={setAdaptiveMode}

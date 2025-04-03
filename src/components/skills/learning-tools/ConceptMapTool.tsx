@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lightbulb } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import ConceptMap from '@/components/skills/concept-map';
 
 interface ConceptMapToolProps {
   skillName: string;
@@ -11,29 +9,14 @@ interface ConceptMapToolProps {
   skillId?: number;
 }
 
-const ConceptMapTool: React.FC<ConceptMapToolProps> = ({ 
-  skillName, 
-  skillDescription, 
-  proficiency, 
-  skillId 
-}) => {
-  const navigate = useNavigate();
-  
-  const handleOpenFullPage = () => {
-    if (skillId) {
-      navigate(`/skills/${skillId}/concept-map`);
-    }
-  };
-
+const ConceptMapTool: React.FC<ConceptMapToolProps> = ({ skillName, skillDescription, proficiency, skillId }) => {
   return (
-    <Button
-      variant="outline"
-      className="h-auto py-3 flex flex-col items-center text-center"
-      onClick={handleOpenFullPage}
-    >
-      <Lightbulb size={16} />
-      <span>Concept Map</span>
-    </Button>
+    <ConceptMap 
+      skillName={skillName}
+      skillDescription={skillDescription}
+      proficiency={proficiency}
+      skillId={skillId}
+    />
   );
 };
 
