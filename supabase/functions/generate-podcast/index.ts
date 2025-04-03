@@ -25,7 +25,7 @@ serve(async (req) => {
     
     console.log(`Generating podcast for: ${skillName} at ${proficiency} level`);
     
-    // Generate podcast script using Gemini
+    // Generate podcast script using Gemini 1.5 Pro
     const transcript = await generatePodcastTranscript(skillName, skillDescription, proficiency);
     
     // Generate audio from transcript using Text-to-Speech API
@@ -76,7 +76,7 @@ async function generatePodcastTranscript(skillName: string, skillDescription: st
   }
   
   const prompt = `
-Generate a 12-20 minute podcast script transcript between two hosts, a male and a female discussing ${skillName} at ${proficiency} level.
+Generate a 15-20 minute podcast script transcript between two hosts, a male and a female discussing ${skillName} at ${proficiency} level.
 ${skillDescription ? `The skill is described as: ${skillDescription}` : ''}
 
 The transcript should:

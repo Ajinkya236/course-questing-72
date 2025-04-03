@@ -206,7 +206,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                       />
                     </div>
                   ) : transcript ? (
-                    <div className="bg-muted rounded-md p-6 text-center min-h-[250px]">
+                    <div className="bg-muted rounded-md p-6 text-center min-h-[300px]">
                       <p>Audio generation is currently unavailable.</p>
                       <p className="text-sm text-muted-foreground mt-2">
                         Please view the transcript instead.
@@ -241,7 +241,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
               </Tabs>
             </div>
           ) : (
-            <div className="bg-muted rounded-md p-6 text-center">
+            <div className="bg-muted rounded-md p-6 text-center min-h-[250px]">
               {isGenerating ? (
                 <div className="flex flex-col items-center justify-center space-y-2">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />

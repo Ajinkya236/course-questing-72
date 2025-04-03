@@ -115,7 +115,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, subtitle }) 
         </CardTitle>
         {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </CardHeader>
-      <CardContent className="min-h-[150px]">
+      <CardContent className="min-h-[200px]">
         <audio ref={audioRef} src={audioUrl} preload="metadata" />
         
         <AudioControls 

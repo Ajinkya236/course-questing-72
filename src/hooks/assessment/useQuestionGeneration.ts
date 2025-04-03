@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -37,14 +36,12 @@ export function useQuestionGeneration() {
       
       try {
         // First, try to call our edge function
-        // Remove 'signal' from options as it's not supported in FunctionInvokeOptions
         const { data, error } = await supabase.functions.invoke('generate-assessment', {
           body: {
             skillName: skill.name,
             proficiency: skill.proficiency,
             difficulty: difficulty
           }
-          // Removed 'signal: controller.signal' as it's not supported
         });
         
         clearTimeout(timeout);

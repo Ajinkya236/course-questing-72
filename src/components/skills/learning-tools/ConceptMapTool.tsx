@@ -16,6 +16,7 @@ const ConceptMapTool: React.FC<ConceptMapToolProps> = ({ skillName, skillDescrip
 
   const handleOpenConceptMap = () => {
     if (skillId) {
+      // Navigate directly to the concept map page
       navigate(`/skills/${skillId}/concept-map`);
     } else {
       console.error("Cannot navigate to concept map: skillId is undefined");
