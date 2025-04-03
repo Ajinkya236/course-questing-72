@@ -33,7 +33,7 @@ const ChatTab: React.FC<ChatTabProps> = ({
   isGeneratingPodcast,
   setIsGeneratingPodcast
 }) => {
-  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -51,7 +51,7 @@ const ChatTab: React.FC<ChatTabProps> = ({
       content: message
     }]);
     
-    setIsTyping(true);
+    setIsLoading(true);
     
     try {
       // Simulate AI response
@@ -66,11 +66,11 @@ You can ask more questions or use the Learning Tools to generate study materials
           role: 'assistant',
           content: response
         }]);
-        setIsTyping(false);
+        setIsLoading(false);
       }, 1500);
     } catch (error) {
       console.error('Error sending message:', error);
-      setIsTyping(false);
+      setIsLoading(false);
       
       setChatMessages(prev => [...prev, {
         role: 'assistant',
@@ -92,13 +92,18 @@ You can ask more questions or use the Learning Tools to generate study materials
         <div className="flex-1 overflow-y-auto px-4">
           <ChatInterface
             messages={chatMessages}
-            isTyping={isTyping}
+            setMessages={setChatMessages}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
             onSendMessage={handleSendMessage}
             placeholder={`Ask about ${skill.name}...`}
             sources={sources}
             setSources={setSources}
-            skill={skill}
-            sampleQuestions={sampleQuestions}
+            apiParams={{
+              skillName: skill.name,
+              skillProficiency: skill.proficiency,
+              sources: sources
+            }}
           />
           <div ref={messagesEndRef} />
         </div>
