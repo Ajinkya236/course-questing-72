@@ -117,6 +117,5 @@ enabled = false
 port = 54329
 base_url = "https://test.supabase.co"
 
-[edge-functions]
+[edge_functions]
 enabled = true
-
