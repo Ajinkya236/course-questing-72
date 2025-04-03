@@ -88,9 +88,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       if (sources && sources.length > 0) {
         context += "Consider these additional knowledge sources:\n";
         sources.forEach((source, index) => {
-          // Use name if available, then description, or a default "Source" label with truncated content
-          const sourceTitle = source.name || source.description || 
-            (source.content ? source.content.substring(0, 30) + '...' : 'Source');
+          const sourceTitle = source.content ? source.content.substring(0, 30) + '...' : 'Source';
           const sourceContent = source.content || 'No content';
           context += `${index + 1}. ${sourceTitle}: ${sourceContent}\n`;
         });
@@ -134,7 +132,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <CardContent className="flex flex-col h-full p-4">
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[500px]"
+          className="flex-1 overflow-y-auto mb-4 space-y-4 max-h-[550px]"
         >
           {messages.map((message, index) => (
             <div 

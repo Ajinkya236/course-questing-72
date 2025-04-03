@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
-import PageLayout from "@/components/layout/PageLayout";
-import SkillDetailHeader from './SkillDetailHeader';
-import SkillDetailTabs from './SkillDetailTabs';
-import { Source } from '@/components/skills/knowledge/types';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ChatMessage } from '@/components/skills/ChatInterface';
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import EarnSkillButton from './EarnSkillButton';
+import SkillHeader from '@/components/skills/SkillHeader';
+import SkillDetailTabs from './SkillDetailTabs';
+import SkillSidebar from './SkillSidebar';
+import { Source } from '@/components/skills/knowledge/types';
 
 interface SkillDetailLayoutProps {
   skill: any;
@@ -19,7 +20,7 @@ interface SkillDetailLayoutProps {
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   isGeneratingPodcast: boolean;
   setIsGeneratingPodcast: React.Dispatch<React.SetStateAction<boolean>>;
-  onProficiencyChange: (proficiency: string) => void;
+  onProficiencyChange?: (value: string) => void;
 }
 
 const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
@@ -35,43 +36,45 @@ const SkillDetailLayout: React.FC<SkillDetailLayoutProps> = ({
   onProficiencyChange
 }) => {
   return (
-    <PageLayout>
+    <>
+      <Helmet>
+        <title>{skill.name} Skill | Learning Platform</title>
+      </Helmet>
+      
       <div className="container mx-auto px-4 py-6">
-        <SkillDetailHeader 
+        <div className="mb-6">
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/skills">
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back to Skills
+            </Link>
+          </Button>
+        </div>
+        
+        <SkillHeader 
           skill={skill} 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
           onProficiencyChange={onProficiencyChange}
         />
         
-        <div className="my-4">
-          <Card>
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Current Proficiency:</span>
-                <Badge variant="outline" className="font-semibold">
-                  {skill.proficiency}
-                </Badge>
-              </div>
-              
-              <EarnSkillButton skillId={skill.id} skillName={skill.name} />
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
+          <div className="col-span-1 lg:col-span-3">
+            <SkillDetailTabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              skill={skill}
+              sources={sources}
+              setSources={setSources}
+              chatMessages={chatMessages}
+              setChatMessages={setChatMessages}
+              isGeneratingPodcast={isGeneratingPodcast}
+              setIsGeneratingPodcast={setIsGeneratingPodcast}
+            />
+          </div>
+          
+          <SkillSidebar skill={skill} />
         </div>
-        
-        <SkillDetailTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          skill={skill}
-          sources={sources}
-          setSources={setSources}
-          chatMessages={chatMessages}
-          setChatMessages={setChatMessages}
-          isGeneratingPodcast={isGeneratingPodcast}
-          setIsGeneratingPodcast={setIsGeneratingPodcast}
-        />
       </div>
-    </PageLayout>
+    </>
   );
 };
 
