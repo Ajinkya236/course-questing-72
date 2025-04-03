@@ -1,14 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { Mic, Volume2 } from 'lucide-react';
+import { Mic, Loader2, FileText, Download, Volume2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
+import AudioPlayer from './AudioPlayer';
 import { generatePodcast } from './PodcastUtils';
-import PodcastLoading from './PodcastLoading';
-import PodcastEmpty from './PodcastEmpty';
-import PodcastError from './PodcastError';
-import PodcastContent from './PodcastContent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PodcastPlayerProps {
   skillName: string;
@@ -28,6 +26,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isMockMode, setIsMockMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('audio');
   const { toast } = useToast();
 
   // Auto-generate podcast on component mount if not in chat mode
@@ -77,12 +76,15 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
       
       if (result.audioUrl) {
         setAudioUrl(result.audioUrl);
+        setActiveTab('audio');
         
         toast({
           title: "Podcast Generated",
           description: "Your learning podcast is ready to play.",
           variant: "default",
         });
+      } else {
+        setActiveTab('transcript');
       }
       
       setIsMockMode(result.mockMode || false);
@@ -100,29 +102,21 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     }
   };
 
-  const renderPodcastContent = () => {
-    if (transcript || audioUrl) {
-      return (
-        <PodcastContent
-          transcript={transcript}
-          audioUrl={audioUrl}
-          skillName={skillName}
-          proficiency={proficiency}
-          onRegenerateClick={handleGeneratePodcast}
-          isGenerating={isGenerating}
-        />
-      );
-    }
-
-    if (isGenerating) {
-      return <PodcastLoading />;
-    }
-
-    if (errorMessage) {
-      return <PodcastError errorMessage={errorMessage} onRetry={handleGeneratePodcast} />;
-    }
-
-    return <PodcastEmpty skillName={skillName} proficiency={proficiency} />;
+  const downloadTranscript = () => {
+    if (!transcript) return;
+    
+    const element = document.createElement("a");
+    const file = new Blob([transcript], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `${skillName}_Podcast_Transcript.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    
+    toast({
+      title: "Transcript Downloaded",
+      description: "Podcast transcript has been downloaded as a text file.",
+    });
   };
 
   return (
@@ -140,15 +134,133 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
                 disabled={isGenerating}
                 className="flex items-center gap-2"
               >
-                <Mic className="h-4 w-4" /> 
-                Generate Podcast
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> 
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Mic className="h-4 w-4" /> 
+                    Generate Podcast
+                  </>
+                )}
               </Button>
             )}
           </div>
           
-          <div className="bg-muted rounded-md p-6 text-center min-h-[250px] flex items-center justify-center">
-            {renderPodcastContent()}
-          </div>
+          {(transcript || audioUrl) ? (
+            <div className="space-y-4">
+              <div className="flex justify-between mb-2">
+                {transcript && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={downloadTranscript}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download Transcript
+                  </Button>
+                )}
+                
+                {(transcript || audioUrl) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGeneratePodcast}
+                    disabled={isGenerating}
+                    className="flex items-center gap-2"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> 
+                        Regenerating...
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4" /> 
+                        Regenerate
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+              
+              <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="audio" disabled={!audioUrl && !transcript}>
+                    {audioUrl ? "Audio Player" : "Audio (Unavailable)"}
+                  </TabsTrigger>
+                  <TabsTrigger value="transcript" disabled={!transcript}>Transcript</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="audio">
+                  {audioUrl ? (
+                    <AudioPlayer 
+                      audioUrl={audioUrl} 
+                      title={`${skillName} Learning Podcast`}
+                      subtitle={`${proficiency} level overview`}
+                    />
+                  ) : transcript ? (
+                    <div className="bg-muted rounded-md p-6 text-center">
+                      <p>Audio generation is currently unavailable.</p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Please view the transcript instead.
+                      </p>
+                      <Button onClick={() => setActiveTab('transcript')} className="mt-4">
+                        View Transcript
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="bg-muted rounded-md p-6 text-center">
+                      <p>No podcast available. Please generate one first.</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="transcript">
+                  {transcript ? (
+                    <div className="bg-muted rounded-md p-6 max-h-[400px] overflow-y-auto">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <h4 className="text-md font-semibold mb-2">{skillName} Podcast Transcript</h4>
+                        <div className="whitespace-pre-line">
+                          {transcript}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-muted rounded-md p-6 text-center">
+                      <p>No transcript available.</p>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+          ) : (
+            <div className="bg-muted rounded-md p-6 text-center">
+              {isGenerating ? (
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p>Creating your personalized learning podcast...</p>
+                  <p className="text-sm text-muted-foreground">This may take a minute or two</p>
+                </div>
+              ) : errorMessage ? (
+                <div>
+                  <p className="text-destructive">{errorMessage}</p>
+                  <Button onClick={handleGeneratePodcast} className="mt-4">Try Again</Button>
+                </div>
+              ) : (
+                <div>
+                  <p>Generate a learning podcast to help you master {skillName}.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    The podcast will feature a conversation between hosts discussing 
+                    key concepts and practical applications at the {proficiency} level.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

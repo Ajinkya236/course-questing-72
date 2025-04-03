@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
 import AssessmentSidebar from '@/components/skills/assessment/AssessmentSidebar';
@@ -9,18 +9,6 @@ import AdaptiveModeToggle from '@/components/skills/assessment/AdaptiveModeToggl
 import GenerationFailedView from '@/components/skills/assessment/GenerationFailedView';
 import { useAssessmentState } from '@/hooks/assessment/useAssessmentState';
 import { PASS_RATE } from '@/hooks/assessment';
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from '@/integrations/supabase/client';
-
-// Mapping of proficiency levels to progress percentages
-const proficiencyProgress = {
-  "Awareness": 25,
-  "Knowledge": 50,
-  "Skill": 75,
-  "Mastery": 100
-};
 
 const SkillAssessment: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -58,44 +46,12 @@ const SkillAssessment: React.FC = () => {
     handleRetryAssessment
   } = useAssessmentState(skillId);
 
-  // Generate questions using our own edge function
-  useEffect(() => {
-    const generateCustomQuestions = async () => {
-      if (selectedSkill && questions.length === 0 && !isLoading && !generationFailed) {
-        try {
-          // Call our custom edge function to generate questions
-          const { data, error } = await supabase.functions.invoke('generate-assessment', {
-            body: {
-              skillName: selectedSkill.name,
-              proficiency: selectedProficiency || selectedSkill.proficiency
-            },
-          });
-          
-          if (error) {
-            console.error("Error generating questions:", error);
-            throw new Error(error.message);
-          }
-          
-          if (data && data.questions && Array.isArray(data.questions)) {
-            // TODO: Store questions in assessment state
-            console.log("Successfully generated questions:", data.questions);
-          }
-        } catch (error) {
-          console.error("Failed to generate assessment:", error);
-        }
-      }
-    };
-    
-    // Uncomment this to use our custom generator instead of the built-in one
-    // generateCustomQuestions();
-  }, [selectedSkill, selectedProficiency, questions.length, isLoading, generationFailed]);
-
   if (!selectedSkill && !isLoading) {
     return <div className="container mx-auto px-4 py-8">Skill not found</div>;
   }
 
-  // Get progress value based on current proficiency
-  const progressValue = proficiencyProgress[selectedProficiency || selectedSkill?.proficiency] || 0;
+  // Proficiency options
+  const proficiencyOptions = ["Awareness", "Knowledge", "Skill", "Mastery"];
 
   return (
     <PageLayout>
@@ -103,7 +59,7 @@ const SkillAssessment: React.FC = () => {
         handleBack={handleBack}
         skillName={selectedSkill?.name}
         proficiency={selectedProficiency || selectedSkill?.proficiency}
-        proficiencyOptions={["Awareness", "Knowledge", "Skill", "Mastery"]}
+        proficiencyOptions={proficiencyOptions}
         onProficiencyChange={handleProficiencyChange}
         showBadgeModal={showBadgeModal}
         closeBadgeModal={closeBadgeModal}
@@ -117,29 +73,6 @@ const SkillAssessment: React.FC = () => {
           )
         }
       >
-        <Card className="mb-6">
-          <CardContent className="p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Current Proficiency:</span>
-                <Badge variant="outline" className="font-semibold">
-                  {selectedProficiency || selectedSkill?.proficiency}
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span>Awareness</span>
-                <span>Knowledge</span>
-                <span>Skill</span>
-                <span>Mastery</span>
-              </div>
-              <Progress value={progressValue} className="h-2" />
-            </div>
-          </CardContent>
-        </Card>
-      
         <AdaptiveModeToggle
           adaptiveMode={adaptiveMode}
           setAdaptiveMode={setAdaptiveMode}
