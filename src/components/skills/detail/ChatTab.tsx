@@ -95,7 +95,6 @@ You can ask more questions or use the Learning Tools to generate study materials
             setMessages={setChatMessages}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
-            onSendMessage={handleSendMessage}
             placeholder={`Ask about ${skill.name}...`}
             sources={sources}
             setSources={setSources}
