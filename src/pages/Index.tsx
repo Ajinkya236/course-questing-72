@@ -10,19 +10,27 @@ const Index = () => {
   useEffect(() => {
     // Check if user is authenticated
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // User is logged in, redirect to home
-        navigate('/', { replace: true });
-      } else {
-        // No session, toast a welcome message
-        toast({
-          title: "Welcome to Jio Learning",
-          description: "Please sign in to access your learning resources.",
-        });
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
         
-        // Redirect to sign-in after 2 seconds
+        if (session) {
+          // User is logged in, redirect to home
+          navigate('/', { replace: true });
+        } else {
+          // No session, toast a welcome message
+          toast({
+            title: "Welcome to Jio Learning",
+            description: "Please sign in to access your learning resources.",
+          });
+          
+          // Redirect to sign-in after 2 seconds
+          setTimeout(() => {
+            navigate('/sign-in', { replace: true });
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+        // On error, still redirect to sign-in
         setTimeout(() => {
           navigate('/sign-in', { replace: true });
         }, 2000);

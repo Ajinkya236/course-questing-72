@@ -1,6 +1,8 @@
 
 import React from 'react';
-import ConceptMap from '@/components/skills/concept-map';
+import { useNavigate } from 'react-router-dom';
+import { Network } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ConceptMapToolProps {
   skillName: string;
@@ -9,12 +11,22 @@ interface ConceptMapToolProps {
 }
 
 const ConceptMapTool: React.FC<ConceptMapToolProps> = ({ skillName, skillDescription, proficiency }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // Open concept map in a new tab/window
+    window.open(`/skills/concept-map?skill=${encodeURIComponent(skillName)}&proficiency=${encodeURIComponent(proficiency)}`, '_blank');
+  };
+
   return (
-    <ConceptMap 
-      skillName={skillName}
-      skillDescription={skillDescription}
-      proficiency={proficiency}
-    />
+    <Button 
+      variant="outline" 
+      className="h-24 md:h-36 flex flex-col items-center justify-center gap-2 p-4" 
+      onClick={handleClick}
+    >
+      <Network className="h-6 w-6 text-primary" />
+      <span className="text-sm font-medium">Concept Map</span>
+    </Button>
   );
 };
 
