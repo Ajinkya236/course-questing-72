@@ -5,6 +5,7 @@ import {
   Calendar, 
   Users
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface SkillInformationProps {
   proficiency: string;
@@ -14,6 +15,16 @@ const SkillInformation: React.FC<SkillInformationProps> = ({ proficiency }) => {
   return (
     <div className="bg-card rounded-lg border shadow-sm p-6 mb-6">
       <h3 className="text-lg font-semibold mb-4">Skill Information</h3>
+      
+      <div className="flex items-center mb-4">
+        <span className="mr-2 text-sm">Proficiency:</span>
+        <Badge 
+          variant="secondary" 
+          className="bg-muted text-foreground"
+        >
+          {proficiency}
+        </Badge>
+      </div>
       
       <div className="space-y-4">
         <div className="flex items-start">

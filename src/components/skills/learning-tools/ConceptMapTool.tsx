@@ -14,8 +14,8 @@ const ConceptMapTool: React.FC<ConceptMapToolProps> = ({ skillName, skillDescrip
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // Open concept map in a new tab/window
-    window.open(`/skills/concept-map?skill=${encodeURIComponent(skillName)}&proficiency=${encodeURIComponent(proficiency)}`, '_blank');
+    // Navigate directly to the concept map page
+    navigate(`/skills/concept-map?skill=${encodeURIComponent(skillName)}&proficiency=${encodeURIComponent(proficiency)}`);
   };
 
   return (

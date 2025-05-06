@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PageLayout from "@/components/layout/PageLayout";
 import AssessmentSidebar from '@/components/skills/assessment/AssessmentSidebar';
@@ -12,6 +12,8 @@ import { PASS_RATE } from '@/hooks/assessment';
 
 const SkillAssessment: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
+  const [targetProficiency, setTargetProficiency] = useState<string | undefined>(undefined);
+  
   const {
     // Assessment state
     questions,
@@ -46,6 +48,22 @@ const SkillAssessment: React.FC = () => {
     handleRetryAssessment
   } = useAssessmentState(skillId);
 
+  // Determine target proficiency based on role requirements
+  useEffect(() => {
+    if (selectedSkill) {
+      // This would typically come from a user's role requirements
+      // For now, let's simulate a target proficiency one level higher
+      const proficiencyLevels = ["Awareness", "Knowledge", "Skill", "Mastery"];
+      const currentIndex = proficiencyLevels.indexOf(selectedSkill.proficiency);
+      
+      if (currentIndex < proficiencyLevels.length - 1) {
+        setTargetProficiency(proficiencyLevels[currentIndex + 1]);
+      } else {
+        setTargetProficiency(undefined); // Already at highest level
+      }
+    }
+  }, [selectedSkill]);
+
   if (!selectedSkill && !isLoading) {
     return <div className="container mx-auto px-4 py-8">Skill not found</div>;
   }
@@ -59,6 +77,7 @@ const SkillAssessment: React.FC = () => {
         handleBack={handleBack}
         skillName={selectedSkill?.name}
         proficiency={selectedProficiency || selectedSkill?.proficiency}
+        targetProficiency={targetProficiency}
         proficiencyOptions={proficiencyOptions}
         onProficiencyChange={handleProficiencyChange}
         showBadgeModal={showBadgeModal}

@@ -2,6 +2,7 @@
 import React, { memo } from 'react';
 import { Clock, Star, Share2, Bookmark, Play, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CourseCardContentProps {
   title: string;
@@ -42,47 +43,69 @@ const CourseCardContent: React.FC<CourseCardContentProps> = ({
         </div>
       </div>
 
-      {/* Action buttons with hover visibility */}
+      {/* Action buttons with hover visibility and tooltips */}
       <div className="flex flex-col gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="default" 
-            className="flex-1 py-1 h-8 bg-primary hover:bg-primary/90 text-white"
-            onClick={handleWatchClick}
-            size="sm"
-          >
-            <Play className="h-3 w-3 mr-1" /> Watch
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={handleShareClick}
-            aria-label="Share"
-            className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={handleBookmarkToggle}
-            aria-label="Bookmark"
-            className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-primary`}
-          >
-            <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
-          </Button>
-        </div>
-        
-        <Button 
-          variant="outline" 
-          className="w-full h-8 text-xs border-muted-foreground/30 hover:bg-muted hover:text-primary"
-          onClick={handleAssignClick}
-          size="sm"
-        >
-          <UserPlus className="h-3 w-3 mr-1" /> Assign
-        </Button>
+        <TooltipProvider>
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="default" 
+                  className="h-8 w-8 bg-primary hover:bg-primary/90 text-white p-0"
+                  onClick={handleWatchClick}
+                  size="sm"
+                >
+                  <Play className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Watch</TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleShareClick}
+                  aria-label="Share"
+                  className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary"
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Share</TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleBookmarkToggle}
+                  aria-label="Bookmark"
+                  className={`h-8 w-8 ${isBookmarked ? "border-primary bg-primary/10" : "border-muted-foreground/30"} hover:bg-muted hover:text-primary`}
+                >
+                  <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-primary text-primary" : ""}`} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Save</TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleAssignClick}
+                  className="h-8 w-8 border-muted-foreground/30 hover:bg-muted hover:text-primary ml-auto"
+                >
+                  <UserPlus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Assign</TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </div>
     </div>
   );

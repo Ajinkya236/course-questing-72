@@ -35,7 +35,7 @@ const CourseCard: React.FC<CourseProps> = ({
           alt={title}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.currentTarget.src = "https://placehold.co/600x400?text=Course";
+            e.currentTarget.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
           }}
         />
         <div className="absolute top-2 right-2 flex flex-col gap-1">
