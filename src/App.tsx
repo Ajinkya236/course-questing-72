@@ -15,6 +15,8 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Skills from './pages/Skills';
+import SkillDetail from './pages/SkillDetail';
 
 // Lazy load other components
 const Discover = lazy(() => import('./pages/Discover'));
@@ -33,9 +35,6 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RecommendedMentorsPage = lazy(() => import('./pages/RecommendedMentorsPage'));
 const ViewAllDomainsPage = lazy(() => import('./pages/ViewAllDomainsPage'));
 const DomainCoursesPage = lazy(() => import('./pages/DomainCoursesPage'));
-
-const Skills = lazy(() => import('./pages/Skills'));
-const SkillDetail = lazy(() => import('./pages/SkillDetail'));
 
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminCourses = lazy(() => import('./pages/admin/Courses'));
