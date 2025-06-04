@@ -1,87 +1,90 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Base light theme variables */
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    /* Updated color scheme based on reference images */
+    --background: 210 17% 98%;
+    --foreground: 220 13% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 220 13% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 220 13% 18%;
 
-    --primary: 214 100% 33%;
+    /* Primary blue from reference images */
+    --primary: 220 91% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 223 14% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 210 17% 95%;
+    --secondary-foreground: 220 13% 18%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8% 46%;
+    --muted: 210 17% 95%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 240 98% 58%;
+    --accent: 220 91% 48%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --jio: 214 100% 33%;
+    /* JIO branding colors */
+    --jio: 220 91% 48%;
     --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 240 100% 12%; /* Dark navy blue */
-    --jio-muted: 214 30% 85%;
+    --jio-light: 220 91% 60%;
+    --jio-dark: 220 91% 35%;
+    --jio-muted: 220 30% 85%;
 
-    --border: 220 14% 90%;
-    --input: 220 14% 90%;
-    --ring: 214 100% 33%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 91% 48%;
 
     --radius: 0.5rem;
     
-    /* Navigation specific colors */
-    --nav-bg: 214 100% 33%; /* Bright navy blue */
-    --nav-text-light: 220 13% 28%; /* Dark grey for light mode */
-    --nav-text-dark: 0 0% 100%; /* White for dark mode */
+    /* Navigation specific colors - bright blue from reference */
+    --nav-bg: 220 91% 48%;
+    --nav-text-light: 220 13% 28%;
+    --nav-text-dark: 0 0% 100%;
   }
 
-  /* Dark theme - updated with lighter dark grey */
+  /* Dark theme - refined based on reference */
   .dark {
-    --background: 240 30% 14%; /* Lighter dark background for body */
-    --foreground: 210 40% 98%;
+    --background: 220 13% 9%;
+    --foreground: 210 20% 98%;
 
-    --card: 240 30% 18%; /* Lighter card background */
-    --card-foreground: 210 40% 98%;
+    --card: 220 13% 12%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 240 30% 18%; /* Lighter popover background */
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 214 100% 33%;
+    --primary: 220 91% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 30% 20%; /* Lighter secondary */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 13% 15%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 240 30% 20%; /* Lighter muted */
-    --muted-foreground: 215 20.2% 75%; /* Lighter muted foreground */
+    --muted: 220 13% 15%;
+    --muted-foreground: 220 9% 70%;
 
-    --accent: 240 98% 65%; /* Lighter accent */
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 91% 60%;
+    --accent-foreground: 210 20% 98%;
 
-    --jio: 214 100% 33%;
+    --jio: 220 91% 48%;
     --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 214 100% 25%;
-    --jio-muted: 214 30% 25%;
+    --jio-light: 220 91% 60%;
+    --jio-dark: 220 91% 35%;
+    --jio-muted: 220 30% 25%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 30% 22%; /* Lighter border */
-    --input: 240 30% 22%; /* Lighter input */
-    --ring: 212.7 26.8% 83.9%;
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 220 91% 48%;
   }
 }
 
@@ -91,63 +94,107 @@
   }
 
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight text-gray-800 dark:text-gray-100;
-    font-weight: 400; /* Archivo Black only comes in 400 weight */
+    @apply font-sans font-semibold tracking-tight text-foreground;
+    line-height: 1.2;
   }
   
   h1 {
-    @apply text-xl md:text-2xl;
+    @apply text-2xl md:text-3xl lg:text-4xl;
   }
   
   h2 {
-    @apply text-lg md:text-xl;
+    @apply text-xl md:text-2xl lg:text-3xl;
   }
   
   h3 {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+
+  h4 {
     @apply text-base md:text-lg;
   }
 
   .skill-title {
-    @apply font-sans font-medium text-gray-800 dark:text-gray-100;
+    @apply font-sans font-medium text-foreground;
   }
   
   .course-title {
-    @apply font-sans font-bold text-gray-800 dark:text-gray-100;
+    @apply font-sans font-semibold text-foreground;
+  }
+
+  /* Body text styling */
+  p {
+    @apply text-foreground/90 leading-relaxed;
+  }
+
+  /* Link styling */
+  a {
+    @apply text-primary hover:text-primary/80 transition-colors;
   }
 }
 
 @layer components {
   .app-header {
-    @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
+    @apply sticky top-0 z-50 bg-background/95 backdrop-blur border-b;
   }
   
   /* Navigation specific styles */
   .top-navigation {
-    @apply w-full sticky top-0 z-10;
-    background-color: hsl(var(--nav-bg));
+    @apply w-full sticky top-0 z-10 border-b;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--jio-dark)) 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
   
   .nav-item {
-    @apply text-white dark:text-[hsl(var(--nav-text-dark))];
+    @apply text-white hover:text-white/90 transition-colors;
   }
 
+  /* Card styling based on reference */
   .glass-effect {
-    @apply backdrop-blur-md bg-white/80 dark:bg-black/50 border border-white/20 dark:border-gray-800/50;
+    @apply backdrop-blur-md bg-card/90 border border-border shadow-lg;
   }
   
   .card-glass {
-    @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300;
+    @apply bg-card backdrop-blur-lg border border-border hover:shadow-xl transition-all duration-300;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
   
+  /* Enhanced course card styling */
+  .course-card {
+    @apply bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  .course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Section headers styling */
+  .section-header {
+    @apply text-2xl font-semibold text-foreground mb-6;
+  }
+
+  /* Button enhancements */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-3 rounded-lg transition-all duration-200;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  /* Page transitions */
   .page-transition-enter {
     opacity: 0;
     transform: translateY(20px);
@@ -156,7 +203,7 @@
   .page-transition-enter-active {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 200ms, transform 200ms;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
   }
   
   .page-transition-exit {
@@ -167,14 +214,15 @@
   .page-transition-exit-active {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 200ms, transform 200ms;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
   }
 
+  /* Enhanced spotlight effect */
   .spotlight {
-    @apply pointer-events-none absolute inset-0 z-[-1] bg-primary/5 opacity-0;
+    @apply pointer-events-none absolute inset-0 z-[-1] opacity-0;
     background: radial-gradient(
       600px circle at var(--x) var(--y),
-      rgba(29, 78, 216, 0.15),
+      rgba(59, 130, 246, 0.15),
       transparent 40%
     );
   }
@@ -187,16 +235,18 @@
     @apply scale-105;
   }
   
+  /* Badge styling from reference */
   .badge-glow {
-    @apply shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-primary/50;
+    @apply shadow-sm transition-shadow duration-300 hover:shadow-md;
   }
   
   .shimmer {
-    @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
+    @apply bg-gradient-to-r from-transparent via-primary/20 to-transparent bg-[length:500px_100%] animate-shimmer;
   }
   
+  /* Layout containers */
   .card-container {
-    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+    @apply grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
   }
   
   .carousel-container {
@@ -212,24 +262,26 @@
   }
   
   .carousel-button {
-    @apply absolute top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full bg-opacity-50 hover:bg-opacity-75 transition-colors duration-200;
+    @apply absolute top-1/2 transform -translate-y-1/2 bg-primary/90 text-primary-foreground p-3 rounded-full hover:bg-primary transition-all duration-200;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .carousel-button.prev {
-    @apply left-2;
+    @apply left-4;
   }
   
   .carousel-button.next {
-    @apply right-2;
+    @apply right-4;
   }
   
+  /* Scrollbar styling */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
   
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -237,8 +289,17 @@
   }
   
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Professional content sections */
+  .content-section {
+    @apply bg-card rounded-xl border border-border p-8 shadow-sm;
+  }
+
+  .stats-card {
+    @apply bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-6;
   }
 }
 
@@ -247,6 +308,7 @@
     text-wrap: balance;
   }
   
+  /* JIO gradient utilities */
   .jio-gradient {
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light;
   }
@@ -255,14 +317,20 @@
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light bg-clip-text text-transparent;
   }
   
+  .primary-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+  
+  /* Progress and interactive elements */
   .progress-circle {
     @apply relative inline-flex items-center justify-center;
   }
   
   .progress-circle-label {
-    @apply absolute text-sm font-bold text-gray-700 dark:text-gray-300;
+    @apply absolute text-sm font-semibold text-foreground;
   }
   
+  /* Card effects */
   .card-partial-visible {
     @apply relative overflow-hidden;
   }
@@ -274,43 +342,84 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 80%, white 100%);
+    background: linear-gradient(to bottom, transparent 0%, hsl(var(--background))/80 80%, hsl(var(--background)) 100%);
     pointer-events: none;
   }
   
+  /* Focus and accessibility */
   .focus-visible-ring {
-    @apply ring-2 ring-offset-2 ring-primary focus-visible:outline-none focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
   
+  /* Loading states */
   .image-loading {
-    @apply animate-pulse bg-gray-200 dark:bg-gray-700;
+    @apply animate-pulse bg-muted;
   }
   
-  /* Add new styles for proficiency selection */
+  /* Professional proficiency selection */
   .proficiency-bubble {
-    @apply px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium cursor-pointer;
+    @apply px-6 py-3 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer border;
   }
   
   .proficiency-bubble.selected {
-    @apply bg-primary text-white dark:bg-white dark:text-gray-800;
+    @apply bg-primary text-primary-foreground border-primary shadow-md;
   }
   
   .proficiency-bubble:not(.selected) {
-    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+    @apply bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/30 hover:text-foreground;
+  }
+
+  /* Typography utilities */
+  .heading-primary {
+    @apply text-3xl font-bold text-foreground tracking-tight;
+  }
+
+  .heading-secondary {
+    @apply text-xl font-semibold text-foreground;
+  }
+
+  .text-subtitle {
+    @apply text-muted-foreground text-base;
+  }
+
+  .text-caption {
+    @apply text-sm text-muted-foreground;
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Inter font import for clean, professional typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Title style for Archivo Black font */
-.font-archivo-black {
-  font-family: 'Archivo Black', sans-serif;
-}
-
-/* Modern sans-serif font for course titles */
+/* Professional course title styling */
 .course-title {
   font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  color: #333333;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Enhanced section styling for better visual hierarchy */
+.section-divider {
+  @apply border-t border-border/60 my-12;
+}
+
+/* Professional card hover effects */
+.professional-card {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Status indicators */
+.status-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-success {
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.status-warning {
+  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
+}
+
+.status-info {
+  @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
 }
