@@ -1,90 +1,87 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Updated color scheme based on reference images */
-    --background: 248 250 252;
-    --foreground: 15 23 42;
+    /* Base light theme variables */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 255 255 255;
-    --card-foreground: 15 23 42;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 255 255 255;
-    --popover-foreground: 15 23 42;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Primary blue from reference images - Deep blue #4A90E2 */
-    --primary: 212 85 73;
-    --primary-foreground: 255 255 255;
+    --primary: 214 100% 33%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 248 250 252;
-    --secondary-foreground: 15 23 42;
+    --secondary: 223 14% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 241 245 249;
-    --muted-foreground: 100 116 139;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8% 46%;
 
-    --accent: 212 85 73;
-    --accent-foreground: 255 255 255;
+    --accent: 240 98% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    /* JIO branding colors */
-    --jio: 212 85 73;
-    --jio-foreground: 255 255 255;
-    --jio-light: 219 89 75;
-    --jio-dark: 185 74 64;
-    --jio-muted: 226 232 240;
+    --jio: 214 100% 33%;
+    --jio-foreground: 0 0% 100%;
+    --jio-light: 214 100% 45%;
+    --jio-dark: 240 100% 12%; /* Dark navy blue */
+    --jio-muted: 214 30% 85%;
 
-    --border: 226 232 240;
-    --input: 226 232 240;
-    --ring: 212 85 73;
+    --border: 220 14% 90%;
+    --input: 220 14% 90%;
+    --ring: 214 100% 33%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
-    /* Orange accent for notifications and badges */
-    --orange-accent: 251 146 60;
-    --green-accent: 34 197 94;
-    --light-blue-accent: 56 189 248;
+    /* Navigation specific colors */
+    --nav-bg: 214 100% 33%; /* Bright navy blue */
+    --nav-text-light: 220 13% 28%; /* Dark grey for light mode */
+    --nav-text-dark: 0 0% 100%; /* White for dark mode */
   }
 
-  /* Dark theme - refined based on reference */
+  /* Dark theme - updated with lighter dark grey */
   .dark {
-    --background: 2 6 23;
-    --foreground: 248 250 252;
+    --background: 240 30% 14%; /* Lighter dark background for body */
+    --foreground: 210 40% 98%;
 
-    --card: 15 23 42;
-    --card-foreground: 248 250 252;
+    --card: 240 30% 18%; /* Lighter card background */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 15 23 42;
-    --popover-foreground: 248 250 252;
+    --popover: 240 30% 18%; /* Lighter popover background */
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 212 85 73;
-    --primary-foreground: 255 255 255;
+    --primary: 214 100% 33%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 41 59;
-    --secondary-foreground: 248 250 252;
+    --secondary: 240 30% 20%; /* Lighter secondary */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 30 41 59;
-    --muted-foreground: 148 163 184;
+    --muted: 240 30% 20%; /* Lighter muted */
+    --muted-foreground: 215 20.2% 75%; /* Lighter muted foreground */
 
-    --accent: 219 89 75;
-    --accent-foreground: 248 250 252;
+    --accent: 240 98% 65%; /* Lighter accent */
+    --accent-foreground: 210 40% 98%;
 
-    --jio: 212 85 73;
-    --jio-foreground: 255 255 255;
-    --jio-light: 219 89 75;
-    --jio-dark: 185 74 64;
-    --jio-muted: 51 65 85;
+    --jio: 214 100% 33%;
+    --jio-foreground: 0 0% 100%;
+    --jio-light: 214 100% 45%;
+    --jio-dark: 214 100% 25%;
+    --jio-muted: 214 30% 25%;
 
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 51 65 85;
-    --input: 51 65 85;
-    --ring: 212 85 73;
+    --border: 240 30% 22%; /* Lighter border */
+    --input: 240 30% 22%; /* Lighter input */
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -94,149 +91,154 @@
   }
 
   html {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold tracking-tight text-foreground;
-    line-height: 1.2;
+    @apply font-heading tracking-tight text-gray-800 dark:text-gray-100;
+    font-weight: 400; /* Archivo Black only comes in 400 weight */
   }
   
   h1 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-xl md:text-2xl;
   }
   
   h2 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
+    @apply text-lg md:text-xl;
   }
   
   h3 {
-    @apply text-xl md:text-2xl lg:text-3xl;
-  }
-
-  h4 {
-    @apply text-lg md:text-xl;
+    @apply text-base md:text-lg;
   }
 
   .skill-title {
-    @apply font-sans font-semibold text-foreground;
+    @apply font-sans font-medium text-gray-800 dark:text-gray-100;
   }
   
   .course-title {
-    @apply font-sans font-bold text-foreground;
-  }
-
-  /* Body text styling */
-  p {
-    @apply text-foreground leading-relaxed;
-  }
-
-  /* Link styling */
-  a {
-    @apply text-primary hover:text-primary/80 transition-colors;
+    @apply font-sans font-bold text-gray-800 dark:text-gray-100;
   }
 }
 
 @layer components {
   .app-header {
-    @apply sticky top-0 z-50 bg-background/95 backdrop-blur border-b;
+    @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
   }
   
   /* Navigation specific styles */
   .top-navigation {
-    @apply w-full sticky top-0 z-10 border-b;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--jio-dark)) 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    @apply w-full sticky top-0 z-10;
+    background-color: hsl(var(--nav-bg));
   }
   
   .nav-item {
-    @apply text-white hover:text-white/90 transition-colors font-medium;
+    @apply text-white dark:text-[hsl(var(--nav-text-dark))];
   }
 
-  /* Card styling based on reference */
   .glass-effect {
-    @apply backdrop-blur-md bg-card/95 border border-border shadow-lg;
+    @apply backdrop-blur-md bg-white/80 dark:bg-black/50 border border-white/20 dark:border-gray-800/50;
   }
   
   .card-glass {
-    @apply bg-card backdrop-blur-lg border border-border hover:shadow-xl transition-all duration-300 rounded-xl;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300;
   }
   
-  /* Enhanced course card styling */
-  .course-card {
-    @apply bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-all duration-300;
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms, transform 200ms;
+  }
+  
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 200ms, transform 200ms;
   }
 
-  .course-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  .spotlight {
+    @apply pointer-events-none absolute inset-0 z-[-1] bg-primary/5 opacity-0;
+    background: radial-gradient(
+      600px circle at var(--x) var(--y),
+      rgba(29, 78, 216, 0.15),
+      transparent 40%
+    );
   }
-
-  /* Section headers styling */
-  .section-header {
-    @apply text-2xl font-bold text-foreground mb-8;
+  
+  .hover-scale {
+    @apply transition-transform duration-200 ease-in-out;
   }
-
-  /* Button enhancements */
-  .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl transition-all duration-300;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+  
+  .hover-scale:hover {
+    @apply scale-105;
   }
-
-  .btn-primary:hover {
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
-    transform: translateY(-2px);
+  
+  .badge-glow {
+    @apply shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-primary/50;
   }
-
-  /* Professional content sections */
-  .content-section {
-    @apply bg-card rounded-xl border border-border p-8 shadow-sm;
+  
+  .shimmer {
+    @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
   }
-
-  .stats-card {
-    @apply bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8;
-  }
-
-  /* Modern card containers */
+  
   .card-container {
-    @apply grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
-  }
-
-  /* Enhanced proficiency selection */
-  .proficiency-bubble {
-    @apply px-6 py-3 rounded-full transition-all duration-300 text-sm font-semibold cursor-pointer border-2;
+    @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
   }
   
-  .proficiency-bubble.selected {
-    @apply bg-slate-200 text-slate-700 border-slate-300 shadow-md;
+  .carousel-container {
+    @apply relative overflow-hidden;
   }
   
-  .proficiency-bubble:not(.selected) {
-    @apply bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/30 hover:text-foreground;
+  .carousel-track {
+    @apply flex transition-transform duration-300 ease-out;
+  }
+  
+  .carousel-item {
+    @apply flex-shrink-0 w-full;
+  }
+  
+  .carousel-button {
+    @apply absolute top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full bg-opacity-50 hover:bg-opacity-75 transition-colors duration-200;
+  }
+  
+  .carousel-button.prev {
+    @apply left-2;
+  }
+  
+  .carousel-button.next {
+    @apply right-2;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 
-  /* Status indicators with modern styling */
-  .status-badge {
-    @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold;
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
-
-  .status-success {
-    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
-  }
-
-  .status-warning {
-    @apply bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400;
-  }
-
-  .status-info {
-    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }
 
@@ -245,7 +247,6 @@
     text-wrap: balance;
   }
   
-  /* JIO gradient utilities */
   .jio-gradient {
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light;
   }
@@ -254,58 +255,62 @@
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light bg-clip-text text-transparent;
   }
   
-  .primary-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  .progress-circle {
+    @apply relative inline-flex items-center justify-center;
   }
-
-  /* Typography utilities */
-  .heading-primary {
-    @apply text-4xl font-bold text-foreground tracking-tight;
+  
+  .progress-circle-label {
+    @apply absolute text-sm font-bold text-gray-700 dark:text-gray-300;
   }
-
-  .heading-secondary {
-    @apply text-2xl font-bold text-foreground;
+  
+  .card-partial-visible {
+    @apply relative overflow-hidden;
   }
-
-  .text-subtitle {
-    @apply text-muted-foreground text-lg;
+  
+  .card-partial-visible::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 80%, white 100%);
+    pointer-events: none;
   }
-
-  .text-caption {
-    @apply text-sm text-muted-foreground;
-  }
-
-  /* Modern spacing and layout */
-  .section-spacing {
-    @apply py-12 px-6;
-  }
-
-  .card-spacing {
-    @apply p-8;
-  }
-
-  /* Enhanced focus states */
+  
   .focus-visible-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+    @apply ring-2 ring-offset-2 ring-primary focus-visible:outline-none focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400;
+  }
+  
+  .image-loading {
+    @apply animate-pulse bg-gray-200 dark:bg-gray-700;
+  }
+  
+  /* Add new styles for proficiency selection */
+  .proficiency-bubble {
+    @apply px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium cursor-pointer;
+  }
+  
+  .proficiency-bubble.selected {
+    @apply bg-primary text-white dark:bg-white dark:text-gray-800;
+  }
+  
+  .proficiency-bubble:not(.selected) {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
   }
 }
 
-/* Inter font import for clean, professional typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Professional course title styling */
+/* Title style for Archivo Black font */
+.font-archivo-black {
+  font-family: 'Archivo Black', sans-serif;
+}
+
+/* Modern sans-serif font for course titles */
 .course-title {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-/* Enhanced section styling for better visual hierarchy */
-.section-divider {
-  @apply border-t border-border/60 my-16;
-}
-
-/* Professional card hover effects */
-.professional-card {
-  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+  color: #333333;
 }

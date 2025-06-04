@@ -11,12 +11,12 @@ const PointsOverview: React.FC<PointsOverviewProps> = ({
   onRedeemPoints
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Main Stats Card */}
       <MainStatsCard data={data} />
       
       {/* Secondary Stats Cards */}
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
         {/* Streak Card */}
         <StreakCard streakDays={data.streakDays} onViewDetails={onViewStreakDetails} />
         

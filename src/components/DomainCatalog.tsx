@@ -37,14 +37,14 @@ const DomainCatalog: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex justify-between items-center group">
-        <h2 className="heading-secondary">Domain Catalog</h2>
+        <h2 className="text-xl font-semibold">Domain Catalog</h2>
         <div className="flex items-center">
           <Button 
             variant="link" 
             size="sm" 
-            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-semibold" 
+            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
             onClick={() => navigate('/view-all/domains')}
           >
             View All
@@ -56,16 +56,16 @@ const DomainCatalog: React.FC = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {domains.map((domain) => (
           <Card 
             key={domain.id} 
-            className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 professional-card"
+            className="overflow-hidden cursor-pointer hover:shadow-md transition-all"
             onClick={() => handleDomainClick(domain.id)}
           >
-            <CardContent className="p-6 flex flex-col items-center text-center">
-              <div className="text-4xl mb-3">{domain.icon}</div>
-              <h3 className="font-bold text-sm mb-1">{domain.name}</h3>
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <div className="text-3xl mb-2">{domain.icon}</div>
+              <h3 className="font-medium text-sm">{domain.name}</h3>
               <p className="text-xs text-muted-foreground">{domain.courseCount} courses</p>
             </CardContent>
           </Card>
