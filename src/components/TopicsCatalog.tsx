@@ -37,10 +37,10 @@ const TopicsCatalog: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="content-spacing">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Topics Catalog</h2>
-        <Button variant="link" size="sm" className="gap-1" onClick={() => navigate('/view-all/topics')}>
+        <Button variant="link" size="sm" className="gap-1 text-primary hover:text-primary/80" onClick={() => navigate('/view-all/topics')}>
           View All
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -50,12 +50,12 @@ const TopicsCatalog: React.FC = () => {
         {topics.map((topic) => (
           <Card 
             key={topic.id} 
-            className="overflow-hidden cursor-pointer hover:shadow-md transition-all"
+            className="modern-card hover:shadow-modern-lg cursor-pointer group"
             onClick={() => handleTopicClick(topic.id)}
           >
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="text-3xl mb-2">{topic.icon}</div>
-              <h3 className="font-medium text-sm">{topic.name}</h3>
+            <CardContent className="p-5 flex flex-col items-center text-center">
+              <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-200">{topic.icon}</div>
+              <h3 className="font-medium text-sm mb-1">{topic.name}</h3>
               <p className="text-xs text-muted-foreground">{topic.courseCount} courses</p>
             </CardContent>
           </Card>

@@ -21,8 +21,8 @@ const H5PPlayer: React.FC<H5PPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   
   return (
-    <Card className="overflow-hidden">
-      <div className="relative aspect-video bg-black">
+    <Card className="modern-card overflow-hidden">
+      <div className="relative aspect-video bg-gray-900">
         {!isPlaying ? (
           <>
             <img 
@@ -41,7 +41,7 @@ const H5PPlayer: React.FC<H5PPlayerProps> = ({
               </Button>
               {earnablePoints && (
                 <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-4 py-2">
-                  <Award className="h-5 w-5 text-yellow-400" />
+                  <Award className="h-5 w-5 text-accent" />
                   <span className="font-medium">Earn {earnablePoints} points</span>
                 </div>
               )}
@@ -92,7 +92,7 @@ const H5PPlayer: React.FC<H5PPlayerProps> = ({
               >
                 {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </Button>
-              <div className="text-sm text-white/80">01:24 / 15:30</div>
+              <div className="text-sm text-white/80 ml-2">01:24 / 15:30</div>
             </div>
             <Button 
               variant="ghost" 
@@ -104,14 +104,14 @@ const H5PPlayer: React.FC<H5PPlayerProps> = ({
           </div>
           
           {/* Progress Bar */}
-          <div className="mt-2 w-full h-1 bg-white/30 rounded-full overflow-hidden">
-            <div className="bg-primary h-full rounded-full" style={{ width: "15%" }}></div>
+          <div className="mt-3 w-full h-1 bg-white/30 rounded-full overflow-hidden">
+            <div className="bg-primary h-full rounded-full transition-all duration-300" style={{ width: "15%" }}></div>
           </div>
         </div>
       </div>
-      <CardContent className="p-4">
-        <h3 className="text-xl font-semibold">{title}</h3>
-        {description && <p className="text-muted-foreground text-sm mt-1">{description}</p>}
+      <CardContent className="p-5">
+        <h3 className="text-lg font-semibold mb-2">{title}</h3>
+        {description && <p className="text-muted-foreground text-sm">{description}</p>}
       </CardContent>
     </Card>
   );

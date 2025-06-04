@@ -1,87 +1,92 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Base light theme variables */
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    /* Updated color scheme based on the provided images */
+    --background: 0 0% 100%;
+    --foreground: 222 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 222 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 222 84% 4.9%;
 
-    --primary: 214 100% 33%;
-    --primary-foreground: 0 0% 100%;
+    /* Deep blue primary color from the images */
+    --primary: 214 100% 50%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 223 14% 96%;
+    /* Light gray for secondary elements */
+    --secondary: 210 20% 98%;
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8% 46%;
+    --muted: 210 20% 98%;
+    --muted-foreground: 215 13% 45%;
 
-    --accent: 240 98% 58%;
-    --accent-foreground: 0 0% 100%;
+    /* Orange accent color for badges and notifications */
+    --accent: 25 95% 53%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --jio: 214 100% 33%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 240 100% 12%; /* Dark navy blue */
+    /* Jio brand colors aligned with the design */
+    --jio: 214 100% 50%;
+    --jio-foreground: 210 40% 98%;
+    --jio-light: 214 85% 65%;
+    --jio-dark: 214 100% 35%;
     --jio-muted: 214 30% 85%;
 
-    --border: 220 14% 90%;
-    --input: 220 14% 90%;
-    --ring: 214 100% 33%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
-    /* Navigation specific colors */
-    --nav-bg: 214 100% 33%; /* Bright navy blue */
-    --nav-text-light: 220 13% 28%; /* Dark grey for light mode */
-    --nav-text-dark: 0 0% 100%; /* White for dark mode */
+    /* Navigation specific colors matching the deep blue header */
+    --nav-bg: 214 100% 35%;
+    --nav-text-light: 220 13% 28%;
+    --nav-text-dark: 210 40% 98%;
   }
 
-  /* Dark theme - updated with lighter dark grey */
+  /* Dark theme with lighter backgrounds */
   .dark {
-    --background: 240 30% 14%; /* Lighter dark background for body */
+    --background: 222 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 240 30% 18%; /* Lighter card background */
+    --card: 222 84% 8%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 240 30% 18%; /* Lighter popover background */
+    --popover: 222 84% 8%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 214 100% 33%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 214 100% 50%;
+    --primary-foreground: 222 84% 4.9%;
 
-    --secondary: 240 30% 20%; /* Lighter secondary */
+    --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 30% 20%; /* Lighter muted */
-    --muted-foreground: 215 20.2% 75%; /* Lighter muted foreground */
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20.2% 65%;
 
-    --accent: 240 98% 65%; /* Lighter accent */
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 222 84% 4.9%;
 
-    --jio: 214 100% 33%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 214 100% 45%;
-    --jio-dark: 214 100% 25%;
+    --jio: 214 100% 50%;
+    --jio-foreground: 210 40% 98%;
+    --jio-light: 214 85% 65%;
+    --jio-dark: 214 100% 35%;
     --jio-muted: 214 30% 25%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 30% 22%; /* Lighter border */
-    --input: 240 30% 22%; /* Lighter input */
-    --ring: 212.7 26.8% 83.9%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 214 100% 50%;
   }
 }
 
@@ -91,37 +96,48 @@
   }
 
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
   }
   
+  /* Typography hierarchy matching the images */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight text-gray-800 dark:text-gray-100;
-    font-weight: 400; /* Archivo Black only comes in 400 weight */
+    @apply font-semibold tracking-tight text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   
   h1 {
-    @apply text-xl md:text-2xl;
+    @apply text-2xl md:text-3xl font-bold;
   }
   
   h2 {
-    @apply text-lg md:text-xl;
+    @apply text-xl md:text-2xl font-semibold;
   }
   
   h3 {
-    @apply text-base md:text-lg;
+    @apply text-lg md:text-xl font-semibold;
+  }
+
+  h4 {
+    @apply text-base md:text-lg font-medium;
+  }
+
+  /* Professional body text */
+  p, span, div {
+    @apply text-sm md:text-base leading-relaxed;
   }
 
   .skill-title {
-    @apply font-sans font-medium text-gray-800 dark:text-gray-100;
+    @apply font-medium text-foreground;
   }
   
   .course-title {
-    @apply font-sans font-bold text-gray-800 dark:text-gray-100;
+    @apply font-semibold text-foreground;
   }
 }
 
@@ -130,115 +146,60 @@
     @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
   }
   
-  /* Navigation specific styles */
+  /* Navigation with deep blue background from images */
   .top-navigation {
-    @apply w-full sticky top-0 z-10;
-    background-color: hsl(var(--nav-bg));
+    @apply w-full sticky top-0 z-10 shadow-sm;
+    background-color: hsl(var(--jio-dark));
   }
   
   .nav-item {
-    @apply text-white dark:text-[hsl(var(--nav-text-dark))];
+    @apply text-white hover:text-blue-100 transition-colors;
   }
 
-  .glass-effect {
-    @apply backdrop-blur-md bg-white/80 dark:bg-black/50 border border-white/20 dark:border-gray-800/50;
-  }
-  
-  .card-glass {
-    @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300;
-  }
-  
-  .page-transition-enter {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  
-  .page-transition-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 200ms, transform 200ms;
-  }
-  
-  .page-transition-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  .page-transition-exit-active {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 200ms, transform 200ms;
+  /* Card styling matching the images */
+  .modern-card {
+    @apply bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
   }
 
-  .spotlight {
-    @apply pointer-events-none absolute inset-0 z-[-1] bg-primary/5 opacity-0;
-    background: radial-gradient(
-      600px circle at var(--x) var(--y),
-      rgba(29, 78, 216, 0.15),
-      transparent 40%
-    );
+  .content-section {
+    @apply bg-background p-6 rounded-xl border border-border;
   }
-  
-  .hover-scale {
-    @apply transition-transform duration-200 ease-in-out;
+
+  /* Professional button styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 font-medium transition-colors;
   }
-  
-  .hover-scale:hover {
-    @apply scale-105;
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-lg px-4 py-2 font-medium transition-colors;
   }
-  
-  .badge-glow {
-    @apply shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-primary/50;
+
+  /* Orange accent badges from the images */
+  .accent-badge {
+    @apply bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium;
   }
-  
-  .shimmer {
-    @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
-  }
-  
-  .card-container {
+
+  /* Grid layouts matching the card-based design */
+  .card-grid {
     @apply grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
   }
-  
-  .carousel-container {
-    @apply relative overflow-hidden;
-  }
-  
-  .carousel-track {
-    @apply flex transition-transform duration-300 ease-out;
-  }
-  
-  .carousel-item {
-    @apply flex-shrink-0 w-full;
-  }
-  
-  .carousel-button {
-    @apply absolute top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full bg-opacity-50 hover:bg-opacity-75 transition-colors duration-200;
-  }
-  
-  .carousel-button.prev {
-    @apply left-2;
-  }
-  
-  .carousel-button.next {
-    @apply right-2;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+  .course-grid {
+    @apply grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* Search and input styling */
+  .search-input {
+    @apply bg-background border border-input rounded-lg px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring;
   }
-  
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+  /* Progress indicators */
+  .progress-bar {
+    @apply bg-secondary rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply bg-primary h-full transition-all duration-300;
   }
 }
 
@@ -247,6 +208,7 @@
     text-wrap: balance;
   }
   
+  /* Gradient utilities matching the brand colors */
   .jio-gradient {
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light;
   }
@@ -254,63 +216,21 @@
   .jio-text-gradient {
     @apply bg-gradient-to-r from-jio-dark via-jio to-jio-light bg-clip-text text-transparent;
   }
-  
-  .progress-circle {
-    @apply relative inline-flex items-center justify-center;
+
+  /* Spacing utilities for consistent layout */
+  .section-spacing {
+    @apply py-8 md:py-12;
   }
-  
-  .progress-circle-label {
-    @apply absolute text-sm font-bold text-gray-700 dark:text-gray-300;
+
+  .content-spacing {
+    @apply space-y-6;
   }
-  
-  .card-partial-visible {
-    @apply relative overflow-hidden;
-  }
-  
-  .card-partial-visible::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 80%, white 100%);
-    pointer-events: none;
-  }
-  
-  .focus-visible-ring {
-    @apply ring-2 ring-offset-2 ring-primary focus-visible:outline-none focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400;
-  }
-  
-  .image-loading {
-    @apply animate-pulse bg-gray-200 dark:bg-gray-700;
-  }
-  
-  /* Add new styles for proficiency selection */
-  .proficiency-bubble {
-    @apply px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium cursor-pointer;
-  }
-  
-  .proficiency-bubble.selected {
-    @apply bg-primary text-white dark:bg-white dark:text-gray-800;
-  }
-  
-  .proficiency-bubble:not(.selected) {
-    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+
+  /* Focus states */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+/* Import Inter font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-/* Title style for Archivo Black font */
-.font-archivo-black {
-  font-family: 'Archivo Black', sans-serif;
-}
-
-/* Modern sans-serif font for course titles */
-.course-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  color: #333333;
-}

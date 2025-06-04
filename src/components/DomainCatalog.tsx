@@ -37,20 +37,20 @@ const DomainCatalog: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center group">
+    <div className="content-spacing">
+      <div className="flex justify-between items-center group mb-6">
         <h2 className="text-xl font-semibold">Domain Catalog</h2>
         <div className="flex items-center">
           <Button 
             variant="link" 
             size="sm" 
-            className="gap-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+            className="gap-1 text-primary hover:text-primary/80 opacity-0 group-hover:opacity-100 transition-opacity" 
             onClick={() => navigate('/view-all/domains')}
           >
             View All
           </Button>
           <ChevronRight 
-            className="h-4 w-4 cursor-pointer" 
+            className="h-4 w-4 cursor-pointer text-primary hover:text-primary/80" 
             onClick={() => navigate('/view-all/domains')}
           />
         </div>
@@ -60,12 +60,12 @@ const DomainCatalog: React.FC = () => {
         {domains.map((domain) => (
           <Card 
             key={domain.id} 
-            className="overflow-hidden cursor-pointer hover:shadow-md transition-all"
+            className="modern-card hover:shadow-modern-lg cursor-pointer group"
             onClick={() => handleDomainClick(domain.id)}
           >
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="text-3xl mb-2">{domain.icon}</div>
-              <h3 className="font-medium text-sm">{domain.name}</h3>
+            <CardContent className="p-5 flex flex-col items-center text-center">
+              <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-200">{domain.icon}</div>
+              <h3 className="font-medium text-sm mb-1">{domain.name}</h3>
               <p className="text-xs text-muted-foreground">{domain.courseCount} courses</p>
             </CardContent>
           </Card>

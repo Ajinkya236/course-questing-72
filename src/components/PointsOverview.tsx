@@ -13,10 +13,12 @@ const PointsOverview: React.FC<PointsOverviewProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Main Stats Card */}
-      <MainStatsCard data={data} />
+      <div className="md:col-span-1">
+        <MainStatsCard data={data} />
+      </div>
       
       {/* Secondary Stats Cards */}
-      <div className="flex flex-col gap-6">
+      <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* Streak Card */}
         <StreakCard streakDays={data.streakDays} onViewDetails={onViewStreakDetails} />
         

@@ -28,29 +28,29 @@ const MyRewardsBadges: React.FC = () => {
   const renderIcon = (iconType: string) => {
     switch(iconType) {
       case 'award':
-        return <Award className="h-5 w-5" />;
+        return <Award className="h-4 w-4" />;
       case 'medal':
-        return <Medal className="h-5 w-5" />;
+        return <Medal className="h-4 w-4" />;
       case 'trophy':
-        return <Trophy className="h-5 w-5" />;
+        return <Trophy className="h-4 w-4" />;
       case 'star':
       default:
-        return <Star className="h-5 w-5" />;
+        return <Star className="h-4 w-4" />;
     }
   };
   
   return (
-    <div className="p-4 border rounded-xl">
-      <div className="flex items-center justify-between mb-4">
+    <div className="modern-card p-5">
+      <div className="flex items-center justify-between mb-5">
         <h3 className="font-semibold">My Rewards</h3>
-        <Badge variant="outline" className="bg-primary/10 text-primary">
+        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
           {earnedBadges.length}/{totalBadges} Badges
         </Badge>
       </div>
       
       <div className="flex flex-wrap gap-2">
         {earnedBadges.slice(0, 3).map(badge => (
-          <div key={badge.id} className="flex items-center gap-1 p-1 rounded-md bg-primary/5 border">
+          <div key={badge.id} className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10">
             <div className="text-primary">
               {renderIcon(badge.icon)}
             </div>
@@ -59,7 +59,7 @@ const MyRewardsBadges: React.FC = () => {
         ))}
         
         {earnedBadges.length > 3 && (
-          <div className="p-1 rounded-md bg-primary/5 border">
+          <div className="p-2 rounded-lg bg-primary/5 border border-primary/10">
             <span className="text-xs font-medium">+{earnedBadges.length - 3} more</span>
           </div>
         )}
