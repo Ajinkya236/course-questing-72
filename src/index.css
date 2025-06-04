@@ -6,85 +6,85 @@
 @layer base {
   :root {
     /* Updated color scheme based on reference images */
-    --background: 210 17% 98%;
-    --foreground: 220 13% 18%;
+    --background: 248 250 252;
+    --foreground: 15 23 42;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
 
-    /* Primary blue from reference images */
-    --primary: 220 91% 48%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary blue from reference images - Deep blue #4A90E2 */
+    --primary: 212 85 73;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 210 17% 95%;
-    --secondary-foreground: 220 13% 18%;
+    --secondary: 248 250 252;
+    --secondary-foreground: 15 23 42;
 
-    --muted: 210 17% 95%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
 
-    --accent: 220 91% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 212 85 73;
+    --accent-foreground: 255 255 255;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
 
     /* JIO branding colors */
-    --jio: 220 91% 48%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 220 91% 60%;
-    --jio-dark: 220 91% 35%;
-    --jio-muted: 220 30% 85%;
+    --jio: 212 85 73;
+    --jio-foreground: 255 255 255;
+    --jio-light: 219 89 75;
+    --jio-dark: 185 74 64;
+    --jio-muted: 226 232 240;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 220 91% 48%;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 212 85 73;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
-    /* Navigation specific colors - bright blue from reference */
-    --nav-bg: 220 91% 48%;
-    --nav-text-light: 220 13% 28%;
-    --nav-text-dark: 0 0% 100%;
+    /* Orange accent for notifications and badges */
+    --orange-accent: 251 146 60;
+    --green-accent: 34 197 94;
+    --light-blue-accent: 56 189 248;
   }
 
   /* Dark theme - refined based on reference */
   .dark {
-    --background: 220 13% 9%;
-    --foreground: 210 20% 98%;
+    --background: 2 6 23;
+    --foreground: 248 250 252;
 
-    --card: 220 13% 12%;
-    --card-foreground: 210 20% 98%;
+    --card: 15 23 42;
+    --card-foreground: 248 250 252;
 
-    --popover: 220 13% 12%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 15 23 42;
+    --popover-foreground: 248 250 252;
 
-    --primary: 220 91% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 212 85 73;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 30 41 59;
+    --secondary-foreground: 248 250 252;
 
-    --muted: 220 13% 15%;
-    --muted-foreground: 220 9% 70%;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
 
-    --accent: 220 91% 60%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 219 89 75;
+    --accent-foreground: 248 250 252;
 
-    --jio: 220 91% 48%;
-    --jio-foreground: 0 0% 100%;
-    --jio-light: 220 91% 60%;
-    --jio-dark: 220 91% 35%;
-    --jio-muted: 220 30% 25%;
+    --jio: 212 85 73;
+    --jio-foreground: 255 255 255;
+    --jio-light: 219 89 75;
+    --jio-dark: 185 74 64;
+    --jio-muted: 51 65 85;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
 
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
-    --ring: 220 91% 48%;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 212 85 73;
   }
 }
 
@@ -94,7 +94,7 @@
   }
 
   html {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   }
 
   body {
@@ -104,37 +104,37 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-semibold tracking-tight text-foreground;
+    @apply font-sans font-bold tracking-tight text-foreground;
     line-height: 1.2;
   }
   
   h1 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
+    @apply text-3xl md:text-4xl lg:text-5xl;
   }
   
   h2 {
-    @apply text-xl md:text-2xl lg:text-3xl;
+    @apply text-2xl md:text-3xl lg:text-4xl;
   }
   
   h3 {
-    @apply text-lg md:text-xl lg:text-2xl;
+    @apply text-xl md:text-2xl lg:text-3xl;
   }
 
   h4 {
-    @apply text-base md:text-lg;
+    @apply text-lg md:text-xl;
   }
 
   .skill-title {
-    @apply font-sans font-medium text-foreground;
+    @apply font-sans font-semibold text-foreground;
   }
   
   .course-title {
-    @apply font-sans font-semibold text-foreground;
+    @apply font-sans font-bold text-foreground;
   }
 
   /* Body text styling */
   p {
-    @apply text-foreground/90 leading-relaxed;
+    @apply text-foreground leading-relaxed;
   }
 
   /* Link styling */
@@ -152,145 +152,47 @@
   .top-navigation {
     @apply w-full sticky top-0 z-10 border-b;
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--jio-dark)) 100%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   }
   
   .nav-item {
-    @apply text-white hover:text-white/90 transition-colors;
+    @apply text-white hover:text-white/90 transition-colors font-medium;
   }
 
   /* Card styling based on reference */
   .glass-effect {
-    @apply backdrop-blur-md bg-card/90 border border-border shadow-lg;
+    @apply backdrop-blur-md bg-card/95 border border-border shadow-lg;
   }
   
   .card-glass {
-    @apply bg-card backdrop-blur-lg border border-border hover:shadow-xl transition-all duration-300;
+    @apply bg-card backdrop-blur-lg border border-border hover:shadow-xl transition-all duration-300 rounded-xl;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
   
   /* Enhanced course card styling */
   .course-card {
-    @apply bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-all duration-200;
+    @apply bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-all duration-300;
   }
 
   .course-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
   }
 
   /* Section headers styling */
   .section-header {
-    @apply text-2xl font-semibold text-foreground mb-6;
+    @apply text-2xl font-bold text-foreground mb-8;
   }
 
   /* Button enhancements */
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-3 rounded-lg transition-all duration-200;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl transition-all duration-300;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
   }
 
   .btn-primary:hover {
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  }
-
-  /* Page transitions */
-  .page-transition-enter {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  
-  .page-transition-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 300ms ease-out, transform 300ms ease-out;
-  }
-  
-  .page-transition-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  .page-transition-exit-active {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 300ms ease-out, transform 300ms ease-out;
-  }
-
-  /* Enhanced spotlight effect */
-  .spotlight {
-    @apply pointer-events-none absolute inset-0 z-[-1] opacity-0;
-    background: radial-gradient(
-      600px circle at var(--x) var(--y),
-      rgba(59, 130, 246, 0.15),
-      transparent 40%
-    );
-  }
-  
-  .hover-scale {
-    @apply transition-transform duration-200 ease-in-out;
-  }
-  
-  .hover-scale:hover {
-    @apply scale-105;
-  }
-  
-  /* Badge styling from reference */
-  .badge-glow {
-    @apply shadow-sm transition-shadow duration-300 hover:shadow-md;
-  }
-  
-  .shimmer {
-    @apply bg-gradient-to-r from-transparent via-primary/20 to-transparent bg-[length:500px_100%] animate-shimmer;
-  }
-  
-  /* Layout containers */
-  .card-container {
-    @apply grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
-  }
-  
-  .carousel-container {
-    @apply relative overflow-hidden;
-  }
-  
-  .carousel-track {
-    @apply flex transition-transform duration-300 ease-out;
-  }
-  
-  .carousel-item {
-    @apply flex-shrink-0 w-full;
-  }
-  
-  .carousel-button {
-    @apply absolute top-1/2 transform -translate-y-1/2 bg-primary/90 text-primary-foreground p-3 rounded-full hover:bg-primary transition-all duration-200;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .carousel-button.prev {
-    @apply left-4;
-  }
-  
-  .carousel-button.next {
-    @apply right-4;
-  }
-  
-  /* Scrollbar styling */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    transform: translateY(-2px);
   }
 
   /* Professional content sections */
@@ -299,7 +201,42 @@
   }
 
   .stats-card {
-    @apply bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-lg p-6;
+    @apply bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8;
+  }
+
+  /* Modern card containers */
+  .card-container {
+    @apply grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+
+  /* Enhanced proficiency selection */
+  .proficiency-bubble {
+    @apply px-6 py-3 rounded-full transition-all duration-300 text-sm font-semibold cursor-pointer border-2;
+  }
+  
+  .proficiency-bubble.selected {
+    @apply bg-slate-200 text-slate-700 border-slate-300 shadow-md;
+  }
+  
+  .proficiency-bubble:not(.selected) {
+    @apply bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/30 hover:text-foreground;
+  }
+
+  /* Status indicators with modern styling */
+  .status-badge {
+    @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold;
+  }
+
+  .status-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+  }
+
+  .status-warning {
+    @apply bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400;
+  }
+
+  .status-info {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
   }
 }
 
@@ -320,106 +257,55 @@
   .primary-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   }
-  
-  /* Progress and interactive elements */
-  .progress-circle {
-    @apply relative inline-flex items-center justify-center;
-  }
-  
-  .progress-circle-label {
-    @apply absolute text-sm font-semibold text-foreground;
-  }
-  
-  /* Card effects */
-  .card-partial-visible {
-    @apply relative overflow-hidden;
-  }
-  
-  .card-partial-visible::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, hsl(var(--background))/80 80%, hsl(var(--background)) 100%);
-    pointer-events: none;
-  }
-  
-  /* Focus and accessibility */
-  .focus-visible-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
-  
-  /* Loading states */
-  .image-loading {
-    @apply animate-pulse bg-muted;
-  }
-  
-  /* Professional proficiency selection */
-  .proficiency-bubble {
-    @apply px-6 py-3 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer border;
-  }
-  
-  .proficiency-bubble.selected {
-    @apply bg-primary text-primary-foreground border-primary shadow-md;
-  }
-  
-  .proficiency-bubble:not(.selected) {
-    @apply bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/30 hover:text-foreground;
-  }
 
   /* Typography utilities */
   .heading-primary {
-    @apply text-3xl font-bold text-foreground tracking-tight;
+    @apply text-4xl font-bold text-foreground tracking-tight;
   }
 
   .heading-secondary {
-    @apply text-xl font-semibold text-foreground;
+    @apply text-2xl font-bold text-foreground;
   }
 
   .text-subtitle {
-    @apply text-muted-foreground text-base;
+    @apply text-muted-foreground text-lg;
   }
 
   .text-caption {
     @apply text-sm text-muted-foreground;
   }
+
+  /* Modern spacing and layout */
+  .section-spacing {
+    @apply py-12 px-6;
+  }
+
+  .card-spacing {
+    @apply p-8;
+  }
+
+  /* Enhanced focus states */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
 }
 
 /* Inter font import for clean, professional typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* Professional course title styling */
 .course-title {
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 
 /* Enhanced section styling for better visual hierarchy */
 .section-divider {
-  @apply border-t border-border/60 my-12;
+  @apply border-t border-border/60 my-16;
 }
 
 /* Professional card hover effects */
 .professional-card {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-}
-
-/* Status indicators */
-.status-badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
-}
-
-.status-success {
-  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
-}
-
-.status-warning {
-  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
-}
-
-.status-info {
-  @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
 }

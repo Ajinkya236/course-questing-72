@@ -40,27 +40,27 @@ const MyRewardsBadges: React.FC = () => {
   };
   
   return (
-    <div className="p-4 border rounded-xl">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">My Rewards</h3>
-        <Badge variant="outline" className="bg-primary/10 text-primary">
+    <div className="p-6 border rounded-xl">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-bold text-lg">My Rewards</h3>
+        <Badge variant="outline" className="bg-primary/10 text-primary font-semibold">
           {earnedBadges.length}/{totalBadges} Badges
         </Badge>
       </div>
       
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {earnedBadges.slice(0, 3).map(badge => (
-          <div key={badge.id} className="flex items-center gap-1 p-1 rounded-md bg-primary/5 border">
+          <div key={badge.id} className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border">
             <div className="text-primary">
               {renderIcon(badge.icon)}
             </div>
-            <span className="text-xs font-medium">{badge.name}</span>
+            <span className="text-sm font-semibold">{badge.name}</span>
           </div>
         ))}
         
         {earnedBadges.length > 3 && (
-          <div className="p-1 rounded-md bg-primary/5 border">
-            <span className="text-xs font-medium">+{earnedBadges.length - 3} more</span>
+          <div className="p-3 rounded-lg bg-primary/5 border">
+            <span className="text-sm font-semibold">+{earnedBadges.length - 3} more</span>
           </div>
         )}
       </div>

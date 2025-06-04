@@ -37,25 +37,25 @@ const TopicsCatalog: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Topics Catalog</h2>
-        <Button variant="link" size="sm" className="gap-1" onClick={() => navigate('/view-all/topics')}>
+        <h2 className="heading-secondary">Topics Catalog</h2>
+        <Button variant="link" size="sm" className="gap-1 font-semibold" onClick={() => navigate('/view-all/topics')}>
           View All
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
         {topics.map((topic) => (
           <Card 
             key={topic.id} 
-            className="overflow-hidden cursor-pointer hover:shadow-md transition-all"
+            className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 professional-card"
             onClick={() => handleTopicClick(topic.id)}
           >
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <div className="text-3xl mb-2">{topic.icon}</div>
-              <h3 className="font-medium text-sm">{topic.name}</h3>
+            <CardContent className="p-6 flex flex-col items-center text-center">
+              <div className="text-4xl mb-3">{topic.icon}</div>
+              <h3 className="font-bold text-sm mb-1">{topic.name}</h3>
               <p className="text-xs text-muted-foreground">{topic.courseCount} courses</p>
             </CardContent>
           </Card>

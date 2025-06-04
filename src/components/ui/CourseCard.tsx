@@ -29,7 +29,7 @@ const CourseCard: React.FC<CourseProps> = ({
 }) => {
   return (
     <Card className="professional-card course-card h-full flex flex-col overflow-hidden group">
-      <div className="h-48 overflow-hidden relative">
+      <div className="h-52 overflow-hidden relative">
         <img 
           src={imageUrl || "https://placehold.co/600x400?text=Course"} 
           alt={title}
@@ -39,7 +39,7 @@ const CourseCard: React.FC<CourseProps> = ({
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
           {isNew && (
             <Badge className="status-badge status-info shadow-sm">New</Badge>
           )}
@@ -52,7 +52,7 @@ const CourseCard: React.FC<CourseProps> = ({
       <CardHeader className="p-6 pb-4">
         <div className="flex justify-between items-start gap-3">
           <h3 className="course-title text-lg line-clamp-2 flex-1">{title}</h3>
-          <Badge variant="outline" className="shrink-0 border-primary/20 text-primary bg-primary/5">
+          <Badge variant="outline" className="shrink-0 border-primary/20 text-primary bg-primary/10">
             {category}
           </Badge>
         </div>
