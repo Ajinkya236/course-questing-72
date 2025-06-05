@@ -109,7 +109,7 @@ const FloatingSidebar: React.FC = () => {
                       } ${
                         active 
                           ? 'bg-primary text-primary-foreground shadow-sm' 
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white'
                       }`}
                       asChild
                     >

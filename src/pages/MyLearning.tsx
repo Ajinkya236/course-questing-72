@@ -18,7 +18,7 @@ interface MyLearningProps {
 
 const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { tab } = useParams();
   const tabFromUrl = tab || searchParams.get('tab') || 'courses';
   const [activeTab, setActiveTab] = useState(tabFromUrl);
@@ -48,17 +48,18 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
   // Title suffix based on if viewing team member's learning
   const titleSuffix = memberId ? ` - Team Member` : '';
 
-  // Handle tab changes
+  // Handle tab changes - fix navigation bug
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     
-    let basePath = memberId 
-      ? `/my-team/member/${memberId}/${params.tab === 'goals' ? 'goals' : 'learning'}`
+    const basePath = memberId 
+      ? `/my-team/member/${memberId}/learning`
       : '/my-learning';
       
     if (value === 'courses') {
       navigate(`${basePath}?tab=courses&status=in-progress`);
     } else {
+      // Navigate properly for non-course tabs
       navigate(`${basePath}?tab=${value}`);
     }
   };
@@ -121,7 +122,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
         </div>
 
         <Tabs 
-          defaultValue="courses" 
           value={activeTab}
           onValueChange={handleTabChange}
           className="space-y-4"

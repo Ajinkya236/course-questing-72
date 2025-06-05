@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -95,10 +94,6 @@ const SearchResults = () => {
     });
   };
   
-  const handleCourseClick = (courseId: string) => {
-    navigate(`/course/${courseId}`);
-  };
-  
   return (
     <>
       <Helmet>
@@ -126,7 +121,6 @@ const SearchResults = () => {
         </div>
         
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters Panel */}
           <div className={`md:w-64 space-y-6 ${isFiltersVisible ? 'block' : 'hidden md:block'}`}>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filters</h2>
@@ -309,21 +303,22 @@ const SearchResults = () => {
                 : "space-y-4"
               }>
                 {filteredCourses.map((course) => (
-                  <div key={course.id} onClick={() => handleCourseClick(course.id)}>
-                    <CourseCard 
-                      id={course.id}
-                      title={course.title}
-                      description={course.description}
-                      imageUrl={course.imageUrl}
-                      category={course.category}
-                      duration={course.duration}
-                      rating={course.rating}
-                      trainingCategory={course.trainingCategory}
-                      isBookmarked={course.isBookmarked}
-                      isHot={course.isHot}
-                      isNew={course.isNew}
-                    />
-                  </div>
+                  <CourseCard 
+                    key={course.id}
+                    id={course.id}
+                    title={course.title}
+                    description={course.description}
+                    imageUrl={course.imageUrl}
+                    category={course.category}
+                    duration={course.duration}
+                    rating={course.rating}
+                    trainingCategory={course.trainingCategory}
+                    isBookmarked={course.isBookmarked}
+                    previewUrl={course.previewUrl}
+                    videoUrl={course.videoUrl}
+                    isHot={course.isHot}
+                    isNew={course.isNew}
+                  />
                 ))}
               </div>
             )}
