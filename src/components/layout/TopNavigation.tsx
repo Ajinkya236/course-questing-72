@@ -10,8 +10,20 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
   Bell, 
-  HelpCircle,
+  Search,
+  Users,
   LayoutDashboard,
   LogOut,
   BrainCircuit
@@ -22,6 +34,8 @@ import { toast } from '@/hooks/use-toast';
 
 const TopNavigation: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sessionCode, setSessionCode] = useState('');
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -61,6 +75,37 @@ const TopNavigation: React.FC = () => {
     }
   };
 
+  const handleJoinSession = () => {
+    if (!sessionCode.trim()) {
+      toast({
+        title: "Invalid Session Code",
+        description: "Please enter a correct session code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simple validation - you can make this more sophisticated
+    if (sessionCode.length < 6) {
+      toast({
+        title: "Invalid Session Code",
+        description: "Please enter a correct session code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Open JioMeet in new tab with session code
+    window.open(`https://jiomeet.jio.com/join/${sessionCode}`, '_blank');
+    setIsJoinDialogOpen(false);
+    setSessionCode('');
+    
+    toast({
+      title: "Joining Session",
+      description: "Opening meeting in new tab",
+    });
+  };
+
   return (
     <div className="top-navigation w-full">
       <div className="container max-w-full mx-auto flex h-14 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
@@ -73,13 +118,57 @@ const TopNavigation: React.FC = () => {
         
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="icon" asChild className="text-white hover:bg-white/10">
-            <Link to="/notifications">
-              <Bell className="h-5 w-5" />
+            <Link to="/search">
+              <Search className="h-5 w-5" />
             </Link>
           </Button>
+          
+          <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                <Users className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Join Meeting Session</DialogTitle>
+                <DialogDescription>
+                  Enter your session code to join the meeting.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sessionCode" className="text-right">
+                    Session Code
+                  </Label>
+                  <Input
+                    id="sessionCode"
+                    value={sessionCode}
+                    onChange={(e) => setSessionCode(e.target.value)}
+                    placeholder="Enter session code"
+                    className="col-span-3"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleJoinSession();
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsJoinDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" onClick={handleJoinSession}>
+                  Join Session
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <Button variant="ghost" size="icon" asChild className="text-white hover:bg-white/10">
-            <Link to="/faq">
-              <HelpCircle className="h-5 w-5" />
+            <Link to="/notifications">
+              <Bell className="h-5 w-5" />
             </Link>
           </Button>
           
@@ -98,9 +187,6 @@ const TopNavigation: React.FC = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link to="/profile">View Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/faq">FAQs</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={toggleAdminMode}>
