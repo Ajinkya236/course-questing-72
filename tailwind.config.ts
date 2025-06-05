@@ -21,7 +21,8 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-				heading: ['Inter', 'system-ui', 'sans-serif'],
+				heading: ['Archivo Black', 'system-ui', 'sans-serif'],
+				'archivo-black': ['Archivo Black', 'system-ui', 'sans-serif'],
 			},
 			fontSize: {
 				'xs': ['0.75rem', { lineHeight: '1.5' }],

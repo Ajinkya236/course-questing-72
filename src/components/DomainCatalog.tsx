@@ -39,7 +39,7 @@ const DomainCatalog: React.FC = () => {
   return (
     <div className="content-spacing">
       <div className="flex justify-between items-center group mb-6">
-        <h2 className="text-xl font-semibold">Domain Catalog</h2>
+        <h2 className="text-xl font-archivo-black">Domain Catalog</h2>
         <div className="flex items-center">
           <Button 
             variant="link" 
@@ -65,7 +65,7 @@ const DomainCatalog: React.FC = () => {
           >
             <CardContent className="p-5 flex flex-col items-center text-center">
               <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-200">{domain.icon}</div>
-              <h3 className="font-medium text-sm mb-1">{domain.name}</h3>
+              <h3 className="font-medium text-sm mb-1 font-archivo-black">{domain.name}</h3>
               <p className="text-xs text-muted-foreground">{domain.courseCount} courses</p>
             </CardContent>
           </Card>

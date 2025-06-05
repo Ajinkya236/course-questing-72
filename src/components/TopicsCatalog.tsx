@@ -39,7 +39,7 @@ const TopicsCatalog: React.FC = () => {
   return (
     <div className="content-spacing">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Topics Catalog</h2>
+        <h2 className="text-xl font-archivo-black">Topics Catalog</h2>
         <Button variant="link" size="sm" className="gap-1 text-primary hover:text-primary/80" onClick={() => navigate('/view-all/topics')}>
           View All
           <ChevronRight className="h-4 w-4" />
@@ -55,7 +55,7 @@ const TopicsCatalog: React.FC = () => {
           >
             <CardContent className="p-5 flex flex-col items-center text-center">
               <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-200">{topic.icon}</div>
-              <h3 className="font-medium text-sm mb-1">{topic.name}</h3>
+              <h3 className="font-medium text-sm mb-1 font-archivo-black">{topic.name}</h3>
               <p className="text-xs text-muted-foreground">{topic.courseCount} courses</p>
             </CardContent>
           </Card>

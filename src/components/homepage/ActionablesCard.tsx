@@ -31,7 +31,7 @@ const ActionablesCard = () => {
     <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
       <div className="p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium">Actionables</h3>
+          <h3 className="text-lg font-archivo-black">Actionables</h3>
           <Button 
             variant="outline" 
             size="sm" 

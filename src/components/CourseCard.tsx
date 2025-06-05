@@ -167,6 +167,11 @@ const CourseCard: React.FC<CourseCardProps> = ({
           videoRef={videoRef}
           toggleMute={toggleMute}
           onImageError={handleImageError}
+          isBookmarked={currentBookmarked}
+          handleWatchClick={handleWatchClick}
+          handleShareClick={handleShareClick}
+          handleBookmarkToggle={handleBookmarkToggle}
+          handleAssignClick={handleAssignClick}
         />
 
         <CourseCardContent
@@ -174,11 +179,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
           description={description}
           duration={duration}
           rating={rating}
-          isBookmarked={currentBookmarked}
-          handleWatchClick={handleWatchClick}
-          handleShareClick={handleShareClick}
-          handleBookmarkToggle={handleBookmarkToggle}
-          handleAssignClick={handleAssignClick}
         />
       </Card>
 

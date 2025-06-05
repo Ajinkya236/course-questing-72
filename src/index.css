@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Archivo Black font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap');
+
 @layer base {
   :root {
     /* Updated color scheme based on the provided images */
@@ -105,26 +108,26 @@
     line-height: 1.6;
   }
   
-  /* Typography hierarchy matching the images */
+  /* Typography hierarchy with Archivo Black for headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply font-bold tracking-tight text-foreground;
+    font-family: 'Archivo Black', system-ui, sans-serif;
   }
   
   h1 {
-    @apply text-2xl md:text-3xl font-bold;
+    @apply text-2xl md:text-3xl;
   }
   
   h2 {
-    @apply text-xl md:text-2xl font-semibold;
+    @apply text-xl md:text-2xl;
   }
   
   h3 {
-    @apply text-lg md:text-xl font-semibold;
+    @apply text-lg md:text-xl;
   }
 
   h4 {
-    @apply text-base md:text-lg font-medium;
+    @apply text-base md:text-lg;
   }
 
   /* Professional body text */
@@ -134,10 +137,12 @@
 
   .skill-title {
     @apply font-medium text-foreground;
+    font-family: 'Archivo Black', system-ui, sans-serif;
   }
   
   .course-title {
     @apply font-semibold text-foreground;
+    font-family: 'Archivo Black', system-ui, sans-serif;
   }
 }
 
@@ -231,6 +236,3 @@
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
 }
-
-/* Import Inter font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

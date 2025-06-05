@@ -9,7 +9,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-3xl font-archivo-black">Admin Dashboard</h1>
         <Button asChild>
           <Link to="/admin/courses/create" className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4" />
@@ -25,7 +25,7 @@ const AdminDashboard: React.FC = () => {
             <BookOpen className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
+            <div className="text-2xl font-archivo-black">24</div>
             <p className="text-xs text-muted-foreground">
               +2 from last month
             </p>
@@ -38,7 +38,7 @@ const AdminDashboard: React.FC = () => {
             <Book className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">76</div>
+            <div className="text-2xl font-archivo-black">76</div>
             <p className="text-xs text-muted-foreground">
               +15 from last month
             </p>
@@ -51,7 +51,7 @@ const AdminDashboard: React.FC = () => {
             <Activity className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">193</div>
+            <div className="text-2xl font-archivo-black">193</div>
             <p className="text-xs text-muted-foreground">
               +32 from last month
             </p>
@@ -64,7 +64,7 @@ const AdminDashboard: React.FC = () => {
             <Users className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">312</div>
+            <div className="text-2xl font-archivo-black">312</div>
             <p className="text-xs text-muted-foreground">
               +12% from last month
             </p>
@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Courses</CardTitle>
+            <CardTitle className="font-archivo-black">Recent Courses</CardTitle>
             <CardDescription>
               Most recently created courses
             </CardDescription>
@@ -105,7 +105,7 @@ const AdminDashboard: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="font-archivo-black">Quick Actions</CardTitle>
             <CardDescription>
               Common administrative tasks
             </CardDescription>

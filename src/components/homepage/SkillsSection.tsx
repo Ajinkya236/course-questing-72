@@ -34,7 +34,7 @@ const SkillsSection = () => {
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium">Skills you follow</h3>
+            <h3 className="text-lg font-archivo-black">Skills you follow</h3>
             <Button 
               variant="outline" 
               size="sm" 
@@ -60,7 +60,7 @@ const SkillsSection = () => {
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium">Skills for your Role</h3>
+            <h3 className="text-lg font-archivo-black">Skills for your Role</h3>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -69,7 +69,7 @@ const SkillsSection = () => {
               </PopoverTrigger>
               <PopoverContent className="w-96 p-0" align="end">
                 <div className="p-6 border-b">
-                  <h4 className="text-lg font-medium">Role Skills Progress</h4>
+                  <h4 className="text-lg font-archivo-black">Role Skills Progress</h4>
                   <p className="text-sm text-muted-foreground">Track your development in key role-specific skills</p>
                 </div>
                 <div className="p-6 space-y-4">
@@ -115,7 +115,7 @@ const SkillsSection = () => {
       <Dialog open={showSkillsDialog} onOpenChange={setShowSkillsDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Manage Your Skills</DialogTitle>
+            <DialogTitle className="font-archivo-black">Manage Your Skills</DialogTitle>
           </DialogHeader>
           <FollowSkills 
             title="Follow Skills"

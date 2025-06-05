@@ -42,7 +42,7 @@ const MyRewardsBadges: React.FC = () => {
   return (
     <div className="modern-card p-5">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="font-semibold">My Rewards</h3>
+        <h3 className="font-archivo-black">My Rewards</h3>
         <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
           {earnedBadges.length}/{totalBadges} Badges
         </Badge>

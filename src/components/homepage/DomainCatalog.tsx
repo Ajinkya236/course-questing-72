@@ -50,7 +50,7 @@ const DomainCatalog = () => {
       <CardContent className="py-6 px-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold tracking-tight">Domains Catalog</h2>
+            <h2 className="text-xl font-archivo-black tracking-tight">Domains Catalog</h2>
             <Button 
               variant="link" 
               className="flex items-center gap-1 p-0 text-blue-600"
