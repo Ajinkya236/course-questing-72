@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -16,30 +17,26 @@ import {
   Send,
   PlusCircle,
   UserPlus,
-  Goal,
-  Save,
-  Plus,
-  List,
-  Eye,
-  EyeOff
+  Goal
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 interface CourseCardDialogsProps {
   id: string;
   title: string;
   showShareDialog: boolean;
   showAssignDialog: boolean;
-  showSaveDialog: boolean;
   setShowShareDialog: (show: boolean) => void;
   setShowAssignDialog: (show: boolean) => void;
-  setShowSaveDialog: (show: boolean) => void;
+}
+
+interface EmailRecipient {
+  email: string;
+  id: string;
 }
 
 // Mock employee data for email autocomplete
@@ -69,22 +66,13 @@ const mentees = [
   { id: '10', name: 'Taylor Evans', role: 'Product Specialist' },
 ];
 
-interface Playlist {
-  id: string;
-  name: string;
-  isPublic: boolean;
-  courseCount: number;
-}
-
 const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
   id,
   title,
   showShareDialog,
   showAssignDialog,
-  showSaveDialog,
   setShowShareDialog,
-  setShowAssignDialog,
-  setShowSaveDialog
+  setShowAssignDialog
 }) => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,19 +87,6 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
   const [personalMessage, setPersonalMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  // State for save dialog
-  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
-  const [newPlaylistName, setNewPlaylistName] = useState('');
-  const [newPlaylistIsPublic, setNewPlaylistIsPublic] = useState(false);
-  const [selectedPlaylists, setSelectedPlaylists] = useState<string[]>(['watch-later']);
-
-  // Mock playlists data
-  const [playlists, setPlaylists] = useState<Playlist[]>([
-    { id: 'watch-later', name: 'Watch Later', isPublic: false, courseCount: 5 },
-    { id: 'leadership', name: 'Leadership Skills', isPublic: true, courseCount: 12 },
-    { id: 'tech-skills', name: 'Technical Skills', isPublic: false, courseCount: 8 },
-  ]);
 
   const filteredTeamMembers = teamMembers.filter(member => 
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -342,87 +317,6 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
     setSearchQuery('');
     setAssignTab("self");
     setShowAssignDialog(false);
-  };
-
-  // New handlers for save dialog
-  const handlePlaylistToggle = (playlistId: string) => {
-    setSelectedPlaylists(prev => {
-      if (prev.includes(playlistId)) {
-        return prev.filter(id => id !== playlistId);
-      } else {
-        return [...prev, playlistId];
-      }
-    });
-  };
-
-  const handleCreatePlaylist = () => {
-    if (!newPlaylistName.trim()) {
-      toast({
-        title: "Invalid Name",
-        description: "Please enter a playlist name",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newPlaylist: Playlist = {
-      id: Date.now().toString(),
-      name: newPlaylistName,
-      isPublic: newPlaylistIsPublic,
-      courseCount: 0
-    };
-
-    setPlaylists(prev => [...prev, newPlaylist]);
-    setSelectedPlaylists(prev => [...prev, newPlaylist.id]);
-    setNewPlaylistName('');
-    setNewPlaylistIsPublic(false);
-    setShowCreatePlaylist(false);
-
-    toast({
-      title: "Playlist Created",
-      description: `"${newPlaylist.name}" has been created and selected`
-    });
-  };
-
-  const handleSaveCourse = () => {
-    if (selectedPlaylists.length === 0) {
-      toast({
-        title: "No Selection",
-        description: "Please select at least one playlist",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const selectedPlaylistNames = selectedPlaylists.map(id => 
-      playlists.find(playlist => playlist.id === id)?.name
-    ).filter(Boolean).join(', ');
-
-    // Save to appropriate locations
-    selectedPlaylists.forEach(playlistId => {
-      if (playlistId === 'watch-later') {
-        // Save to saved courses
-        const savedCourses = JSON.parse(localStorage.getItem('savedCourses') || '[]');
-        if (!savedCourses.includes(id)) {
-          localStorage.setItem('savedCourses', JSON.stringify([...savedCourses, id]));
-        }
-      } else {
-        // Save to playlist
-        const playlistCourses = JSON.parse(localStorage.getItem(`playlist_${playlistId}`) || '[]');
-        if (!playlistCourses.includes(id)) {
-          localStorage.setItem(`playlist_${playlistId}`, JSON.stringify([...playlistCourses, id]));
-        }
-      }
-    });
-
-    toast({
-      title: "Course Saved",
-      description: `"${title}" has been saved to: ${selectedPlaylistNames}`
-    });
-
-    // Reset and close
-    setSelectedPlaylists(['watch-later']);
-    setShowSaveDialog(false);
   };
 
   return (
@@ -736,126 +630,6 @@ const CourseCardDialogs: React.FC<CourseCardDialogsProps> = ({
             >
               <UserPlus className="h-4 w-4 mr-2" />
               Assign
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Save Dialog */}
-      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-        <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
-          <DialogHeader>
-            <DialogTitle>Save Course</DialogTitle>
-            <DialogDescription>
-              Save "{title}" to your playlists
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            {/* Create new playlist section */}
-            {showCreatePlaylist ? (
-              <div className="space-y-3 p-3 border rounded-lg">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Create New Playlist</h4>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowCreatePlaylist(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Input
-                  placeholder="Playlist name"
-                  value={newPlaylistName}
-                  onChange={(e) => setNewPlaylistName(e.target.value)}
-                />
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="public"
-                    checked={newPlaylistIsPublic}
-                    onCheckedChange={setNewPlaylistIsPublic}
-                  />
-                  <Label htmlFor="public" className="text-sm">
-                    Make public
-                  </Label>
-                  {newPlaylistIsPublic ? (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </div>
-                <Button onClick={handleCreatePlaylist} size="sm" className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Playlist
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => setShowCreatePlaylist(true)}
-                className="w-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Playlist
-              </Button>
-            )}
-
-            {/* Playlist selection */}
-            <div className="space-y-2">
-              <h4 className="font-medium">Select Playlists</h4>
-              <div className="max-h-60 overflow-y-auto space-y-2">
-                {playlists.map(playlist => (
-                  <div 
-                    key={playlist.id}
-                    className="flex items-center space-x-3 p-2 rounded hover:bg-muted"
-                  >
-                    <Checkbox
-                      id={`playlist-${playlist.id}`}
-                      checked={selectedPlaylists.includes(playlist.id)}
-                      onCheckedChange={() => handlePlaylistToggle(playlist.id)}
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <List className="h-4 w-4 text-muted-foreground" />
-                        <label 
-                          htmlFor={`playlist-${playlist.id}`}
-                          className="font-medium text-sm cursor-pointer"
-                        >
-                          {playlist.name}
-                        </label>
-                        {playlist.isPublic ? (
-                          <Eye className="h-3 w-3 text-muted-foreground" />
-                        ) : (
-                          <EyeOff className="h-3 w-3 text-muted-foreground" />
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {playlist.courseCount} courses
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter className="sm:justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowSaveDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={handleSaveCourse}
-              disabled={selectedPlaylists.length === 0}
-              className="ml-2"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save Course
             </Button>
           </DialogFooter>
         </DialogContent>

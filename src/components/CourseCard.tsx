@@ -44,7 +44,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const navigate = useNavigate();
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
   const { isBookmarked: checkIsBookmarked, toggleBookmark } = useCourseBookmarks();
@@ -84,12 +83,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   // Event handlers with React.MouseEvent parameters for direct DOM interaction
   const handleCourseClick = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog || showSaveDialog) {
+    if ((e.target as HTMLElement).closest('button') || showShareDialog || showAssignDialog) {
       e.stopPropagation();
       return;
     }
     navigate(`/course/${id}`);
-  }, [id, navigate, showShareDialog, showAssignDialog, showSaveDialog]);
+  }, [id, navigate, showShareDialog, showAssignDialog]);
 
   const handleWatchClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -133,11 +132,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
     setShowAssignDialog(true);
   }, [id, title]);
 
-  const handleSaveClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowSaveDialog(true);
-  }, []);
-
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = "/placeholder.svg";
@@ -155,16 +149,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
   return (
     <>
       <Card 
-        className={`w-full overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group h-full ${
-          isHovered ? 'z-[60] relative transform scale-105 shadow-2xl' : 'z-10'
+        className={`w-full overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-125 h-full group ${
+          isHovered ? 'z-50 relative' : ''
         }`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCourseClick}
-        style={{
-          height: isHovered ? 'auto' : undefined,
-          minHeight: isHovered ? '400px' : undefined
-        }}
       >
         <CourseCardMedia
           title={title}
@@ -184,7 +174,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
           handleShareClick={handleShareClick}
           handleBookmarkToggle={handleBookmarkToggle}
           handleAssignClick={handleAssignClick}
-          handleSaveClick={handleSaveClick}
         />
 
         <CourseCardContent
@@ -200,10 +189,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
         title={title}
         showShareDialog={showShareDialog}
         showAssignDialog={showAssignDialog}
-        showSaveDialog={showSaveDialog}
         setShowShareDialog={setShowShareDialog}
         setShowAssignDialog={setShowAssignDialog}
-        setShowSaveDialog={setShowSaveDialog}
       />
     </>
   );

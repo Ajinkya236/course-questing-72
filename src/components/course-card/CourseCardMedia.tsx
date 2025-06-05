@@ -1,17 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Play, 
-  VolumeX, 
-  Volume2, 
-  Bookmark, 
-  BookmarkCheck, 
-  Share2, 
-  UserPlus,
-  Save
-} from "lucide-react";
+import { Volume2, VolumeX, Play, Share2, Bookmark, UserPlus } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CourseCardMediaProps {
   title: string;
@@ -24,14 +17,13 @@ interface CourseCardMediaProps {
   isHovered: boolean;
   isMuted: boolean;
   videoRef: React.RefObject<HTMLVideoElement>;
-  toggleMute: () => void;
-  onImageError: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+  toggleMute: (e: React.MouseEvent) => void;
+  onImageError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
   isBookmarked: boolean;
   handleWatchClick: (e: React.MouseEvent) => void;
   handleShareClick: (e: React.MouseEvent) => void;
   handleBookmarkToggle: (e: React.MouseEvent) => void;
   handleAssignClick: (e: React.MouseEvent) => void;
-  handleSaveClick: (e: React.MouseEvent) => void;
 }
 
 const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
@@ -51,136 +43,194 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
   handleWatchClick,
   handleShareClick,
   handleBookmarkToggle,
-  handleAssignClick,
-  handleSaveClick
+  handleAssignClick
 }) => {
-  return (
-    <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
-      {/* Video or Image */}
-      {isHovered && previewUrl ? (
-        <video
-          ref={videoRef}
-          src={previewUrl}
-          className="w-full h-full object-cover"
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-        />
-      ) : (
-        <img
-          src={imageUrl}
-          alt={title}
-          className="w-full h-full object-cover transition-transform duration-300"
-          onError={onImageError}
-        />
-      )}
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  
+  // Handle image loading state
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+  };
 
-      {/* Badges */}
-      <div className="absolute top-2 left-2 flex gap-1">
+  // Default image error handler if none provided
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    setIsImageLoading(false);
+    if (onImageError) {
+      onImageError(e);
+    } else {
+      const target = e.target as HTMLImageElement;
+      target.src = "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
+      target.onerror = null;
+    }
+  };
+
+  // Video event handlers
+  const handleVideoLoad = () => {
+    setIsVideoLoaded(true);
+  };
+
+  // Process image URL to ensure it loads properly
+  const processedImageUrl = imageUrl || "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=450&q=80";
+
+  return (
+    <div className="relative overflow-hidden">
+      <AspectRatio ratio={16/9} className="bg-muted/20">
+        {/* Loading indicator */}
+        {isImageLoading && !isVideoLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          </div>
+        )}
+        
+        {/* Video preview when hovered and previewUrl exists */}
+        {isHovered && previewUrl && (
+          <div className="absolute inset-0 z-10">
+            <video
+              ref={videoRef}
+              src={previewUrl}
+              className="w-full h-full object-cover"
+              muted={isMuted}
+              autoPlay
+              loop
+              playsInline
+              onLoadedData={handleVideoLoad}
+            />
+          </div>
+        )}
+        
+        {/* Thumbnail image (always rendered) */}
+        <img
+          src={processedImageUrl}
+          alt={title}
+          className={`object-cover w-full h-full transition-transform duration-500 group-hover:scale-105 ${
+            isHovered && previewUrl && isVideoLoaded ? 'opacity-0' : 'opacity-100'
+          }`}
+          loading="lazy"
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+        
+        {/* Overlay gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
+        
+        {/* Action buttons overlay - always positioned at bottom and visible on hover */}
+        <div className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all duration-300 z-20 ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+        }`}>
+          <TooltipProvider>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
+                    className="h-9 w-9 bg-primary hover:bg-primary/90 text-white shadow-lg"
+                    onClick={handleWatchClick}
+                  >
+                    <Play className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Play</TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
+                    onClick={handleShareClick}
+                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Share</TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
+                    onClick={handleAssignClick}
+                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
+                  >
+                    <UserPlus className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Assign</TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
+                    onClick={handleBookmarkToggle}
+                    className={`h-9 w-9 shadow-lg ${
+                      isBookmarked 
+                        ? "bg-yellow-500 hover:bg-yellow-600 text-white" 
+                        : "bg-white/90 hover:bg-white text-gray-900"
+                    }`}
+                  >
+                    <Bookmark className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Save</TooltipContent>
+              </Tooltip>
+            </div>
+            
+            {/* Mute/Unmute button positioned on the right - always visible when there's video */}
+            {previewUrl && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="h-9 w-9 bg-black/70 hover:bg-black/80 text-white backdrop-blur-sm shadow-lg"
+                    onClick={toggleMute}
+                  >
+                    {isMuted ? (
+                      <VolumeX className="h-5 w-5" />
+                    ) : (
+                      <Volume2 className="h-5 w-5" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {isMuted ? 'Unmute' : 'Mute'}
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </TooltipProvider>
+        </div>
+      </AspectRatio>
+      
+      {/* Status badges */}
+      <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
         {isHot && (
-          <Badge variant="destructive" className="text-xs font-bold bg-red-500 text-white">
-            HOT
-          </Badge>
+          <Badge className="bg-red-500 text-white border-none">Hot</Badge>
         )}
         {isNew && (
-          <Badge variant="secondary" className="text-xs font-bold bg-green-500 text-white">
-            NEW
-          </Badge>
-        )}
-        {trainingCategory && (
-          <Badge variant="outline" className="text-xs bg-white/90 text-gray-800">
-            {trainingCategory}
-          </Badge>
+          <Badge className="bg-blue-500 text-white border-none">New</Badge>
         )}
       </div>
-
-      {/* Category Badge */}
-      <div className="absolute top-2 right-2">
-        <Badge variant="secondary" className="text-xs bg-black/70 text-white">
+      
+      {/* Category badge */}
+      <div className="absolute bottom-2 left-2">
+        <Badge variant="outline" className="bg-black/60 text-white border-none">
           {category}
         </Badge>
       </div>
-
-      {/* Hover Actions */}
-      {isHovered && (
-        <>
-          {/* Central Play Button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Button
-              variant="secondary"
-              size="lg"
-              className="rounded-full bg-white/90 hover:bg-white h-14 w-14"
-              onClick={handleWatchClick}
-            >
-              <Play className="h-6 w-6 text-black" />
-            </Button>
-          </div>
-
-          {/* Action Icons */}
-          <div className="absolute bottom-2 right-2 flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/80 p-0"
-              onClick={handleBookmarkToggle}
-            >
-              {isBookmarked ? (
-                <BookmarkCheck className="h-4 w-4 text-white" />
-              ) : (
-                <Bookmark className="h-4 w-4 text-white" />
-              )}
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/80 p-0"
-              onClick={handleSaveClick}
-            >
-              <Save className="h-4 w-4 text-white" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/80 p-0"
-              onClick={handleShareClick}
-            >
-              <Share2 className="h-4 w-4 text-white" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/80 p-0"
-              onClick={handleAssignClick}
-            >
-              <UserPlus className="h-4 w-4 text-white" />
-            </Button>
-          </div>
-
-          {/* Mute/Unmute Button for Video */}
-          {previewUrl && (
-            <div className="absolute bottom-2 left-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 rounded-full bg-black/70 hover:bg-black/80 p-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleMute();
-                }}
-              >
-                {isMuted ? (
-                  <VolumeX className="h-4 w-4 text-white" />
-                ) : (
-                  <Volume2 className="h-4 w-4 text-white" />
-                )}
-              </Button>
-            </div>
-          )}
-        </>
+      
+      {/* Training category if provided */}
+      {trainingCategory && (
+        <div className="absolute top-2 left-2">
+          <Badge variant="outline" className="bg-primary/80 text-white border-none">
+            {trainingCategory}
+          </Badge>
+        </div>
       )}
     </div>
   );

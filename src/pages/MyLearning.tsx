@@ -11,7 +11,6 @@ import CoursesTab from './my-learning/CoursesTab';
 import LearningGoalsTab from './my-learning/LearningGoalsTab';
 import BadgesTab from './my-learning/BadgesTab';
 import RewardsTab from './my-learning/RewardsTab';
-import PlaylistsTab from './my-learning/PlaylistsTab';
 
 interface MyLearningProps {
   teamMemberId?: string;
@@ -131,7 +130,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="goals">Learning Goals</TabsTrigger>
             <TabsTrigger value="badges">Badges & Certifications</TabsTrigger>
-            <TabsTrigger value="playlists">Playlists</TabsTrigger>
             <TabsTrigger value="rewards">Rewards</TabsTrigger>
           </TabsList>
           
@@ -145,10 +143,6 @@ const MyLearning: React.FC<MyLearningProps> = ({ teamMemberId }) => {
           
           <TabsContent value="badges" className="space-y-4">
             <BadgesTab teamMemberId={memberId} />
-          </TabsContent>
-          
-          <TabsContent value="playlists" className="space-y-4">
-            <PlaylistsTab teamMemberId={memberId} />
           </TabsContent>
           
           <TabsContent value="rewards" className="space-y-4">
