@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,8 +114,8 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
         {/* Overlay gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
         
-        {/* Action buttons overlay - always positioned at bottom */}
-        <div className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all duration-300 ${
+        {/* Action buttons overlay - always positioned at bottom and visible on hover */}
+        <div className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all duration-300 z-20 ${
           isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}>
           <TooltipProvider>
@@ -152,6 +153,20 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                   <Button 
                     variant="secondary" 
                     size="icon"
+                    onClick={handleAssignClick}
+                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Assign</TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
                     onClick={handleBookmarkToggle}
                     className={`h-9 w-9 shadow-lg ${
                       isBookmarked 
@@ -164,24 +179,10 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                 </TooltipTrigger>
                 <TooltipContent>Save</TooltipContent>
               </Tooltip>
-              
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="secondary" 
-                    size="icon"
-                    onClick={handleAssignClick}
-                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Assign</TooltipContent>
-              </Tooltip>
             </div>
             
-            {/* Mute/Unmute button positioned on the right */}
-            {isHovered && previewUrl && (
+            {/* Mute/Unmute button positioned on the right - always visible when there's video */}
+            {previewUrl && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button

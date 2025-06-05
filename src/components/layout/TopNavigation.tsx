@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { 
   Bell, 
   Search,
-  Users,
+  UsersRound,
   LayoutDashboard,
   LogOut,
   BrainCircuit
@@ -64,6 +65,10 @@ const TopNavigation: React.FC = () => {
   }, [isSearchExpanded]);
 
   const handleSearchHover = () => {
+    setIsSearchExpanded(true);
+  };
+
+  const handleSearchFocus = () => {
     setIsSearchExpanded(true);
   };
 
@@ -170,12 +175,19 @@ const TopNavigation: React.FC = () => {
                   placeholder="Search courses, skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onBlur={(e) => {
+                    // Only close if not clicking within the search container
+                    if (!searchRef.current?.contains(e.relatedTarget as Node)) {
+                      setIsSearchExpanded(false);
+                    }
+                  }}
                   className="w-full h-10 bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:bg-white/20"
                 />
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
               </form>
             ) : (
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 w-10 h-10">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 w-10 h-10" onClick={handleSearchFocus}>
                 <Search className="h-5 w-5" />
               </Button>
             )}
@@ -184,14 +196,14 @@ const TopNavigation: React.FC = () => {
           <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-                <Users className="h-5 w-5" />
+                <UsersRound className="h-5 w-5" />
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Join Meeting Session</DialogTitle>
+                <DialogTitle>Join Learning Session</DialogTitle>
                 <DialogDescription>
-                  Enter your session code to join the meeting.
+                  Enter your session code to join the group learning session.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
