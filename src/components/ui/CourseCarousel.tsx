@@ -1,14 +1,14 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import CourseCard, { CourseProps } from './CourseCard';
+import CourseCard from '@/components/CourseCard';
+import { Course } from '@/types/course';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CourseCarouselProps {
   title: string;
   description?: string;
-  courses: CourseProps[];
+  courses: Course[];
   emptyMessage?: string;
 }
 
@@ -153,7 +153,21 @@ const CourseCarousel: React.FC<CourseCarouselProps> = ({
                 key={course.id} 
                 className={`${getItemsPerViewClass()} flex-shrink-0 snap-start`}
               >
-                <CourseCard {...course} />
+                <CourseCard 
+                  id={course.id}
+                  title={course.title}
+                  description={course.description}
+                  imageUrl={course.imageUrl}
+                  category={course.category}
+                  duration={course.duration}
+                  rating={course.rating}
+                  trainingCategory={course.trainingCategory}
+                  isBookmarked={course.isBookmarked}
+                  previewUrl={course.previewUrl}
+                  videoUrl={course.videoUrl}
+                  isHot={course.isHot}
+                  isNew={course.isNew}
+                />
               </div>
             ))}
           </div>
