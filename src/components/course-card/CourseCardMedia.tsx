@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -114,9 +113,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
         {/* Overlay gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
         
-        {/* Action buttons overlay - repositioned to bottom */}
-        <div className={`absolute bottom-4 left-4 right-4 flex items-center justify-between transition-opacity duration-300 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
+        {/* Action buttons overlay - always positioned at bottom */}
+        <div className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all duration-300 ${
+          isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}>
           <TooltipProvider>
             <div className="flex items-center gap-2">
@@ -125,13 +124,13 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                   <Button 
                     variant="secondary" 
                     size="icon"
-                    className="h-8 w-8 bg-primary hover:bg-primary/90 text-white"
+                    className="h-9 w-9 bg-primary hover:bg-primary/90 text-white shadow-lg"
                     onClick={handleWatchClick}
                   >
-                    <Play className="h-3.5 w-3.5" />
+                    <Play className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Watch</TooltipContent>
+                <TooltipContent>Play</TooltipContent>
               </Tooltip>
               
               <Tooltip>
@@ -140,9 +139,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleShareClick}
-                    className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
                   >
-                    <Share2 className="h-3.5 w-3.5" />
+                    <Share2 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Share</TooltipContent>
@@ -154,11 +153,13 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleBookmarkToggle}
-                    className={`h-8 w-8 text-white border-white/20 ${
-                      isBookmarked ? "bg-primary/80 hover:bg-primary" : "bg-white/20 hover:bg-white/30"
+                    className={`h-9 w-9 shadow-lg ${
+                      isBookmarked 
+                        ? "bg-yellow-500 hover:bg-yellow-600 text-white" 
+                        : "bg-white/90 hover:bg-white text-gray-900"
                     }`}
                   >
-                    <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current" : ""}`} />
+                    <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Save</TooltipContent>
@@ -170,9 +171,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleAssignClick}
-                    className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                    className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
                   >
-                    <UserPlus className="h-3.5 w-3.5" />
+                    <UserPlus className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Assign</TooltipContent>
@@ -186,13 +187,13 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm"
+                    className="h-9 w-9 bg-black/70 hover:bg-black/80 text-white backdrop-blur-sm shadow-lg"
                     onClick={toggleMute}
                   >
                     {isMuted ? (
-                      <VolumeX className="h-3.5 w-3.5" />
+                      <VolumeX className="h-4 w-4" />
                     ) : (
-                      <Volume2 className="h-3.5 w-3.5" />
+                      <Volume2 className="h-4 w-4" />
                     )}
                   </Button>
                 </TooltipTrigger>

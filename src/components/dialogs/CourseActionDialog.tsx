@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
     if (!emails.trim()) {
       toast({
         title: "Error",
-        description: "Please enter at least one email address",
+        description: "Please enter at least one employee domain ID",
         variant: "destructive"
       });
       return;
@@ -98,6 +97,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
       case 'me':
         message = `"${courseName}" has been assigned to you`;
         shouldNavigateToMyLearning = true;
+        courseTabToNavigate = 'assigned';
         break;
       case 'team':
         if (selectedTeamMembers.length === 0) {
@@ -189,7 +189,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {actionType === 'share' 
-              ? "Share this course with your colleagues" 
+              ? "Share this course with your colleagues using their employee domain IDs" 
               : "Add this course to the learning path"}
           </DialogDescription>
         </DialogHeader>
@@ -198,10 +198,10 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
           <>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="emails">Enter email addresses (comma separated)</Label>
+                <Label htmlFor="emails">Enter employee domain IDs (comma separated)</Label>
                 <Input
                   id="emails"
-                  placeholder="colleague@example.com, teammate@example.com"
+                  placeholder="john.doe@company.com, jane.smith@company.com"
                   value={emails}
                   onChange={(e) => setEmails(e.target.value)}
                 />
@@ -256,13 +256,13 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               
               <TabsContent value="me" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  This course will be added to your assigned courses list.
+                  This course will be added to your assigned courses list in My Learning.
                 </p>
               </TabsContent>
               
               <TabsContent value="team" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Select team members to assign this course to:
+                  Select team members to assign this course to. It will appear in their assigned courses:
                 </p>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {teamMembers.map(member => (
@@ -297,7 +297,7 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               
               <TabsContent value="mentee" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Select mentees to assign this course to:
+                  Select mentees to assign this course to. It will appear in their engagement courses:
                 </p>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {mentees.map(mentee => (
@@ -332,13 +332,13 @@ const CourseActionDialog: React.FC<CourseActionDialogProps> = ({
               
               <TabsContent value="mygoals" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  This course will be added to your learning goals under "Courses Assigned by You".
+                  This course will be added to your learning goals in My Learning.
                 </p>
               </TabsContent>
               
               <TabsContent value="teamgoals" className="py-2">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Select team members to add this course to their learning goals under "Courses Assigned by Manager":
+                  Select team members to add this course to their learning goals:
                 </p>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {teamMembers.map(member => (

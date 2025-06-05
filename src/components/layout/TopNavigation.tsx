@@ -1,7 +1,7 @@
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Bell, 
@@ -36,8 +35,46 @@ const TopNavigation: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [sessionCode, setSessionCode] = useState('');
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle click outside to close search
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Focus input when search expands
+  useEffect(() => {
+    if (isSearchExpanded && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchExpanded]);
+
+  const handleSearchHover = () => {
+    setIsSearchExpanded(true);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchExpanded(false);
+      setSearchQuery('');
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -117,11 +154,32 @@ const TopNavigation: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" asChild className="text-white hover:bg-white/10">
-            <Link to="/search">
-              <Search className="h-5 w-5" />
-            </Link>
-          </Button>
+          {/* Expandable Search */}
+          <div 
+            ref={searchRef}
+            className={`transition-all duration-300 ease-in-out ${
+              isSearchExpanded ? 'w-64' : 'w-10'
+            }`}
+            onMouseEnter={handleSearchHover}
+          >
+            {isSearchExpanded ? (
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <Input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search courses, skills..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-10 bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:bg-white/20"
+                />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
+              </form>
+            ) : (
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 w-10 h-10">
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
           
           <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
             <DialogTrigger asChild>
