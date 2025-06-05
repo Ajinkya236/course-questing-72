@@ -96,20 +96,6 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
               playsInline
               onLoadedData={handleVideoLoad}
             />
-            
-            {/* Mute/Unmute button */}
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all"
-              onClick={toggleMute}
-            >
-              {isMuted ? (
-                <VolumeX className="h-4 w-4 text-white" />
-              ) : (
-                <Volume2 className="h-4 w-4 text-white" />
-              )}
-            </Button>
           </div>
         )}
         
@@ -128,21 +114,21 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
         {/* Overlay gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
         
-        {/* Action buttons overlay - visible on hover */}
-        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+        {/* Action buttons overlay - positioned at bottom left, visible on hover */}
+        <div className={`absolute bottom-2 left-2 flex items-center gap-2 transition-opacity duration-300 ${
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}>
           <TooltipProvider>
-            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-lg p-2">
+            <div className="flex items-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     variant="secondary" 
                     size="icon"
-                    className="h-10 w-10 bg-primary hover:bg-primary/90 text-white"
+                    className="h-8 w-8 bg-primary hover:bg-primary/90 text-white"
                     onClick={handleWatchClick}
                   >
-                    <Play className="h-4 w-4" />
+                    <Play className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Watch</TooltipContent>
@@ -154,9 +140,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleShareClick}
-                    className="h-10 w-10 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                    className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
                   >
-                    <Share2 className="h-4 w-4" />
+                    <Share2 className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Share</TooltipContent>
@@ -168,11 +154,11 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleBookmarkToggle}
-                    className={`h-10 w-10 text-white border-white/20 ${
+                    className={`h-8 w-8 text-white border-white/20 ${
                       isBookmarked ? "bg-primary/80 hover:bg-primary" : "bg-white/20 hover:bg-white/30"
                     }`}
                   >
-                    <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+                    <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current" : ""}`} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Save</TooltipContent>
@@ -184,9 +170,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     variant="secondary" 
                     size="icon"
                     onClick={handleAssignClick}
-                    className="h-10 w-10 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                    className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
                   >
-                    <UserPlus className="h-4 w-4" />
+                    <UserPlus className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Assign</TooltipContent>
@@ -194,6 +180,22 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
             </div>
           </TooltipProvider>
         </div>
+
+        {/* Mute/Unmute button - positioned at bottom right when video is playing */}
+        {isHovered && previewUrl && (
+          <Button
+            variant="secondary"
+            size="icon"
+            className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all"
+            onClick={toggleMute}
+          >
+            {isMuted ? (
+              <VolumeX className="h-4 w-4 text-white" />
+            ) : (
+              <Volume2 className="h-4 w-4 text-white" />
+            )}
+          </Button>
+        )}
       </AspectRatio>
       
       {/* Status badges */}
@@ -207,7 +209,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
       </div>
       
       {/* Category badge */}
-      <div className="absolute bottom-2 left-2">
+      <div className="absolute top-2 left-2">
         <Badge variant="outline" className="bg-black/60 text-white border-none">
           {category}
         </Badge>
@@ -215,7 +217,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
       
       {/* Training category if provided */}
       {trainingCategory && (
-        <div className="absolute bottom-2 right-2">
+        <div className="absolute top-8 left-2">
           <Badge variant="outline" className="bg-primary/80 text-white border-none">
             {trainingCategory}
           </Badge>

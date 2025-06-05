@@ -53,6 +53,16 @@
     --nav-bg: 214 100% 35%;
     --nav-text-light: 220 13% 28%;
     --nav-text-dark: 210 40% 98%;
+
+    /* Sidebar colors */
+    --sidebar-background: 222 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 214 100% 50%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 32% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 32% 17%;
+    --sidebar-ring: 214 100% 50%;
   }
 
   /* Dark theme with lighter backgrounds */
@@ -90,6 +100,15 @@
     --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 214 100% 50%;
+
+    --sidebar-background: 222 84% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 214 100% 50%;
+    --sidebar-primary-foreground: 222 84% 4.9%;
+    --sidebar-accent: 217 32% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 32% 17%;
+    --sidebar-ring: 214 100% 50%;
   }
 }
 
@@ -110,24 +129,33 @@
   
   /* Typography hierarchy with Archivo Black for headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-foreground;
+    @apply font-bold tracking-tight;
     font-family: 'Archivo Black', system-ui, sans-serif;
   }
   
+  /* Responsive heading colors for better contrast */
+  .text-heading-light {
+    @apply text-gray-800;
+  }
+  
+  .text-heading-dark {
+    @apply text-white;
+  }
+  
   h1 {
-    @apply text-2xl md:text-3xl;
+    @apply text-2xl md:text-3xl text-heading-light dark:text-heading-dark;
   }
   
   h2 {
-    @apply text-xl md:text-2xl;
+    @apply text-xl md:text-2xl text-heading-light dark:text-heading-dark;
   }
   
   h3 {
-    @apply text-lg md:text-xl;
+    @apply text-lg md:text-xl text-heading-light dark:text-heading-dark;
   }
 
   h4 {
-    @apply text-base md:text-lg;
+    @apply text-base md:text-lg text-heading-light dark:text-heading-dark;
   }
 
   /* Professional body text */
@@ -136,13 +164,21 @@
   }
 
   .skill-title {
-    @apply font-medium text-foreground;
+    @apply font-medium;
     font-family: 'Archivo Black', system-ui, sans-serif;
+    @apply text-heading-light dark:text-heading-dark;
   }
   
   .course-title {
-    @apply font-semibold text-foreground;
+    @apply font-semibold;
     font-family: 'Archivo Black', system-ui, sans-serif;
+    @apply text-heading-light dark:text-heading-dark;
+  }
+
+  .section-title {
+    @apply font-bold;
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    @apply text-heading-light dark:text-heading-dark;
   }
 }
 
@@ -236,3 +272,4 @@
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
 }
+

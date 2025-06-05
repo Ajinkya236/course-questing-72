@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Play, Share2, Bookmark, UserPlus } from 'lucide-react';
+import { Play, Share2, Bookmark, UserPlus, Volume2, VolumeX } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import CourseCarouselVideo from './CourseCarouselVideo';
 
@@ -111,21 +111,21 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
         )}
       </AspectRatio>
       
-      {/* Action buttons overlay - visible on hover */}
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+      {/* Action buttons overlay - positioned at bottom left, visible on hover */}
+      <div className={`absolute bottom-2 left-2 flex items-center gap-2 transition-opacity duration-300 ${
         isHovered ? 'opacity-100' : 'opacity-0'
       }`}>
         <TooltipProvider>
-          <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-lg p-2">
+          <div className="flex items-center gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   variant="secondary" 
                   size="icon"
-                  className="h-8 w-8 bg-primary hover:bg-primary/90 text-white"
+                  className="h-7 w-7 bg-primary hover:bg-primary/90 text-white"
                   onClick={handleWatchClick}
                 >
-                  <Play className="h-3.5 w-3.5" />
+                  <Play className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Watch</TooltipContent>
@@ -137,9 +137,9 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
                   variant="secondary" 
                   size="icon"
                   onClick={handleShareClick}
-                  className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                  className="h-7 w-7 bg-white/20 hover:bg-white/30 text-white border-white/20"
                 >
-                  <Share2 className="h-3.5 w-3.5" />
+                  <Share2 className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Share</TooltipContent>
@@ -151,11 +151,11 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
                   variant="secondary" 
                   size="icon"
                   onClick={handleBookmarkToggle}
-                  className={`h-8 w-8 text-white border-white/20 ${
+                  className={`h-7 w-7 text-white border-white/20 ${
                     isBookmarked ? "bg-primary/80 hover:bg-primary" : "bg-white/20 hover:bg-white/30"
                   }`}
                 >
-                  <Bookmark className={`h-3.5 w-3.5 ${isBookmarked ? "fill-current" : ""}`} />
+                  <Bookmark className={`h-3 w-3 ${isBookmarked ? "fill-current" : ""}`} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Save</TooltipContent>
@@ -167,9 +167,9 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
                   variant="secondary" 
                   size="icon"
                   onClick={handleAssignClick}
-                  className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                  className="h-7 w-7 bg-white/20 hover:bg-white/30 text-white border-white/20"
                 >
-                  <UserPlus className="h-3.5 w-3.5" />
+                  <UserPlus className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Assign</TooltipContent>
@@ -177,6 +177,22 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
           </div>
         </TooltipProvider>
       </div>
+
+      {/* Mute/Unmute button - positioned at bottom right when video is playing */}
+      {isHovered && course.videoUrl && (
+        <Button
+          variant="secondary"
+          size="icon"
+          className="absolute bottom-2 right-2 h-7 w-7 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all"
+          onClick={toggleMute}
+        >
+          {isMuted ? (
+            <VolumeX className="h-3 w-3 text-white" />
+          ) : (
+            <Volume2 className="h-3 w-3 text-white" />
+          )}
+        </Button>
+      )}
       
       {course.enrollmentStatus && (
         <div className="absolute top-2 right-2">
@@ -186,7 +202,7 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
         </div>
       )}
       {showTrainingCategory && course.trainingCategory && (
-        <div className="absolute bottom-2 left-2">
+        <div className="absolute top-2 left-2">
           <Badge variant="outline" className="bg-black/60 text-white border-none">
             {course.trainingCategory}
           </Badge>
