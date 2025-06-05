@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,12 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -25,22 +20,12 @@ import {
   LayoutGrid,
   List,
   Search,
-  SlidersHorizontal,
   ChevronDown,
   X,
-  Clock,
   BookOpen,
-  Star,
-  Users,
-  Award,
-  BadgeCheck,
-  Trophy,
-  Calendar,
-  ArrowUpDown,
 } from 'lucide-react';
 import { Course } from '@/types/course';
 import CourseCard from '@/components/CourseCard';
-import { Badge } from '@/components/ui/badge';
 
 // Import coursesList
 import { coursesList } from '@/data/mockData';
@@ -59,12 +44,11 @@ const SearchResults = () => {
   
   // Filter states
   const [filters, setFilters] = useState({
-    courseType: 'all',
-    academy: 'all',
-    skillLevel: 'all',
+    categories: [],
+    trainingCategories: [],
     duration: 'all',
     rating: 'all',
-    language: 'all',
+    level: 'all',
     source: 'all',
   });
   
@@ -94,26 +78,19 @@ const SearchResults = () => {
       ...prev,
       [key]: value
     }));
-    
-    // Here you would apply the filters to the search results
-    // For now, we'll just keep the existing results
   };
   
   const handleSortChange = (value: string) => {
     setSortBy(value);
-    
-    // Here you would sort the search results
-    // For now, we'll just keep the existing results
   };
   
   const clearFilters = () => {
     setFilters({
-      courseType: 'all',
-      academy: 'all',
-      skillLevel: 'all',
+      categories: [],
+      trainingCategories: [],
       duration: 'all',
       rating: 'all',
-      language: 'all',
+      level: 'all',
       source: 'all',
     });
   };
@@ -160,62 +137,32 @@ const SearchResults = () => {
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <h3 className="font-medium">Course Type</h3>
-                <Select
-                  value={filters.courseType}
-                  onValueChange={(value) => handleFilterChange('courseType', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="Online Course">Online Course</SelectItem>
-                    <SelectItem value="Online Program">Online Program</SelectItem>
-                    <SelectItem value="Blended">Blended</SelectItem>
-                    <SelectItem value="Classroom">Classroom</SelectItem>
-                  </SelectContent>
-                </Select>
+                <h3 className="font-medium">Categories</h3>
+                <div className="space-y-2">
+                  {['Technology', 'Leadership', 'Marketing', 'Data Science', 'Design', 'Business'].map((category) => (
+                    <label key={category} className="flex items-center space-x-2">
+                      <input type="checkbox" className="rounded" />
+                      <span className="text-sm">{category}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <h3 className="font-medium">Academy</h3>
-                <Select
-                  value={filters.academy}
-                  onValueChange={(value) => handleFilterChange('academy', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Academies" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Academies</SelectItem>
-                    <SelectItem value="Leadership Academy">Leadership Academy</SelectItem>
-                    <SelectItem value="Data Academy">Data Academy</SelectItem>
-                    <SelectItem value="Marketing Academy">Marketing Academy</SelectItem>
-                    <SelectItem value="PM Academy">PM Academy</SelectItem>
-                    <SelectItem value="Innovation Academy">Innovation Academy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Separator />
               
               <div className="space-y-2">
-                <h3 className="font-medium">Skill Level</h3>
-                <Select
-                  value={filters.skillLevel}
-                  onValueChange={(value) => handleFilterChange('skillLevel', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Levels" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                    <SelectItem value="Expert">Expert</SelectItem>
-                  </SelectContent>
-                </Select>
+                <h3 className="font-medium">Training Categories</h3>
+                <div className="space-y-2">
+                  {['Leadership Academy', 'Data Academy', 'Marketing Academy', 'PM Academy', 'Innovation Academy'].map((academy) => (
+                    <label key={academy} className="flex items-center space-x-2">
+                      <input type="checkbox" className="rounded" />
+                      <span className="text-sm">{academy}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
+              
+              <Separator />
               
               <div className="space-y-2">
                 <h3 className="font-medium">Duration</h3>
@@ -254,21 +201,19 @@ const SearchResults = () => {
               </div>
               
               <div className="space-y-2">
-                <h3 className="font-medium">Language</h3>
+                <h3 className="font-medium">Level</h3>
                 <Select
-                  value={filters.language}
-                  onValueChange={(value) => handleFilterChange('language', value)}
+                  value={filters.level}
+                  onValueChange={(value) => handleFilterChange('level', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All Languages" />
+                    <SelectValue placeholder="All Levels" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Languages</SelectItem>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="Spanish">Spanish</SelectItem>
-                    <SelectItem value="French">French</SelectItem>
-                    <SelectItem value="German">German</SelectItem>
-                    <SelectItem value="Chinese">Chinese</SelectItem>
+                    <SelectItem value="all">All Levels</SelectItem>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -284,12 +229,11 @@ const SearchResults = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Sources</SelectItem>
-                    <SelectItem value="Internal">Internal</SelectItem>
-                    <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                    <SelectItem value="CourseEra">CourseEra</SelectItem>
-                    <SelectItem value="els">els</SelectItem>
-                    <SelectItem value="WorkEra">WorkEra</SelectItem>
-                    <SelectItem value="Skillsoft">Skillsoft</SelectItem>
+                    <SelectItem value="internal">Internal</SelectItem>
+                    <SelectItem value="linkedin">LinkedIn Learning</SelectItem>
+                    <SelectItem value="coursera">Coursera</SelectItem>
+                    <SelectItem value="udemy">Udemy</SelectItem>
+                    <SelectItem value="skillsoft">Skillsoft</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -128,7 +128,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     className="h-9 w-9 bg-primary hover:bg-primary/90 text-white shadow-lg"
                     onClick={handleWatchClick}
                   >
-                    <Play className="h-4 w-4" />
+                    <Play className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Play</TooltipContent>
@@ -142,7 +142,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     onClick={handleShareClick}
                     className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
                   >
-                    <Share2 className="h-4 w-4" />
+                    <Share2 className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Share</TooltipContent>
@@ -156,7 +156,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     onClick={handleAssignClick}
                     className="h-9 w-9 bg-white/90 hover:bg-white text-gray-900 shadow-lg"
                   >
-                    <UserPlus className="h-4 w-4" />
+                    <UserPlus className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Assign</TooltipContent>
@@ -174,7 +174,7 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                         : "bg-white/90 hover:bg-white text-gray-900"
                     }`}
                   >
-                    <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+                    <Bookmark className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Save</TooltipContent>
@@ -192,9 +192,9 @@ const CourseCardMedia: React.FC<CourseCardMediaProps> = ({
                     onClick={toggleMute}
                   >
                     {isMuted ? (
-                      <VolumeX className="h-4 w-4" />
+                      <VolumeX className="h-5 w-5" />
                     ) : (
-                      <Volume2 className="h-4 w-4" />
+                      <Volume2 className="h-5 w-5" />
                     )}
                   </Button>
                 </TooltipTrigger>
