@@ -18,21 +18,24 @@ const Mentoring = () => {
   const banners = [
     {
       id: 1,
-      title: "HR Update: New Mentoring Guidelines",
-      description: "Learn about the updated mentoring program policies and best practices.",
-      imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      title: "Mentoring Excellence Program",
+      description: "Learn about our comprehensive mentoring program designed to accelerate professional growth.",
+      imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      link: "/mentoring/excellence"
     },
     {
       id: 2,
-      title: "Mentoring Excellence Workshop",
+      title: "Mentoring Skills Workshop",
       description: "Join our upcoming workshop to enhance your mentoring skills - Thursday at 2 PM.",
-      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80"
+      imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80",
+      link: "/mentoring/workshop"
     },
     {
       id: 3,
       title: "Mentoring Resources Hub",
       description: "Access our updated knowledge base with templates and guides for effective mentoring.",
-      imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+      imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      link: "/mentoring/resources"
     }
   ];
 

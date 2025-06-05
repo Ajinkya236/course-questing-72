@@ -49,10 +49,14 @@
 
     --radius: 0.75rem;
     
-    /* Navigation specific colors matching the deep blue header */
-    --nav-bg: 214 100% 35%;
+    /* Navigation specific colors - updated to #3535F3 */
+    --nav-bg: 224 96% 58%;
     --nav-text-light: 220 13% 28%;
     --nav-text-dark: 210 40% 98%;
+
+    /* Typography colors for light/dark contexts */
+    --heading-light: 220 9% 25%;
+    --heading-dark: 210 40% 98%;
   }
 
   /* Dark theme with lighter backgrounds */
@@ -90,6 +94,10 @@
     --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 214 100% 50%;
+
+    /* Typography colors for dark theme */
+    --heading-light: 210 40% 98%;
+    --heading-dark: 220 9% 25%;
   }
 }
 
@@ -110,8 +118,13 @@
   
   /* Typography hierarchy with Archivo Black for headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-foreground;
+    @apply font-bold tracking-tight;
     font-family: 'Archivo Black', system-ui, sans-serif;
+    color: hsl(var(--heading-light));
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: hsl(var(--heading-dark));
   }
   
   h1 {
@@ -136,13 +149,23 @@
   }
 
   .skill-title {
-    @apply font-medium text-foreground;
+    @apply font-medium;
     font-family: 'Archivo Black', system-ui, sans-serif;
+    color: hsl(var(--heading-light));
+  }
+
+  .dark .skill-title {
+    color: hsl(var(--heading-dark));
   }
   
   .course-title {
-    @apply font-semibold text-foreground;
+    @apply font-semibold;
     font-family: 'Archivo Black', system-ui, sans-serif;
+    color: hsl(var(--heading-light));
+  }
+
+  .dark .course-title {
+    color: hsl(var(--heading-dark));
   }
 }
 
@@ -151,10 +174,10 @@
     @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
   }
   
-  /* Navigation with deep blue background from images */
+  /* Navigation with updated color #3535F3 */
   .top-navigation {
     @apply w-full sticky top-0 z-10 shadow-sm;
-    background-color: hsl(var(--jio-dark));
+    background-color: #3535F3;
   }
   
   .nav-item {

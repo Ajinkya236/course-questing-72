@@ -11,8 +11,8 @@ interface Banner {
   description: string;
   imageUrl: string;
   link?: string;
-  videoUrl?: string; // Add video URL for video banners
-  isVideo?: boolean; // Flag to identify video banners
+  videoUrl?: string;
+  isVideo?: boolean;
 }
 
 interface BannerCarouselProps {
@@ -21,8 +21,33 @@ interface BannerCarouselProps {
   smallSize?: boolean;
 }
 
+// Real banner images with proper URLs
+const defaultBanners: Banner[] = [
+  {
+    id: 1,
+    title: "Leadership Excellence Program",
+    description: "Develop your leadership skills with our comprehensive training program designed for modern leaders.",
+    imageUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    link: "/courses/leadership"
+  },
+  {
+    id: 2,
+    title: "Data Science Masterclass",
+    description: "Master data science fundamentals and advanced techniques in this intensive workshop series.",
+    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    link: "/courses/data-science"
+  },
+  {
+    id: 3,
+    title: "Digital Transformation Workshop",
+    description: "Learn how to lead digital transformation initiatives and drive innovation in your organization.",
+    imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    link: "/courses/digital-transformation"
+  }
+];
+
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ 
-  banners, 
+  banners = defaultBanners, 
   className = '',
   smallSize = true
 }) => {
@@ -144,10 +169,10 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({
           <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-8 text-white">
             <div className="max-w-2xl">
               <Badge className="mb-2 bg-primary text-white">
-                {isCurrentVideo ? 'Watch Now' : 'HR Update'}
+                {isCurrentVideo ? 'Watch Now' : 'Featured'}
               </Badge>
-              <h3 className={`font-bold mb-2 ${smallSize ? 'text-xl' : 'text-3xl md:text-4xl'}`}>{banner.title}</h3>
-              <p className={`${smallSize ? 'text-sm' : 'text-base md:text-lg'} max-w-xl opacity-90 mb-6`}>{banner.description}</p>
+              <h3 className={`font-bold mb-2 text-white ${smallSize ? 'text-xl' : 'text-3xl md:text-4xl'}`}>{banner.title}</h3>
+              <p className={`${smallSize ? 'text-sm' : 'text-base md:text-lg'} max-w-xl opacity-90 mb-6 text-white`}>{banner.description}</p>
               
               {banner.link && (
                 <Button 

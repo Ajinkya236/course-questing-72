@@ -10,36 +10,17 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { 
-  Home as HomeIcon, 
-  Compass, 
-  BookOpen, 
-  Users, 
-  Headphones,
   Bell, 
   HelpCircle,
-  ChevronDown,
   LayoutDashboard,
   LogOut,
-  Sparkles
+  BrainCircuit
 } from "lucide-react";
 import ThemeSelector from "@/components/ThemeSelector";
 import { AuthContext } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
-const courseCategories = [
-  "Leadership & Management",
-  "Technical Skills",
-  "Data & Analytics",
-  "Marketing & Digital",
-  "Product Management",
-  "Design & Innovation",
-  "Soft Skills",
-  "Project Management",
-  "Compliance & Safety"
-];
-
 const TopNavigation: React.FC = () => {
-  const [isDiscoverHovered, setIsDiscoverHovered] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -84,118 +65,19 @@ const TopNavigation: React.FC = () => {
     <div className="top-navigation w-full">
       <div className="container max-w-full mx-auto flex h-14 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-lg text-white">Jio Learning</h1>
-          <nav className="flex items-center space-x-2">
-            {!isAdmin && (
-              <>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/" className="flex items-center gap-1">
-                    <HomeIcon className="h-4 w-4" />
-                    <span>Home</span>
-                  </Link>
-                </Button>
-                
-                <DropdownMenu open={isDiscoverHovered} onOpenChange={setIsDiscoverHovered}>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="nav-item text-white flex items-center gap-1"
-                      onMouseEnter={() => setIsDiscoverHovered(true)}
-                      onMouseLeave={() => setIsDiscoverHovered(false)}
-                      asChild
-                    >
-                      <Link to="/discover" className="flex items-center gap-1">
-                        <Compass className="h-4 w-4" />
-                        <span>Discover</span>
-                        <ChevronDown className="h-3 w-3 opacity-50" />
-                      </Link>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="start" 
-                    className="w-56"
-                    onMouseEnter={() => setIsDiscoverHovered(true)}
-                    onMouseLeave={() => setIsDiscoverHovered(false)}
-                  >
-                    {courseCategories.map((category) => (
-                      <DropdownMenuItem key={category} asChild>
-                        <Link to={`/discover?category=${encodeURIComponent(category)}`}>
-                          {category}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/discover">View All Categories</Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/my-learning" className="flex items-center gap-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>My Learning</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/skills" className="flex items-center gap-1">
-                    <Sparkles className="h-4 w-4" />
-                    <span>Skills</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/my-team" className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>My Team</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/mentoring" className="flex items-center gap-1">
-                    <Headphones className="h-4 w-4" />
-                    <span>Mentoring</span>
-                  </Link>
-                </Button>
-              </>
-            )}
-            
-            {isAdmin && (
-              <>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/admin/dashboard" className="flex items-center gap-1">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/admin/courses" className="flex items-center gap-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>Courses</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/admin/modules" className="flex items-center gap-1">
-                    <Compass className="h-4 w-4" />
-                    <span>Modules</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild size="sm" className="nav-item text-white">
-                  <Link to="/admin/activities" className="flex items-center gap-1">
-                    <Headphones className="h-4 w-4" />
-                    <span>Activities</span>
-                  </Link>
-                </Button>
-              </>
-            )}
-          </nav>
+          <Link to="/" className="flex items-center gap-2 font-semibold text-white">
+            <BrainCircuit className="h-6 w-6" />
+            <span className="text-lg">LearnForge Enterprise</span>
+          </Link>
         </div>
+        
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" asChild className="text-white">
+          <Button variant="ghost" size="icon" asChild className="text-white hover:bg-white/10">
             <Link to="/notifications">
               <Bell className="h-5 w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" asChild className="text-white">
+          <Button variant="ghost" size="icon" asChild className="text-white hover:bg-white/10">
             <Link to="/faq">
               <HelpCircle className="h-5 w-5" />
             </Link>
@@ -205,7 +87,7 @@ const TopNavigation: React.FC = () => {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
+              <Button variant="ghost" size="icon" className="rounded-full overflow-hidden hover:bg-white/10">
                 <img 
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80" 
                   alt="Profile" 

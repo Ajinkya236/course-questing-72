@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Play, Share2, Bookmark, UserPlus } from 'lucide-react';
+import { Play, Share2, Bookmark, UserPlus, Volume2, VolumeX } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import CourseCarouselVideo from './CourseCarouselVideo';
 
@@ -111,12 +111,12 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
         )}
       </AspectRatio>
       
-      {/* Action buttons overlay - visible on hover */}
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+      {/* Action buttons overlay - repositioned to bottom */}
+      <div className={`absolute bottom-4 left-4 right-4 flex items-center justify-between transition-opacity duration-300 ${
         isHovered ? 'opacity-100' : 'opacity-0'
       }`}>
         <TooltipProvider>
-          <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-lg p-2">
+          <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
@@ -175,6 +175,29 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
               <TooltipContent>Assign</TooltipContent>
             </Tooltip>
           </div>
+          
+          {/* Mute/Unmute button positioned on the right */}
+          {isHovered && course.videoUrl && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm"
+                  onClick={toggleMute}
+                >
+                  {isMuted ? (
+                    <VolumeX className="h-3.5 w-3.5" />
+                  ) : (
+                    <Volume2 className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isMuted ? 'Unmute' : 'Mute'}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </TooltipProvider>
       </div>
       
@@ -186,7 +209,7 @@ const CourseCarouselMedia: React.FC<CourseCarouselMediaProps> = ({
         </div>
       )}
       {showTrainingCategory && course.trainingCategory && (
-        <div className="absolute bottom-2 left-2">
+        <div className="absolute top-2 left-2">
           <Badge variant="outline" className="bg-black/60 text-white border-none">
             {course.trainingCategory}
           </Badge>
