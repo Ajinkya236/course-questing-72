@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,20 +49,10 @@
 
     --radius: 0.75rem;
     
-    /* Navigation specific colors - Updated to #3535F3 */
-    --nav-bg: 230 89% 58%;
+    /* Navigation specific colors matching the deep blue header */
+    --nav-bg: 214 100% 35%;
     --nav-text-light: 220 13% 28%;
     --nav-text-dark: 210 40% 98%;
-
-    /* Sidebar colors */
-    --sidebar-background: 222 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 214 100% 50%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217 32% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 32% 17%;
-    --sidebar-ring: 214 100% 50%;
   }
 
   /* Dark theme with lighter backgrounds */
@@ -99,15 +90,6 @@
     --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 214 100% 50%;
-
-    --sidebar-background: 222 84% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 214 100% 50%;
-    --sidebar-primary-foreground: 222 84% 4.9%;
-    --sidebar-accent: 217 32% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 32% 17%;
-    --sidebar-ring: 214 100% 50%;
   }
 }
 
@@ -128,33 +110,24 @@
   
   /* Typography hierarchy with Archivo Black for headings */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
+    @apply font-bold tracking-tight text-foreground;
     font-family: 'Archivo Black', system-ui, sans-serif;
   }
   
-  /* Responsive heading colors for better contrast */
-  .text-heading-light {
-    @apply text-gray-800;
-  }
-  
-  .text-heading-dark {
-    @apply text-white;
-  }
-  
   h1 {
-    @apply text-2xl md:text-3xl text-heading-light dark:text-heading-dark;
+    @apply text-2xl md:text-3xl;
   }
   
   h2 {
-    @apply text-xl md:text-2xl text-heading-light dark:text-heading-dark;
+    @apply text-xl md:text-2xl;
   }
   
   h3 {
-    @apply text-lg md:text-xl text-heading-light dark:text-heading-dark;
+    @apply text-lg md:text-xl;
   }
 
   h4 {
-    @apply text-base md:text-lg text-heading-light dark:text-heading-dark;
+    @apply text-base md:text-lg;
   }
 
   /* Professional body text */
@@ -163,21 +136,13 @@
   }
 
   .skill-title {
-    @apply font-medium;
+    @apply font-medium text-foreground;
     font-family: 'Archivo Black', system-ui, sans-serif;
-    @apply text-heading-light dark:text-heading-dark;
   }
   
   .course-title {
-    @apply font-semibold;
+    @apply font-semibold text-foreground;
     font-family: 'Archivo Black', system-ui, sans-serif;
-    @apply text-heading-light dark:text-heading-dark;
-  }
-
-  .section-title {
-    @apply font-bold;
-    font-family: 'Archivo Black', system-ui, sans-serif;
-    @apply text-heading-light dark:text-heading-dark;
   }
 }
 
@@ -186,10 +151,10 @@
     @apply sticky top-0 z-50 bg-background/95 backdrop-blur;
   }
   
-  /* Navigation with updated #3535F3 color */
+  /* Navigation with deep blue background from images */
   .top-navigation {
     @apply w-full sticky top-0 z-10 shadow-sm;
-    background-color: #3535F3;
+    background-color: hsl(var(--jio-dark));
   }
   
   .nav-item {
