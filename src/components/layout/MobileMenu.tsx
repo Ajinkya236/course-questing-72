@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, BrainCircuit, Trophy, Users, Search } from 'lucide-react';
+import { Home, BookOpen, BrainCircuit, Trophy, Users, Search, UserCheck, CalendarDays } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import SkillSearch from '../skills/SkillSearch';
 
@@ -72,14 +72,34 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           Skills
         </Link>
         <Link
+          to="/my-team"
+          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+            isActive('/my-team') ? 'bg-secondary' : 'hover:bg-secondary/50'
+          }`}
+          onClick={onClose}
+        >
+          <Users className="h-4 w-4" />
+          My Team
+        </Link>
+        <Link
           to="/mentoring"
           className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
             isActive('/mentoring') ? 'bg-secondary' : 'hover:bg-secondary/50'
           }`}
           onClick={onClose}
         >
-          <Users className="h-4 w-4" />
+          <UserCheck className="h-4 w-4" />
           Mentoring
+        </Link>
+        <Link
+          to="/events"
+          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
+            isActive('/events') ? 'bg-secondary' : 'hover:bg-secondary/50'
+          }`}
+          onClick={onClose}
+        >
+          <CalendarDays className="h-4 w-4" />
+          Events
         </Link>
         <div className="relative w-full mt-2">
           {isSkillsPage ? (

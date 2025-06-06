@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,9 @@ import {
   Compass, 
   BookOpen, 
   Users, 
-  Headphones,
+  UserCheck,
   Sparkles,
+  CalendarDays,
   Menu,
   X
 } from "lucide-react";
@@ -48,7 +48,12 @@ const navigationItems = [
   {
     title: "Mentoring",
     url: "/mentoring",
-    icon: Headphones,
+    icon: UserCheck,
+  },
+  {
+    title: "Events",
+    url: "/events",
+    icon: CalendarDays,
   },
 ];
 
