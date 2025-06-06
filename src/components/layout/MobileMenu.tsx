@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, BrainCircuit, Trophy, Users, Search, UserCheck, CalendarDays } from 'lucide-react';
+import { Home, BookOpen, BrainCircuit, Trophy, Users, Search, GraduationCap, PartyPopper } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import SkillSearch from '../skills/SkillSearch';
 
@@ -88,7 +88,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           }`}
           onClick={onClose}
         >
-          <UserCheck className="h-4 w-4" />
+          <GraduationCap className="h-4 w-4" />
           Mentoring
         </Link>
         <Link
@@ -98,7 +98,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           }`}
           onClick={onClose}
         >
-          <CalendarDays className="h-4 w-4" />
+          <PartyPopper className="h-4 w-4" />
           Events
         </Link>
         <div className="relative w-full mt-2">

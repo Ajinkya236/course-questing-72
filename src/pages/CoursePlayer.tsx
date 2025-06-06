@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -123,7 +122,7 @@ const mockGamificationData = {
 const CoursePlayer: React.FC = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // Changed to true for open by default
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [userRating, setUserRating] = useState<number | null>(null);
   const [currentActivityId, setCurrentActivityId] = useState<string>("a1");
@@ -340,7 +339,7 @@ const CoursePlayer: React.FC = () => {
           currentActivityId={currentActivityId}
         />
         
-        <div className="flex-1 overflow-auto">
+        <div className={`flex-1 overflow-auto transition-all duration-300 ${isSidebarOpen ? '' : 'ml-0'}`}>
           <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b p-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
               {!isFullscreen && (
@@ -348,7 +347,12 @@ const CoursePlayer: React.FC = () => {
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
               )}
-              <Button variant="outline" size="icon" onClick={toggleSidebar}>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={toggleSidebar}
+                className={isSidebarOpen ? "bg-primary text-primary-foreground" : ""}
+              >
                 <Menu className="h-5 w-5" />
               </Button>
               <h1 className="text-lg font-semibold truncate max-w-[300px] md:max-w-md">
@@ -411,7 +415,7 @@ const CoursePlayer: React.FC = () => {
             </div>
           </div>
           
-          <div className={`aspect-video w-full ${isFullscreen ? 'h-screen' : ''}`}>
+          <div className={`w-full transition-all duration-300 ${isFullscreen ? 'h-screen' : 'aspect-video'}`}>
             {renderActivityContent()}
           </div>
           
