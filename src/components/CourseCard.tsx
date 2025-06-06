@@ -90,8 +90,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
     navigate(`/course/${id}`);
   }, [id, navigate, showShareDialog, showAssignDialog]);
 
-  const handleWatchClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  // Fix: Make handleWatchClick parameter-less to match the expected signature
+  const handleWatchClick = useCallback(() => {
     navigate(`/course/${id}`);
   }, [id, navigate]);
 

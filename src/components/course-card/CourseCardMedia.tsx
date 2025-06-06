@@ -20,7 +20,7 @@ interface CourseCardMediaProps {
   toggleMute: (e: React.MouseEvent) => void;
   onImageError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
   isBookmarked: boolean;
-  handleWatchClick: (e: React.MouseEvent) => void;
+  handleWatchClick: () => void; // Fixed: Changed from (e: React.MouseEvent) => void to () => void
   handleShareClick: (e: React.MouseEvent) => void;
   handleBookmarkToggle: (e: React.MouseEvent) => void;
   handleAssignClick: (e: React.MouseEvent) => void;
