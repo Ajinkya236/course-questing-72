@@ -148,6 +148,9 @@ const EvaluationForm: React.FC = () => {
       const formattedSubmissionData: SubmissionData = {
         ...submissionData,
         module_status: submissionData.module_status as 'pass' | 'fail' | null,
+        submissions: Array.isArray(submissionData.submissions) 
+          ? submissionData.submissions as Submission[]
+          : [],
         profiles: profileData ? {
           first_name: profileData.first_name || '',
           last_name: profileData.last_name || ''
