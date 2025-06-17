@@ -301,6 +301,44 @@ export type Database = {
         }
         Relationships: []
       }
+      evaluations: {
+        Row: {
+          activity_score: number | null
+          evaluated_at: string | null
+          evaluator_id: string | null
+          feedback: Json
+          id: string
+          module_status: string | null
+          submission_id: string | null
+        }
+        Insert: {
+          activity_score?: number | null
+          evaluated_at?: string | null
+          evaluator_id?: string | null
+          feedback?: Json
+          id?: string
+          module_status?: string | null
+          submission_id?: string | null
+        }
+        Update: {
+          activity_score?: number | null
+          evaluated_at?: string | null
+          evaluator_id?: string | null
+          feedback?: Json
+          id?: string
+          module_status?: string | null
+          submission_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "ojt_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mentors: {
         Row: {
           availability: string | null
@@ -369,6 +407,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      ojt_activities: {
+        Row: {
+          activity_name: string
+          course_id: string
+          created_at: string | null
+          id: string
+          module_id: string
+          questions: Json
+          updated_at: string | null
+        }
+        Insert: {
+          activity_name: string
+          course_id: string
+          created_at?: string | null
+          id?: string
+          module_id: string
+          questions?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          activity_name?: string
+          course_id?: string
+          created_at?: string | null
+          id?: string
+          module_id?: string
+          questions?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ojt_submissions: {
+        Row: {
+          activity_id: string | null
+          activity_score: number | null
+          employee_code: string | null
+          id: string
+          module_status: string | null
+          status: string | null
+          submissions: Json
+          submitted_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          activity_score?: number | null
+          employee_code?: string | null
+          id?: string
+          module_status?: string | null
+          status?: string | null
+          submissions?: Json
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          activity_score?: number | null
+          employee_code?: string | null
+          id?: string
+          module_status?: string | null
+          status?: string | null
+          submissions?: Json
+          submitted_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ojt_submissions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "ojt_activities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -516,15 +628,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "evaluator" | "super_evaluator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -639,6 +778,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "evaluator", "super_evaluator", "user"],
+    },
   },
 } as const

@@ -8,7 +8,8 @@ import {
   HelpCircle, 
   MessageSquare, 
   Trophy, 
-  Bell 
+  Bell,
+  ClipboardList
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -23,6 +24,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from "@/hooks/use-toast";
+import { useUserRole } from '@/hooks/useUserRole';
+import { useContext } from 'react';
+import { AuthContext } from '@/contexts/AuthContext';
 
 interface UserMenuProps {
   avatarSrc?: string;
@@ -34,14 +38,23 @@ const UserMenu: React.FC<UserMenuProps> = ({
   avatarFallback = "SC" 
 }) => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+  const { isEvaluator } = useUserRole();
 
-  const handleLogout = () => {
-    // Implement your logout logic here
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Logout failed",
+        description: "An error occurred during logout",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -87,6 +100,17 @@ const UserMenu: React.FC<UserMenuProps> = ({
             <span>Milestones</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {isEvaluator && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => navigate('/evaluator')}>
+                <ClipboardList className="mr-2 h-4 w-4" />
+                <span>Evaluator Dashboard</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => navigate('/support')}>

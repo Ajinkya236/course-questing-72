@@ -12,6 +12,8 @@ import Home from './pages/Home';
 import SkillAssessment from './pages/SkillAssessment';
 import Index from './pages/Index';
 import Events from './pages/Events';
+import EvaluatorDashboard from './pages/EvaluatorDashboard';
+import EvaluationForm from './pages/EvaluationForm';
 
 // Import non-lazy components first
 import SignIn from './pages/SignIn';
@@ -69,9 +71,9 @@ function App() {
     <div className="App">
       <ShadcnThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <ThemeProvider>
-          <Router>
-            <QueryClientProvider client={queryClient}>
-              <SpinTheWheelProvider>
+          <QueryClientProvider client={queryClient}>
+            <SpinTheWheelProvider>
+              <Router>
                 <AuthProvider>
                   <Routes>
                     <Route path="/sign-in" element={<SignIn />} />
@@ -110,6 +112,10 @@ function App() {
                       
                       <Route path="/skills/:skillId/assessment" element={<SkillAssessment />} />
                       
+                      <Route path="/evaluator" element={<PageLayout><EvaluatorDashboard /></PageLayout>} />
+                      <Route path="/evaluator/evaluate/:submissionId" element={<PageLayout><EvaluationForm /></PageLayout>} />
+                      <Route path="/evaluator/view/:submissionId" element={<PageLayout><EvaluationForm /></PageLayout>} />
+                      
                       <Route path="/admin/dashboard" element={<PageLayout><Suspense fallback={<PageLoader />}><AdminDashboard /></Suspense></PageLayout>} />
                       <Route path="/admin/courses" element={<PageLayout><Suspense fallback={<PageLoader />}><AdminCourses /></Suspense></PageLayout>} />
                       <Route path="/admin/modules" element={<PageLayout><Suspense fallback={<PageLoader />}><AdminModules /></Suspense></PageLayout>} />
@@ -129,9 +135,9 @@ function App() {
                     <Route path="*" element={<Suspense fallback={<PageLoader />}><NotFound /></Suspense>} />
                   </Routes>
                 </AuthProvider>
-              </SpinTheWheelProvider>
-            </QueryClientProvider>
-          </Router>
+              </Router>
+            </SpinTheWheelProvider>
+          </QueryClientProvider>
         </ThemeProvider>
       </ShadcnThemeProvider>
     </div>
