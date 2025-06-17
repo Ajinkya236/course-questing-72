@@ -39,7 +39,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
 }) => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
-  const { isEvaluator } = useUserRole();
+  const { isEvaluator, loading: roleLoading } = useUserRole();
 
   const handleLogout = async () => {
     try {
@@ -100,7 +100,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
             <span>Milestones</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        {isEvaluator && (
+        {!roleLoading && isEvaluator && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
