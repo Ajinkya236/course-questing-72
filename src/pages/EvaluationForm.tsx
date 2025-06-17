@@ -116,10 +116,6 @@ const EvaluationForm: React.FC = () => {
             course_id,
             module_id,
             questions
-          ),
-          profiles (
-            first_name,
-            last_name
           )
         `)
         .eq('id', submissionId)
@@ -127,29 +123,58 @@ const EvaluationForm: React.FC = () => {
 
       if (submissionError) throw submissionError;
 
+      // Fetch profile separately
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', submissionData.user_id)
+        .single();
+
       // Fetch evaluations for this submission
       const { data: evaluationsData, error: evaluationsError } = await supabase
         .from('evaluations')
-        .select(`
-          *,
-          profiles (
-            first_name,
-            last_name
-          )
-        `)
+        .select('*')
         .eq('submission_id', submissionId);
 
       if (evaluationsError) throw evaluationsError;
 
-      setSubmission(submissionData);
-      setEvaluations(evaluationsData || []);
+      // Fetch evaluator profiles
+      const evaluatorIds = evaluationsData?.map(e => e.evaluator_id).filter(Boolean) || [];
+      const { data: evaluatorProfiles } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', evaluatorIds);
+
+      const formattedSubmissionData: SubmissionData = {
+        ...submissionData,
+        module_status: submissionData.module_status as 'pass' | 'fail' | null,
+        profiles: profileData ? {
+          first_name: profileData.first_name || '',
+          last_name: profileData.last_name || ''
+        } : null
+      };
+
+      const formattedEvaluations: EvaluationData[] = evaluationsData?.map(evaluation => {
+        const evaluatorProfile = evaluatorProfiles?.find(p => p.id === evaluation.evaluator_id);
+        return {
+          ...evaluation,
+          module_status: evaluation.module_status as 'pass' | 'fail',
+          profiles: evaluatorProfile ? {
+            first_name: evaluatorProfile.first_name || '',
+            last_name: evaluatorProfile.last_name || ''
+          } : null
+        };
+      }) || [];
+
+      setSubmission(formattedSubmissionData);
+      setEvaluations(formattedEvaluations);
       
       // Check if already evaluated
-      const hasEvaluation = evaluationsData && evaluationsData.length > 0;
+      const hasEvaluation = formattedEvaluations && formattedEvaluations.length > 0;
       setIsViewMode(hasEvaluation);
       
       if (hasEvaluation) {
-        const latestEvaluation = evaluationsData[0];
+        const latestEvaluation = formattedEvaluations[0];
         setActivityScore(latestEvaluation.activity_score);
         setModuleStatus(latestEvaluation.module_status);
       }

@@ -84,29 +84,38 @@ const EvaluatorDashboard: React.FC = () => {
             id,
             evaluator_id,
             evaluated_at
-          ),
-          profiles (
-            first_name,
-            last_name
           )
         `)
         .order('submitted_at', { ascending: false });
 
       if (error) throw error;
 
-      const formattedSubmissions: Submission[] = data?.map(submission => ({
-        id: submission.id,
-        employee_code: submission.employee_code || '',
-        user_id: submission.user_id,
-        activity_id: submission.activity_id,
-        submitted_at: submission.submitted_at,
-        status: submission.status,
-        activity_score: submission.activity_score,
-        module_status: submission.module_status,
-        activity: submission.ojt_activities,
-        evaluations: submission.evaluations || [],
-        profiles: submission.profiles
-      })) || [];
+      // Fetch profiles separately to avoid the relation error
+      const userIds = data?.map(submission => submission.user_id).filter(Boolean) || [];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', userIds);
+
+      const formattedSubmissions: Submission[] = data?.map(submission => {
+        const profile = profilesData?.find(p => p.id === submission.user_id);
+        return {
+          id: submission.id,
+          employee_code: submission.employee_code || '',
+          user_id: submission.user_id,
+          activity_id: submission.activity_id,
+          submitted_at: submission.submitted_at,
+          status: submission.status,
+          activity_score: submission.activity_score,
+          module_status: submission.module_status as 'pass' | 'fail' | null,
+          activity: submission.ojt_activities,
+          evaluations: submission.evaluations || [],
+          profiles: profile ? {
+            first_name: profile.first_name || '',
+            last_name: profile.last_name || ''
+          } : null
+        };
+      }) || [];
 
       setSubmissions(formattedSubmissions);
     } catch (error: any) {
