@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -149,8 +148,14 @@ const EvaluationForm: React.FC = () => {
         ...submissionData,
         module_status: submissionData.module_status as 'pass' | 'fail' | null,
         submissions: Array.isArray(submissionData.submissions) 
-          ? submissionData.submissions as Submission[]
+          ? (submissionData.submissions as unknown as Submission[])
           : [],
+        ojt_activities: {
+          ...submissionData.ojt_activities,
+          questions: Array.isArray(submissionData.ojt_activities.questions)
+            ? (submissionData.ojt_activities.questions as unknown as Question[])
+            : []
+        },
         profiles: profileData ? {
           first_name: profileData.first_name || '',
           last_name: profileData.last_name || ''
