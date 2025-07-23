@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient } from 'react-query';
@@ -41,18 +42,18 @@ function App() {
                   <Route path="/courses" element={<Courses />} />
                   <Route path="/courses/:id" element={<CourseDetail />} />
                   <Route path="/events" element={<Events />} />
+                  <Route path="/events/:id" element={<EventDetail />} />
                   <Route path="/spin-the-wheel" element={<ProtectedRoute><SpinTheWheel /></ProtectedRoute>} />
                   <Route path="/rewards" element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
                   <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard />} />
-                  <Route path="/profile" element={<ProtectedRoute><Profile />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                   <Route path="/admin/courses/create" element={<AdminRoute><CreateCourse /></AdminRoute>} />
                   <Route path="/admin/courses/edit/:id" element={<AdminRoute><EditCourse /></AdminRoute>} />
                   <Route path="/admin/events/create" element={<AdminRoute><CreateEvent /></AdminRoute>} />
                   <Route path="/admin/events/edit/:id" element={<AdminRoute><EditEvent /></AdminRoute>} />
                   <Route path="/admin/users" element={<AdminRoute><Users /></AdminRoute>} />
-                  <Route path="/events/:id" element={<EventDetail />} />
                 </Routes>
                 <Toaster />
               </div>
