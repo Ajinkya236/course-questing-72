@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import PageLayout from '@/components/layout/PageLayout';
 
 interface Event {
   id: string;
@@ -221,7 +222,7 @@ const Events: React.FC = () => {
   };
 
   return (
-    <>
+    <PageLayout>
       <Helmet>
         <title>Events | Learning Management System</title>
       </Helmet>
@@ -499,7 +500,7 @@ const Events: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </PageLayout>
   );
 };
 

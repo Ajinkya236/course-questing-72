@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, MapPin, Clock, Users, FileText } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import PageLayout from '@/components/layout/PageLayout';
 
 // Mock event data (in a real app, this would come from an API)
 const mockEvents = [{
@@ -80,26 +81,29 @@ const mockEvents = [{
   location: 'Hyderabad Tech Hub',
   agenda: ['Strategic technology planning', 'Team leadership skills', 'Innovation management', 'Cross-functional collaboration']
 }];
+
 const EventDetail: React.FC = () => {
-  const {
-    id
-  } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const event = mockEvents.find(e => e.id === id);
+
   if (!event) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
-          <p className="text-gray-600 mb-4">The event you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/events')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Events
-          </Button>
+    return (
+      <PageLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
+            <p className="text-gray-600 mb-4">The event you're looking for doesn't exist.</p>
+            <Button onClick={() => navigate('/events')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Events
+            </Button>
+          </div>
         </div>
-      </div>;
+      </PageLayout>
+    );
   }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -108,7 +112,9 @@ const EventDetail: React.FC = () => {
       day: 'numeric'
     });
   };
-  return <>
+
+  return (
+    <PageLayout>
       <Helmet>
         <title>{event.name} | Events</title>
       </Helmet>
@@ -155,8 +161,19 @@ const EventDetail: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center gap-2 text-gray-600">
-                    
-                    
+                    <Users className="h-5 w-5" />
+                    <div>
+                      <p className="font-medium">Participants</p>
+                      <p className="text-sm">{event.participants}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin className="h-5 w-5" />
+                    <div>
+                      <p className="font-medium">Location</p>
+                      <p className="text-sm">{event.location}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,8 +186,63 @@ const EventDetail: React.FC = () => {
         </div>
 
         {/* Event Details */}
-        
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <Card className="bg-white shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <h2 className="text-xl font-semibold">Event Agenda</h2>
+                  </div>
+                  <ul className="space-y-3">
+                    {event.agenda.map((item, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm">
+                          {index + 1}
+                        </span>
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div>
+              <Card className="bg-white shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">Event Information</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-500">Academy</p>
+                      <p className="font-medium">{event.academy}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Status</p>
+                      <Badge variant={event.status === 'OPEN' ? 'default' : 'secondary'}>
+                        {event.status}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Duration</p>
+                      <p className="font-medium">
+                        {Math.ceil((new Date(event.endDate).getTime() - new Date(event.startDate).getTime()) / (1000 * 60 * 60 * 24))} days
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Participants</p>
+                      <p className="font-medium">{event.participants} registered</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
-    </>;
+    </PageLayout>
+  );
 };
+
 export default EventDetail;
