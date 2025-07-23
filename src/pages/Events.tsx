@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
-import { Search, List, Grid, ChevronDown, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown, UserPlus, Bookmark, Share2, Calendar, Clock, MapPin } from 'lucide-react';
+import { Search, Filter, List, Grid, ChevronDown, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown, UserPlus, Bookmark, Share2, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,7 @@ import {
   DialogFooter 
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import PageLayout from '@/components/layout/PageLayout';
+import { useState as useLocalState } from 'react';
 
 interface Event {
   id: string;
@@ -32,9 +31,6 @@ interface Event {
   startDate: string;
   endDate: string;
   description: string;
-  location?: string;
-  capacity?: number;
-  enrolled?: number;
 }
 
 // Mock events data
@@ -47,10 +43,7 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-01-15',
     endDate: '2024-01-20',
-    description: 'Construction skills assessment and training event',
-    location: 'Mumbai Training Center',
-    capacity: 50,
-    enrolled: 45
+    description: 'Construction skills assessment and training event'
   },
   {
     id: '2',
@@ -60,10 +53,7 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-02-01',
     endDate: '2024-02-05',
-    description: 'Sales team training and evaluation',
-    location: 'Delhi Regional Office',
-    capacity: 30,
-    enrolled: 28
+    description: 'Sales team training and evaluation'
   },
   {
     id: '3',
@@ -73,10 +63,7 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-02-10',
     endDate: '2024-02-15',
-    description: 'Technical skills workshop',
-    location: 'Bangalore Tech Hub',
-    capacity: 40,
-    enrolled: 35
+    description: 'Technical skills workshop'
   },
   {
     id: '4',
@@ -86,10 +73,7 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-03-01',
     endDate: '2024-03-10',
-    description: 'HR processes and policies training',
-    location: 'Corporate Headquarters',
-    capacity: 60,
-    enrolled: 25
+    description: 'HR processes and policies training'
   },
   {
     id: '5',
@@ -99,10 +83,7 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-03-15',
     endDate: '2024-03-20',
-    description: 'Leadership and technology strategy',
-    location: 'Innovation Center',
-    capacity: 25,
-    enrolled: 25
+    description: 'Leadership and technology strategy'
   },
   {
     id: '6',
@@ -112,14 +93,12 @@ const mockEvents: Event[] = [
     image: '/placeholder.svg',
     startDate: '2024-04-01',
     endDate: '2024-04-05',
-    description: 'Technology leadership workshop',
-    location: 'Tech Campus',
-    capacity: 35,
-    enrolled: 32
+    description: 'Technology leadership workshop'
   }
 ];
 
 const academies = [
+  'All',
   'JFP - Construction',
   'JFP - Sales', 
   'Workera',
@@ -136,13 +115,12 @@ const Events: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Date(↑)');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedAcademy, setSelectedAcademy] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState('Open');
+  const [selectedAcademy, setSelectedAcademy] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [showEventDetail, setShowEventDetail] = useState<Event | null>(null);
   const [showShareDialog, setShowShareDialog] = useState<Event | null>(null);
   const [shareEmployeeIds, setShareEmployeeIds] = useState('');
-  const [showAcademyDropdown, setShowAcademyDropdown] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const sortOptions = [
     'Date(↑)', 'Date(↓)', 'Name (A-Z)', 'Name (Z-A)'
@@ -158,8 +136,8 @@ const Events: React.FC = () => {
     let filtered = mockEvents.filter(event => {
       const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            event.id.includes(searchQuery);
-      const matchesAcademy = selectedAcademy === null || event.academy === selectedAcademy;
-      const matchesStatus = statusFilter === 'All' || event.status === statusFilter.toUpperCase();
+      const matchesAcademy = selectedAcademy === 'All' || event.academy === selectedAcademy;
+      const matchesStatus = statusFilter === 'All' || event.status === statusFilter;
       
       return matchesSearch && matchesAcademy && matchesStatus;
     });
@@ -184,7 +162,7 @@ const Events: React.FC = () => {
   }, [searchQuery, selectedAcademy, statusFilter, sortBy]);
 
   const handleEventClick = (event: Event) => {
-    navigate(`/events/${event.id}`);
+    setShowEventDetail(event);
   };
 
   const handleAssignToMe = (event: Event) => {
@@ -226,69 +204,45 @@ const Events: React.FC = () => {
     setShareEmployeeIds('');
   };
 
-  const handleAcademySelect = (academy: string) => {
-    setSelectedAcademy(academy);
-    setShowAcademyDropdown(false);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    return status === 'OPEN' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-200';
-  };
-
   return (
-    <PageLayout>
+    <>
       <Helmet>
         <title>Events | Learning Management System</title>
       </Helmet>
       
       <div className="min-h-screen bg-gray-50">
-        {/* Events Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-6 mb-6">
+        {/* White Navigation Bar */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3">
           <div className="container mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Events</h1>
-              <div className="text-sm text-gray-600">
-                Total search result: {filteredAndSortedEvents.length}
-              </div>
-            </div>
-            
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* Search Bar */}
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search events by name or ID..."
+                  placeholder="Event Name or ID"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-10"
                 />
               </div>
 
               {/* Sort By Dropdown */}
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                <span className="text-sm font-medium">Sort by:</span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2 border-gray-300">
+                    <Button variant="outline" className="flex items-center gap-2">
                       {getSortIcon(sortBy)}
                       {sortBy}
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
+                  <DropdownMenuContent>
                     {sortOptions.map((option) => (
                       <DropdownMenuItem
                         key={option}
                         onClick={() => setSortBy(option)}
-                        className="flex items-center gap-2 hover:bg-gray-50"
+                        className="flex items-center gap-2"
                       >
                         {getSortIcon(option)}
                         {option}
@@ -304,7 +258,6 @@ const Events: React.FC = () => {
                   variant={viewMode === 'list' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className="border-gray-300"
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -312,89 +265,47 @@ const Events: React.FC = () => {
                   variant={viewMode === 'grid' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className="border-gray-300"
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Academy Filter */}
-            <div className="mt-6">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-sm font-medium text-gray-700">Filter by Academy:</span>
-                <DropdownMenu open={showAcademyDropdown} onOpenChange={setShowAcademyDropdown}>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="border-gray-300 hover:bg-gray-50"
-                    >
-                      {selectedAcademy || 'All Academies'}
-                      <ChevronDown className="h-4 w-4 ml-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg max-h-64 overflow-y-auto">
-                    <DropdownMenuItem
-                      onClick={() => handleAcademySelect('')}
-                      className="hover:bg-gray-50"
-                    >
-                      All Academies
-                    </DropdownMenuItem>
-                    {academies.map((academy) => (
-                      <DropdownMenuItem
-                        key={academy}
-                        onClick={() => handleAcademySelect(academy)}
-                        className="hover:bg-gray-50"
-                      >
-                        {academy}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* Academy Bubble Filters */}
-              {selectedAcademy && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge 
-                    variant="secondary" 
-                    className="bg-blue-100 text-blue-800 border-blue-200 px-3 py-1"
-                  >
-                    {selectedAcademy}
-                    <button
-                      onClick={() => setSelectedAcademy(null)}
-                      className="ml-2 text-blue-600 hover:text-blue-800"
-                    >
-                      ×
-                    </button>
-                  </Badge>
-                </div>
-              )}
+            {/* Academy Filter Bubbles */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              {academies.map((academy) => (
+                <Button
+                  key={academy}
+                  variant={selectedAcademy === academy ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedAcademy(academy)}
+                  className="rounded-full"
+                >
+                  {academy}
+                </Button>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Status Filter Buttons */}
-        <div className="container mx-auto px-4 mb-6">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex gap-2">
             <Button
               variant={statusFilter === 'All' ? 'default' : 'outline'}
               onClick={() => setStatusFilter('All')}
-              className="border-gray-300"
             >
               All
             </Button>
             <Button
-              variant={statusFilter === 'Open' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('Open')}
-              className="border-gray-300"
+              variant={statusFilter === 'OPEN' ? 'default' : 'outline'}
+              onClick={() => setStatusFilter('OPEN')}
             >
               Open
             </Button>
             <Button
-              variant={statusFilter === 'Closed' ? 'outline' : 'outline'}
-              onClick={() => setStatusFilter('Closed')}
-              className="border-gray-300"
+              variant={statusFilter === 'CLOSED' ? 'default' : 'outline'}
+              onClick={() => setStatusFilter('CLOSED')}
             >
               Closed
             </Button>
@@ -403,33 +314,39 @@ const Events: React.FC = () => {
 
         {/* Events Grid/List */}
         <div className="container mx-auto px-4 pb-8">
+          <div className="mb-4 text-right">
+            <span className="text-sm text-gray-600">
+              Total search result: {filteredAndSortedEvents.length}
+            </span>
+          </div>
+
           <div className={viewMode === 'grid' 
             ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
             : 'space-y-4'
           }>
             {filteredAndSortedEvents.map((event) => (
-              <Card key={event.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-gray-200 bg-white">
+              <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
                     src={event.image}
                     alt={event.name}
-                    className="w-full h-48 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-48 object-cover cursor-pointer"
                     onClick={() => handleEventClick(event)}
                   />
-                  <div className="absolute top-3 left-3">
-                    <Badge className={`${getStatusColor(event.status)} font-medium`}>
-                      {event.status}
-                    </Badge>
-                  </div>
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
+                  <Badge 
+                    variant={event.status === 'OPEN' ? 'default' : 'secondary'}
+                    className="absolute top-2 left-2"
+                  >
+                    {event.status}
+                  </Badge>
                 </div>
                 
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-start mb-3">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
-                      <p className="text-sm text-blue-600 font-medium mb-1">{event.academy}</p>
+                      <p className="text-sm text-gray-600 mb-1">{event.academy}</p>
                       <h3 
-                        className="font-semibold text-lg text-gray-900 cursor-pointer hover:text-blue-600 transition-colors line-clamp-2"
+                        className="font-semibold text-lg cursor-pointer hover:text-blue-600"
                         onClick={() => handleEventClick(event)}
                       >
                         {event.name}
@@ -438,64 +355,79 @@ const Events: React.FC = () => {
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
-                        <DropdownMenuItem onClick={() => handleAssignToMe(event)} className="hover:bg-gray-50">
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleAssignToMe(event)}>
                           <UserPlus className="h-4 w-4 mr-2" />
                           Assign to me
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSaveEvent(event)} className="hover:bg-gray-50">
+                        <DropdownMenuItem onClick={() => handleSaveEvent(event)}>
                           <Bookmark className="h-4 w-4 mr-2" />
                           Save
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleShareEvent(event)} className="hover:bg-gray-50">
+                        <DropdownMenuItem onClick={() => handleShareEvent(event)}>
                           <Share2 className="h-4 w-4 mr-2" />
                           Share
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {formatDate(event.startDate)} - {formatDate(event.endDate)}
-                    </div>
-                    {event.location && (
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {event.location}
-                      </div>
-                    )}
-                    {event.capacity && (
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="h-4 w-4 mr-2" />
-                        {event.enrolled || 0}/{event.capacity} enrolled
-                      </div>
-                    )}
-                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          {filteredAndSortedEvents.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-lg mb-2">No events found</div>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-            </div>
-          )}
         </div>
       </div>
 
+      {/* Event Detail Dialog */}
+      <Dialog open={!!showEventDetail} onOpenChange={() => setShowEventDetail(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowEventDetail(null)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <DialogTitle>{showEventDetail?.name}</DialogTitle>
+            </div>
+          </DialogHeader>
+          
+          {showEventDetail && (
+            <div className="space-y-4">
+              <img
+                src={showEventDetail.image}
+                alt={showEventDetail.name}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+              
+              <div className="space-y-2">
+                <p><strong>Academy:</strong> {showEventDetail.academy}</p>
+                <p><strong>Status:</strong> 
+                  <Badge 
+                    variant={showEventDetail.status === 'OPEN' ? 'default' : 'secondary'}
+                    className="ml-2"
+                  >
+                    {showEventDetail.status}
+                  </Badge>
+                </p>
+                <p><strong>Start Date:</strong> {new Date(showEventDetail.startDate).toLocaleDateString()}</p>
+                <p><strong>End Date:</strong> {new Date(showEventDetail.endDate).toLocaleDateString()}</p>
+                <p><strong>Description:</strong> {showEventDetail.description}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Share Dialog */}
       <Dialog open={!!showShareDialog} onOpenChange={() => setShowShareDialog(null)}>
-        <DialogContent className="bg-white">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Share Event</DialogTitle>
           </DialogHeader>
@@ -508,7 +440,6 @@ const Events: React.FC = () => {
                 placeholder="EMP001, EMP002, EMP003..."
                 value={shareEmployeeIds}
                 onChange={(e) => setShareEmployeeIds(e.target.value)}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -523,7 +454,7 @@ const Events: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageLayout>
+    </>
   );
 };
 
