@@ -1,7 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import SpinTheWheelDialog from '@/components/gamification/SpinTheWheelDialog';
 
 type SpinTheWheelContextType = {
   openSpinTheWheel: () => void;
@@ -19,19 +18,7 @@ export const SpinTheWheelProvider = ({ children }: { children: ReactNode }) => {
   return (
     <SpinTheWheelContext.Provider value={{ openSpinTheWheel, closeSpinTheWheel }}>
       {children}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Spin The Wheel</DialogTitle>
-          </DialogHeader>
-          <div className="p-6 text-center">
-            <p>Spin the wheel feature coming soon!</p>
-            <Button onClick={closeSpinTheWheel} className="mt-4">
-              Close
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SpinTheWheelDialog open={open} onOpenChange={setOpen} />
     </SpinTheWheelContext.Provider>
   );
 };
