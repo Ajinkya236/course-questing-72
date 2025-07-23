@@ -1,27 +1,18 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Search, Filter, List, Grid, ChevronDown, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown, UserPlus, Bookmark, Share2, ArrowLeft } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Search, Filter, Calendar, MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
-} from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { CarouselFilters } from '@/components/ui/carousel/carousel-filters';
 
 interface Event {
   id: string;
@@ -34,7 +25,6 @@ interface Event {
   description: string;
 }
 
-// Mock events data
 const mockEvents: Event[] = [
   {
     id: '1',
@@ -98,125 +88,33 @@ const mockEvents: Event[] = [
   }
 ];
 
-const academies = [
-  'JFP - Construction',
-  'JFP - Sales', 
-  'Workera',
-  'Human Resource',
-  'Mobility JC',
-  'Corporate Services',
-  'Enterprise Products',
-  'Facility Operations',
-  'Supply Chain Management (SCM)',
-  'JioFiber Partner'
-];
-
 const Events: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('Date(↑)');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedAcademy, setSelectedAcademy] = useState('');
-  const [showAcademyFilters, setShowAcademyFilters] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('Open');
-  const [showShareDialog, setShowShareDialog] = useState<Event | null>(null);
-  const [shareEmployeeIds, setShareEmployeeIds] = useState('');
-  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<'All' | 'Open' | 'Closed'>('Open');
+  const [selectedAcademy, setSelectedAcademy] = useState<string>('');
+  const [showAcademyFilter, setShowAcademyFilter] = useState(false);
 
-  const sortOptions = [
-    'Date(↑)', 'Date(↓)', 'Name (A-Z)', 'Name (Z-A)'
-  ];
+  const academies = Array.from(new Set(mockEvents.map(event => event.academy)));
 
-  const getSortIcon = (option: string) => {
-    if (option.includes('↑')) return <ArrowUp className="h-3 w-3" />;
-    if (option.includes('↓')) return <ArrowDown className="h-3 w-3" />;
-    return <ArrowUpDown className="h-3 w-3" />;
-  };
-
-  const filteredAndSortedEvents = React.useMemo(() => {
-    let filtered = mockEvents.filter(event => {
-      const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           event.id.includes(searchQuery);
-      const matchesAcademy = !selectedAcademy || event.academy === selectedAcademy;
-      const matchesStatus = statusFilter === 'All' || event.status === statusFilter.toUpperCase();
-      
-      return matchesSearch && matchesAcademy && matchesStatus;
-    });
-
-    // Sort events
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'Date(↑)':
-          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-        case 'Date(↓)':
-          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-        case 'Name (A-Z)':
-          return a.name.localeCompare(b.name);
-        case 'Name (Z-A)':
-          return b.name.localeCompare(a.name);
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [searchQuery, selectedAcademy, statusFilter, sortBy]);
-
-  const handleEventClick = (event: Event) => {
-    navigate(`/events/${event.id}`);
-  };
-
-  const handleAssignToMe = (event: Event) => {
-    toast({
-      title: "Event Assigned",
-      description: `"${event.name}" has been assigned to you and will appear in My Learning > Events > My Events`
-    });
-  };
-
-  const handleSaveEvent = (event: Event) => {
-    toast({
-      title: "Event Saved",
-      description: `"${event.name}" has been saved and will appear in My Learning > Events > Saved Events`
-    });
-  };
-
-  const handleShareEvent = (event: Event) => {
-    setShowShareDialog(event);
-  };
-
-  const handleShareSubmit = () => {
-    if (!shareEmployeeIds.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter at least one employee ID",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const employeeList = shareEmployeeIds.split(',').map(id => id.trim()).filter(id => id);
+  const filteredEvents = mockEvents.filter(event => {
+    const matchesSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         event.academy.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = selectedStatus === 'All' || 
+                         (selectedStatus === 'Open' && event.status === 'OPEN') ||
+                         (selectedStatus === 'Closed' && event.status === 'CLOSED');
+    const matchesAcademy = !selectedAcademy || event.academy === selectedAcademy;
     
-    toast({
-      title: "Event Shared",
-      description: `"${showShareDialog?.name}" has been shared with ${employeeList.length} employee(s)`
-    });
-    
-    setShowShareDialog(null);
-    setShareEmployeeIds('');
-  };
-
-  const handleAcademyFilterToggle = () => {
-    setShowAcademyFilters(!showAcademyFilters);
-  };
+    return matchesSearch && matchesStatus && matchesAcademy;
+  });
 
   const handleAcademySelect = (academy: string) => {
     setSelectedAcademy(academy);
-    setShowAcademyFilters(false);
+    setShowAcademyFilter(false);
   };
 
   const clearAcademyFilter = () => {
     setSelectedAcademy('');
-    setShowAcademyFilters(false);
+    setShowAcademyFilter(false);
   };
 
   return (
@@ -225,243 +123,188 @@ const Events: React.FC = () => {
         <title>Events | Learning Management System</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gray-50">
-        {/* White Navigation Bar */}
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="container mx-auto">
-            {/* Page Title */}
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Events</h1>
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div className="flex flex-col space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Events</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Discover and participate in learning events, workshops, and training sessions across different academies.
+          </p>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {/* Status Filter */}
+            <div className="flex bg-muted rounded-lg p-1">
+              {['All', 'Open', 'Closed'].map((status) => (
+                <Button
+                  key={status}
+                  variant={selectedStatus === status ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedStatus(status as 'All' | 'Open' | 'Closed')}
+                  className="px-3 py-1 text-sm"
+                >
+                  {status}
+                </Button>
+              ))}
             </div>
 
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Event Name or ID"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Sort By Dropdown */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Sort by:</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      {getSortIcon(sortBy)}
-                      {sortBy}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white border shadow-lg">
-                    {sortOptions.map((option) => (
-                      <DropdownMenuItem
-                        key={option}
-                        onClick={() => setSortBy(option)}
-                        className="flex items-center gap-2"
-                      >
-                        {getSortIcon(option)}
-                        {option}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* View Mode Toggle */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* All Academies Filter */}
-            <div className="mt-4">
+            {/* Academy Filter */}
+            <div className="relative">
               <Button
-                variant={showAcademyFilters ? 'default' : 'outline'}
-                onClick={handleAcademyFilterToggle}
-                className="rounded-full"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAcademyFilter(!showAcademyFilter)}
+                className="flex items-center gap-2"
               >
+                <Filter className="h-4 w-4" />
                 All Academies
-                <ChevronDown className="h-4 w-4 ml-1" />
+                {selectedAcademy && (
+                  <Badge variant="secondary" className="ml-1">
+                    1
+                  </Badge>
+                )}
               </Button>
-              {selectedAcademy && (
-                <Button
-                  variant="outline"
-                  onClick={clearAcademyFilter}
-                  className="rounded-full ml-2"
-                >
-                  {selectedAcademy} ✕
-                </Button>
+              
+              {showAcademyFilter && (
+                <div className="absolute top-full left-0 mt-2 w-72 bg-background border rounded-lg shadow-lg p-4 z-10">
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-sm text-foreground">Filter by Academy</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {academies.map((academy) => (
+                        <Button
+                          key={academy}
+                          variant={selectedAcademy === academy ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handleAcademySelect(academy)}
+                          className="text-xs"
+                        >
+                          {academy}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between pt-2 border-t">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearAcademyFilter}
+                        className="text-xs"
+                      >
+                        Clear
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAcademyFilter(false)}
+                        className="text-xs"
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
-
-            {/* Academy Filter Bubbles */}
-            {showAcademyFilters && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex flex-wrap gap-2">
-                  {academies.map((academy) => (
-                    <Button
-                      key={academy}
-                      variant={selectedAcademy === academy ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleAcademySelect(academy)}
-                      className="rounded-full"
-                    >
-                      {academy}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Status Filter Buttons */}
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex gap-2">
-            <Button
-              variant={statusFilter === 'All' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('All')}
-              className="rounded-full"
-            >
-              All
-            </Button>
-            <Button
-              variant={statusFilter === 'Open' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('Open')}
-              className="rounded-full"
-            >
-              Open
-            </Button>
-            <Button
-              variant={statusFilter === 'Closed' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('Closed')}
-              className="rounded-full"
-            >
-              Closed
-            </Button>
+        {/* Active Filters */}
+        {selectedAcademy && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <Badge variant="secondary" className="flex items-center gap-1">
+              {selectedAcademy}
+              <button
+                onClick={() => setSelectedAcademy('')}
+                className="ml-1 hover:text-destructive"
+              >
+                ×
+              </button>
+            </Badge>
           </div>
-        </div>
+        )}
 
-        {/* Events Grid/List */}
-        <div className="container mx-auto px-4 pb-8">
-          <div className="mb-6 text-right">
-            <span className="text-sm text-gray-600">
-              Total search result: {filteredAndSortedEvents.length}
-            </span>
-          </div>
-
-          <div className={viewMode === 'grid' 
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-            : 'space-y-4'
-          }>
-            {filteredAndSortedEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-200 bg-white border border-gray-200">
-                <div className="relative">
-                  <img
-                    src={event.image}
-                    alt={event.name}
-                    className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => handleEventClick(event)}
-                  />
+        {/* Events Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredEvents.map((event) => (
+            <Card key={event.id} className="group hover:shadow-lg transition-all duration-200 border-0 bg-card/50 backdrop-blur-sm">
+              <CardContent className="p-0">
+                <div className="relative overflow-hidden">
+                  <Link to={`/events/${event.id}`}>
+                    <img
+                      src={event.image}
+                      alt={event.name}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    />
+                  </Link>
                   <Badge 
                     variant={event.status === 'OPEN' ? 'default' : 'secondary'}
-                    className="absolute top-3 left-3 bg-white/90 text-gray-800 border"
+                    className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm"
                   >
                     {event.status}
                   </Badge>
                 </div>
                 
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500 mb-1 font-medium">{event.academy}</p>
-                      <h3 
-                        className="font-semibold text-lg cursor-pointer hover:text-blue-600 transition-colors leading-tight"
-                        onClick={() => handleEventClick(event)}
-                      >
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{event.academy}</span>
+                  </div>
+                  
+                  <div>
+                    <Link to={`/events/${event.id}`}>
+                      <h3 className="font-semibold text-lg text-foreground hover:text-primary transition-colors cursor-pointer line-clamp-2">
                         {event.name}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-2">
-                        {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
-                      </p>
+                    </Link>
+                    <p className="text-muted-foreground text-sm mt-2 line-clamp-3">
+                      {event.description}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      <span>{new Date(event.startDate).toLocaleDateString()}</span>
                     </div>
                     
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-white border shadow-lg">
-                        <DropdownMenuItem onClick={() => handleAssignToMe(event)}>
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Assign to me
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleSaveEvent(event)}>
-                          <Bookmark className="h-4 w-4 mr-2" />
-                          Save
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleShareEvent(event)}>
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {event.status === 'OPEN' && (
+                      <Button size="sm" className="bg-primary hover:bg-primary/90">
+                        <Users className="h-4 w-4 mr-2" />
+                        Join
+                      </Button>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </div>
 
-      {/* Share Dialog */}
-      <Dialog open={!!showShareDialog} onOpenChange={() => setShowShareDialog(null)}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Share Event</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <p>Share "{showShareDialog?.name}" with:</p>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Employee IDs (comma-separated):</label>
-              <Input
-                placeholder="EMP001, EMP002, EMP003..."
-                value={shareEmployeeIds}
-                onChange={(e) => setShareEmployeeIds(e.target.value)}
-              />
+        {/* Empty State */}
+        {filteredEvents.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-muted rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-8 w-8 text-muted-foreground" />
             </div>
+            <h3 className="text-lg font-medium text-foreground mb-2">No events found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search or filters to find events.
+            </p>
           </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowShareDialog(null)}>
-              Cancel
-            </Button>
-            <Button onClick={handleShareSubmit}>
-              Share
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     </>
   );
 };
