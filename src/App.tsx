@@ -18,9 +18,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <AuthProvider>
-            <SpinTheWheelProvider>
-              <Router>
+          <Router>
+            <AuthProvider>
+              <SpinTheWheelProvider>
                 <div className="min-h-screen bg-background">
                   <Routes>
                     <Route path="/" element={<Home />} />
@@ -28,10 +28,10 @@ function App() {
                     <Route path="/events/:id" element={<EventDetail />} />
                   </Routes>
                 </div>
-              </Router>
-              <Toaster />
-            </SpinTheWheelProvider>
-          </AuthProvider>
+                <Toaster />
+              </SpinTheWheelProvider>
+            </AuthProvider>
+          </Router>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
