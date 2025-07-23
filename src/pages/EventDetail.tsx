@@ -125,6 +125,49 @@ const EventDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* Horizontal Menu Bar with Event Info and Register Button */}
+        <div className="bg-white border-b border-gray-200 px-4 py-4">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between">
+              {/* Event Info */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-600">{event.academy}</span>
+                </div>
+                <Badge 
+                  variant={event.status === 'OPEN' ? 'default' : 'secondary'}
+                  className="text-xs"
+                >
+                  {event.status}
+                </Badge>
+                {event.status === 'OPEN' && (
+                  <Button size="sm" className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Register for Event
+                  </Button>
+                )}
+              </div>
+
+              {/* Sub-menu Navigation */}
+              <nav className="flex items-center gap-6">
+                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  Dashboard
+                </button>
+                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  Leaderboard
+                </button>
+                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  FAQ
+                </button>
+                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  Support
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+
         {/* Event Details */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
@@ -136,21 +179,11 @@ const EventDetail: React.FC = () => {
                   alt={event.name}
                   className="w-full h-80 object-cover"
                 />
-                <Badge 
-                  variant={event.status === 'OPEN' ? 'default' : 'secondary'}
-                  className="absolute top-4 left-4 bg-white/90 text-gray-800 border"
-                >
-                  {event.status}
-                </Badge>
               </div>
 
               <CardContent className="p-8">
                 {/* Event Header */}
                 <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="h-5 w-5 text-gray-500" />
-                    <span className="text-lg font-medium text-gray-600">{event.academy}</span>
-                  </div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-4">{event.name}</h1>
                   <p className="text-gray-600 text-lg leading-relaxed">{event.description}</p>
                 </div>
@@ -165,7 +198,7 @@ const EventDetail: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Start Date</p>
+                        <p className="text-sm font-medium text-gray-600">Assigned Date</p>
                         <p className="text-lg font-semibold text-gray-900">
                           {new Date(event.startDate).toLocaleDateString('en-US', {
                             weekday: 'long',
@@ -179,7 +212,7 @@ const EventDetail: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">End Date</p>
+                        <p className="text-sm font-medium text-gray-600">Completed Date</p>
                         <p className="text-lg font-semibold text-gray-900">
                           {new Date(event.endDate).toLocaleDateString('en-US', {
                             weekday: 'long',
@@ -201,20 +234,6 @@ const EventDetail: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  {event.status === 'OPEN' && (
-                    <Button size="lg" className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      Register for Event
-                    </Button>
-                  )}
-                  <Button variant="outline" size="lg" className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Add to Calendar
-                  </Button>
                 </div>
               </CardContent>
             </Card>
