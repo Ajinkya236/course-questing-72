@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, BrainCircuit, Trophy, Users, Search, GraduationCap, PartyPopper } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import SkillSearch from '../skills/SkillSearch';
+import { Home, Search, BookOpen, Users, Calendar, Award, User, Bell } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import SearchBar from './SearchBar';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -15,111 +15,60 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({ 
   isOpen, 
   isSkillsPage, 
-  onClose,
-  navigateToSearch
+  onClose, 
+  navigateToSearch 
 }) => {
   const location = useLocation();
-  
+
   if (!isOpen) return null;
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-  
-  const isSkillsActive = location.pathname.includes('/skills');
+
+  const navItems = [
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/discover', label: 'Discover', icon: Search },
+    { href: '/my-learning', label: 'My Learning', icon: BookOpen },
+    { href: '/my-team', label: 'My Team', icon: Users },
+    { href: '/events', label: 'Events', icon: Calendar },
+    { href: '/skills', label: 'Skills', icon: Award },
+    { href: '/mentoring', label: 'Mentoring', icon: User },
+    { href: '/notifications', label: 'Notifications', icon: Bell, badge: 4 },
+  ];
 
   return (
-    <div className="md:hidden border-t p-4">
-      <nav className="grid gap-2">
-        <Link
-          to="/"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <Home className="h-4 w-4" />
-          Home
-        </Link>
-        <Link
-          to="/discover"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/discover') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <BookOpen className="h-4 w-4" />
-          Discover
-        </Link>
-        <Link
-          to="/my-learning"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/my-learning') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <Trophy className="h-4 w-4" />
-          My Learning
-        </Link>
-        <Link
-          to="/skills"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isSkillsActive ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <BrainCircuit className="h-4 w-4" />
-          Skills
-        </Link>
-        <Link
-          to="/my-team"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/my-team') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <Users className="h-4 w-4" />
-          My Team
-        </Link>
-        <Link
-          to="/mentoring"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/mentoring') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <GraduationCap className="h-4 w-4" />
-          Mentoring
-        </Link>
-        <Link
-          to="/events"
-          className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm ${
-            isActive('/events') ? 'bg-secondary' : 'hover:bg-secondary/50'
-          }`}
-          onClick={onClose}
-        >
-          <PartyPopper className="h-4 w-4" />
-          Events
-        </Link>
-        <div className="relative w-full mt-2">
-          {isSkillsPage ? (
-            <SkillSearch />
-          ) : (
-            <>
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full pl-9"
-                onFocus={() => {
-                  navigateToSearch();
-                  onClose();
-                }}
-              />
-            </>
-          )}
-        </div>
-      </nav>
+    <div className="md:hidden bg-background border-b">
+      <div className="container py-4 space-y-4">
+        <SearchBar 
+          isSkillsPage={isSkillsPage} 
+          onFocus={navigateToSearch}
+        />
+        
+        <nav className="space-y-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.href;
+            
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                  isActive 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+                onClick={onClose}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.label}</span>
+                {item.badge && (
+                  <Badge className="ml-auto h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {item.badge}
+                  </Badge>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </div>
   );
 };

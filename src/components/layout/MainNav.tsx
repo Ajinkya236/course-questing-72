@@ -1,54 +1,37 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Trophy, BrainCircuit, Users } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const MainNav: React.FC = () => {
+const MainNav = () => {
   const location = useLocation();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-  
-  const isSkillsPage = location.pathname.includes('/skills');
+
+  const navItems = [
+    { href: '/', label: 'Home' },
+    { href: '/discover', label: 'Discover' },
+    { href: '/my-learning', label: 'My Learning' },
+    { href: '/my-team', label: 'My Team' },
+    { href: '/events', label: 'Events' },
+    { href: '/skills', label: 'Skills' },
+    { href: '/mentoring', label: 'Mentoring' },
+  ];
 
   return (
-    <nav className="hidden md:flex items-center gap-1">
-      <Link 
-        to="/" 
-        className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
-      >
-        <Home className="mr-1 h-4 w-4" />
-        Home
-      </Link>
-      <Link 
-        to="/discover" 
-        className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/discover') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
-      >
-        <BookOpen className="mr-1 h-4 w-4" />
-        Discover
-      </Link>
-      <Link 
-        to="/my-learning" 
-        className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/my-learning') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
-      >
-        <Trophy className="mr-1 h-4 w-4" />
-        My Learning
-      </Link>
-      <Link 
-        to="/skills" 
-        className={`flex items-center px-4 py-1.5 text-sm font-medium ${isSkillsPage ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
-      >
-        <BrainCircuit className="mr-1 h-4 w-4" />
-        Skills
-      </Link>
-      <Link 
-        to="/mentoring" 
-        className={`flex items-center px-4 py-1.5 text-sm font-medium ${isActive('/mentoring') ? 'bg-secondary rounded-md' : 'text-foreground/60 hover:text-foreground'}`}
-      >
-        <Users className="mr-1 h-4 w-4" />
-        Mentoring
-      </Link>
+    <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+      {navItems.map((item) => (
+        <Link
+          key={item.href}
+          to={item.href}
+          className={cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            location.pathname === item.href
+              ? "text-primary"
+              : "text-muted-foreground"
+          )}
+        >
+          {item.label}
+        </Link>
+      ))}
     </nav>
   );
 };
